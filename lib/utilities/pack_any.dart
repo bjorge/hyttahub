@@ -4,7 +4,7 @@ import 'package:protobuf/protobuf.dart';
 /// Packs a message into an Any.
 Any packAny(GeneratedMessage msg) {
   return Any()
-    ..typeUrl = 'type.googleapis.com/${msg.info_.qualifiedMessageName}'
+    ..typeUrl = 'type.hyttehub.com/${msg.info_.qualifiedMessageName}'
     ..value = msg.writeToBuffer();
 }
 
