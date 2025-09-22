@@ -4,12 +4,13 @@ import 'package:hyttahub/common_widgets/events_display.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/proto/common_blocs.pb.dart';
 
 class MockEventsDisplayConfig extends Mock
-    implements EventsDisplayConfig<CommonSubmitBlocState, CommonSubmitBlocState> {}
+    implements EventsDisplayConfig<AccountState, AccountState> {}
 
 void main() {
   group('EventsDisplay', () {
@@ -22,11 +23,10 @@ void main() {
       when(mockConfig.collectionPath).thenReturn('test_path');
       when(mockConfig.screenTitle).thenReturn('Test Title');
       when(mockConfig.replayTitle).thenReturn('Replay Title');
-      when(mockConfig.parseRecord(any, any, any))
-          .thenReturn(CommonSubmitBlocState());
+      when(mockConfig.parseRecord(any, any, any)).thenReturn(AccountState());
       when(mockConfig.getVersion(any)).thenReturn(1);
       when(mockConfig.getIsoDate(any)).thenReturn('2025-01-01');
-      when(mockConfig.replay(any)).thenReturn(CommonSubmitBlocState());
+      when(mockConfig.replay(any)).thenReturn(AccountState());
     });
 
     testWidgets('renders loading indicator when fetching',
@@ -36,7 +36,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
+          home: EventsDisplay<AccountState, AccountState>(
             config: mockConfig,
           ),
         ),
@@ -58,7 +58,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
+          home: EventsDisplay<AccountState, AccountState>(
             config: mockConfig,
           ),
         ),
@@ -80,7 +80,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
+          home: EventsDisplay<AccountState, AccountState>(
             config: mockConfig,
           ),
         ),

@@ -5,9 +5,10 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:mockito/mockito.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 
-class _MockReplayBloc extends BaseReplayBloc<CommonSubmitBlocState> {
-  _MockReplayBloc(this.firestore) : super(CommonSubmitBlocState());
+class _MockReplayBloc extends BaseReplayBloc<AccountState> {
+  _MockReplayBloc(this.firestore) : super(AccountState());
 
   final FakeFirebaseFirestore firestore;
 
@@ -19,42 +20,42 @@ class _MockReplayBloc extends BaseReplayBloc<CommonSubmitBlocState> {
 
   @override
   void handleEmptyInitialSnapshot(
-      Emitter<CommonSubmitBlocState> emit, CommonSubmitBlocState currentState) {
+      Emitter<AccountState> emit, AccountState currentState) {
     emit(currentState..status = CommonReplayStateEnum.ok);
   }
 
   @override
-  CommonSubmitBlocState replayEvents(
-      CommonSubmitBlocState currentState, Map<int, String> newEventsData) {
+  AccountState replayEvents(
+      AccountState currentState, Map<int, String> newEventsData) {
     final newState = currentState.deepCopy();
-    // newState.events.addAll(newEventsData); // CommonSubmitBlocState has no events
+    newState.events.addAll(newEventsData);
     return newState;
   }
 
   @override
-  Map<int, String> stateGetEventsMap(CommonSubmitBlocState state) {
-    return {}; // CommonSubmitBlocState has no events
+  Map<int, String> stateGetEventsMap(AccountState state) {
+    return state.events;
   }
 
   @override
-  CommonReplayStateEnum stateGetStatusEnum(CommonSubmitBlocState state) {
+  CommonReplayStateEnum stateGetStatusEnum(AccountState state) {
     return state.status;
   }
 
   @override
-  CommonSubmitBlocState stateCopyWithStatus(
-      CommonSubmitBlocState currentState, CommonReplayStateEnum newStatusEnum) {
+  AccountState stateCopyWithStatus(
+      AccountState currentState, CommonReplayStateEnum newStatusEnum) {
     return currentState.deepCopy()..status = newStatusEnum;
   }
 
   @override
-  CommonSubmitBlocState stateFromJson(
+  AccountState stateFromJson(
       Map<String, dynamic> json, Map<int, String> hydratedEvents) {
-    return CommonSubmitBlocState();
+    return AccountState()..events.addAll(hydratedEvents);
   }
 
   @override
-  Map<String, dynamic> stateToJson(CommonSubmitBlocState state) {
+  Map<String, dynamic> stateToJson(AccountState state) {
     return {};
   }
 
@@ -70,17 +71,17 @@ void main() {
       firestore = FakeFirebaseFirestore();
     });
 
-    blocTest<_MockReplayBloc, CommonSubmitBlocState>(
+    blocTest<_MockReplayBloc, AccountState>(
       'emits [fetching, ok] when listen is added and no events are fetched',
       build: () => _MockReplayBloc(firestore),
       act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
       expect: () => [
-        isA<CommonSubmitBlocState>().having(
+        isA<AccountState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.fetchingConfig,
         ),
-        isA<CommonSubmitBlocState>().having(
+        isA<AccountState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.ok,
@@ -88,7 +89,7 @@ void main() {
       ],
     );
 
-    blocTest<_MockReplayBloc, CommonSubmitBlocState>(
+    blocTest<_MockReplayBloc, AccountState>(
       'emits [fetching, ok] with events when listen is added and events are fetched',
       build: () {
         firestore.collection('test').doc('1').set({
@@ -99,16 +100,22 @@ void main() {
       },
       act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
       expect: () => [
-        isA<CommonSubmitBlocState>().having(
+        isA<AccountState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.fetchingConfig,
         ),
-        isA<CommonSubmitBlocState>().having(
-          (s) => s.status,
-          'status',
-          CommonReplayStateEnum.ok,
-        ),
+        isA<AccountState>()
+            .having(
+              (s) => s.status,
+              'status',
+              CommonReplayStateEnum.ok,
+            )
+            .having(
+              (s) => s.events,
+              'events',
+              {1: 'event1'},
+            ),
       ],
     );
   });
