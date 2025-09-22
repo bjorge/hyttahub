@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message BloomFilter {
+  bytes bit_array = 1;  // The bit array (Uint8List)
+  int32 size = 2;       // Total number of bits
+  int32 hash_count = 3; // Number of hash functions
+}

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "common_blocs.proto";
+import "any.proto";
+
+
+// message AppReplayBlocStateWrapper { Any payload = 1; }
+
+message SiteReplayBlocState {
+
+  message Member {
+    string name = 1;
+    bool admin = 2;
+  }
+
+  CommonReplayStateEnum state = 1;
+  map<int32, string> events = 2;  // base64 encoded events
+  string name = 3;                // name of the site
+  map<int32, Member> members = 4; // map of user id to user info
+  map<int32, Member> removedMembers = 5; // members that have been removed
+
+  /****** Application specific state ********/
+
+  Any appBlocState = 20;
+}

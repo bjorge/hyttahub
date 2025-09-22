@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+import "bloom_filter.proto";
+
+// these records are permanently stored in firebase and read by the client, 
+// so do not include email or any other PII
+message ServiceEvent {
+  // note: do not store timestamp here, it can be pulled from firebase if needed
+  // the event version, these must be unique and incrementing
+  int32 version = 1;
+  // user user that stored this event
+  int32 author = 2;
+
+  message InitialEvent {
+    string instance = 1;
+    string alias = 2; // alias name for service admin
+    BloomFilter filter =
+        3; // the new bloom filter after the addition of the first user
+  }
+
+  message ServiceStatus {
+    bool unavailable = 1;
+  }
+
+  message TermsOfService {
+    string content = 1;
+  }
+
+  message PrivacyPolicy {
+    string content = 1;
+  }
+
+  message AddServiceAdmin {
+    string alias = 1;       // alias name for service admin
+    BloomFilter filter = 2; // the new bloom filter after the addition
+  }
+
+  message RemoveServiceAdmin {
+    int32 id = 1;
+    BloomFilter filter = 2;
+  }
+
+  message UpdateServiceAdmin {
+    int32 id = 1;
+    string alias = 2;
+    BloomFilter filter = 3;
+  }
+
+  message RestoreServiceAdmin {
+    int32 id = 1;
+    string alias = 2;
+    BloomFilter filter = 3;
+  }
+
+  message MinimumVersionRequired {
+    int32 value = 1;
+  }
+
+  oneof event_type {
+    InitialEvent initialEvent = 3;
+    ServiceStatus serviceStatus = 4;
+    TermsOfService terms = 5;
+    PrivacyPolicy privacy = 6;
+    AddServiceAdmin addServiceAdmin = 7;       // add and update the bloom filter
+    RemoveServiceAdmin removeServiceAdmin = 8; // remove and update the bloom filter
+    MinimumVersionRequired minVersion = 9;
+    BloomFilter betaUsersFilter = 10; // updated beta users filter
+    UpdateServiceAdmin updateServiceAdmin = 11;
+    RestoreServiceAdmin restoreServiceAdmin = 12;
+  }
+}
+
+// The SubmitServiceEvent is passed to the submit bloc handler, so it can contain PII
+message SubmitServiceEvent {
+  ServiceEvent event = 1;
+  string email = 2; // some events have an associated email that has to be saved
+  string betaUsers = 3; // the beta users, if any, commas separated email addresses
+  string addServiceAdminEmail = 4;
+  string updateServiceAdminOriginalEmail = 5;
+  string updateServiceAdminNewEmail = 6;
+  string removeServiceAdminEmail = 7;
+}
+
+// The ServiceEventRecord is a representation of the actual record stored in the database
+// This record is used just for display purposes in the client
+message ServiceEventRecord {
+  string isoDate = 1;
+  int32 version = 2;
+  ServiceEvent serviceEvent = 3;
+}

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+enum AuthState {
+  // transition states (show progress bar)
+  initializing = 0;
+  authenticating = 1; // (logging in)
+  registering = 2;    // (creating an account)
+  submittingEmailVerificationRequest = 3;
+  submittingForgottenPasswordRequest = 4;
+  submittingSignOutRequest = 5;
+  submittingRemoveAccountRequest = 6;
+  loginSuccess = 7; // (login success)
+
+  // final states (show/push a screen)
+  authenticated = 10;   // (logged in)
+  unauthenticated = 11; // (logged out)
+  authenticationError = 12;
+  emailVerificationSent =
+      13; // (email verification sent during account creation)
+  forgottenPasswordEmailSent = 14; // (password reset email sent)
+}
+
+message AuthBlocState {
+  AuthState authState = 1;
+  string email = 2;
+  string errorMessage = 3;
+  bool isServiceAdmin = 4;
+}
+
+message AuthBlocEvent {
+
+  message AppStartup {}
+
+  message EmailLogin {
+    string email = 1;
+    string password = 2;
+    string language = 3;
+    bool serviceAdmin = 4;
+  }
+  message EmailSignup {
+    string email = 1;
+    string password = 2;
+    // string terms = 3;
+    int32 termsVersion = 4;
+    // string privacy = 5;
+    int32 privacyVersion = 6;
+    string language = 7;
+    bool serviceAdmin = 8;
+  }
+
+  message EmailForgotPassword {
+    string email = 1;
+    string language = 2;
+  }
+
+  message Logout {}
+
+  message RemoveAccount {}
+
+  oneof eventType {
+    EmailLogin emailLogin = 1;
+    EmailSignup emailSignup = 2;
+    EmailForgotPassword emailForgotPassword = 3;
+    Logout logout = 4;
+    AppStartup startup = 5;
+    RemoveAccount removeAccount = 6;
+  }
+}

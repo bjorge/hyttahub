@@ -1,0 +1,15 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow all access for emulator
+    match /emulator/{siteId}/{photoId} {
+      allow read: if request.auth != null;
+    }
+
+    // Deny all other access by default
+    // Get a signed url instead for reads
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "app_createTreeTitle": "Create Tree",
+  "app_treeNameLabel": "Tree Name",
+  "app_treeNameEmptyError": "Tree name cannot be empty",
+  "app_addPhotosTitle": "Add Photos",
+  "app_uploadingPhotosProgress": "Uploading {count} of {total} files...",
+  "app_submissionError": "Submission Error: {error}",
+  "app_pickPhotosButton": "Pick Photos",
+  "app_selectPhotosToUpload": "Select photos to upload:",
+  "app_treeSettingsTitle": "Tree Settings",
+  "app_reorderTreesTitle": "Reorder Trees",
+  "app_renameTreeTitle": "Rename Tree",
+  "app_photoInfoTitle": "Photo Info",
+  "app_photoNotFound": "Photo not found.",
+  "app_treeLabel": "Tree",
+  "app_notAvailable": "N/A",
+  "app_originalNameLabel": "Original Name",
+  "app_sizeLabel": "Size",
+  "app_noTrees": "no trees",
+  "app_siteSettingsTitle": "Site Settings",
+  "app_addTreeTitle": "Add Tree",
+  "app_newTreeNameLabel": "New Tree Name",
+  "app_addPhotoCaptionTitle": "Add Photo Caption",
+  "app_photoCaptionLabel": "Photo Caption",
+  "app_deletePhotoTitle": "Delete Photo",
+  "app_deletePhotoConfirmation": "Delete Photo? This action cannot be undone.",
+  "app_deleteTreeTitle": "Delete Tree",
+  "app_deleteTreeConfirmation": "Delete Tree? This action cannot be undone and will delete all members and photos in the tree.",
+  "app_addTreeMemberTitle": "Add Tree Member",
+  "app_treeMemberNameLabel": "Member Name",
+  "app_treeMemberNameEmptyError": "Member name cannot be empty",
+  "app_removeTreeMemberTitle": "Remove Tree Member",
+  "app_removeTreeMemberConfirmation": "Remove Member? This action cannot be undone.",
+  "app_addConnectionTitle": "Add Connection",
+  "app_selectMember": "Select Member",
+  "app_selectConnectionType": "Select Connection Type",
+  "app_infoLabel": "Info (optional)",
+  "app_removeConnectionTitle": "Remove Connection",
+  "app_removeConnectionConfirmation": "Remove Connection? This action cannot be undone.",
+  "app_updatePhotoCaptionScreenTitle": "Update Photo Caption",
+  "app_newCaptionLabel": "New caption",
+  "app_pleaseSelectMemberError": "Please select a member",
+  "app_pleaseSelectConnectionType": "Please select a connection type",
+  "app_treeNotFound": "Tree not found",
+  "app_personNotFound": "Person not found",
+  "app_noConnections": "No connections",
+  "app_connectionTypePartner": "Partner",
+  "app_connectionTypeExPartner": "Ex-Partner",
+  "app_connectionTypeChild": "Children",
+  "app_connectionTypeFriend": "Friends",
+  "app_connectionTypeParent": "Parents",
+  "app_connectionTypePet": "Pets",
+  "app_connectionTypeConnections": "Connections",
+  "app_noMembersInThisTree": "No members in this tree",
+  "app_renameTreeMemberTitle": "Rename Tree Member",
+  "app_newMemberNameLabel": "New Member Name",
+  "app_photoSizeInKB": "{size} KB",
+  "@app_photoSizeInKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventsTitle": "App Events",
+  "app_stateTitle": "App State",
+  "app_showAppEventsState": "Show App Events & State",
+  "app_photosCount": "Photos: {count}",
+  "@app_photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "app_connectionsCount": "Connections: {count}",
+  "@app_connectionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "app_addConnectionTooltip": "Add Connection",
+  "app_addPhotoTooltip": "Add Photo",
+  "app_errorTitle": "Error",
+  "app_unexpectedError": "Unexpected error, check internet, go back and try again",
+  "app_accessDeniedTitle": "Access Denied",
+  "app_sitePermissionDenied": "You do not have permission to view this site. Contact the site administrator if your email should be allowed.",
+  "app_networkError": "A network error occurred. Please check your connection.",
+  "app_editModeTitle": "Edit Mode",
+  "app_adminPrivileges": "You have admin privileges for this site.",
+  "app_howToProceed": "How would you like to proceed?",
+  "app_viewSite": "View Site",
+  "app_editSite": "Edit Site",
+  "app_renameSiteTitle": "Rename Site",
+  "app_manageSiteMembers": "Manage Site Members",
+  "app_showSiteEventsState": "Show Site Events & State",
+  "app_showSiteAllowedEmails": "Show Site Allowed Emails",
+  "app_appTitle": "Hytta Hub Connections",
+  "app_nightMode": "Night Mode",
+  "app_themeSettingsAlwaysOff": "Always Off",
+  "app_themeSettingsAlwaysOn": "Always On",
+  "app_themeSettingsAutomatic": "Automatic",
+  "app_versionInfo": "Version {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Select Language",
+  "app_english": "English",
+  "app_italian": "Italian",
+  "app_spanish": "Spanish",
+  "app_enterButton": "Enter",
+  "app_otherAppsTitle": "Other Hytta Hub Applications",
+  "app_reservationsAppButton": "Hytta Hub Reservations",
+  "app_serviceLoginButton": "Service Login"
+}

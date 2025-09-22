@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+message AppReplayBlocState {
+  message Photo {
+    int32 id = 1;
+    string name = 3;
+    int32 size = 4;
+    string caption = 5;
+  }
+
+
+  message AlbumInfo {
+    int32 id = 1;
+    string name = 2;
+    repeated Photo photos = 3;
+  }
+
+  repeated AlbumInfo albums = 1;
+}

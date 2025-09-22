@@ -1,0 +1,17 @@
+#!/bin/bash
+# Configuration for deployment scripts.
+# Copy this file to config.sh and fill in your project details.
+# config.sh is ignored by git.
+
+# Your Firebase Project ID
+export FIREBASE_PROJECT_ID="your-firebase-project-id"
+
+# Your Firebase Hosting site name (often the same as the project ID)
+export FIREBASE_HOSTING_SITE="your-hosting-site-name"
+
+# The web app URL for CORS configuration (e.g., https://your-project-id.web.app)
+export WEB_APP_URL="https://your-project-id.web.app"
+
+# The URL for your Firebase Storage bucket (e.g., gs://your-project-id.appspot.com)
+export FIREBASE_STORAGE_BUCKET="gs://your-project-id.appspot.com"
+

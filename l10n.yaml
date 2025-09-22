@@ -1,0 +1,6 @@
+arb-dir: lib/l10n
+template-arb-file: intl_en.arb
+output-localization-file: intl_localizations.dart
+synthetic-package: false
+output-class: HyttaHubLocalizations
+

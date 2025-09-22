@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// The SiteEmail is persisted in the email collection for each site
+message MarkForDeletion {
+  enum DeleteReason {
+    memberLeftSite = 0; // update the site's
+    memberRemovedFromSite = 1; // update the member's account stream
+    memberEmailUpdated = 2; // the user's email has been updated
+  }
+
+  DeleteReason deleteReason = 1; // the reason for deletion
+}

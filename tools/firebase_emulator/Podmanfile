@@ -1,0 +1,24 @@
+FROM node:20
+
+# Install Java (required for Firebase Firestore)
+RUN apt-get update && apt-get install -y \
+    default-jdk \
+    vim \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Install Firebase CLI and TypeScript globally
+RUN npm install -g firebase-tools typescript ts-node
+
+# Copy Firebase configuration files
+COPY firebase.json .
+# COPY firestore.rules .
+
+# Expose Firebase emulator ports
+EXPOSE 4000 4500 5000 5001 8080 8085 9000 9099 9199
+
+# Start Firebase Emulator
+# CMD ["sh", "-c", "firebase emulators:start --project demo-project"]
+CMD ["sh", "-c", "cd node-functions && npm install && npm run build && cd .. && firebase emulators:start --project demo-project"]

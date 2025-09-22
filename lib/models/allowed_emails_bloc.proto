@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+// Fetch the allowed emails for the service or a site
+// The emails are stored outside of the events
+message AllowedEmailsBlocEvent {
+  message FetchedAllowedEmails {
+  }
+
+  oneof event_type {
+    FetchedAllowedEmails fetchNow = 1;
+    AllowedEmailsBlocState updateNow = 2;
+  }
+}
+
+
+message AllowedEmailsBlocState {
+  message UserInfo {
+    int32 user_id = 1;
+  }
+
+  enum State {
+    fetching = 0;
+    success = 1;
+    error = 2;
+    permissionDenied = 3;
+  }
+  State state = 1;
+  map<string, UserInfo> emails = 2;
+}

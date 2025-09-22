@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+message AppEvent {
+
+  message AddAlbum {
+    string name = 1; // the name of the album
+  }
+
+  message AddPhoto {
+    int32 albumId = 1;
+    string name = 2; // the original name of the photo
+    int32 size = 3;  // the size of the image in bytes
+  }
+
+  message ReorderAlbums {
+    repeated int32 albumIds = 1; // the new order of the albums
+  }
+
+  message UpdateAlbum {
+    int32 albumId = 1;
+    string name = 2;
+  }
+
+  message DeleteAlbum {
+    int32 albumId = 1;
+  }
+
+  message UpdateCaption {
+    int32 photoId = 1;
+    string caption = 2;
+  }
+
+  message DeletePhoto {
+    int32 photoId = 1;
+  }
+
+  message ReorderPhotos {
+    int32 albumId = 1;
+    repeated int32 photoIds = 2;
+  }
+
+  oneof event_type {
+    AddAlbum addAlbum = 1;
+    AddPhoto addPhoto = 2;
+    ReorderAlbums reorderAlbums = 3;
+    UpdateAlbum updateAlbum = 4;
+    DeleteAlbum deleteAlbum = 5;
+    UpdateCaption updateCaption = 6;
+    DeletePhoto deletePhoto = 7;
+    ReorderPhotos reorderPhotos = 8;
+  }
+}
+
+// The SubmitAppEvent is passed to the submit bloc handler
+// PII (ex. email) is allowed in this message since not stored to immutable
+// records
+message SubmitAppEvent {
+  // the final site event will contain this app event
+  message SiteEvent {
+    int32 version = 1; // the version of the event, required
+    int32 author = 2;  // filled in by the app submit bloc
+  }
+
+  message Image {
+    string base64Data = 1;  // the image data
+    string name = 2; // the name of the image, used for display
+    int32 size = 3;  // the size of the image in bytes
+  }
+
+  AppEvent appEvent = 1;   // the event to store in immutable records, required
+  SiteEvent siteEvent = 2; // the version of the event, required
+  string authorEmail = 3;  // the author's email, required
+
+
+  repeated Image images = 10; // for add photo events, the images to upload
+  repeated int32 photo_ids_to_delete = 11; // for delete album events, the photo ids to delete
+
+}
+
+// The AppEventRecord is a representation of the actual record stored in the
+// database This record is used just for display purposes in the client
+message AppEventRecord {
+  string isoDate = 1;
+  int32 version = 2;
+  AppEvent appEvent = 3;
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(-105.931, -13.241) scale(6.17931)">
+    <!-- House roof (triangle) with extended eaves -->
+    <path d="M50,60 L100,30 L150,60" fill="none" stroke="#4a86e8" stroke-width="6" stroke-linejoin="round"/>
+    
+    <!-- House base (square) -->
+    <path d="M60,60 h80 v80 h-80 z" fill="none" stroke="#4a86e8" stroke-width="6"/>
+    
+    <!-- Letter A inside the house -->
+    <!-- Left diagonal line of A -->
+    <path d="M80,130 L100,70" fill="none" stroke="#4a86e8" stroke-width="6"/>
+    
+    <!-- Right diagonal line of A -->
+    <path d="M100,70 L120,130" fill="none" stroke="#4a86e8" stroke-width="6"/>
+    
+    <!-- Horizontal crossbar of A -->
+    <path d="M85,105 h30" fill="none" stroke="#4a86e8" stroke-width="6"/>
+  </g>
+</svg>

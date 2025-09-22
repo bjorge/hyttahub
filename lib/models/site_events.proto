@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+import "any.proto";
+
+// The SiteEvent is persisted in immutable firestore collection
+// do not store email addresses or any other PII in this message
+message SiteEvent {
+  int32 version = 1;
+  int32 author = 2;
+
+  // events should be messages to allow for ease in future updates
+  message NewSite {
+    string siteName = 1;
+    string memberName = 2;
+  }
+
+  message AddMember {
+    string memberName = 1;
+    bool admin = 2;
+  }
+
+  // admin removes a member from the site
+  message RemoveMember { int32 memberId = 1; }
+
+  message RestoreMember {
+    int32 memberId = 1;
+    string memberName = 2;
+    bool admin = 3;
+  }
+
+  message UpdateMember {
+    int32 memberId = 1;
+    string memberName = 2;
+    bool admin = 3;
+  }
+
+  // member leaves the site
+  message LeaveSite { int32 memberId = 1; }
+
+  message UpdateSiteName { string name = 1; }
+
+  oneof event_type {
+    NewSite newSite = 4;
+    AddMember addMember = 5;
+    UpdateSiteName updateSiteName = 6;
+    RemoveMember removeMember = 7; // the member to remove
+    LeaveSite leaveSite = 8;       // the member that has left the site
+    RestoreMember restoreMember = 9;
+    UpdateMember updateMember = 10;
+
+    /****** Application specific events ********/
+
+    Any appEvent = 20;
+  }
+}
+
+// The SubmitSiteEvent is passed to the submit bloc handler
+// PII (ex. email) is allowed in this message since not stored to immutable
+// records
+message SubmitSiteEvent {
+
+  SiteEvent event = 1;
+  string authorEmail =
+      2; // the author's email, used to identify the user, required
+  string addMemberEmail = 4; // for add member events, the email of the new member
+  string removeMemberEmail = 5; // for remove member events, the email of the member to remove
+  string updateMemberNewEmail = 6; // for update member events, the new email of the member
+  string updateMemberOriginalEmail = 7; // for update member events, the original email of the member
+
+}
+
+// The SiteEventRecord is a representation of the actual record stored in the
+// database This record is used just for display purposes in the client
+message SiteEventRecord {
+  string isoDate = 1;
+  int32 version = 2;
+  SiteEvent siteEvent = 3;
+}

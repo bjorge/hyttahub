@@ -1,0 +1,47 @@
+# note: the firebase.json file in this directory is for the emulator, not prod
+
+# in chromeos (flux) developer linux build the image
+sudo podman build -t localhost/firebase-emulator -f Podmanfile
+
+# docker (mac M1)
+docker build -t firebase-emulator -f Podmanfile .
+
+# run the image
+sudo podman run --rm -it \
+  --name firebase-emulator-container \
+  -p 4000:4000 \
+  -p 4500:4500 \
+  -p 5000:5000 \
+  -p 5001:5001 \
+  -p 8080:8080 \
+  -p 8085:8085 \
+  -p 9000:9000 \
+  -p 9099:9099 \
+  -p 9199:9199 \
+  -v "$(pwd)/firestore.rules:/app/firestore.rules" \
+  -v "$(pwd)/storage.rules:/app/storage.rules" \
+  -v "$(pwd)/../node-functions":/app/node-functions \
+  localhost/firebase-emulator
+
+# docker (mac M1)
+docker run --rm -it \
+  --name firebase-emulator-container \
+  -p 4000:4000 \
+  -p 4500:4500 \
+  -p 5001:5001 \
+  -p 8080:8080 \
+  -p 8085:8085 \
+  -p 9000:9000 \
+  -p 9099:9099 \
+  -p 9199:9199 \
+  -v "$(pwd)/firestore.rules:/app/firestore.rules" \
+  -v "$(pwd)/storage.rules:/app/storage.rules" \
+  -v "$(pwd)/../node-functions":/app/node-functions \
+  firebase-emulator
+
+# to shell into the container
+sudo podman exec -it firebase-emulator-container /bin/bash
+
+# docker: to shell into the container 
+docker exec -it firebase-emulator-container /bin/bash
+

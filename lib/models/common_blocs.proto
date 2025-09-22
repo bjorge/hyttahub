@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+enum CommonReplayStateEnum {
+  ok = 0;
+  fetchingConfig = 1;
+  uninitialized = 2;
+  networkError = 3;
+  permissionDenied = 4;
+}
+
+message CommonReplayBlocEvent {
+  oneof event_type {
+    bool listen = 1;
+    NewEvents newEvents = 2;
+    string errorOccurred = 3;
+  }
+  message NewEvents { map<int32, string> events = 1; }
+}
+
+message EventMapProto { map<int32, string> events = 1; }
+
+message CommonSubmitBlocEvent {
+  oneof event_type {
+    string updatedPayload = 2;
+    bool isFormValid = 3;
+    SubmitNow submit = 4;
+  }
+  message SubmitNow {}
+}
+
+message CommonSubmitBlocState {
+  enum State {
+    ready = 0;
+    canSubmit = 1;
+    submitting = 2;
+    error = 3;
+    success = 4;
+  }
+  State state = 1;
+  enum ErrorCode {
+    none = 0;
+    networkError = 1;
+    permissionDenied = 2;
+  }
+  ErrorCode errorCode = 8;
+  message SubmitProgress {
+    int32 count = 1;
+    int32 total = 2;
+  }
+  SubmitProgress progress = 9;
+}

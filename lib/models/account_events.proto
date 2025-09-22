@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+message AccountEvent {
+  int32 version = 1;
+
+  // these are the terms and policies that the user has accepted
+  message Terms {
+    int32 termsVersion = 1;
+    int32 policyVersion = 2;
+  }
+
+  message InitialEvent { Terms terms = 1; }
+
+  oneof event_type {
+    InitialEvent initialEvent = 2;
+    Terms terms = 3;
+    bool allowEmailNotifications = 4; // true or false
+    string createSite = 5; // site id
+    string removeSite = 6; // the user was removed from this site
+    string joinSite = 7; // site id
+    string leaveSite = 8; // the user left this site
+  }
+}
+
+// The SubmitAccountEvent is passed to the submit bloc handler
+message SubmitAccountEvent {
+  AccountEvent event = 1;
+  string createSiteName = 2; // the initial site name
+  string createSiteUserName = 3; // the user nickname who created the site
+}
+
+// The AccountEventRecord is a representation of the actual record stored in the database
+// This record is used just for display purposes in the client
+message AccountEventRecord {
+  string isoDate = 1;
+  int32 version = 2;
+  AccountEvent accountEvent = 3;
+}
+
+
+

@@ -1,0 +1,74 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents/hyttahub {
+    match /{app} {
+      // Site users
+      match /sites/{siteid}/site_users/{email} {
+        allow create: if firstSiteUser(app, siteid, request.auth.token.email) || isSiteEmailListed(app, siteid, request.auth.token.email);
+        allow read, write, update, delete: if isSiteEmailListed(app, siteid, request.auth.token.email);
+      }
+
+      // Site events (no delete or update for events)
+      match /sites/{siteid}/site_events/{eventid} {
+        allow read, create: if isSiteEmailListed(app, siteid, request.auth.token.email);
+      }
+
+      // Site email notifications
+      match /sites/{siteid}/site_emails/{eventid} {
+        allow read, create: if isSiteEmailListed(app, siteid, request.auth.token.email);
+      }
+
+
+      // Service users
+      match /services/status/service_users/{email} {
+        allow create: if firstServiceUser(app) || isServiceEmailListed(app, request.auth.token.email);
+        allow read, write, update, delete: if isServiceEmailListed(app, request.auth.token.email);
+      }
+
+      // Service beta users
+      match /services/beta_users {
+        allow create, read, write, update, delete: if isServiceEmailListed(app, request.auth.token.email);
+      }
+
+      // Service events (no delete or update for events)
+      match /services/status/service_events/{eventid} {
+        allow read: if true;
+        allow create: if firstServiceUser(app) || isServiceEmailListed(app, request.auth.token.email);
+      }
+
+      // Account events (allow delete for when a user deletes their own account)
+      match /accounts/{email}/account_events/{eventid} {
+        allow read, create, delete: if request.auth.token.email == email;
+      }
+    }
+  }
+}
+
+// 🔍 Optimized Helper Functions
+function isSiteEmailListed(app, siteid, email) {
+  return exists(/databases/(default)/documents/hyttahub/$(app)/sites/$(siteid)/site_users/$(email));
+}
+
+function isServiceEmailListed(app, email) {
+  return exists(/databases/(default)/documents/hyttahub/$(app)/services/status/service_users/$(email));
+}
+
+function firstSiteUser(app, siteid, email) {
+  return !exists(/databases/(default)/documents/hyttahub/$(app)/sites/$(siteid)) || 
+         exists(/databases/(default)/documents/hyttahub/$(app)/sites/$(siteid)/site_users/$(email));
+}
+
+function firstServiceUser(app) {
+  return !exists(/databases/(default)/documents/hyttahub/$(app)/services/status) || 
+    !exists(/databases/(default)/documents/hyttahub/$(app)/services/status/service_events/1);
+}
+
+
+
+
+
+
+
+

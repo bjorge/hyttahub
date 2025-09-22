@@ -1,0 +1,124 @@
+{
+  "app_createTreeTitle": "Crear árbol",
+  "app_treeNameLabel": "Nombre del árbol",
+  "app_treeNameEmptyError": "El nombre del árbol no puede estar vacío",
+  "app_addPhotosTitle": "Agregar fotos",
+  "app_uploadingPhotosProgress": "Subiendo {count} de {total} archivos...",
+  "app_submissionError": "Error de envío: {error}",
+  "app_pickPhotosButton": "Seleccionar fotos",
+  "app_selectPhotosToUpload": "Selecciona las fotos para subir:",
+  "app_treeSettingsTitle": "Configuración del árbol",
+  "app_reorderTreesTitle": "Reordenar árboles",
+  "app_renameTreeTitle": "Renombrar árbol",
+  "app_photoInfoTitle": "Información de la foto",
+  "app_photoNotFound": "Foto no encontrada.",
+  "app_treeLabel": "Árbol",
+  "app_notAvailable": "N/D",
+  "app_originalNameLabel": "Nombre original",
+  "app_sizeLabel": "Tamaño",
+  "app_noTrees": "ningún árbol",
+  "app_siteSettingsTitle": "Configuración del sitio",
+  "app_addTreeTitle": "Agregar árbol",
+  "app_newTreeNameLabel": "Nuevo nombre del árbol",
+  "app_addPhotoCaptionTitle": "Agregar leyenda a la foto",
+  "app_photoCaptionLabel": "Leyenda de la foto",
+  "app_deletePhotoTitle": "Eliminar Foto",
+  "app_deletePhotoConfirmation": "¿Eliminar Foto? Esta acción no se puede deshacer.",
+  "app_deleteTreeTitle": "Eliminar árbol",
+  "app_deleteTreeConfirmation": "¿Eliminar árbol? Esta acción no se puede deshacer y eliminará todos los miembros y fotos del árbol.",
+  "app_addTreeMemberTitle": "Agregar miembro del árbol",
+  "app_treeMemberNameLabel": "Nombre del miembro",
+  "app_treeMemberNameEmptyError": "El nombre del miembro no puede estar vacío",
+  "app_removeTreeMemberTitle": "Eliminar miembro del árbol",
+  "app_removeTreeMemberConfirmation": "¿Eliminar miembro? Esta acción no se puede deshacer.",
+  "app_addConnectionTitle": "Agregar conexión",
+  "app_selectMember": "Seleccionar miembro",
+  "app_selectConnectionType": "Seleccionar tipo de conexión",
+  "app_infoLabel": "Información (opcional)",
+  "app_removeConnectionTitle": "Eliminar conexión",
+  "app_removeConnectionConfirmation": "¿Eliminar conexión? Esta acción no se puede deshacer.",
+  "app_updatePhotoCaptionScreenTitle": "Actualizar pie de foto",
+  "app_newCaptionLabel": "Nuevo pie de foto",
+  "app_pleaseSelectMemberError": "Por favor seleccione un miembro",
+  "app_pleaseSelectConnectionType": "Por favor seleccione un tipo de conexión",
+  "app_treeNotFound": "Árbol no encontrado",
+  "app_personNotFound": "Persona no encontrada",
+  "app_noConnections": "No hay conexiones",
+  "app_connectionTypePartner": "Compañero",
+  "app_connectionTypeExPartner": "Ex-pareja",
+  "app_connectionTypeChild": "Niños",
+  "app_connectionTypeFriend": "Amigos",
+  "app_connectionTypeParent": "Padres",
+  "app_connectionTypePet": "Mascotas",
+  "app_connectionTypeConnections": "Conexiones",
+  "app_noMembersInThisTree": "No hay miembros en este árbol",
+  "app_renameTreeMemberTitle": "Renombrar miembro del árbol",
+  "app_newMemberNameLabel": "Nuevo nombre de miembro",
+  "app_photoSizeInKB": "{size} KB",
+  "@app_photoSizeInKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventsTitle": "Eventos de la aplicación",
+  "app_stateTitle": "Estado de la aplicación",
+  "app_showAppEventsState": "Mostrar eventos y estado de la aplicación",
+  "app_photosCount": "Fotos: {count}",
+  "@app_photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "app_connectionsCount": "Conexiones: {count}",
+  "@app_connectionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "app_addConnectionTooltip": "Añadir conección",
+  "app_addPhotoTooltip": "Añadir foto",
+  "app_errorTitle": "Error",
+  "app_unexpectedError": "Error inesperado, verifica la conexión a internet, regresa e inténtalo de nuevo",
+  "app_accessDeniedTitle": "Acceso denegado",
+  "app_sitePermissionDenied": "No tienes permiso para ver este sitio. Contacta al administrador si tu correo electrónico debería estar autorizado.",
+  "app_networkError": "Se produjo un error de red. Verifica tu conexión.",
+  "app_editModeTitle": "Modo edición",
+  "app_adminPrivileges": "Tienes privilegios de administrador para este sitio.",
+  "app_howToProceed": "¿Cómo deseas proceder?",
+  "app_viewSite": "Ver sitio",
+  "app_editSite": "Editar sitio",
+  "app_renameSiteTitle": "Renombrar sitio",
+  "app_manageSiteMembers": "Gestionar miembros del sitio",
+  "app_showSiteEventsState": "Mostrar eventos y estado del sitio",
+  "app_showSiteAllowedEmails": "Mostrar correos electrónicos autorizados del sitio",
+  "app_appTitle": "Conexiones de Hytta Hub",
+  "app_nightMode": "Modo noche",
+  "app_themeSettingsAlwaysOff": "Siempre apagado",
+  "app_themeSettingsAlwaysOn": "Siempre encendido",
+  "app_themeSettingsAutomatic": "Automático",
+  "app_versionInfo": "Versión {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Seleccionar idioma",
+  "app_english": "Inglés",
+  "app_italian": "Italiano",
+  "app_spanish": "Español",
+  "app_enterButton": "Entrar",
+  "app_otherAppsTitle": "Otras aplicaciones de Hytta Hub",
+  "app_reservationsAppButton": "Reservas de Hytta Hub",
+  "app_serviceLoginButton": "Inicio de sesión del servicio"
+}

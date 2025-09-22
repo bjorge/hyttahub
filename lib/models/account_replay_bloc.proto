@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "common_blocs.proto";
+
+message AccountReplayBlocState {
+  CommonReplayStateEnum state = 1;
+  int32 termsVersion = 2;
+  int32 privacyVersion = 3;
+  map<int32, string> events = 4; // base64 encoded events
+  repeated string sitesIds = 5;  // list of sites (created or joined)
+}

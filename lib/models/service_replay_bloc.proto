@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "common_blocs.proto";
+import "bloom_filter.proto";
+
+message ServiceAdmin {
+  string alias = 1;
+}
+
+message ServiceReplayBlocState {
+  int32 minVersion = 1;
+  bool serviceUnavailable = 2;
+  string terms = 3;
+  int32 termsVersion = 4;
+  string privacy = 5;
+  int32 privacyVersion = 6;
+  CommonReplayStateEnum state = 7;
+  map<int32, string> events = 8; // map of event version to event data (base64 encoded)
+  map<int32, ServiceAdmin> serviceAdmins = 9;
+  BloomFilter filter = 10;
+  string instance = 11; // the instance of this event stream
+  BloomFilter betaUsersFilter = 12;
+  map<int32, ServiceAdmin> removedServiceAdmins = 13;
+}
+
+
