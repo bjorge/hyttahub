@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/firebase_paths.dart';
 
 class MockEventsDisplayConfig extends Mock
-    implements EventsDisplayConfig<CommonReplayState, CommonReplayState> {}
+    implements EventsDisplayConfig<CommonSubmitBlocState, CommonSubmitBlocState> {}
 
 void main() {
   group('EventsDisplay', () {
@@ -23,10 +23,10 @@ void main() {
       when(mockConfig.screenTitle).thenReturn('Test Title');
       when(mockConfig.replayTitle).thenReturn('Replay Title');
       when(mockConfig.parseRecord(any, any, any))
-          .thenReturn(CommonReplayState());
+          .thenReturn(CommonSubmitBlocState());
       when(mockConfig.getVersion(any)).thenReturn(1);
       when(mockConfig.getIsoDate(any)).thenReturn('2025-01-01');
-      when(mockConfig.replay(any)).thenReturn(CommonReplayState());
+      when(mockConfig.replay(any)).thenReturn(CommonSubmitBlocState());
     });
 
     testWidgets('renders loading indicator when fetching',
@@ -36,7 +36,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonReplayState, CommonReplayState>(
+          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
             config: mockConfig,
           ),
         ),
@@ -58,7 +58,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonReplayState, CommonReplayState>(
+          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
             config: mockConfig,
           ),
         ),
@@ -80,7 +80,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<CommonReplayState, CommonReplayState>(
+          home: EventsDisplay<CommonSubmitBlocState, CommonSubmitBlocState>(
             config: mockConfig,
           ),
         ),
