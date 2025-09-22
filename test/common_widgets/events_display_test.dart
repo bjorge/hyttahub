@@ -25,9 +25,9 @@ void main() {
       when(mockConfig.replayTitle).thenReturn('Replay Title');
       when(mockConfig.parseRecord(any, any, any))
           .thenReturn(SiteReplayBlocState());
-      when(mockConfig.getVersion(anyThat(isA<SiteReplayBlocState>())))
+      when(mockConfig.getVersion(argThat(isA<SiteReplayBlocState>())))
           .thenReturn(1);
-      when(mockConfig.getIsoDate(anyThat(isA<SiteReplayBlocState>())))
+      when(mockConfig.getIsoDate(argThat(isA<SiteReplayBlocState>())))
           .thenReturn('2025-01-01');
       when(mockConfig.replay(any)).thenReturn(SiteReplayBlocState());
     });
