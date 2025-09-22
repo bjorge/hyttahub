@@ -9,7 +9,7 @@ import 'package.hyttahub/proto/common_blocs.pb.dart';
 import 'package:bloc_test/bloc_test.dart';
 
 class MockSubmitBloc extends MockBloc<BaseSubmitEvent<CommonSubmitBlocState>,
-    BaseSubmitState<CommonSubmitBlocState>> {}
+    BaseSubmitState<CommonSubmitBlocState>> implements BaseSubmitBloc<CommonSubmitBlocState> {}
 
 class MockSubmitEvent extends Mock
     implements BaseSubmitEvent<CommonSubmitBlocState> {}

@@ -7,8 +7,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
-class _MockReplayBloc extends BaseReplayBloc<SiteState> {
-  _MockReplayBloc(this.firestore) : super(SiteState());
+class _MockReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
+  _MockReplayBloc(this.firestore) : super(SiteReplayBlocState());
 
   final FakeFirebaseFirestore firestore;
 
@@ -20,42 +20,42 @@ class _MockReplayBloc extends BaseReplayBloc<SiteState> {
 
   @override
   void handleEmptyInitialSnapshot(
-      Emitter<SiteState> emit, SiteState currentState) {
+      Emitter<SiteReplayBlocState> emit, SiteReplayBlocState currentState) {
     emit(currentState..status = CommonReplayStateEnum.ok);
   }
 
   @override
-  SiteState replayEvents(
-      SiteState currentState, Map<int, String> newEventsData) {
+  SiteReplayBlocState replayEvents(
+      SiteReplayBlocState currentState, Map<int, String> newEventsData) {
     final newState = currentState.deepCopy();
     newState.events.addAll(newEventsData);
     return newState;
   }
 
   @override
-  Map<int, String> stateGetEventsMap(SiteState state) {
+  Map<int, String> stateGetEventsMap(SiteReplayBlocState state) {
     return state.events;
   }
 
   @override
-  CommonReplayStateEnum stateGetStatusEnum(SiteState state) {
+  CommonReplayStateEnum stateGetStatusEnum(SiteReplayBlocState state) {
     return state.status;
   }
 
   @override
-  SiteState stateCopyWithStatus(
-      SiteState currentState, CommonReplayStateEnum newStatusEnum) {
+  SiteReplayBlocState stateCopyWithStatus(
+      SiteReplayBlocState currentState, CommonReplayStateEnum newStatusEnum) {
     return currentState.deepCopy()..status = newStatusEnum;
   }
 
   @override
-  SiteState stateFromJson(
+  SiteReplayBlocState stateFromJson(
       Map<String, dynamic> json, Map<int, String> hydratedEvents) {
-    return SiteState()..events.addAll(hydratedEvents);
+    return SiteReplayBlocState()..events.addAll(hydratedEvents);
   }
 
   @override
-  Map<String, dynamic> stateToJson(SiteState state) {
+  Map<String, dynamic> stateToJson(SiteReplayBlocState state) {
     return {};
   }
 
@@ -71,17 +71,17 @@ void main() {
       firestore = FakeFirebaseFirestore();
     });
 
-    blocTest<_MockReplayBloc, SiteState>(
+    blocTest<_MockReplayBloc, SiteReplayBlocState>(
       'emits [fetching, ok] when listen is added and no events are fetched',
       build: () => _MockReplayBloc(firestore),
       act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
       expect: () => [
-        isA<SiteState>().having(
+        isA<SiteReplayBlocState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.fetchingConfig,
         ),
-        isA<SiteState>().having(
+        isA<SiteReplayBlocState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.ok,
@@ -89,7 +89,7 @@ void main() {
       ],
     );
 
-    blocTest<_MockReplayBloc, SiteState>(
+    blocTest<_MockReplayBloc, SiteReplayBlocState>(
       'emits [fetching, ok] with events when listen is added and events are fetched',
       build: () {
         firestore.collection('test').doc('1').set({
@@ -100,12 +100,12 @@ void main() {
       },
       act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
       expect: () => [
-        isA<SiteState>().having(
+        isA<SiteReplayBlocState>().having(
           (s) => s.status,
           'status',
           CommonReplayStateEnum.fetchingConfig,
         ),
-        isA<SiteState>()
+        isA<SiteReplayBlocState>()
             .having(
               (s) => s.status,
               'status',

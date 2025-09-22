@@ -10,7 +10,7 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 
 class MockEventsDisplayConfig extends Mock
-    implements EventsDisplayConfig<SiteState, SiteState> {}
+    implements EventsDisplayConfig<SiteReplayBlocState, SiteReplayBlocState> {}
 
 void main() {
   group('EventsDisplay', () {
@@ -18,15 +18,16 @@ void main() {
     late FakeFirebaseFirestore fakeFirestore;
 
     setUp(() {
-      mockConfig = MockEventsDisplayCofig();
+      mockConfig = MockEventsDisplayConfig();
       fakeFirestore = FakeFirebaseFirestore();
       when(mockConfig.collectionPath).thenReturn('test_path');
       when(mockConfig.screenTitle).thenReturn('Test Title');
       when(mockConfig.replayTitle).thenReturn('Replay Title');
-      when(mockConfig.parseRecord(any, any, any)).thenReturn(SiteState());
+      when(mockConfig.parseRecord(any, any, any))
+          .thenReturn(SiteReplayBlocState());
       when(mockConfig.getVersion(any)).thenReturn(1);
       when(mockConfig.getIsoDate(any)).thenReturn('2025-01-01');
-      when(mockConfig.replay(any)).thenReturn(SiteState());
+      when(mockConfig.replay(any)).thenReturn(SiteReplayBlocState());
     });
 
     testWidgets('renders loading indicator when fetching',
@@ -36,7 +37,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<SiteState, SiteState>(
+          home: EventsDisplay<SiteReplayBlocState, SiteReplayBlocState>(
             config: mockConfig,
           ),
         ),
@@ -58,7 +59,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<SiteState, SiteState>(
+          home: EventsDisplay<SiteReplayBlocState, SiteReplayBlocState>(
             config: mockConfig,
           ),
         ),
@@ -80,7 +81,7 @@ void main() {
           localizationsDelegates: const [
             HyttaHubLocalizations.delegate,
           ],
-          home: EventsDisplay<SiteState, SiteState>(
+          home: EventsDisplay<SiteReplayBlocState, SiteReplayBlocState>(
             config: mockConfig,
           ),
         ),
