@@ -49,7 +49,7 @@ void main() {
       build: () => _MockSubmitBloc(shouldSucceed: true),
       act: (bloc) => bloc.add(
         _MockSubmitEvent(
-          submission: CommonSubmitBlocEvent(submit: true),
+          submission: CommonSubmitBlocEvent(submitNow: CommonSubmitBlocEvent_SubmitNow()),
         ),
       ),
       expect: () => [
@@ -71,7 +71,7 @@ void main() {
       build: () => _MockSubmitBloc(shouldSucceed: false),
       act: (bloc) => bloc.add(
         _MockSubmitEvent(
-          submission: CommonSubmitBlocEvent(submit: true),
+          submission: CommonSubmitBlocEvent(submitNow: CommonSubmitBlocEvent_SubmitNow()),
         ),
       ),
       expect: () => [

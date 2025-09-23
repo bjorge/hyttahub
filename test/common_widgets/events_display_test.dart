@@ -25,10 +25,10 @@ void main() {
       when(mockConfig.replayTitle).thenReturn('Replay Title');
       when(mockConfig.parseRecord(any, any, any))
           .thenReturn(SiteReplayBlocState());
-      when(mockConfig.getVersion(argThat(isA<SiteReplayBlocState>())))
-          .thenReturn(1);
-      when(mockConfig.getIsoDate(argThat(isA<SiteReplayBlocState>())))
-          .thenReturn('2025-01-01');
+      // ignore: argument_type_not_assignable
+      when(mockConfig.getVersion(any)).thenReturn(1);
+      // ignore: argument_type_not_assignable
+      when(mockConfig.getIsoDate(any)).thenReturn('2025-01-01');
       when(mockConfig.replay(any)).thenReturn(SiteReplayBlocState());
     });
 
