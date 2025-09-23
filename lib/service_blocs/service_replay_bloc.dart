@@ -8,10 +8,12 @@ import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
 class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
-  ServiceReplayBloc() : super(ServiceReplayBlocState());
+  ServiceReplayBloc({FirebaseFirestore? firestore})
+      : super(ServiceReplayBlocState(), firestore: firestore);
 
   @override
   final String collectionName = firebaseServiceCollectionName;

@@ -8,10 +8,12 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
 class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
-  SiteReplayBloc(this.collectionName) : super(SiteReplayBlocState());
+  SiteReplayBloc(this.collectionName, {FirebaseFirestore? firestore})
+      : super(SiteReplayBlocState(), firestore: firestore);
 
   @override
   final String collectionName;

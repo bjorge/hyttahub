@@ -11,13 +11,15 @@ import 'package:protobuf/protobuf.dart'; // For GeneratedMessage
 
 abstract class BaseReplayBloc<S extends GeneratedMessage>
     extends HydratedBloc<CommonReplayBlocEvent, S> {
-  BaseReplayBloc(super.initialState) : _initialState = initialState {
+  BaseReplayBloc(super.initialState, {FirebaseFirestore? firestore})
+      : _initialState = initialState,
+        _firestore = firestore ?? FirebaseFirestore.instance {
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
   StreamSubscription? _subscription;
   final S _initialState;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
 
   // --- Abstract methods and getters to be implemented by subclasses ---
 

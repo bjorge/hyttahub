@@ -8,10 +8,12 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
 class AccountReplayBloc extends BaseReplayBloc<AccountReplayBlocState> {
-  AccountReplayBloc(this.collectionName) : super(AccountReplayBlocState());
+  AccountReplayBloc(this.collectionName, {FirebaseFirestore? firestore})
+      : super(AccountReplayBlocState(), firestore: firestore);
 
   @override
   final String collectionName;

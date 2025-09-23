@@ -15,13 +15,12 @@ import 'package:protobuf/protobuf.dart';
 class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   TestReplayBloc(
     this.collectionPath, {
-    required this.firestore,
+    required FirebaseFirestore firestore,
     this.validationResult = true,
     this.handleEmptySnapshotCompleter,
-  }) : super(ServiceReplayBlocState());
+  }) : super(ServiceReplayBlocState(), firestore: firestore);
 
   final String collectionPath;
-  final FirebaseFirestore firestore;
   final bool validationResult;
   final Completer? handleEmptySnapshotCompleter;
 
@@ -88,10 +87,6 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   ) async {
     return validationResult;
   }
-
-  // Override to use the test instance of firestore
-  @override
-  FirebaseFirestore get _firestore => firestore;
 }
 
 void main() {
