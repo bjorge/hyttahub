@@ -10,6 +10,23 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:protobuf/protobuf.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+
+class MockStorage implements Storage {
+  final Map<String, dynamic> _data = <String, dynamic>{};
+
+  @override
+  dynamic read(String key) => _data[key];
+
+  @override
+  Future<void> write(String key, dynamic value) async => _data[key] = value;
+
+  @override
+  Future<void> delete(String key) async => _data.remove(key);
+
+  @override
+  Future<void> clear() async => _data.clear();
+}
 
 // A concrete implementation of BaseReplayBloc for testing purposes
 class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
@@ -90,6 +107,10 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
 }
 
 void main() {
+  setUpAll(() {
+    HydratedBloc.storage = MockStorage();
+  });
+
   group('BaseReplayBloc', () {
     late FakeFirebaseFirestore fakeFirestore;
     const collectionPath = 'test_collection';
