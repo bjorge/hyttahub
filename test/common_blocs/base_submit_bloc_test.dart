@@ -1,24 +1,21 @@
+import 'package:bloc/bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:protobuf/protobuf.dart';
 
 // Mock Event
 class TestSubmitEvent extends BaseSubmitEvent<SubmitServiceEvent> {
-  TestSubmitEvent({
-    SubmitServiceEvent? updatedPayload,
-    required CommonSubmitBlocEvent submission,
-  }) : super(updatedPayload: updatedPayload, submission: submission);
+  TestSubmitEvent({super.updatedPayload, required super.submission});
 }
 
 // Mock Bloc for testing
 class TestSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
-  TestSubmitBloc(
-    SubmitServiceEvent initialPayload, {
-    this.submitError,
-  }) : super(initialPayload: initialPayload);
+  TestSubmitBloc(SubmitServiceEvent initialPayload, {this.submitError})
+    : super(initialPayload: initialPayload);
 
   final Exception? submitError;
 
@@ -57,7 +54,9 @@ void main() {
     test('initial state is correct', () {
       final bloc = TestSubmitBloc(initialPayload);
       expect(
-          bloc.state.submissionState.state, CommonSubmitBlocState_State.ready);
+        bloc.state.submissionState.state,
+        CommonSubmitBlocState_State.ready,
+      );
       expect(bloc.state.payload, initialPayload);
     });
 
@@ -147,8 +146,10 @@ void main() {
       'emits [submitting, error] with permissionDenied on FirebaseException',
       build: () => TestSubmitBloc(
         initialPayload,
-        submitError:
-            FirebaseException(plugin: 'firestore', code: 'permission-denied'),
+        submitError: FirebaseException(
+          plugin: 'firestore',
+          code: 'permission-denied',
+        ),
       ),
       act: (bloc) {
         bloc.isFormValid = true;
