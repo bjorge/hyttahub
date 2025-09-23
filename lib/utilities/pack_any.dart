@@ -12,8 +12,7 @@ Any packAny(GeneratedMessage msg) {
 /// Returns null if typeUrl doesn't match.
 T? unpackAny<T extends GeneratedMessage>(Any any, T Function() create) {
   final message = create();
-  final expectedUrl =
-      'type.googleapis.com/${message.info_.qualifiedMessageName}';
+  final expectedUrl = 'type.hyttehub.com/${message.info_.qualifiedMessageName}';
   if (any.typeUrl != expectedUrl) {
     // print('Type mismatch: expected $expectedUrl, got ${any.typeUrl}');
     return null;

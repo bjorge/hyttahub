@@ -1,6 +1,6 @@
 name: albums
 description: "Hytte Hub Albums"
-publish_to: 'none'
+publish_to: "none"
 version: 2.0.4+78
 
 environment:
@@ -15,20 +15,20 @@ dependencies:
   hyttahub:
     path: ../..
 
+  firebase_core: ^4.1.1
+  cloud_firestore: ^6.0.2
+  firebase_auth: ^6.1.0
+  firebase_storage: ^13.0.2
+  protobuf: ^4.2.0
+  go_router: ^16.2.2
+  cloud_functions: ^6.0.2
   cupertino_icons: ^1.0.8
-  go_router: ^14.8.1
   flutter_bloc: ^9.1.1
-  protobuf: ^3.1.0
   get_it: ^8.2.0
-  cloud_firestore: ^5.6.12
-  firebase_auth: ^5.7.0
   path_provider: ^2.1.5
   hydrated_bloc: ^10.1.1
-  firebase_storage: ^12.4.10
-  firebase_core: ^3.15.2
   file_picker: ^10.3.1
   bloc: ^9.0.0
-  cloud_functions: ^5.6.2
 
 dev_dependencies:
   flutter_test:
