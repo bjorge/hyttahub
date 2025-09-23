@@ -89,12 +89,15 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
     Map<String, dynamic> json,
     Map<int, String> hydratedEvents,
   ) {
-    return ServiceReplayBlocState(events: hydratedEvents);
+    return ServiceReplayBlocState(
+      events: hydratedEvents,
+      instance: json['instance'] as String?,
+    );
   }
 
   @override
   Map<String, dynamic> stateToJson(ServiceReplayBlocState state) {
-    return {};
+    return {'instance': state.instance};
   }
 
   @override
@@ -107,15 +110,12 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
 }
 
 void main() {
-  setUpAll(() {
-    HydratedBloc.storage = MockStorage();
-  });
-
   group('BaseReplayBloc', () {
     late FakeFirebaseFirestore fakeFirestore;
     const collectionPath = 'test_collection';
 
     setUp(() {
+      HydratedBloc.storage = MockStorage();
       fakeFirestore = FakeFirebaseFirestore();
     });
 
@@ -321,15 +321,19 @@ void main() {
     group('Hydration', () {
       test('toJson and fromJson work correctly', () {
         final bloc = buildBloc();
-        final state = ServiceReplayBlocState(events: {
-          1: 'event1',
-          2: 'event2',
-        });
+        final state = ServiceReplayBlocState(
+          events: {
+            1: 'event1',
+            2: 'event2',
+          },
+          instance: 'test_instance',
+        );
 
         final json = bloc.toJson(state);
         final newState = bloc.fromJson(json!);
 
         expect(newState?.events, state.events);
+        expect(newState?.instance, state.instance);
       });
 
       test('fromJson returns null on error', () {
