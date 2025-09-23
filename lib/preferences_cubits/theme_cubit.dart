@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class ThemeCubit extends HydratedCubit<ThemeMode> {
-  ThemeCubit() : super(ThemeMode.system);
+  ThemeCubit(this.storageKey) : super(ThemeMode.system);
+
+  final String storageKey;
 
   void setTheme(ThemeMode mode) => emit(mode);
+
+  // for hydrated storage
+  @override
+  String get id => ':$storageKey';
 
   @override
   ThemeMode fromJson(Map<String, dynamic> json) {

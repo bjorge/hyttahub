@@ -2,6 +2,7 @@
 
 import 'package:albums/l10n/app_localizations.dart';
 import 'package:albums/routers/app_routes.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
@@ -46,8 +47,15 @@ class _AppRouterState extends State<AppRouter> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
-        BlocProvider<LanguageCubit>(create: (_) => LanguageCubit()),
+        BlocProvider<ThemeCubit>(
+          create:
+              (_) => ThemeCubit(HyttaHubOptions.firebaseRootCollection ?? ''),
+        ),
+        BlocProvider<LanguageCubit>(
+          create:
+              (_) =>
+                  LanguageCubit(HyttaHubOptions.firebaseRootCollection ?? ''),
+        ),
         BlocProvider<CreateAccountCubit>(create: (_) => CreateAccountCubit()),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
         BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),

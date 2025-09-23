@@ -5,9 +5,15 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 enum AppLanguage { en, it, es }
 
 class LanguageCubit extends HydratedCubit<AppLanguage> {
-  LanguageCubit() : super(AppLanguage.en);
+  LanguageCubit(this.storageKey) : super(AppLanguage.en);
+
+  final String storageKey;
 
   void setLanguage(AppLanguage mode) => emit(mode);
+
+  // for hydrated storage
+  @override
+  String get id => ':$storageKey';
 
   @override
   AppLanguage fromJson(Map<String, dynamic> json) {
