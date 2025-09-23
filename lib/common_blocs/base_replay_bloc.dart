@@ -12,8 +12,8 @@ import 'package:protobuf/protobuf.dart'; // For GeneratedMessage
 abstract class BaseReplayBloc<S extends GeneratedMessage>
     extends HydratedBloc<CommonReplayBlocEvent, S> {
   BaseReplayBloc(super.initialState, {FirebaseFirestore? firestore})
-      : _initialState = initialState,
-        _firestore = firestore ?? FirebaseFirestore.instance {
+    : _initialState = initialState,
+      _firestore = firestore ?? FirebaseFirestore.instance {
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
