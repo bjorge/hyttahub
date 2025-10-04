@@ -105,7 +105,7 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   }
 
   @override
-  Future<bool> validateServerState(
+  Future<bool> validateLocalEventCache(
     ServiceReplayBlocState localState,
     String collectionPath,
   ) async {

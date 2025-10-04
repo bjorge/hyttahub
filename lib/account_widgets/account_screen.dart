@@ -135,6 +135,8 @@ class _AccountInitializingWidgetState extends State<AccountInitializingWidget> {
             termsVersion: serviceState.termsVersion,
             policyVersion: serviceState.privacyVersion,
           ),
+          instance:
+              generateId(), // generate a unique instance id for this account
         ),
       ),
     );
@@ -305,7 +307,7 @@ class CreateSiteDialogOption extends StatelessWidget {
           createSiteName: '',
           createSiteUserName: '',
           event: AccountEvent(
-            createSite: generateSiteId(),
+            createSite: generateId(),
             version: accountState.events.isEmpty
                 ? 1
                 : accountState.events.keys.fold<int>(

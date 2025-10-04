@@ -81,10 +81,14 @@ class AccountEvent_Terms extends $pb.GeneratedMessage {
 class AccountEvent_InitialEvent extends $pb.GeneratedMessage {
   factory AccountEvent_InitialEvent({
     AccountEvent_Terms? terms,
+    $core.String? instance,
   }) {
     final $result = create();
     if (terms != null) {
       $result.terms = terms;
+    }
+    if (instance != null) {
+      $result.instance = instance;
     }
     return $result;
   }
@@ -94,6 +98,7 @@ class AccountEvent_InitialEvent extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AccountEvent.InitialEvent', createEmptyInstance: create)
     ..aOM<AccountEvent_Terms>(1, _omitFieldNames ? '' : 'terms', subBuilder: AccountEvent_Terms.create)
+    ..aOS(2, _omitFieldNames ? '' : 'instance')
     ..hasRequiredFields = false
   ;
 
@@ -128,6 +133,15 @@ class AccountEvent_InitialEvent extends $pb.GeneratedMessage {
   void clearTerms() => clearField(1);
   @$pb.TagNumber(1)
   AccountEvent_Terms ensureTerms() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $core.String get instance => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set instance($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasInstance() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearInstance() => clearField(2);
 }
 
 enum AccountEvent_EventType {
@@ -388,8 +402,8 @@ class SubmitAccountEvent extends $pb.GeneratedMessage {
   void clearCreateSiteUserName() => clearField(3);
 }
 
-/// The AccountEventRecord is a representation of the actual record stored in the database
-/// This record is used just for display purposes in the client
+/// The AccountEventRecord is a representation of the actual record stored in the
+/// database This record is used just for display purposes in the client
 class AccountEventRecord extends $pb.GeneratedMessage {
   factory AccountEventRecord({
     $core.String? isoDate,

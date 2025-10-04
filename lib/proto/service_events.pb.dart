@@ -847,7 +847,8 @@ class ServiceEvent extends $pb.GeneratedMessage {
   ServiceEvent_RestoreServiceAdmin ensureRestoreServiceAdmin() => $_ensure(11);
 }
 
-/// The SubmitServiceEvent is passed to the submit bloc handler, so it can contain PII
+/// The SubmitServiceEvent is passed to the submit bloc handler, so it can
+/// contain PII
 class SubmitServiceEvent extends $pb.GeneratedMessage {
   factory SubmitServiceEvent({
     ServiceEvent? event,
@@ -984,8 +985,8 @@ class SubmitServiceEvent extends $pb.GeneratedMessage {
   void clearRemoveServiceAdminEmail() => clearField(7);
 }
 
-/// The ServiceEventRecord is a representation of the actual record stored in the database
-/// This record is used just for display purposes in the client
+/// The ServiceEventRecord is a representation of the actual record stored in the
+/// database This record is used just for display purposes in the client
 class ServiceEventRecord extends $pb.GeneratedMessage {
   factory ServiceEventRecord({
     $core.String? isoDate,

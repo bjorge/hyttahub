@@ -43,6 +43,7 @@ export interface AccountEvent_Terms {
 
 export interface AccountEvent_InitialEvent {
   terms?: AccountEvent_Terms | undefined;
+  instance: string;
 }
 
 /** The SubmitAccountEvent is passed to the submit bloc handler */
@@ -57,8 +58,8 @@ export interface SubmitAccountEvent {
 }
 
 /**
- * The AccountEventRecord is a representation of the actual record stored in the database
- * This record is used just for display purposes in the client
+ * The AccountEventRecord is a representation of the actual record stored in the
+ * database This record is used just for display purposes in the client
  */
 export interface AccountEventRecord {
   isoDate: string;
@@ -320,13 +321,16 @@ export const AccountEvent_Terms = {
 };
 
 function createBaseAccountEvent_InitialEvent(): AccountEvent_InitialEvent {
-  return { terms: undefined };
+  return { terms: undefined, instance: "" };
 }
 
 export const AccountEvent_InitialEvent = {
   encode(message: AccountEvent_InitialEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.terms !== undefined) {
       AccountEvent_Terms.encode(message.terms, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.instance !== "") {
+      writer.uint32(18).string(message.instance);
     }
     return writer;
   },
@@ -345,6 +349,13 @@ export const AccountEvent_InitialEvent = {
 
           message.terms = AccountEvent_Terms.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.instance = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -355,13 +366,19 @@ export const AccountEvent_InitialEvent = {
   },
 
   fromJSON(object: any): AccountEvent_InitialEvent {
-    return { terms: isSet(object.terms) ? AccountEvent_Terms.fromJSON(object.terms) : undefined };
+    return {
+      terms: isSet(object.terms) ? AccountEvent_Terms.fromJSON(object.terms) : undefined,
+      instance: isSet(object.instance) ? globalThis.String(object.instance) : "",
+    };
   },
 
   toJSON(message: AccountEvent_InitialEvent): unknown {
     const obj: any = {};
     if (message.terms !== undefined) {
       obj.terms = AccountEvent_Terms.toJSON(message.terms);
+    }
+    if (message.instance !== "") {
+      obj.instance = message.instance;
     }
     return obj;
   },
@@ -374,6 +391,7 @@ export const AccountEvent_InitialEvent = {
     message.terms = (object.terms !== undefined && object.terms !== null)
       ? AccountEvent_Terms.fromPartial(object.terms)
       : undefined;
+    message.instance = object.instance ?? "";
     return message;
   },
 };

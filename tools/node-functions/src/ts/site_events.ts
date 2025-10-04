@@ -37,6 +37,7 @@ export interface SiteEvent {
 export interface SiteEvent_NewSite {
   siteName: string;
   memberName: string;
+  instance: string;
 }
 
 export interface SiteEvent_AddMember {
@@ -325,7 +326,7 @@ export const SiteEvent = {
 };
 
 function createBaseSiteEvent_NewSite(): SiteEvent_NewSite {
-  return { siteName: "", memberName: "" };
+  return { siteName: "", memberName: "", instance: "" };
 }
 
 export const SiteEvent_NewSite = {
@@ -335,6 +336,9 @@ export const SiteEvent_NewSite = {
     }
     if (message.memberName !== "") {
       writer.uint32(18).string(message.memberName);
+    }
+    if (message.instance !== "") {
+      writer.uint32(26).string(message.instance);
     }
     return writer;
   },
@@ -360,6 +364,13 @@ export const SiteEvent_NewSite = {
 
           message.memberName = reader.string();
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.instance = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -373,6 +384,7 @@ export const SiteEvent_NewSite = {
     return {
       siteName: isSet(object.siteName) ? globalThis.String(object.siteName) : "",
       memberName: isSet(object.memberName) ? globalThis.String(object.memberName) : "",
+      instance: isSet(object.instance) ? globalThis.String(object.instance) : "",
     };
   },
 
@@ -384,6 +396,9 @@ export const SiteEvent_NewSite = {
     if (message.memberName !== "") {
       obj.memberName = message.memberName;
     }
+    if (message.instance !== "") {
+      obj.instance = message.instance;
+    }
     return obj;
   },
 
@@ -394,6 +409,7 @@ export const SiteEvent_NewSite = {
     const message = createBaseSiteEvent_NewSite();
     message.siteName = object.siteName ?? "";
     message.memberName = object.memberName ?? "";
+    message.instance = object.instance ?? "";
     return message;
   },
 };

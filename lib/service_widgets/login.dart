@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
               version: 1,
               author: 1,
               initialEvent: ServiceEvent_InitialEvent(
-                instance: generateSiteId(), // a good enough random value
+                instance: generateId(), // a good enough random value
                 alias: '',
                 filter: BloomFilter(),
               ),

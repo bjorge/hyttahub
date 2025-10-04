@@ -91,7 +91,10 @@ export interface ServiceEvent_MinimumVersionRequired {
   value: number;
 }
 
-/** The SubmitServiceEvent is passed to the submit bloc handler, so it can contain PII */
+/**
+ * The SubmitServiceEvent is passed to the submit bloc handler, so it can
+ * contain PII
+ */
 export interface SubmitServiceEvent {
   event?:
     | ServiceEvent
@@ -107,8 +110,8 @@ export interface SubmitServiceEvent {
 }
 
 /**
- * The ServiceEventRecord is a representation of the actual record stored in the database
- * This record is used just for display purposes in the client
+ * The ServiceEventRecord is a representation of the actual record stored in the
+ * database This record is used just for display purposes in the client
  */
 export interface ServiceEventRecord {
   isoDate: string;

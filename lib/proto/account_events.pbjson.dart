@@ -46,6 +46,7 @@ const AccountEvent_InitialEvent$json = {
   '1': 'InitialEvent',
   '2': [
     {'1': 'terms', '3': 1, '4': 1, '5': 11, '6': '.AccountEvent.Terms', '10': 'terms'},
+    {'1': 'instance', '3': 2, '4': 1, '5': 9, '10': 'instance'},
   ],
 };
 
@@ -58,8 +59,9 @@ final $typed_data.Uint8List accountEventDescriptor = $convert.base64Decode(
     'aXRlGAUgASgJSABSCmNyZWF0ZVNpdGUSIAoKcmVtb3ZlU2l0ZRgGIAEoCUgAUgpyZW1vdmVTaX'
     'RlEhwKCGpvaW5TaXRlGAcgASgJSABSCGpvaW5TaXRlEh4KCWxlYXZlU2l0ZRgIIAEoCUgAUgls'
     'ZWF2ZVNpdGUaUQoFVGVybXMSIgoMdGVybXNWZXJzaW9uGAEgASgFUgx0ZXJtc1ZlcnNpb24SJA'
-    'oNcG9saWN5VmVyc2lvbhgCIAEoBVINcG9saWN5VmVyc2lvbho5CgxJbml0aWFsRXZlbnQSKQoF'
-    'dGVybXMYASABKAsyEy5BY2NvdW50RXZlbnQuVGVybXNSBXRlcm1zQgwKCmV2ZW50X3R5cGU=');
+    'oNcG9saWN5VmVyc2lvbhgCIAEoBVINcG9saWN5VmVyc2lvbhpVCgxJbml0aWFsRXZlbnQSKQoF'
+    'dGVybXMYASABKAsyEy5BY2NvdW50RXZlbnQuVGVybXNSBXRlcm1zEhoKCGluc3RhbmNlGAIgAS'
+    'gJUghpbnN0YW5jZUIMCgpldmVudF90eXBl');
 
 @$core.Deprecated('Use submitAccountEventDescriptor instead')
 const SubmitAccountEvent$json = {

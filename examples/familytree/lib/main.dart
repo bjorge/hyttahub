@@ -21,7 +21,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:path_provider/path_provider.dart';
 
 String appVersion = "2.1.0";
-int appBuildNumber = 93;
+int appBuildNumber = 94;
 
 final getIt = GetIt.instance;
 

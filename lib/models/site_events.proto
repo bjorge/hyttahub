@@ -12,6 +12,7 @@ message SiteEvent {
   message NewSite {
     string siteName = 1;
     string memberName = 2;
+    string instance = 3;
   }
 
   message AddMember {
@@ -62,11 +63,14 @@ message SubmitSiteEvent {
   SiteEvent event = 1;
   string authorEmail =
       2; // the author's email, used to identify the user, required
-  string addMemberEmail = 4; // for add member events, the email of the new member
-  string removeMemberEmail = 5; // for remove member events, the email of the member to remove
-  string updateMemberNewEmail = 6; // for update member events, the new email of the member
-  string updateMemberOriginalEmail = 7; // for update member events, the original email of the member
-
+  string addMemberEmail =
+      4; // for add member events, the email of the new member
+  string removeMemberEmail =
+      5; // for remove member events, the email of the member to remove
+  string updateMemberNewEmail =
+      6; // for update member events, the new email of the member
+  string updateMemberOriginalEmail =
+      7; // for update member events, the original email of the member
 }
 
 // The SiteEventRecord is a representation of the actual record stored in the

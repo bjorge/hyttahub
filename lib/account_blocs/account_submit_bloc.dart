@@ -10,6 +10,7 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:hyttahub/utilities/ids.dart';
 import 'package:protobuf/protobuf.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);
@@ -65,6 +66,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         newSite: SiteEvent_NewSite(
           siteName: siteName,
           memberName: siteUserName,
+          instance: generateId(),
         ),
       );
       final encodedSiteEvent = base64Encode(siteEvent.writeToBuffer());

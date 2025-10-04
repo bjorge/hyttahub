@@ -71,20 +71,27 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   ///
   /// Returns `true` if the state is valid, `false` otherwise.
   /// Subclasses can override this for more specific validation logic.
-  Future<bool> validateServerState(S localState, String collectionPath) async {
+  Future<bool> validateLocalEventCache(
+    S localState,
+    String collectionPath,
+  ) async {
     final int maxVersion = stateGetEventsMap(
       localState,
     ).keys.fold<int>(0, (p, e) => e > p ? e : p);
     if (maxVersion > 0) {
-      final firstEventDoc = await _firestore
-          .collection(collectionPath)
-          .doc(
-            '1',
-          ) // Assumes version '1' is the document ID for the first event.
-          .get(const GetOptions(source: Source.server));
+      final firstEventDoc = await getFirstEventDocument(collectionPath);
       return firstEventDoc.exists;
     }
     return true; // Local state is empty, so it's valid by default.
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getFirstEventDocument(
+    String collectionPath,
+  ) {
+    return _firestore
+        .collection(collectionPath)
+        .doc('1') // Assumes version '1' is the document ID for the first event.
+        .get(const GetOptions(source: Source.server));
   }
 
   // --- Common BLoC Logic ---
@@ -145,7 +152,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       // --- State Validation ---
       // Before proceeding, validate that our hydrated local state is not stale
       // compared to the server (e.g., server was wiped).
-      final bool isStateValid = await validateServerState(state, path);
+      final bool isStateValid = await validateLocalEventCache(state, path);
       if (!isStateValid) {
         await clear();
         emit(

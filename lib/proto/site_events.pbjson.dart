@@ -40,6 +40,7 @@ const SiteEvent_NewSite$json = {
   '2': [
     {'1': 'siteName', '3': 1, '4': 1, '5': 9, '10': 'siteName'},
     {'1': 'memberName', '3': 2, '4': 1, '5': 9, '10': 'memberName'},
+    {'1': 'instance', '3': 3, '4': 1, '5': 9, '10': 'instance'},
   ],
 };
 
@@ -107,15 +108,16 @@ final $typed_data.Uint8List siteEventDescriptor = $convert.base64Decode(
     'aXRlSABSCWxlYXZlU2l0ZRJACg1yZXN0b3JlTWVtYmVyGAkgASgLMhguU2l0ZUV2ZW50LlJlc3'
     'RvcmVNZW1iZXJIAFINcmVzdG9yZU1lbWJlchI9Cgx1cGRhdGVNZW1iZXIYCiABKAsyFy5TaXRl'
     'RXZlbnQuVXBkYXRlTWVtYmVySABSDHVwZGF0ZU1lbWJlchIiCghhcHBFdmVudBgUIAEoCzIELk'
-    'FueUgAUghhcHBFdmVudBpFCgdOZXdTaXRlEhoKCHNpdGVOYW1lGAEgASgJUghzaXRlTmFtZRIe'
-    'CgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lGkEKCUFkZE1lbWJlchIeCgptZW1iZXJOYW'
-    '1lGAEgASgJUgptZW1iZXJOYW1lEhQKBWFkbWluGAIgASgIUgVhZG1pbhoqCgxSZW1vdmVNZW1i'
-    'ZXISGgoIbWVtYmVySWQYASABKAVSCG1lbWJlcklkGmEKDVJlc3RvcmVNZW1iZXISGgoIbWVtYm'
-    'VySWQYASABKAVSCG1lbWJlcklkEh4KCm1lbWJlck5hbWUYAiABKAlSCm1lbWJlck5hbWUSFAoF'
-    'YWRtaW4YAyABKAhSBWFkbWluGmAKDFVwZGF0ZU1lbWJlchIaCghtZW1iZXJJZBgBIAEoBVIIbW'
-    'VtYmVySWQSHgoKbWVtYmVyTmFtZRgCIAEoCVIKbWVtYmVyTmFtZRIUCgVhZG1pbhgDIAEoCFIF'
-    'YWRtaW4aJwoJTGVhdmVTaXRlEhoKCG1lbWJlcklkGAEgASgFUghtZW1iZXJJZBokCg5VcGRhdG'
-    'VTaXRlTmFtZRISCgRuYW1lGAEgASgJUgRuYW1lQgwKCmV2ZW50X3R5cGU=');
+    'FueUgAUghhcHBFdmVudBphCgdOZXdTaXRlEhoKCHNpdGVOYW1lGAEgASgJUghzaXRlTmFtZRIe'
+    'CgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhoKCGluc3RhbmNlGAMgASgJUghpbnN0YW'
+    '5jZRpBCglBZGRNZW1iZXISHgoKbWVtYmVyTmFtZRgBIAEoCVIKbWVtYmVyTmFtZRIUCgVhZG1p'
+    'bhgCIAEoCFIFYWRtaW4aKgoMUmVtb3ZlTWVtYmVyEhoKCG1lbWJlcklkGAEgASgFUghtZW1iZX'
+    'JJZBphCg1SZXN0b3JlTWVtYmVyEhoKCG1lbWJlcklkGAEgASgFUghtZW1iZXJJZBIeCgptZW1i'
+    'ZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhQKBWFkbWluGAMgASgIUgVhZG1pbhpgCgxVcGRhdG'
+    'VNZW1iZXISGgoIbWVtYmVySWQYASABKAVSCG1lbWJlcklkEh4KCm1lbWJlck5hbWUYAiABKAlS'
+    'Cm1lbWJlck5hbWUSFAoFYWRtaW4YAyABKAhSBWFkbWluGicKCUxlYXZlU2l0ZRIaCghtZW1iZX'
+    'JJZBgBIAEoBVIIbWVtYmVySWQaJAoOVXBkYXRlU2l0ZU5hbWUSEgoEbmFtZRgBIAEoCVIEbmFt'
+    'ZUIMCgpldmVudF90eXBl');
 
 @$core.Deprecated('Use submitSiteEventDescriptor instead')
 const SubmitSiteEvent$json = {

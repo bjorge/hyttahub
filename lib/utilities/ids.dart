@@ -2,7 +2,7 @@
 
 import 'dart:math';
 
-String generateSiteId() {
+String generateId() {
   final random = Random();
   const validChars = '123456789ABCDE';
   const allValidChars = '123456789ABCDEFG';

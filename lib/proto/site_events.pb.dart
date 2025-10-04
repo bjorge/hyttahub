@@ -20,6 +20,7 @@ class SiteEvent_NewSite extends $pb.GeneratedMessage {
   factory SiteEvent_NewSite({
     $core.String? siteName,
     $core.String? memberName,
+    $core.String? instance,
   }) {
     final $result = create();
     if (siteName != null) {
@@ -27,6 +28,9 @@ class SiteEvent_NewSite extends $pb.GeneratedMessage {
     }
     if (memberName != null) {
       $result.memberName = memberName;
+    }
+    if (instance != null) {
+      $result.instance = instance;
     }
     return $result;
   }
@@ -37,6 +41,7 @@ class SiteEvent_NewSite extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteEvent.NewSite', createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'siteName', protoName: 'siteName')
     ..aOS(2, _omitFieldNames ? '' : 'memberName', protoName: 'memberName')
+    ..aOS(3, _omitFieldNames ? '' : 'instance')
     ..hasRequiredFields = false
   ;
 
@@ -78,6 +83,15 @@ class SiteEvent_NewSite extends $pb.GeneratedMessage {
   $core.bool hasMemberName() => $_has(1);
   @$pb.TagNumber(2)
   void clearMemberName() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get instance => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set instance($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasInstance() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearInstance() => clearField(3);
 }
 
 class SiteEvent_AddMember extends $pb.GeneratedMessage {
