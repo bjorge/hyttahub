@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert'; // For base64Encode/Decode
 
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -31,7 +32,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   // for hydrated storage
   @override
-  String get id => ':$collectionName';
+  String get id => ':$collectionName:${HyttaHubOptions.firebaseRootCollection}';
 
   /// Field name for the version in Firestore documents (e.g., 'v' or 'fbVersion').
   String get versionField => fbVersion;
