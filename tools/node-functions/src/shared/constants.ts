@@ -41,9 +41,9 @@ export const firebasePhotosPath = (
   photoId: string
 ): string => {
   if (isRunningInEmulator()) {
-    return `emulator/${appPathSegment}/${siteId}/${photoId}`;
+    return `emulator/${appPathSegment}/sites/${siteId}/${photoId}`;
   } else {
-    return `hyttahub/${appPathSegment}/${siteId}/${photoId}`;
+    return `hyttahub/${appPathSegment}/sites/${siteId}/${photoId}`;
   }
 };
 
