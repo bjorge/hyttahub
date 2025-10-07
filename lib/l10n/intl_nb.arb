@@ -1,0 +1,8 @@
+{
+  "@@locale": "nb",
+  "exportSiteTitle": "Eksporter nettsted",
+  "manageExportsTitle": "Administrer eksport",
+  "exportDeletedSuccessfully": "Eksport slettet",
+  "noExportsFound": "Ingen eksport funnet.",
+  "failedToLoadExports": "Kunne ikke laste inn eksport."
+}

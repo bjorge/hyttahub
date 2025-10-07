@@ -191,5 +191,10 @@
   "loginDismissSnackbar": "Dismiss",
   "passwordEmptyError": "Password cannot be empty.",
   "passwordTooShortError": "Password is too short.",
-  "passwordTooLongError": "Password is too long."
+  "passwordTooLongError": "Password is too long.",
+  "exportSiteTitle": "Export Site",
+  "manageExportsTitle": "Manage Exports",
+  "exportDeletedSuccessfully": "Export deleted successfully",
+  "noExportsFound": "No exports found.",
+  "failedToLoadExports": "Failed to load exports."
 }

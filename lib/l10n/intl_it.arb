@@ -191,5 +191,10 @@
   "loginDismissSnackbar": "Ignora",
   "passwordEmptyError": "La password non può essere vuota.",
   "passwordTooShortError": "La password è troppo corta.",
-  "passwordTooLongError": "La password è troppo lunga."
+  "passwordTooLongError": "La password è troppo lunga.",
+  "exportSiteTitle": "Esporta Sito",
+  "manageExportsTitle": "Gestisci Esportazioni",
+  "exportDeletedSuccessfully": "Esportazione eliminata con successo",
+  "noExportsFound": "Nessuna esportazione trovata.",
+  "failedToLoadExports": "Impossibile caricare le esportazioni."
 }

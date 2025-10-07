@@ -32,6 +32,8 @@ import 'package:hyttahub/site_widgets/remove_member_screen.dart';
 import 'package:hyttahub/site_widgets/restore_member_screen.dart';
 import 'package:hyttahub/site_widgets/update_member_screen.dart';
 import 'package:hyttahub/site_widgets/site_members_screen.dart';
+import 'package:hyttahub/site_widgets/export_site_screen.dart';
+import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
 
 /// A route for the login screen.
 class LoginScreenRoute extends GoRoute {
@@ -168,6 +170,44 @@ class SiteMembersRoute extends GoRoute {
 
   /// The path segment for this route.
   static const String pathSegment = 'members';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class ExportSiteRoute extends GoRoute {
+  /// Creates an [ExportSiteRoute].
+  ExportSiteRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return ExportSiteScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'export';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class ManageExportsRoute extends GoRoute {
+  /// Creates a [ManageExportsRoute].
+  ManageExportsRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return ManageExportsScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'manage_exports';
 
   /// A builder for the full path to this route.
   static String fullPath({required String siteId}) =>
@@ -644,6 +684,9 @@ class RestoreServiceAdminRoute extends GoRoute {
 
 final serviceUnimplementedRoute = ServiceUnimplementedRoute();
 final landingUnimplementedRoute = ServiceUnimplementedRoute();
+
+final exportSiteRoute = ExportSiteRoute();
+final manageExportsRoute = ManageExportsRoute();
 
 final addSiteRoute = AddSiteRoute();
 final joinSiteRoute = JoinSiteRoute();

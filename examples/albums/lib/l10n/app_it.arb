@@ -79,5 +79,7 @@
   "app_enterButton": "Invio",
   "app_otherAppsTitle": "Altre Applicazioni Hytta Hub",
   "app_reservationsAppButton": "Hytta Hub Prenotazioni",
-  "app_serviceLoginButton": "Accesso Servizio"
+  "app_serviceLoginButton": "Accesso Servizio",
+  "app_exportSiteTitle": "Esporta Sito",
+  "app_manageExportsTitle": "Gestisci Esportazioni"
 }

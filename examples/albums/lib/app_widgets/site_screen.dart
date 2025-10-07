@@ -517,6 +517,28 @@ class _SiteSettingsButtonState extends State<SiteSettingsButton> {
                     onPressed: () {
                       Navigator.pop(context);
                       context.push(
+                        ExportSiteRoute.fullPath(siteId: widget.siteId),
+                      );
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.app_exportSiteTitle,
+                    ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push(
+                        ManageExportsRoute.fullPath(siteId: widget.siteId),
+                      );
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.app_manageExportsTitle,
+                    ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.push(
                         SiteMembersRoute.fullPath(siteId: widget.siteId),
                       );
                     },
