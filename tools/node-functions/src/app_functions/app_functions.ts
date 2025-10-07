@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import * as archiver from "archiver";
+import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 
 import {
