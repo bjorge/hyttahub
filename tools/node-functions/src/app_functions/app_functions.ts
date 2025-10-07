@@ -1,8 +1,9 @@
 import * as admin from "firebase-admin";
-
+import * as archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 
 import {
+  firebaseExportsPath,
   firebasePhotosPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
@@ -247,4 +248,96 @@ export const deleteAlbumPhotos = onCall(async (request) => {
     logger.error(`Failed to delete photos`, error);
     throw new HttpsError("internal", "Failed to delete photos");
   }
+});
+
+export const exportPhotos = onCall(async (request) => {
+  logger.info("exportPhotos function called");
+
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const siteId = request.data.siteId;
+  const appName = request.data.appName;
+  const email =
+    typeof request.auth?.token?.email === "string"
+      ? request.auth.token.email
+      : undefined;
+  if (!email) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User email is required and must be a string"
+    );
+  }
+
+  logger.info("exportPhotos function called, siteId:", siteId, "email:", email);
+
+  const emailRef = admin
+    .firestore()
+    .collection(firebaseSiteUsersPath(appName, siteId))
+    .doc(email);
+
+  const emailDoc = await emailRef.get();
+  if (!emailDoc.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "User is not a member of this site"
+    );
+  }
+
+  // Return immediately and perform the export in the background
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  (async () => {
+    const bucket = admin.storage().bucket();
+    const photoPrefix = firebasePhotosPath(appName, siteId, "");
+    const [files] = await bucket.getFiles({ prefix: photoPrefix });
+
+    if (files.length === 0) {
+      logger.info(`No photos found for site ${siteId} to export.`);
+      return;
+    }
+
+    const archive = archiver("zip", {
+      zlib: { level: 9 }, // Sets the compression level.
+    });
+
+    archive.on("warning", (err) => {
+      if (err.code === "ENOENT") {
+        logger.warn("Archiver warning:", err);
+      } else {
+        throw err;
+      }
+    });
+
+    archive.on("error", (err) => {
+      throw err;
+    });
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const zipFileName = `export-${siteId}-${timestamp}.zip`;
+    const exportFilePath = firebaseExportsPath(appName, zipFileName);
+    const exportFile = bucket.file(exportFilePath);
+    const stream = exportFile.createWriteStream({
+      gzip: true,
+      contentType: "application/zip",
+    });
+
+    archive.pipe(stream);
+
+    for (const file of files) {
+      const fileName = file.name.split("/").pop();
+      if (fileName) {
+        archive.append(file.createReadStream(), { name: fileName });
+      }
+    }
+
+    await archive.finalize();
+
+    logger.info(
+      `Successfully created photo export for site ${siteId} at ${exportFilePath}`
+    );
+  })();
+
+  return { status: "Export started" };
 });

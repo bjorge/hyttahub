@@ -47,6 +47,17 @@ export const firebasePhotosPath = (
   }
 };
 
+export const firebaseExportsPath = (
+  appPathSegment: string,
+  fileName: string
+): string => {
+  if (isRunningInEmulator()) {
+    return `emulator/${appPathSegment}/exports/${fileName}`;
+  } else {
+    return `hyttahub/${appPathSegment}/exports/${fileName}`;
+  }
+};
+
 // Document keys
 export const fbUserId = "u";
 export const fbTimeStamp = "t";
