@@ -3,6 +3,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 
 part 'export_state.dart';
 
@@ -12,10 +13,12 @@ class ExportBloc extends Cubit<ExportState> {
   Future<void> exportPhotos(String siteId) async {
     emit(ExportLoading());
     try {
-      final HttpsCallable callable =
-          FirebaseFunctions.instance.httpsCallable('exportPhotos');
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'exportPhotos',
+      );
       final result = await callable.call(<String, dynamic>{
         'siteId': siteId,
+        'appName': HyttaHubOptions.firebaseRootCollection,
       });
       emit(ExportSuccess(result.data['message']));
     } catch (e) {
@@ -26,10 +29,12 @@ class ExportBloc extends Cubit<ExportState> {
   Future<void> listExports(String siteId) async {
     emit(ExportLoading());
     try {
-      final HttpsCallable callable =
-          FirebaseFunctions.instance.httpsCallable('listExports');
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'listExports',
+      );
       final result = await callable.call(<String, dynamic>{
         'siteId': siteId,
+        'appName': HyttaHubOptions.firebaseRootCollection,
       });
       final files = (result.data['files'] as List)
           .map((file) => ExportFile.fromMap(file))
@@ -43,10 +48,12 @@ class ExportBloc extends Cubit<ExportState> {
   Future<void> deleteExport(String siteId, String fileName) async {
     emit(ExportLoading());
     try {
-      final HttpsCallable callable =
-          FirebaseFunctions.instance.httpsCallable('deleteExport');
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'deleteExport',
+      );
       await callable.call(<String, dynamic>{
         'siteId': siteId,
+        'appName': HyttaHubOptions.firebaseRootCollection,
         'fileName': fileName,
       });
       emit(ExportDeleteSuccess());

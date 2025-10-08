@@ -4,9 +4,9 @@ import 'intl_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
-  HyttaHubLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for Norwegian Bokmål (`nb`).
+class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
+  HyttaHubLocalizationsNb([String locale = 'nb']) : super(locale);
 
   @override
   String get loginTitle => 'Login';
@@ -506,17 +506,17 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get passwordTooLongError => 'Password is too long.';
 
   @override
-  String get exportSiteTitle => 'Export Site';
+  String get exportSiteTitle => 'Eksporter nettsted';
 
   @override
-  String get manageExportsTitle => 'Manage Exports';
+  String get manageExportsTitle => 'Administrer eksport';
 
   @override
-  String get exportDeletedSuccessfully => 'Export deleted successfully';
+  String get exportDeletedSuccessfully => 'Eksport slettet';
 
   @override
-  String get noExportsFound => 'No exports found.';
+  String get noExportsFound => 'Ingen eksport funnet.';
 
   @override
-  String get failedToLoadExports => 'Failed to load exports.';
+  String get failedToLoadExports => 'Kunne ikke laste inn eksport.';
 }

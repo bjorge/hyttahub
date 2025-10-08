@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/service_blocs/export_bloc.dart';
-import 'package:hyttahub/service_blocs/export_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManageExportsScreen extends StatelessWidget {
@@ -25,14 +24,18 @@ class ManageExportsScreen extends StatelessWidget {
             if (state is ExportDeleteSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: Text(HyttaHubLocalizations.of(context)!
-                        .exportDeletedSuccessfully)),
+                  content: Text(
+                    HyttaHubLocalizations.of(
+                      context,
+                    )!.exportDeletedSuccessfully,
+                  ),
+                ),
               );
               context.read<ExportBloc>().listExports(siteId);
             } else if (state is ExportFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.error)));
             }
           },
           builder: (context, state) {
@@ -42,8 +45,10 @@ class ManageExportsScreen extends StatelessWidget {
             if (state is ExportListSuccess) {
               if (state.files.isEmpty) {
                 return Center(
-                    child: Text(
-                        HyttaHubLocalizations.of(context)!.noExportsFound));
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.noExportsFound,
+                  ),
+                );
               }
               return ListView.builder(
                 itemCount: state.files.length,
@@ -66,9 +71,10 @@ class ManageExportsScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            context
-                                .read<ExportBloc>()
-                                .deleteExport(siteId, file.name);
+                            context.read<ExportBloc>().deleteExport(
+                              siteId,
+                              file.name,
+                            );
                           },
                         ),
                       ],
@@ -78,8 +84,10 @@ class ManageExportsScreen extends StatelessWidget {
               );
             }
             return Center(
-                child:
-                    Text(HyttaHubLocalizations.of(context)!.failedToLoadExports));
+              child: Text(
+                HyttaHubLocalizations.of(context)!.failedToLoadExports,
+              ),
+            );
           },
         ),
       ),

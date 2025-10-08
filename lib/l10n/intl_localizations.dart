@@ -8,6 +8,7 @@ import 'package:intl/intl.dart' as intl;
 import 'intl_localizations_en.dart';
 import 'intl_localizations_es.dart';
 import 'intl_localizations_it.dart';
+import 'intl_localizations_nb.dart';
 
 // ignore_for_file: type=lint
 
@@ -101,6 +102,7 @@ abstract class HyttaHubLocalizations {
     Locale('en'),
     Locale('es'),
     Locale('it'),
+    Locale('nb'),
   ];
 
   /// No description provided for @loginTitle.
@@ -1026,6 +1028,36 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Password is too long.'**
   String get passwordTooLongError;
+
+  /// No description provided for @exportSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Site'**
+  String get exportSiteTitle;
+
+  /// No description provided for @manageExportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Exports'**
+  String get manageExportsTitle;
+
+  /// No description provided for @exportDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Export deleted successfully'**
+  String get exportDeletedSuccessfully;
+
+  /// No description provided for @noExportsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No exports found.'**
+  String get noExportsFound;
+
+  /// No description provided for @failedToLoadExports.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exports.'**
+  String get failedToLoadExports;
 }
 
 class _HyttaHubLocalizationsDelegate
@@ -1041,7 +1073,7 @@ class _HyttaHubLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'it'].contains(locale.languageCode);
+      <String>['en', 'es', 'it', 'nb'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_HyttaHubLocalizationsDelegate old) => false;
@@ -1056,6 +1088,8 @@ HyttaHubLocalizations lookupHyttaHubLocalizations(Locale locale) {
       return HyttaHubLocalizationsEs();
     case 'it':
       return HyttaHubLocalizationsIt();
+    case 'nb':
+      return HyttaHubLocalizationsNb();
   }
 
   throw FlutterError(

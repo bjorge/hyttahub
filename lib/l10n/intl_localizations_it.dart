@@ -513,4 +513,19 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
 
   @override
   String get passwordTooLongError => 'La password è troppo lunga.';
+
+  @override
+  String get exportSiteTitle => 'Esporta Sito';
+
+  @override
+  String get manageExportsTitle => 'Gestisci Esportazioni';
+
+  @override
+  String get exportDeletedSuccessfully => 'Esportazione eliminata con successo';
+
+  @override
+  String get noExportsFound => 'Nessuna esportazione trovata.';
+
+  @override
+  String get failedToLoadExports => 'Impossibile caricare le esportazioni.';
 }

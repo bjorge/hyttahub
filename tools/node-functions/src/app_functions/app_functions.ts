@@ -237,7 +237,16 @@ export const deleteAlbumPhotos = onCall(async (request) => {
   for (const fileName of fileNames) {
     const filePath = firebasePhotosPath(appName, siteId, fileName);
     const file = bucket.file(filePath);
-    deletePromises.push(file.delete());
+    deletePromises.push(
+      file.delete().catch((err) => {
+      // Ignore "file not found" errors (best effort delete)
+      if (err.code === 404) {
+        logger.info(`Photo not found for deletion: ${filePath}`);
+        return;
+      }
+      throw err;
+      })
+    );
   }
 
   try {
@@ -271,7 +280,7 @@ export const exportPhotos = onCall(async (request) => {
     );
   }
 
-  logger.info("exportPhotos function called, siteId:", siteId, "email:", email);
+  logger.info("exportPhotos function called, siteId:", siteId, "email:", email, "appName:", appName);
 
   const emailRef = admin
     .firestore()
@@ -316,7 +325,7 @@ export const exportPhotos = onCall(async (request) => {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const zipFileName = `export-${siteId}-${timestamp}.zip`;
-    const exportFilePath = firebaseExportsPath(appName, zipFileName);
+    const exportFilePath = firebaseExportsPath(appName, siteId, zipFileName);
     const exportFile = bucket.file(exportFilePath);
     const stream = exportFile.createWriteStream({
       gzip: true,
@@ -340,4 +349,115 @@ export const exportPhotos = onCall(async (request) => {
   })();
 
   return { status: "Export started" };
+});
+
+export const listExports = onCall(async (request) => {
+  logger.info("listExports function called");
+
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const siteId = request.data.siteId;
+  const appName = request.data.appName;
+  const email =
+    typeof request.auth?.token?.email === "string"
+      ? request.auth.token.email
+      : undefined;
+  if (!email) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User email is required and must be a string"
+    );
+  }
+
+  logger.info("exportPhotos function called, siteId:", siteId, "email:", email, "appName:", appName);
+
+
+  const emailRef = admin
+    .firestore()
+    .collection(firebaseSiteUsersPath(appName, siteId))
+    .doc(email);
+
+  const emailDoc = await emailRef.get();
+  if (!emailDoc.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "User is not a member of this site"
+    );
+  }
+
+
+  const bucket = admin.storage().bucket();
+  const filePath = firebaseExportsPath(appName, siteId, "");
+
+  const [files] = await bucket.getFiles({
+    prefix: filePath,
+  });
+
+  const signedUrlConfig = {
+    action: 'read' as const,
+    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+  };
+
+  const exportFiles = await Promise.all(
+    files.map(async (file) => {
+      const url = isRunningInEmulator() ? file.publicUrl() : (await file.getSignedUrl(signedUrlConfig))[0];
+      logger.info("exportPhotos function iteration, url:", url);
+      return {
+        name: file.name.split('/').pop(),
+        url: url,
+      };
+    })
+  );
+
+  logger.info("exportPhotos function returned, exportFiles:", JSON.stringify(exportFiles, null, 2));
+
+
+  return { files: exportFiles };
+});
+
+export const deleteExport = onCall(async (request) => {
+
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const siteId = request.data.siteId;
+  const appName = request.data.appName;
+  const fileName = request.data.fileName;
+  const email =
+    typeof request.auth?.token?.email === "string"
+      ? request.auth.token.email
+      : undefined;
+  if (!email) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User email is required and must be a string"
+    );
+  }
+  logger.info("deleteExport function called, siteId:", siteId, "email:", email, "appName:", appName);
+
+  const emailRef = admin
+    .firestore()
+    .collection(firebaseSiteUsersPath(appName, siteId))
+    .doc(email);
+
+  const emailDoc = await emailRef.get();
+  if (!emailDoc.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "User is not a member of this site"
+    );
+  }
+
+  const bucket = admin.storage().bucket();
+  const filePath = firebaseExportsPath(appName, siteId, fileName);
+
+  const file = bucket.file(filePath);
+  await file.delete();
+
+  return { message: 'Export deleted successfully.' };
 });

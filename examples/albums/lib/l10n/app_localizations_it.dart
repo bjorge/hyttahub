@@ -214,4 +214,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get app_serviceLoginButton => 'Accesso Servizio';
+
+  @override
+  String get app_exportSiteTitle => 'Esporta Sito';
+
+  @override
+  String get app_manageExportsTitle => 'Gestisci Esportazioni';
 }

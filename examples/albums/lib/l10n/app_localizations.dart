@@ -481,6 +481,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Service Login'**
   String get app_serviceLoginButton;
+
+  /// No description provided for @app_exportSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Site'**
+  String get app_exportSiteTitle;
+
+  /// No description provided for @app_manageExportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Exports'**
+  String get app_manageExportsTitle;
 }
 
 class _AppLocalizationsDelegate
