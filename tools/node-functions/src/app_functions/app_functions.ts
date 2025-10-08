@@ -1,10 +1,13 @@
 import * as admin from "firebase-admin";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
+import * as unzipper from "unzipper";
 
 import {
+  fbPayload,
   firebaseExportsPath,
   firebasePhotosPath,
+  firebaseSiteEventsPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
 } from "../shared/constants";
@@ -259,8 +262,8 @@ export const deleteAlbumPhotos = onCall(async (request) => {
   }
 });
 
-export const exportPhotos = onCall(async (request) => {
-  logger.info("exportPhotos function called");
+export const exportSite = onCall(async (request) => {
+  logger.info("exportSite function called");
 
   const uid = request.auth?.uid;
   if (!uid) {
@@ -280,7 +283,7 @@ export const exportPhotos = onCall(async (request) => {
     );
   }
 
-  logger.info("exportPhotos function called, siteId:", siteId, "email:", email, "appName:", appName);
+  logger.info("exportSite function called, siteId:", siteId, "email:", email, "appName:", appName);
 
   const emailRef = admin
     .firestore()
@@ -302,8 +305,16 @@ export const exportPhotos = onCall(async (request) => {
     const photoPrefix = firebasePhotosPath(appName, siteId, "");
     const [files] = await bucket.getFiles({ prefix: photoPrefix });
 
-    if (files.length === 0) {
-      logger.info(`No photos found for site ${siteId} to export.`);
+    const eventsCollectionRef = admin
+      .firestore()
+      .collection(firebaseSiteEventsPath(appName, siteId));
+    const eventsSnapshot = await eventsCollectionRef.get();
+    const events = eventsSnapshot.docs
+      .map((doc) => doc.data()[fbPayload])
+      .join("\n");
+
+    if (files.length === 0 && events.length === 0) {
+      logger.info(`No data found for site ${siteId} to export.`);
       return;
     }
 
@@ -334,6 +345,10 @@ export const exportPhotos = onCall(async (request) => {
 
     archive.pipe(stream);
 
+    if (events.length > 0) {
+      archive.append(events, { name: "events.txt" });
+    }
+
     for (const file of files) {
       const fileName = file.name.split("/").pop();
       if (fileName) {
@@ -344,7 +359,7 @@ export const exportPhotos = onCall(async (request) => {
     await archive.finalize();
 
     logger.info(
-      `Successfully created photo export for site ${siteId} at ${exportFilePath}`
+      `Successfully created site export for site ${siteId} at ${exportFilePath}`
     );
   })();
 
@@ -460,4 +475,60 @@ export const deleteExport = onCall(async (request) => {
   await file.delete();
 
   return { message: 'Export deleted successfully.' };
+});
+
+export const exportDetails = onCall(async (request) => {
+  logger.info("exportDetails function called");
+
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const siteId = request.data.siteId;
+  const appName = request.data.appName;
+  const fileName = request.data.fileName;
+  const email =
+    typeof request.auth?.token?.email === "string"
+      ? request.auth.token.email
+      : undefined;
+  if (!email) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User email is required and must be a string"
+    );
+  }
+  logger.info("exportDetails function called, siteId:", siteId, "email:", email, "appName:", appName, "fileName:", fileName);
+
+  const emailRef = admin
+    .firestore()
+    .collection(firebaseSiteUsersPath(appName, siteId))
+    .doc(email);
+
+  const emailDoc = await emailRef.get();
+  if (!emailDoc.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "User is not a member of this site"
+    );
+  }
+
+  const bucket = admin.storage().bucket();
+  const filePath = firebaseExportsPath(appName, siteId, fileName);
+  const file = bucket.file(filePath);
+
+  return new Promise((resolve, reject) => {
+    const stream = file.createReadStream();
+    stream.pipe(unzipper.Parse())
+      .on("entry", (entry) => {
+        if (entry.path === "events.txt") {
+          entry.buffer().then((buffer: { toString: () => any; }) => {
+            resolve({ events: buffer.toString() });
+          }).catch(reject);
+        } else {
+          entry.autodrain();
+        }
+      })
+      .on("error", reject);
+  });
 });
