@@ -61,4 +61,21 @@ class ExportBloc extends Cubit<ExportState> {
       emit(ExportFailure(e.toString()));
     }
   }
+
+  Future<void> getExportDetails(String siteId, String fileName) async {
+    emit(ExportLoading());
+    try {
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'exportDetails',
+      );
+      final result = await callable.call(<String, dynamic>{
+        'siteId': siteId,
+        'appName': HyttaHubOptions.firebaseRootCollection,
+        'fileName': fileName,
+      });
+      emit(ExportDetailsSuccess(result.data['events']));
+    } catch (e) {
+      emit(ExportFailure(e.toString()));
+    }
+  }
 }

@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/export_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,6 +61,17 @@ class ManageExportsScreen extends StatelessWidget {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        IconButton(
+                          icon: const Icon(Icons.info_outline),
+                          onPressed: () {
+                            context.go(
+                              ExportDetailsRoute.fullPath(
+                                siteId: siteId,
+                                fileName: file.name,
+                              ),
+                            );
+                          },
+                        ),
                         IconButton(
                           icon: const Icon(Icons.download),
                           onPressed: () async {

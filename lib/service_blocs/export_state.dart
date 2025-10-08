@@ -31,6 +31,15 @@ class ExportListSuccess extends ExportState {
 
 class ExportDeleteSuccess extends ExportState {}
 
+class ExportDetailsSuccess extends ExportState {
+  final String events;
+
+  const ExportDetailsSuccess(this.events);
+
+  @override
+  List<Object> get props => [events];
+}
+
 class ExportFailure extends ExportState {
   final String error;
 

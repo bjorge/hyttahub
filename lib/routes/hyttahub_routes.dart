@@ -34,6 +34,7 @@ import 'package:hyttahub/site_widgets/update_member_screen.dart';
 import 'package:hyttahub/site_widgets/site_members_screen.dart';
 import 'package:hyttahub/site_widgets/export_site_screen.dart';
 import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
+import 'package:hyttahub/site_widgets/export_details_screen.dart';
 
 /// A route for the login screen.
 class LoginScreenRoute extends GoRoute {
@@ -197,7 +198,7 @@ class ExportSiteRoute extends GoRoute {
 
 class ManageExportsRoute extends GoRoute {
   /// Creates a [ManageExportsRoute].
-  ManageExportsRoute()
+  ManageExportsRoute({super.routes})
     : super(
         path: pathSegment,
         builder: (BuildContext context, GoRouterState state) {
@@ -212,6 +213,32 @@ class ManageExportsRoute extends GoRoute {
   /// A builder for the full path to this route.
   static String fullPath({required String siteId}) =>
       '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class ExportDetailsRoute extends GoRoute {
+  /// Creates an [ExportDetailsRoute].
+  ExportDetailsRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          final fileName = state.pathParameters['fileName'] ?? '';
+          return ExportDetailsScreen(
+            siteId: siteId,
+            fileName: fileName,
+          );
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'details/:fileName';
+
+  /// A builder for the full path to this route.
+  static String fullPath({
+    required String siteId,
+    required String fileName,
+  }) =>
+      '${ManageExportsRoute.fullPath(siteId: siteId)}/details/$fileName';
 }
 
 class AddMemberRoute extends GoRoute {
@@ -685,8 +712,11 @@ class RestoreServiceAdminRoute extends GoRoute {
 final serviceUnimplementedRoute = ServiceUnimplementedRoute();
 final landingUnimplementedRoute = ServiceUnimplementedRoute();
 
+final exportDetailsRoute = ExportDetailsRoute();
 final exportSiteRoute = ExportSiteRoute();
-final manageExportsRoute = ManageExportsRoute();
+final manageExportsRoute = ManageExportsRoute(
+  routes: [exportDetailsRoute],
+);
 
 final addSiteRoute = AddSiteRoute();
 final joinSiteRoute = JoinSiteRoute();
