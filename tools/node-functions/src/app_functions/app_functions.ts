@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { Timestamp } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
@@ -347,6 +347,8 @@ export const exportSite = onCall({ cors: true }, async (request) => {
           siteEvent: siteEvent,
         };
 
+        logger.info("Event record to export:", SiteEventRecord.toJSON(record));
+
         const buffer = SiteEventRecord.encode(record).finish();
         return Buffer.from(buffer).toString("base64");
       })
@@ -618,35 +620,54 @@ export const importSite = onCall({ cors: true }, async (request) => {
 
     for (const line of eventLines) {
       const eventRecord = SiteEventRecord.decode(Buffer.from(line, "base64"));
-      const docRef = siteEventsCollection.doc();
+      const docRef = siteEventsCollection.doc(eventRecord.version.toString());
+      if (!eventRecord.siteEvent) {
+        throw new HttpsError("invalid-argument", "Site event is missing in import data.");
+      }
+
+
+      logger.info("Event record to import:", SiteEventRecord.toJSON(eventRecord));
+
       writeBatch.set(docRef, {
         [fbPayload]: Buffer.from(
           SiteEvent.encode(eventRecord.siteEvent).finish()
         ).toString("base64"),
         [fbTimeStamp]: Timestamp.fromDate(new Date(eventRecord.isoDate)),
+        [fbVersion]: eventRecord.version,
       });
 
       if (
-        eventRecord.siteEvent?.addMember?.isAdmin ||
-        eventRecord.siteEvent?.updateMember?.newIsAdmin
+        eventRecord.siteEvent?.addMember ||
+        eventRecord.siteEvent?.updateMember ||
+        eventRecord.siteEvent?.newSite ||
+        eventRecord.siteEvent?.removeMember
       ) {
         let memberId;
         let name;
         if (eventRecord.siteEvent.addMember) {
-          memberId = eventRecord.siteEvent.addMember.id;
-          name = eventRecord.siteEvent.addMember.name;
+          memberId = eventRecord.siteEvent.version;
+          name = eventRecord.siteEvent.addMember.memberName;
         } else if (eventRecord.siteEvent.updateMember) {
-          memberId = eventRecord.siteEvent.updateMember.id;
-          name = eventRecord.siteEvent.updateMember.newName;
+          memberId = eventRecord.siteEvent.updateMember.memberId;
+          name = eventRecord.siteEvent.updateMember.memberName;
+          } else if (eventRecord.siteEvent.newSite) {
+            memberId = eventRecord.siteEvent.version;
+            name = eventRecord.siteEvent.newSite.memberName;
         }
         if (memberId && name) {
-          adminMembers.push({ memberId, name });
+          adminMembers.push({ memberId: String(memberId), name: name });
         }
       }
     }
 
     await writeBatch.commit();
     logger.info("All events imported successfully");
+
+    // log the admin members for debugging
+    logger.info("Admin members identified during import:", adminMembers);
+
+    // log the site id for debugging
+    logger.info("New site ID generated:", newSiteId);
 
     return {
       siteId: newSiteId,
@@ -706,8 +727,8 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
 
   const userDocRef = siteUsersCollectionRef.doc(email);
   writeBatch.set(userDocRef, {
-    [fbUserId]: memberId,
-    [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
+    [fbUserId]: Number(memberId),
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
   });
 
   const newAccountEventRef = accountEventsCollectionRef.doc();
@@ -719,7 +740,7 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
     [fbPayload]: Buffer.from(
       AccountEvent.encode(joinSiteEvent).finish()
     ).toString("base64"),
-    [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
     [fbVersion]: newVersion,
   });
 

@@ -5,9 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
-import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
+// import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/site_blocs/site_replay.dart';
 
 class ExportDetailsScreen extends StatefulWidget {
   final String siteId;
@@ -36,8 +37,9 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CloudFunctionsBloc()
-        ..getExportDetails(widget.siteId, widget.fileName),
+      create: (context) =>
+          CloudFunctionsBloc()
+            ..getExportDetails(widget.siteId, widget.fileName),
       child: Scaffold(
         appBar: AppBar(
           title: Text('exportDetailsTitle'),
@@ -50,12 +52,14 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
               final eventsMap = <int, String>{};
               for (final event in events) {
                 if (event.isNotEmpty) {
-                  final record =
-                      SiteEventRecord.fromBuffer(base64Decode(event));
+                  final record = SiteEventRecord.fromBuffer(
+                    base64Decode(event),
+                  );
                   final siteEvent = record.siteEvent;
                   final eventVersion = siteEvent.version;
-                  eventsMap[eventVersion] =
-                      base64Encode(siteEvent.writeToBuffer());
+                  eventsMap[eventVersion] = base64Encode(
+                    siteEvent.writeToBuffer(),
+                  );
                 }
               }
               _replayBlocState = siteReplay(SiteReplayBlocState(), eventsMap);

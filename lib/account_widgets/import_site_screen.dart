@@ -13,7 +13,7 @@ class ImportSiteScreen extends StatefulWidget {
   const ImportSiteScreen({super.key});
 
   @override
-  _ImportSiteScreenState createState() => _ImportSiteScreenState();
+  State<ImportSiteScreen> createState() => _ImportSiteScreenState();
 }
 
 class _ImportSiteScreenState extends State<ImportSiteScreen> {
@@ -45,30 +45,35 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     });
 
     final base64Data = base64Encode(_zipFileBytes!);
-    context.read<CloudFunctionsBloc>().importSite(base64Data).then((response) {
-      setState(() {
-        _isLoading = false;
-      });
-      final siteId = response['siteId'] as String;
-      final adminMembers =
-          (response['adminMembers'] as List<dynamic>).map((member) {
-        return member as Map<String, dynamic>;
-      }).toList();
+    context
+        .read<CloudFunctionsBloc>()
+        .importSite(base64Data)
+        .then((response) {
+          setState(() {
+            _isLoading = false;
+          });
+          final siteId = response['siteId'] as String;
+          final adminMembers = (response['adminMembers'] as List<dynamic>).map((
+            member,
+          ) {
+            return member as Map<String, dynamic>;
+          }).toList();
 
-      if (!mounted) return;
-      context.push(SelectAdminRoute.fullPath(siteId: siteId),
-          extra: adminMembers);
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error importing site: $error'),
-        ),
-      );
-    });
+          if (!mounted) return;
+          context.push(
+            SelectAdminRoute.fullPath(siteId: siteId),
+            extra: adminMembers,
+          );
+        })
+        .catchError((error) {
+          setState(() {
+            _isLoading = false;
+          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error importing site: $error')),
+          );
+        });
   }
 
   @override

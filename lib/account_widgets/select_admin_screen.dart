@@ -7,15 +7,12 @@ import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 
 class SelectAdminScreen extends StatefulWidget {
-  const SelectAdminScreen({
-    super.key,
-    required this.siteId,
-  });
+  const SelectAdminScreen({super.key, required this.siteId});
 
   final String siteId;
 
   @override
-  _SelectAdminScreenState createState() => _SelectAdminScreenState();
+  State<SelectAdminScreen> createState() => _SelectAdminScreenState();
 }
 
 class _SelectAdminScreenState extends State<SelectAdminScreen> {
@@ -35,22 +32,21 @@ class _SelectAdminScreenState extends State<SelectAdminScreen> {
         .read<CloudFunctionsBloc>()
         .assignUserToImportedSite(widget.siteId, _selectedMemberId!)
         .then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (!mounted) return;
-      context.go(AccountScreenRoute.fullPath);
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error assigning user: $error'),
-        ),
-      );
-    });
+          setState(() {
+            _isLoading = false;
+          });
+          if (!mounted) return;
+          context.go(AccountScreenRoute.fullPath);
+        })
+        .catchError((error) {
+          setState(() {
+            _isLoading = false;
+          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error assigning user: $error')),
+          );
+        });
   }
 
   @override
@@ -74,8 +70,9 @@ class _SelectAdminScreenState extends State<SelectAdminScreen> {
                   _selectedMemberId = newValue;
                 });
               },
-              items: adminMembers
-                  .map<DropdownMenuItem<String>>((Map<String, dynamic> member) {
+              items: adminMembers.map<DropdownMenuItem<String>>((
+                Map<String, dynamic> member,
+              ) {
                 return DropdownMenuItem<String>(
                   value: member['memberId'] as String,
                   child: Text(member['name'] as String),

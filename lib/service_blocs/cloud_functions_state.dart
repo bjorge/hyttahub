@@ -43,7 +43,7 @@ class ExportDetailsSuccess extends CloudFunctionsState {
 class CloudFunctionsFailure extends CloudFunctionsState {
   final String error;
 
-  const ExportFailure(this.error);
+  const CloudFunctionsFailure(this.error);
 
   @override
   List<Object> get props => [error];
@@ -56,10 +56,7 @@ class ExportFile extends Equatable {
   const ExportFile({required this.name, required this.url});
 
   factory ExportFile.fromMap(Map<String, dynamic> map) {
-    return ExportFile(
-      name: map['name'] as String,
-      url: map['url'] as String,
-    );
+    return ExportFile(name: map['name'] as String, url: map['url'] as String);
   }
 
   @override

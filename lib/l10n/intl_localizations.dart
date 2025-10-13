@@ -1058,6 +1058,42 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load exports.'**
   String get failedToLoadExports;
+
+  /// No description provided for @importSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Site'**
+  String get importSiteTitle;
+
+  /// No description provided for @selectFileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select File'**
+  String get selectFileButton;
+
+  /// No description provided for @importButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importButton;
+
+  /// No description provided for @selectAdminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Admin Account'**
+  String get selectAdminTitle;
+
+  /// No description provided for @selectAdminInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your administrator account from the list of admins for the imported site.'**
+  String get selectAdminInstruction;
+
+  /// No description provided for @assignUserButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign User'**
+  String get assignUserButton;
 }
 
 class _HyttaHubLocalizationsDelegate

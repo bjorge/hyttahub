@@ -519,4 +519,23 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String get failedToLoadExports => 'Failed to load exports.';
+
+  @override
+  String get importSiteTitle => 'Import Site';
+
+  @override
+  String get selectFileButton => 'Select File';
+
+  @override
+  String get importButton => 'Import';
+
+  @override
+  String get selectAdminTitle => 'Select Your Admin Account';
+
+  @override
+  String get selectAdminInstruction =>
+      'Please select your administrator account from the list of admins for the imported site.';
+
+  @override
+  String get assignUserButton => 'Assign User';
 }
