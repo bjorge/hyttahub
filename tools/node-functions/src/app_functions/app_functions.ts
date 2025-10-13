@@ -14,6 +14,8 @@ import {
   firebaseSiteEventsPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
+  fbUserId,
+  fbVersion,
 } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -677,40 +679,49 @@ export const assignUserToImportedSite = onCall(async (request) => {
     );
   }
 
-  const eventsCollectionRef = admin
+  const siteUsersCollectionRef = admin
     .firestore()
-    .collection(firebaseSiteEventsPath(appName, siteId));
-  const newEventRef = eventsCollectionRef.doc();
-
-  const writeBatch = admin.firestore().batch();
-
-  const updateMemberEvent = SiteEvent.create({
-    updateMember: {
-      id: memberId,
-      newEmail: email,
-    },
-    version: 2,
-  });
-  writeBatch.set(newEventRef, {
-    [fbPayload]: Buffer.from(
-      SiteEvent.encode(updateMemberEvent).finish()
-    ).toString("base64"),
-    [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
-  });
+    .collection(firebaseSiteUsersPath(appName, siteId));
 
   const accountEventsCollectionRef = admin
     .firestore()
-    .collection(firebaseAccountEventsPath(appName, uid));
+    .collection(firebaseAccountEventsPath(appName, email));
+
+  // Get the latest event version to increment it.
+  const lastEventSnapshot = await accountEventsCollectionRef
+    .orderBy(fbVersion, "desc")
+    .limit(1)
+    .get();
+  let newVersion = 1;
+  if (!lastEventSnapshot.empty) {
+    const lastEventData = lastEventSnapshot.docs[0].data();
+    if (
+      lastEventData[fbVersion] &&
+      typeof lastEventData[fbVersion] === "number"
+    ) {
+      newVersion = lastEventData[fbVersion] + 1;
+    }
+  }
+
+  const writeBatch = admin.firestore().batch();
+
+  const userDocRef = siteUsersCollectionRef.doc(email);
+  writeBatch.set(userDocRef, {
+    [fbUserId]: memberId,
+    [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
   const newAccountEventRef = accountEventsCollectionRef.doc();
   const joinSiteEvent = AccountEvent.create({
     joinSite: siteId,
-    version: 2,
+    version: newVersion,
   });
   writeBatch.set(newAccountEventRef, {
     [fbPayload]: Buffer.from(
       AccountEvent.encode(joinSiteEvent).finish()
     ).toString("base64"),
     [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
+    [fbVersion]: newVersion,
   });
 
   await writeBatch.commit();
