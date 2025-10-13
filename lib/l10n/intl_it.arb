@@ -196,5 +196,11 @@
   "manageExportsTitle": "Gestisci Esportazioni",
   "exportDeletedSuccessfully": "Esportazione eliminata con successo",
   "noExportsFound": "Nessuna esportazione trovata.",
-  "failedToLoadExports": "Impossibile caricare le esportazioni."
+  "failedToLoadExports": "Impossibile caricare le esportazioni.",
+  "importSiteTitle": "Importa Sito",
+  "selectFileButton": "Seleziona File",
+  "importButton": "Importa",
+  "selectAdminTitle": "Seleziona il tuo Account Amministratore",
+  "selectAdminInstruction": "Seleziona il tuo account amministratore dall'elenco degli amministratori del sito importato.",
+  "assignUserButton": "Assegna Utente"
 }

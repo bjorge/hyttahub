@@ -5,13 +5,44 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 
-part 'export_state.dart';
+part 'cloud_functions_state.dart';
 
-class ExportBloc extends Cubit<ExportState> {
-  ExportBloc() : super(ExportInitial());
+class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
+  CloudFunctionsBloc() : super(CloudFunctionsInitial());
+
+  Future<Map<String, dynamic>> importSite(String base64Data) async {
+    try {
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'importSite',
+      );
+      final result = await callable.call(<String, dynamic>{
+        'base64Data': base64Data,
+        'appName': HyttaHubOptions.firebaseRootCollection,
+      });
+      return Map<String, dynamic>.from(result.data);
+    } catch (e) {
+      throw Exception('Failed to import site: $e');
+    }
+  }
+
+  Future<void> assignUserToImportedSite(
+      String siteId, String memberId) async {
+    try {
+      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+        'assignUserToImportedSite',
+      );
+      await callable.call(<String, dynamic>{
+        'siteId': siteId,
+        'memberId': memberId,
+        'appName': HyttaHubOptions.firebaseRootCollection,
+      });
+    } catch (e) {
+      throw Exception('Failed to assign user to imported site: $e');
+    }
+  }
 
   Future<void> exportPhotos(String siteId) async {
-    emit(ExportLoading());
+    emit(CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'exportSite',
@@ -22,12 +53,12 @@ class ExportBloc extends Cubit<ExportState> {
       });
       emit(ExportSuccess(result.data['message']));
     } catch (e) {
-      emit(ExportFailure(e.toString()));
+      emit(CloudFunctionsFailure(e.toString()));
     }
   }
 
   Future<void> listExports(String siteId) async {
-    emit(ExportLoading());
+    emit(CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'listExports',
@@ -41,12 +72,12 @@ class ExportBloc extends Cubit<ExportState> {
           .toList();
       emit(ExportListSuccess(files));
     } catch (e) {
-      emit(ExportFailure(e.toString()));
+      emit(CloudFunctionsFailure(e.toString()));
     }
   }
 
   Future<void> deleteExport(String siteId, String fileName) async {
-    emit(ExportLoading());
+    emit(CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'deleteExport',
@@ -58,12 +89,12 @@ class ExportBloc extends Cubit<ExportState> {
       });
       emit(ExportDeleteSuccess());
     } catch (e) {
-      emit(ExportFailure(e.toString()));
+      emit(CloudFunctionsFailure(e.toString()));
     }
   }
 
   Future<void> getExportDetails(String siteId, String fileName) async {
-    emit(ExportLoading());
+    emit(CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'exportDetails',
@@ -75,7 +106,7 @@ class ExportBloc extends Cubit<ExportState> {
       });
       emit(ExportDetailsSuccess(result.data['events']));
     } catch (e) {
-      emit(ExportFailure(e.toString()));
+      emit(CloudFunctionsFailure(e.toString()));
     }
   }
 }

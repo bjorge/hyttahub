@@ -4,6 +4,8 @@ import 'package:hyttahub/account_widgets/account_events_display.dart';
 import 'package:hyttahub/account_widgets/account_screen.dart';
 import 'package:hyttahub/account_widgets/remove_account_screen.dart';
 import 'package:hyttahub/account_widgets/add_site_screen.dart';
+import 'package:hyttahub/account_widgets/import_site_screen.dart';
+import 'package:hyttahub/account_widgets/select_admin_screen.dart';
 import 'package:hyttahub/account_widgets/join_site_screen.dart';
 import 'package:hyttahub/account_widgets/manage_sites_screen.dart';
 import 'package:hyttahub/account_widgets/leave_site_screen.dart';
@@ -156,6 +158,46 @@ class AddSiteRoute extends GoRoute {
 
   /// The full path to this route.
   static final String fullPath = '${AccountScreenRoute.fullPath}/$pathSegment';
+}
+
+class ImportSiteRoute extends GoRoute {
+  /// Creates an [ImportSiteRoute].
+  ImportSiteRoute({required super.routes})
+      : super(
+          path: pathSegment,
+          builder: (BuildContext context, GoRouterState state) {
+            return ImportSiteScreen();
+          },
+        );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'importsite';
+
+  /// The full path to this route.
+  static final String fullPath = '${AccountScreenRoute.fullPath}/$pathSegment';
+}
+
+class SelectAdminRoute extends GoRoute {
+  /// Creates a [SelectAdminRoute].
+  SelectAdminRoute()
+      : super(
+          path: pathSegment,
+          builder: (BuildContext context, GoRouterState state) {
+            final siteId = state.pathParameters['siteId'] ?? '';
+            return SelectAdminScreen(
+              siteId: siteId,
+            );
+          },
+        );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'selectadmin/:siteId';
+
+  /// A builder for the full path to this route.
+  static String fullPath({
+    required String siteId,
+  }) =>
+      '${ImportSiteRoute.fullPath}/selectadmin/$siteId';
 }
 
 class SiteMembersRoute extends GoRoute {
@@ -721,6 +763,10 @@ final manageExportsRoute = ManageExportsRoute(
 final addSiteRoute = AddSiteRoute();
 final joinSiteRoute = JoinSiteRoute();
 final removeSiteRoute = RemoveSiteRoute();
+final selectAdminRoute = SelectAdminRoute();
+final importSiteRoute = ImportSiteRoute(
+  routes: [selectAdminRoute],
+);
 
 final manageSitesRoute = ManageSitesRoute(routes: [removeSiteRoute]);
 final accountOptionUnimplementedRoute = AccountOptionUnimplementedRoute();
@@ -769,6 +815,7 @@ final accountEventsDisplayRoute = AccountEventsDisplayRoute();
 final accountScreenRoute = AccountScreenRoute(
   routes: [
     addSiteRoute,
+    importSiteRoute,
     joinSiteRoute,
     manageSitesRoute,
     termsDisplayRoute,

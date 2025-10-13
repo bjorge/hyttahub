@@ -1,17 +1,17 @@
-part of 'export_bloc.dart';
+part of 'cloud_functions_bloc.dart';
 
-abstract class ExportState extends Equatable {
-  const ExportState();
+abstract class CloudFunctionsState extends Equatable {
+  const CloudFunctionsState();
 
   @override
   List<Object> get props => [];
 }
 
-class ExportInitial extends ExportState {}
+class CloudFunctionsInitial extends CloudFunctionsState {}
 
-class ExportLoading extends ExportState {}
+class CloudFunctionsLoading extends CloudFunctionsState {}
 
-class ExportSuccess extends ExportState {
+class ExportSuccess extends CloudFunctionsState {
   final String message;
 
   const ExportSuccess(this.message);
@@ -20,7 +20,7 @@ class ExportSuccess extends ExportState {
   List<Object> get props => [message];
 }
 
-class ExportListSuccess extends ExportState {
+class ExportListSuccess extends CloudFunctionsState {
   final List<ExportFile> files;
 
   const ExportListSuccess(this.files);
@@ -29,9 +29,9 @@ class ExportListSuccess extends ExportState {
   List<Object> get props => [files];
 }
 
-class ExportDeleteSuccess extends ExportState {}
+class ExportDeleteSuccess extends CloudFunctionsState {}
 
-class ExportDetailsSuccess extends ExportState {
+class ExportDetailsSuccess extends CloudFunctionsState {
   final String events;
 
   const ExportDetailsSuccess(this.events);
@@ -40,7 +40,7 @@ class ExportDetailsSuccess extends ExportState {
   List<Object> get props => [events];
 }
 
-class ExportFailure extends ExportState {
+class CloudFunctionsFailure extends CloudFunctionsState {
   final String error;
 
   const ExportFailure(this.error);

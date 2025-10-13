@@ -196,5 +196,11 @@
   "manageExportsTitle": "Manage Exports",
   "exportDeletedSuccessfully": "Export deleted successfully",
   "noExportsFound": "No exports found.",
-  "failedToLoadExports": "Failed to load exports."
+  "failedToLoadExports": "Failed to load exports.",
+  "importSiteTitle": "Import Site",
+  "selectFileButton": "Select File",
+  "importButton": "Import",
+  "selectAdminTitle": "Select Your Admin Account",
+  "selectAdminInstruction": "Please select your administrator account from the list of admins for the imported site.",
+  "assignUserButton": "Assign User"
 }

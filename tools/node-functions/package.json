@@ -23,13 +23,15 @@
     "google-protobuf": "^3.21.4",
     "mailgun.js": "^10.4.0",
     "protobufjs": "^7.4.0",
-    "unzipper": "^0.12.1"
+    "unzipper": "^0.12.1",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",
     "@types/google-protobuf": "^3.15.12",
     "@types/jest": "^29.5.14",
     "@types/unzipper": "^0.10.9",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "eslint": "^8.9.0",
