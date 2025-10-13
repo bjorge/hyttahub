@@ -45,7 +45,6 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     });
 
     final base64Data = base64Encode(_zipFileBytes!);
-    context
     context.read<CloudFunctionsBloc>().importSite(base64Data).then((response) {
       setState(() {
         _isLoading = false;
