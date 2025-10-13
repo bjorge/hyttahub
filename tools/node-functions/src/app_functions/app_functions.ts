@@ -4,7 +4,6 @@ import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
 import { SiteEvent, SiteEventRecord } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   fbPayload,
@@ -18,6 +17,24 @@ import {
 } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+
+function generateId(): string {
+  const validChars = "123456789ABCDE";
+  const allValidChars = "123456789ABCDEFG";
+
+  const firstChar = validChars.charAt(
+    Math.floor(Math.random() * validChars.length)
+  );
+
+  let remainingChars = "";
+  for (let i = 0; i < 7; i++) {
+    remainingChars += allValidChars.charAt(
+      Math.floor(Math.random() * allValidChars.length)
+    );
+  }
+
+  return firstChar + remainingChars;
+}
 
 export const uploadPhoto = onCall(async (request) => {
   logger.info("uploadPhoto function called");
@@ -562,7 +579,7 @@ export const importSite = onCall(async (request) => {
 
   const appName = request.data.appName;
   const base64Data = request.data.base64Data;
-  const newSiteId = uuidv4();
+  const newSiteId = generateId();
   const bucket = admin.storage().bucket();
 
   try {
