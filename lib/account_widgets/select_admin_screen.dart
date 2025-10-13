@@ -38,11 +38,13 @@ class _SelectAdminScreenState extends State<SelectAdminScreen> {
       setState(() {
         _isLoading = false;
       });
+      if (!mounted) return;
       context.go(AccountScreenRoute.fullPath);
     }).catchError((error) {
       setState(() {
         _isLoading = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error assigning user: $error'),

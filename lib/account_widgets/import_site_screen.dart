@@ -55,12 +55,14 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
         return member as Map<String, dynamic>;
       }).toList();
 
+      if (!mounted) return;
       context.push(SelectAdminRoute.fullPath(siteId: siteId),
           extra: adminMembers);
     }).catchError((error) {
       setState(() {
         _isLoading = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error importing site: $error'),
