@@ -3,9 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'dart:convert';
 import 'package:hyttahub/service_blocs/export_bloc.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
+import 'package:hyttahub/proto/site_events.pb.dart';
 
 class ExportDetailsScreen extends StatefulWidget {
   final String siteId;
@@ -45,12 +47,16 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
           listener: (context, state) {
             if (state is ExportDetailsSuccess) {
               final events = state.events.split('\n');
-              final Map<int, String> eventsMap = {
-                for (var i = 0; i < events.length; i++)
-                  if (events[i].isNotEmpty) i + 1: events[i],
-              };
+              final eventsMap = <int, String>{};
+              for (final event in events) {
+                if (event.isNotEmpty) {
+                  final record = SiteEventRecord.fromBuffer(base64Decode(event));
+                  final siteEvent = record.siteEvent;
+                  final eventVersion = siteEvent.version;
+                  eventsMap[eventVersion] = base64Encode(siteEvent.writeToBuffer());
+                }
+              }
               _replayBlocState = siteReplay(SiteReplayBlocState(), eventsMap);
-              // _siteReplayBloc.emit(replayedState);
             }
           },
           builder: (context, state) {

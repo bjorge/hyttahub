@@ -2,9 +2,10 @@ import * as admin from "firebase-admin";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
-
+import { SiteEvent, SiteEventRecord } from "../proto/site_events_pb";
 import {
   fbPayload,
+  fbTimeStamp,
   firebaseExportsPath,
   firebasePhotosPath,
   firebaseSiteEventsPath,
@@ -310,7 +311,20 @@ export const exportSite = onCall(async (request) => {
       .collection(firebaseSiteEventsPath(appName, siteId));
     const eventsSnapshot = await eventsCollectionRef.get();
     const events = eventsSnapshot.docs
-      .map((doc) => doc.data()[fbPayload])
+      .map((doc) => {
+        const docData = doc.data();
+        const payload = docData[fbPayload];
+        const timestamp = docData[fbTimeStamp] as admin.firestore.Timestamp;
+        const siteEvent = SiteEvent.deserializeBinary(Buffer.from(payload, "base64"));
+
+        const record = new SiteEventRecord();
+        record.setIsoDate(timestamp.toDate().toISOString());
+        record.setVersion(siteEvent.getVersion());
+        record.setSiteEvent(siteEvent);
+
+        const serializedRecord = record.serializeBinary();
+        return Buffer.from(serializedRecord).toString("base64");
+      })
       .join("\n");
 
     if (files.length === 0 && events.length === 0) {
