@@ -14,7 +14,7 @@ class ExportBloc extends Cubit<ExportState> {
     emit(ExportLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'exportPhotos',
+        'exportSite',
       );
       final result = await callable.call(<String, dynamic>{
         'siteId': siteId,

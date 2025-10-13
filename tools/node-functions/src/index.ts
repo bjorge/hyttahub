@@ -7,9 +7,10 @@ export {
   getPhoto,
   deletePhoto,
   deleteAlbumPhotos,
-  exportPhotos,
+  exportSite,
   listExports,
   deleteExport,
+  exportDetails,
 } from "./app_functions/app_functions";
 export {
   queryservice,

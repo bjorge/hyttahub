@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyttahub/l10n/intl_localizations.dart';
+// import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/service_blocs/export_bloc.dart';
-import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
+import 'package:hyttahub/site_blocs/site_replay.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
 class ExportDetailsScreen extends StatefulWidget {
@@ -22,25 +22,24 @@ class ExportDetailsScreen extends StatefulWidget {
 }
 
 class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
-  final SiteReplayBloc _siteReplayBloc = SiteReplayBloc('');
+  // final SiteReplayBloc _siteReplayBloc = SiteReplayBloc('');
+  SiteReplayBlocState? _replayBlocState;
 
   @override
   void dispose() {
-    _siteReplayBloc.close();
+    // _siteReplayBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ExportBloc()
-        ..getExportDetails(
-          widget.siteId,
-          widget.fileName,
-        ),
+      create: (context) =>
+          ExportBloc()..getExportDetails(widget.siteId, widget.fileName),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(HyttaHubLocalizations.of(context)!.exportDetailsTitle),
+          title: Text('exportDetailsTitle'),
+          // title: Text(HyttaHubLocalizations.of(context)!.exportDetailsTitle),
         ),
         body: BlocConsumer<ExportBloc, ExportState>(
           listener: (context, state) {
@@ -50,11 +49,8 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
                 for (var i = 0; i < events.length; i++)
                   if (events[i].isNotEmpty) i + 1: events[i],
               };
-              final replayedState = _siteReplayBloc.replayEvents(
-                SiteReplayBlocState(),
-                eventsMap,
-              );
-              _siteReplayBloc.emit(replayedState);
+              _replayBlocState = siteReplay(SiteReplayBlocState(), eventsMap);
+              // _siteReplayBloc.emit(replayedState);
             }
           },
           builder: (context, state) {
@@ -65,10 +61,9 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
               return Center(child: Text(state.error));
             }
             if (state is ExportDetailsSuccess) {
-              return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
-                bloc: _siteReplayBloc,
-                builder: (context, replayState) {
-                  if (replayState.name.isEmpty) {
+              return Builder(
+                builder: (context) {
+                  if (_replayBlocState == null) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   return Padding(
@@ -77,7 +72,7 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Site Name: ${replayState.name}',
+                          'Site Name: ${_replayBlocState!.name}',
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 16),
@@ -87,10 +82,10 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: replayState.members.length,
+                            itemCount: _replayBlocState!.members.length,
                             itemBuilder: (context, index) {
-                              final member =
-                                  replayState.members.values.toList()[index];
+                              final member = _replayBlocState!.members.values
+                                  .toList()[index];
                               return ListTile(
                                 title: Text(member.name),
                                 subtitle: Text(
