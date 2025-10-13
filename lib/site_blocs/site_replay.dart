@@ -1,6 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
@@ -29,6 +30,12 @@ SiteReplayBlocState siteReplay(
   final replay = siteReplay.deepCopy();
 
   replay.events.addAll(base64Events);
+
+  if (kDebugMode) {
+    print('Replaying ${eventKeys.length} events');
+    print(base64Events.values.join('\n'));
+    print(base64Events.keys.join('\n'));
+  }
 
   for (int i = 0; i < eventKeys.length; i++) {
     final eventVersion = eventKeys[i];
