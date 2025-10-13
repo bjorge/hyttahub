@@ -3,11 +3,13 @@ import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
 import { SiteEvent, SiteEventRecord } from "../ts/site_events";
+import { AccountEvent } from "../ts/account_events";
 import { v4 as uuidv4 } from "uuid";
 
 import {
   fbPayload,
   fbTimeStamp,
+  firebaseAccountEventsPath,
   firebaseExportsPath,
   firebasePhotosPath,
   firebaseSiteEventsPath,
@@ -663,6 +665,8 @@ export const assignUserToImportedSite = onCall(async (request) => {
     .collection(firebaseSiteEventsPath(appName, siteId));
   const newEventRef = eventsCollectionRef.doc();
 
+  const writeBatch = admin.firestore().batch();
+
   const updateMemberEvent = SiteEvent.create({
     updateMember: {
       id: memberId,
@@ -670,13 +674,29 @@ export const assignUserToImportedSite = onCall(async (request) => {
     },
     version: 2,
   });
-
-  await newEventRef.set({
-    [fbPayload]: Buffer.from(SiteEvent.encode(updateMemberEvent).finish()).toString(
-      "base64"
-    ),
+  writeBatch.set(newEventRef, {
+    [fbPayload]: Buffer.from(
+      SiteEvent.encode(updateMemberEvent).finish()
+    ).toString("base64"),
     [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
   });
+
+  const accountEventsCollectionRef = admin
+    .firestore()
+    .collection(firebaseAccountEventsPath(appName, uid));
+  const newAccountEventRef = accountEventsCollectionRef.doc();
+  const joinSiteEvent = AccountEvent.create({
+    joinSite: siteId,
+    version: 2,
+  });
+  writeBatch.set(newAccountEventRef, {
+    [fbPayload]: Buffer.from(
+      AccountEvent.encode(joinSiteEvent).finish()
+    ).toString("base64"),
+    [fbTimeStamp]: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  await writeBatch.commit();
 
   return { success: true };
 });

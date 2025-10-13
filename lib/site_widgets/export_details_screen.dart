@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
-import 'package:hyttahub/service_blocs/export_bloc.dart';
-import 'package:hyttahub/site_blocs/site_replay.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 
@@ -36,34 +36,36 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          ExportBloc()..getExportDetails(widget.siteId, widget.fileName),
+      create: (context) => CloudFunctionsBloc()
+        ..getExportDetails(widget.siteId, widget.fileName),
       child: Scaffold(
         appBar: AppBar(
           title: Text('exportDetailsTitle'),
           // title: Text(HyttaHubLocalizations.of(context)!.exportDetailsTitle),
         ),
-        body: BlocConsumer<ExportBloc, ExportState>(
+        body: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
             if (state is ExportDetailsSuccess) {
               final events = state.events.split('\n');
               final eventsMap = <int, String>{};
               for (final event in events) {
                 if (event.isNotEmpty) {
-                  final record = SiteEventRecord.fromBuffer(base64Decode(event));
+                  final record =
+                      SiteEventRecord.fromBuffer(base64Decode(event));
                   final siteEvent = record.siteEvent;
                   final eventVersion = siteEvent.version;
-                  eventsMap[eventVersion] = base64Encode(siteEvent.writeToBuffer());
+                  eventsMap[eventVersion] =
+                      base64Encode(siteEvent.writeToBuffer());
                 }
               }
               _replayBlocState = siteReplay(SiteReplayBlocState(), eventsMap);
             }
           },
           builder: (context, state) {
-            if (state is ExportLoading) {
+            if (state is CloudFunctionsLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state is ExportFailure) {
+            if (state is CloudFunctionsFailure) {
               return Center(child: Text(state.error));
             }
             if (state is ExportDetailsSuccess) {

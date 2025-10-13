@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/service_blocs/export_bloc.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
 
 class ExportSiteScreen extends StatelessWidget {
   final String siteId;
@@ -17,28 +18,28 @@ class ExportSiteScreen extends StatelessWidget {
         title: Text(HyttaHubLocalizations.of(context)!.exportSiteTitle),
       ),
       body: BlocProvider(
-        create: (_) => ExportBloc(),
-        child: BlocConsumer<ExportBloc, ExportState>(
+        create: (_) => CloudFunctionsBloc(),
+        child: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
             if (state is ExportSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
               Navigator.of(context).pop();
-            } else if (state is ExportFailure) {
+            } else if (state is CloudFunctionsFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.error)),
               );
             }
           },
           builder: (context, state) {
-            if (state is ExportLoading) {
+            if (state is CloudFunctionsLoading) {
               return const Center(child: CircularProgressIndicator());
             }
             return Center(
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<ExportBloc>().exportPhotos(siteId);
+                  context.read<CloudFunctionsBloc>().exportPhotos(siteId);
                 },
                 child: Text(HyttaHubLocalizations.of(context)!.exportSiteTitle),
               ),

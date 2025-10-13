@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/service_blocs/export_bloc.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManageExportsScreen extends StatelessWidget {
@@ -20,8 +21,8 @@ class ManageExportsScreen extends StatelessWidget {
         title: Text(HyttaHubLocalizations.of(context)!.manageExportsTitle),
       ),
       body: BlocProvider(
-        create: (_) => ExportBloc()..listExports(siteId),
-        child: BlocConsumer<ExportBloc, ExportState>(
+        create: (_) => CloudFunctionsBloc()..listExports(siteId),
+        child: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
             if (state is ExportDeleteSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -33,15 +34,15 @@ class ManageExportsScreen extends StatelessWidget {
                   ),
                 ),
               );
-              context.read<ExportBloc>().listExports(siteId);
-            } else if (state is ExportFailure) {
+              context.read<CloudFunctionsBloc>().listExports(siteId);
+            } else if (state is CloudFunctionsFailure) {
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(state.error)));
             }
           },
           builder: (context, state) {
-            if (state is ExportLoading) {
+            if (state is CloudFunctionsLoading) {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is ExportListSuccess) {
@@ -84,7 +85,7 @@ class ManageExportsScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            context.read<ExportBloc>().deleteExport(
+                            context.read<CloudFunctionsBloc>().deleteExport(
                               siteId,
                               file.name,
                             );
