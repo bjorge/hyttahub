@@ -74,7 +74,8 @@ message SubmitSiteEvent {
 }
 
 // The SiteEventRecord is a representation of the actual record stored in the
-// database This record is used just for display purposes in the client
+// database This record is used for display purposes in the client and to store
+// backup records
 message SiteEventRecord {
   string isoDate = 1;
   int32 version = 2;
