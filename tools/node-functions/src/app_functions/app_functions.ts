@@ -38,7 +38,7 @@ function generateId(): string {
   return firstChar + remainingChars;
 }
 
-export const uploadPhoto = onCall(async (request) => {
+export const uploadPhoto = onCall({ cors: true }, async (request) => {
   logger.info("uploadPhoto function called");
 
   const uid = request.auth?.uid;
@@ -106,7 +106,7 @@ export const uploadPhoto = onCall(async (request) => {
   }
 });
 
-export const getPhoto = onCall(async (request) => {
+export const getPhoto = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new HttpsError("unauthenticated", "User must be signed in");
@@ -169,7 +169,7 @@ export const getPhoto = onCall(async (request) => {
   // return { downloadUrl: signedUrl };
 });
 
-export const deletePhoto = onCall(async (request) => {
+export const deletePhoto = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new HttpsError("unauthenticated", "User must be signed in");
@@ -221,7 +221,7 @@ export const deletePhoto = onCall(async (request) => {
   }
 });
 
-export const deleteAlbumPhotos = onCall(async (request) => {
+export const deleteAlbumPhotos = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) {
     throw new HttpsError("unauthenticated", "User must be signed in");
@@ -286,7 +286,7 @@ export const deleteAlbumPhotos = onCall(async (request) => {
   }
 });
 
-export const exportSite = onCall(async (request) => {
+export const exportSite = onCall({ cors: true }, async (request) => {
   logger.info("exportSite function called");
 
   const uid = request.auth?.uid;
@@ -404,7 +404,7 @@ export const exportSite = onCall(async (request) => {
   return { status: "Export started" };
 });
 
-export const listExports = onCall(async (request) => {
+export const listExports = onCall({ cors: true }, async (request) => {
   logger.info("listExports function called");
 
   const uid = request.auth?.uid;
@@ -471,7 +471,7 @@ export const listExports = onCall(async (request) => {
   return { files: exportFiles };
 });
 
-export const deleteExport = onCall(async (request) => {
+export const deleteExport = onCall({ cors: true }, async (request) => {
 
   const uid = request.auth?.uid;
   if (!uid) {
@@ -515,7 +515,7 @@ export const deleteExport = onCall(async (request) => {
   return { message: 'Export deleted successfully.' };
 });
 
-export const exportDetails = onCall(async (request) => {
+export const exportDetails = onCall({ cors: true }, async (request) => {
   logger.info("exportDetails function called");
 
   const uid = request.auth?.uid;
@@ -571,7 +571,7 @@ export const exportDetails = onCall(async (request) => {
   });
 });
 
-export const importSite = onCall(async (request) => {
+export const importSite = onCall({ cors: true }, async (request) => {
   logger.info("importSite function called");
 
   const uid = request.auth?.uid;
@@ -659,7 +659,7 @@ export const importSite = onCall(async (request) => {
   }
 });
 
-export const assignUserToImportedSite = onCall(async (request) => {
+export const assignUserToImportedSite = onCall({ cors: true }, async (request) => {
   logger.info("assignUserToImportedSite function called");
 
   const uid = request.auth?.uid;
