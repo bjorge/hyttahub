@@ -9,6 +9,7 @@ import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -60,6 +61,7 @@ class _AppRouterState extends State<AppRouter> {
         BlocProvider<CreateAccountCubit>(create: (_) => CreateAccountCubit()),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
         BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
+        BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
         BlocProvider<AuthBloc>(create: (_) => getIt<AuthBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
