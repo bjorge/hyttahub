@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { Timestamp } from "firebase-admin/firestore";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
@@ -622,9 +623,7 @@ export const importSite = onCall({ cors: true }, async (request) => {
         [fbPayload]: Buffer.from(
           SiteEvent.encode(eventRecord.siteEvent).finish()
         ).toString("base64"),
-        [fbTimeStamp]: admin.firestore.Timestamp.fromDate(
-          new Date(eventRecord.isoDate)
-        ),
+        [fbTimeStamp]: Timestamp.fromDate(new Date(eventRecord.isoDate)),
       });
 
       if (
