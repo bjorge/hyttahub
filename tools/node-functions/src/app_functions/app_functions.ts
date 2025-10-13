@@ -2,7 +2,8 @@ import * as admin from "firebase-admin";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
-import { SiteEvent, SiteEventRecord } from "../proto/site_events_pb";
+import { SiteEvent, SiteEventRecord } from "../ts/site_events";
+
 import {
   fbPayload,
   fbTimeStamp,
@@ -243,12 +244,12 @@ export const deleteAlbumPhotos = onCall(async (request) => {
     const file = bucket.file(filePath);
     deletePromises.push(
       file.delete().catch((err) => {
-      // Ignore "file not found" errors (best effort delete)
-      if (err.code === 404) {
-        logger.info(`Photo not found for deletion: ${filePath}`);
-        return;
-      }
-      throw err;
+        // Ignore "file not found" errors (best effort delete)
+        if (err.code === 404) {
+          logger.info(`Photo not found for deletion: ${filePath}`);
+          return;
+        }
+        throw err;
       })
     );
   }
@@ -315,15 +316,16 @@ export const exportSite = onCall(async (request) => {
         const docData = doc.data();
         const payload = docData[fbPayload];
         const timestamp = docData[fbTimeStamp] as admin.firestore.Timestamp;
-        const siteEvent = SiteEvent.deserializeBinary(Buffer.from(payload, "base64"));
+        const siteEvent = SiteEvent.decode(Buffer.from(payload, "base64"));
 
-        const record = new SiteEventRecord();
-        record.setIsoDate(timestamp.toDate().toISOString());
-        record.setVersion(siteEvent.getVersion());
-        record.setSiteEvent(siteEvent);
+        const record: SiteEventRecord = {
+          isoDate: timestamp.toDate().toISOString(),
+          version: siteEvent.version,
+          siteEvent: siteEvent,
+        };
 
-        const serializedRecord = record.serializeBinary();
-        return Buffer.from(serializedRecord).toString("base64");
+        const buffer = SiteEventRecord.encode(record).finish();
+        return Buffer.from(buffer).toString("base64");
       })
       .join("\n");
 
