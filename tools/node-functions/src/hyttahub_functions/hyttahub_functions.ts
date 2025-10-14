@@ -125,7 +125,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             const buffer = SiteEvent.encode(siteEvent).finish();
             const base64Event = Buffer.from(buffer).toString("base64");
 
-            await siteEventsRef.add({
+            await siteEventsRef.doc(String(newVersion)).set({
               [fbPayload]: base64Event,
               [fbVersion]: newVersion,
               [fbTimeStamp]: FieldValue.serverTimestamp(),
@@ -212,7 +212,17 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
 );
 
 async function cleanUp() {
-  for (const appPathSegment of ["familytree", "abums"]) {
+  // Dynamically discover all app path segments under the top-level `hyttahub` collection
+  const hyttahubRoot = admin.firestore().collection('hyttahub');
+  const appDocs = await hyttahubRoot.listDocuments();
+
+  if (appDocs.length === 0) {
+    logger.info('cleanUp: No app documents found under hyttahub.');
+    return;
+  }
+
+  for (const appDoc of appDocs) {
+    const appPathSegment = appDoc.id;
     logger.info(`App path segment for cleanup: ${appPathSegment}`);
 
     try {
@@ -225,7 +235,7 @@ async function cleanUp() {
 
       if (siteRefs.length === 0) {
         logger.info("cleanUp: No site documents found.");
-        return;
+        continue;
       }
 
       logger.info("cleanUp: Detected sites:");
