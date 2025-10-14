@@ -220,10 +220,9 @@ class SiteScreen extends StatelessWidget {
                                   ? [
                                     Center(
                                       child: Text(
-                                        // AppLocalizations.of(
-                                        //   context,
-                                        // )!.app_noAlbums,
-                                        "app_noAlbums",
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.app_noAlbums,
                                       ),
                                     ),
                                   ]

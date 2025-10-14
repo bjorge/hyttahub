@@ -9,6 +9,7 @@
   "app_hideCaptionTooltip": "Hide Caption",
   "app_showCaptionTooltip": "Show Caption",
   "app_noPhotos": "no photos",
+  "app_noAlbums": "no albums",
   "app_updateCaption": "Update Caption",
   "app_reorderAlbumsTitle": "Reorder Albums",
   "app_renameAlbumTitle": "Rename Album",

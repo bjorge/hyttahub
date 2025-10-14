@@ -442,8 +442,7 @@ class AlbumSettingsButton extends StatelessWidget {
           (BuildContext context) => <PopupMenuEntry<String>>[
             PopupMenuItem<String>(
               value: 'add_photo',
-              // child: Text(AppLocalizations.of(context)!.app_addPhotoTitle),
-              child: Text("app_addPhotoTitle"),
+              child: Text(AppLocalizations.of(context)!.app_addPhotosTitle),
             ),
             PopupMenuItem<String>(
               value: 'reorder_photos',

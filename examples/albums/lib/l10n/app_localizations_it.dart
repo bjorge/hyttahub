@@ -43,6 +43,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get app_noPhotos => 'nessuna foto';
 
   @override
+  String get app_noAlbums => 'nessun album';
+
+  @override
   String get app_updateCaption => 'Aggiorna Didascalia';
 
   @override

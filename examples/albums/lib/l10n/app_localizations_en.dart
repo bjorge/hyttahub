@@ -43,6 +43,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_noPhotos => 'no photos';
 
   @override
+  String get app_noAlbums => 'no albums';
+
+  @override
   String get app_updateCaption => 'Update Caption';
 
   @override

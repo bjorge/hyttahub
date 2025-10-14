@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'no photos'**
   String get app_noPhotos;
 
+  /// No description provided for @app_noAlbums.
+  ///
+  /// In en, this message translates to:
+  /// **'no albums'**
+  String get app_noAlbums;
+
   /// No description provided for @app_updateCaption.
   ///
   /// In en, this message translates to:
