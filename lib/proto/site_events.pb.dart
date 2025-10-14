@@ -466,6 +466,106 @@ class SiteEvent_UpdateSiteName extends $pb.GeneratedMessage {
   void clearName() => clearField(1);
 }
 
+class SiteEvent_ExportEvent extends $pb.GeneratedMessage {
+  factory SiteEvent_ExportEvent({
+    $core.String? previousSiteId,
+  }) {
+    final $result = create();
+    if (previousSiteId != null) {
+      $result.previousSiteId = previousSiteId;
+    }
+    return $result;
+  }
+  SiteEvent_ExportEvent._() : super();
+  factory SiteEvent_ExportEvent.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SiteEvent_ExportEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteEvent.ExportEvent', createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'previousSiteId', protoName: 'previousSiteId')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SiteEvent_ExportEvent clone() => SiteEvent_ExportEvent()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SiteEvent_ExportEvent copyWith(void Function(SiteEvent_ExportEvent) updates) => super.copyWith((message) => updates(message as SiteEvent_ExportEvent)) as SiteEvent_ExportEvent;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SiteEvent_ExportEvent create() => SiteEvent_ExportEvent._();
+  SiteEvent_ExportEvent createEmptyInstance() => create();
+  static $pb.PbList<SiteEvent_ExportEvent> createRepeated() => $pb.PbList<SiteEvent_ExportEvent>();
+  @$core.pragma('dart2js:noInline')
+  static SiteEvent_ExportEvent getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SiteEvent_ExportEvent>(create);
+  static SiteEvent_ExportEvent? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get previousSiteId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set previousSiteId($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasPreviousSiteId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearPreviousSiteId() => clearField(1);
+}
+
+class SiteEvent_ImportEvent extends $pb.GeneratedMessage {
+  factory SiteEvent_ImportEvent({
+    $core.String? siteName,
+  }) {
+    final $result = create();
+    if (siteName != null) {
+      $result.siteName = siteName;
+    }
+    return $result;
+  }
+  SiteEvent_ImportEvent._() : super();
+  factory SiteEvent_ImportEvent.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SiteEvent_ImportEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteEvent.ImportEvent', createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'siteName', protoName: 'siteName')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SiteEvent_ImportEvent clone() => SiteEvent_ImportEvent()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SiteEvent_ImportEvent copyWith(void Function(SiteEvent_ImportEvent) updates) => super.copyWith((message) => updates(message as SiteEvent_ImportEvent)) as SiteEvent_ImportEvent;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SiteEvent_ImportEvent create() => SiteEvent_ImportEvent._();
+  SiteEvent_ImportEvent createEmptyInstance() => create();
+  static $pb.PbList<SiteEvent_ImportEvent> createRepeated() => $pb.PbList<SiteEvent_ImportEvent>();
+  @$core.pragma('dart2js:noInline')
+  static SiteEvent_ImportEvent getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SiteEvent_ImportEvent>(create);
+  static SiteEvent_ImportEvent? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get siteName => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set siteName($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasSiteName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSiteName() => clearField(1);
+}
+
 enum SiteEvent_EventType {
   newSite, 
   addMember, 
@@ -474,6 +574,8 @@ enum SiteEvent_EventType {
   leaveSite, 
   restoreMember, 
   updateMember, 
+  exportEvent, 
+  importEvent, 
   appEvent, 
   notSet
 }
@@ -491,6 +593,8 @@ class SiteEvent extends $pb.GeneratedMessage {
     SiteEvent_LeaveSite? leaveSite,
     SiteEvent_RestoreMember? restoreMember,
     SiteEvent_UpdateMember? updateMember,
+    SiteEvent_ExportEvent? exportEvent,
+    SiteEvent_ImportEvent? importEvent,
     $2.Any? appEvent,
   }) {
     final $result = create();
@@ -521,6 +625,12 @@ class SiteEvent extends $pb.GeneratedMessage {
     if (updateMember != null) {
       $result.updateMember = updateMember;
     }
+    if (exportEvent != null) {
+      $result.exportEvent = exportEvent;
+    }
+    if (importEvent != null) {
+      $result.importEvent = importEvent;
+    }
     if (appEvent != null) {
       $result.appEvent = appEvent;
     }
@@ -538,11 +648,13 @@ class SiteEvent extends $pb.GeneratedMessage {
     8 : SiteEvent_EventType.leaveSite,
     9 : SiteEvent_EventType.restoreMember,
     10 : SiteEvent_EventType.updateMember,
+    11 : SiteEvent_EventType.exportEvent,
+    12 : SiteEvent_EventType.importEvent,
     20 : SiteEvent_EventType.appEvent,
     0 : SiteEvent_EventType.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteEvent', createEmptyInstance: create)
-    ..oo(0, [4, 5, 6, 7, 8, 9, 10, 20])
+    ..oo(0, [4, 5, 6, 7, 8, 9, 10, 11, 12, 20])
     ..a<$core.int>(1, _omitFieldNames ? '' : 'version', $pb.PbFieldType.O3)
     ..a<$core.int>(2, _omitFieldNames ? '' : 'author', $pb.PbFieldType.O3)
     ..aOM<SiteEvent_NewSite>(4, _omitFieldNames ? '' : 'newSite', protoName: 'newSite', subBuilder: SiteEvent_NewSite.create)
@@ -552,6 +664,8 @@ class SiteEvent extends $pb.GeneratedMessage {
     ..aOM<SiteEvent_LeaveSite>(8, _omitFieldNames ? '' : 'leaveSite', protoName: 'leaveSite', subBuilder: SiteEvent_LeaveSite.create)
     ..aOM<SiteEvent_RestoreMember>(9, _omitFieldNames ? '' : 'restoreMember', protoName: 'restoreMember', subBuilder: SiteEvent_RestoreMember.create)
     ..aOM<SiteEvent_UpdateMember>(10, _omitFieldNames ? '' : 'updateMember', protoName: 'updateMember', subBuilder: SiteEvent_UpdateMember.create)
+    ..aOM<SiteEvent_ExportEvent>(11, _omitFieldNames ? '' : 'exportEvent', protoName: 'exportEvent', subBuilder: SiteEvent_ExportEvent.create)
+    ..aOM<SiteEvent_ImportEvent>(12, _omitFieldNames ? '' : 'importEvent', protoName: 'importEvent', subBuilder: SiteEvent_ImportEvent.create)
     ..aOM<$2.Any>(20, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: $2.Any.create)
     ..hasRequiredFields = false
   ;
@@ -675,16 +789,38 @@ class SiteEvent extends $pb.GeneratedMessage {
   @$pb.TagNumber(10)
   SiteEvent_UpdateMember ensureUpdateMember() => $_ensure(8);
 
+  @$pb.TagNumber(11)
+  SiteEvent_ExportEvent get exportEvent => $_getN(9);
+  @$pb.TagNumber(11)
+  set exportEvent(SiteEvent_ExportEvent v) { setField(11, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasExportEvent() => $_has(9);
+  @$pb.TagNumber(11)
+  void clearExportEvent() => clearField(11);
+  @$pb.TagNumber(11)
+  SiteEvent_ExportEvent ensureExportEvent() => $_ensure(9);
+
+  @$pb.TagNumber(12)
+  SiteEvent_ImportEvent get importEvent => $_getN(10);
+  @$pb.TagNumber(12)
+  set importEvent(SiteEvent_ImportEvent v) { setField(12, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasImportEvent() => $_has(10);
+  @$pb.TagNumber(12)
+  void clearImportEvent() => clearField(12);
+  @$pb.TagNumber(12)
+  SiteEvent_ImportEvent ensureImportEvent() => $_ensure(10);
+
   @$pb.TagNumber(20)
-  $2.Any get appEvent => $_getN(9);
+  $2.Any get appEvent => $_getN(11);
   @$pb.TagNumber(20)
   set appEvent($2.Any v) { setField(20, v); }
   @$pb.TagNumber(20)
-  $core.bool hasAppEvent() => $_has(9);
+  $core.bool hasAppEvent() => $_has(11);
   @$pb.TagNumber(20)
   void clearAppEvent() => clearField(20);
   @$pb.TagNumber(20)
-  $2.Any ensureAppEvent() => $_ensure(9);
+  $2.Any ensureAppEvent() => $_ensure(11);
 }
 
 /// The SubmitSiteEvent is passed to the submit bloc handler
@@ -813,7 +949,8 @@ class SubmitSiteEvent extends $pb.GeneratedMessage {
 }
 
 /// The SiteEventRecord is a representation of the actual record stored in the
-/// database This record is used just for display purposes in the client
+/// database This record is used for display purposes in the client and to store
+/// backup records
 class SiteEventRecord extends $pb.GeneratedMessage {
   factory SiteEventRecord({
     $core.String? isoDate,

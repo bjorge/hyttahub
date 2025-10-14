@@ -323,6 +323,14 @@ export const exportSite = onCall({ cors: true }, async (request) => {
     );
   }
 
+  const authorId = emailDoc.get(fbUserId);
+  if (typeof authorId !== "number") {
+    throw new HttpsError(
+      "failed-precondition",
+      "User does not have a valid member ID"
+    );
+  }
+
   // Return immediately and perform the export in the background
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   (async () => {
@@ -334,20 +342,24 @@ export const exportSite = onCall({ cors: true }, async (request) => {
       .firestore()
       .collection(firebaseSiteEventsPath(appName, siteId));
     const eventsSnapshot = await eventsCollectionRef.get();
-    const events = eventsSnapshot.docs
+    let lastEventVersion = 0;
+    let events = eventsSnapshot.docs
       .map((doc) => {
         const docData = doc.data();
         const payload = docData[fbPayload];
         const timestamp = docData[fbTimeStamp] as admin.firestore.Timestamp;
         const siteEvent = SiteEvent.decode(Buffer.from(payload, "base64"));
+        const version = docData[fbVersion] as number;
 
         const record: SiteEventRecord = {
           isoDate: timestamp.toDate().toISOString(),
-          version: siteEvent.version,
+          version: version,
           siteEvent: siteEvent,
         };
 
         logger.info("Event record to export:", SiteEventRecord.toJSON(record));
+
+        lastEventVersion = Math.max(lastEventVersion, version || 0);
 
         const buffer = SiteEventRecord.encode(record).finish();
         return Buffer.from(buffer).toString("base64");
@@ -358,6 +370,25 @@ export const exportSite = onCall({ cors: true }, async (request) => {
       logger.info(`No data found for site ${siteId} to export.`);
       return;
     }
+
+
+    const lastEvent: SiteEvent = {
+      version: lastEventVersion + 1,
+      author: authorId,
+      exportEvent: { previousSiteId: siteId },
+    };
+
+
+    const lastRecord: SiteEventRecord = {
+      isoDate: new Date().toISOString(),
+      version: lastEventVersion + 1,
+      siteEvent: lastEvent,
+    };
+
+    const lastEncodedRecord = SiteEventRecord.encode(lastRecord).finish();
+    const lastBase64Record = Buffer.from(lastEncodedRecord).toString("base64");
+    events += "\n" +lastBase64Record;
+
 
     const archive = archiver("zip", {
       zlib: { level: 9 }, // Sets the compression level.
@@ -650,9 +681,9 @@ export const importSite = onCall({ cors: true }, async (request) => {
         } else if (eventRecord.siteEvent.updateMember) {
           memberId = eventRecord.siteEvent.updateMember.memberId;
           name = eventRecord.siteEvent.updateMember.memberName;
-          } else if (eventRecord.siteEvent.newSite) {
-            memberId = eventRecord.siteEvent.version;
-            name = eventRecord.siteEvent.newSite.memberName;
+        } else if (eventRecord.siteEvent.newSite) {
+          memberId = eventRecord.siteEvent.version;
+          name = eventRecord.siteEvent.newSite.memberName;
         }
         if (memberId && name) {
           adminMembers.push({ memberId: String(memberId), name: name });

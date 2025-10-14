@@ -40,6 +40,14 @@ message SiteEvent {
 
   message UpdateSiteName { string name = 1; }
 
+  message ExportEvent {
+    string previousSiteId = 1;
+  }
+
+  message ImportEvent {
+    string siteName = 1;
+  }
+
   oneof event_type {
     NewSite newSite = 4;
     AddMember addMember = 5;
@@ -48,6 +56,8 @@ message SiteEvent {
     LeaveSite leaveSite = 8;       // the member that has left the site
     RestoreMember restoreMember = 9;
     UpdateMember updateMember = 10;
+    ExportEvent exportEvent = 11;
+    ImportEvent importEvent = 12;
 
     /****** Application specific events ********/
 

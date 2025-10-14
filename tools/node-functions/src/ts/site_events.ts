@@ -30,6 +30,8 @@ export interface SiteEvent {
   leaveSite?: SiteEvent_LeaveSite | undefined;
   restoreMember?: SiteEvent_RestoreMember | undefined;
   updateMember?: SiteEvent_UpdateMember | undefined;
+  exportEvent?: SiteEvent_ExportEvent | undefined;
+  importEvent?: SiteEvent_ImportEvent | undefined;
   appEvent?: Any | undefined;
 }
 
@@ -71,6 +73,14 @@ export interface SiteEvent_UpdateSiteName {
   name: string;
 }
 
+export interface SiteEvent_ExportEvent {
+  previousSiteId: string;
+}
+
+export interface SiteEvent_ImportEvent {
+  siteName: string;
+}
+
 /**
  * The SubmitSiteEvent is passed to the submit bloc handler
  * PII (ex. email) is allowed in this message since not stored to immutable
@@ -94,7 +104,8 @@ export interface SubmitSiteEvent {
 
 /**
  * The SiteEventRecord is a representation of the actual record stored in the
- * database This record is used just for display purposes in the client
+ * database This record is used for display purposes in the client and to store
+ * backup records
  */
 export interface SiteEventRecord {
   isoDate: string;
@@ -113,6 +124,8 @@ function createBaseSiteEvent(): SiteEvent {
     leaveSite: undefined,
     restoreMember: undefined,
     updateMember: undefined,
+    exportEvent: undefined,
+    importEvent: undefined,
     appEvent: undefined,
   };
 }
@@ -145,6 +158,12 @@ export const SiteEvent = {
     }
     if (message.updateMember !== undefined) {
       SiteEvent_UpdateMember.encode(message.updateMember, writer.uint32(82).fork()).ldelim();
+    }
+    if (message.exportEvent !== undefined) {
+      SiteEvent_ExportEvent.encode(message.exportEvent, writer.uint32(90).fork()).ldelim();
+    }
+    if (message.importEvent !== undefined) {
+      SiteEvent_ImportEvent.encode(message.importEvent, writer.uint32(98).fork()).ldelim();
     }
     if (message.appEvent !== undefined) {
       Any.encode(message.appEvent, writer.uint32(162).fork()).ldelim();
@@ -222,6 +241,20 @@ export const SiteEvent = {
 
           message.updateMember = SiteEvent_UpdateMember.decode(reader, reader.uint32());
           continue;
+        case 11:
+          if (tag !== 90) {
+            break;
+          }
+
+          message.exportEvent = SiteEvent_ExportEvent.decode(reader, reader.uint32());
+          continue;
+        case 12:
+          if (tag !== 98) {
+            break;
+          }
+
+          message.importEvent = SiteEvent_ImportEvent.decode(reader, reader.uint32());
+          continue;
         case 20:
           if (tag !== 162) {
             break;
@@ -251,6 +284,8 @@ export const SiteEvent = {
       leaveSite: isSet(object.leaveSite) ? SiteEvent_LeaveSite.fromJSON(object.leaveSite) : undefined,
       restoreMember: isSet(object.restoreMember) ? SiteEvent_RestoreMember.fromJSON(object.restoreMember) : undefined,
       updateMember: isSet(object.updateMember) ? SiteEvent_UpdateMember.fromJSON(object.updateMember) : undefined,
+      exportEvent: isSet(object.exportEvent) ? SiteEvent_ExportEvent.fromJSON(object.exportEvent) : undefined,
+      importEvent: isSet(object.importEvent) ? SiteEvent_ImportEvent.fromJSON(object.importEvent) : undefined,
       appEvent: isSet(object.appEvent) ? Any.fromJSON(object.appEvent) : undefined,
     };
   },
@@ -283,6 +318,12 @@ export const SiteEvent = {
     }
     if (message.updateMember !== undefined) {
       obj.updateMember = SiteEvent_UpdateMember.toJSON(message.updateMember);
+    }
+    if (message.exportEvent !== undefined) {
+      obj.exportEvent = SiteEvent_ExportEvent.toJSON(message.exportEvent);
+    }
+    if (message.importEvent !== undefined) {
+      obj.importEvent = SiteEvent_ImportEvent.toJSON(message.importEvent);
     }
     if (message.appEvent !== undefined) {
       obj.appEvent = Any.toJSON(message.appEvent);
@@ -317,6 +358,12 @@ export const SiteEvent = {
       : undefined;
     message.updateMember = (object.updateMember !== undefined && object.updateMember !== null)
       ? SiteEvent_UpdateMember.fromPartial(object.updateMember)
+      : undefined;
+    message.exportEvent = (object.exportEvent !== undefined && object.exportEvent !== null)
+      ? SiteEvent_ExportEvent.fromPartial(object.exportEvent)
+      : undefined;
+    message.importEvent = (object.importEvent !== undefined && object.importEvent !== null)
+      ? SiteEvent_ImportEvent.fromPartial(object.importEvent)
       : undefined;
     message.appEvent = (object.appEvent !== undefined && object.appEvent !== null)
       ? Any.fromPartial(object.appEvent)
@@ -833,6 +880,120 @@ export const SiteEvent_UpdateSiteName = {
   fromPartial<I extends Exact<DeepPartial<SiteEvent_UpdateSiteName>, I>>(object: I): SiteEvent_UpdateSiteName {
     const message = createBaseSiteEvent_UpdateSiteName();
     message.name = object.name ?? "";
+    return message;
+  },
+};
+
+function createBaseSiteEvent_ExportEvent(): SiteEvent_ExportEvent {
+  return { previousSiteId: "" };
+}
+
+export const SiteEvent_ExportEvent = {
+  encode(message: SiteEvent_ExportEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.previousSiteId !== "") {
+      writer.uint32(10).string(message.previousSiteId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SiteEvent_ExportEvent {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSiteEvent_ExportEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.previousSiteId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SiteEvent_ExportEvent {
+    return { previousSiteId: isSet(object.previousSiteId) ? globalThis.String(object.previousSiteId) : "" };
+  },
+
+  toJSON(message: SiteEvent_ExportEvent): unknown {
+    const obj: any = {};
+    if (message.previousSiteId !== "") {
+      obj.previousSiteId = message.previousSiteId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SiteEvent_ExportEvent>, I>>(base?: I): SiteEvent_ExportEvent {
+    return SiteEvent_ExportEvent.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SiteEvent_ExportEvent>, I>>(object: I): SiteEvent_ExportEvent {
+    const message = createBaseSiteEvent_ExportEvent();
+    message.previousSiteId = object.previousSiteId ?? "";
+    return message;
+  },
+};
+
+function createBaseSiteEvent_ImportEvent(): SiteEvent_ImportEvent {
+  return { siteName: "" };
+}
+
+export const SiteEvent_ImportEvent = {
+  encode(message: SiteEvent_ImportEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.siteName !== "") {
+      writer.uint32(10).string(message.siteName);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SiteEvent_ImportEvent {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSiteEvent_ImportEvent();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.siteName = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SiteEvent_ImportEvent {
+    return { siteName: isSet(object.siteName) ? globalThis.String(object.siteName) : "" };
+  },
+
+  toJSON(message: SiteEvent_ImportEvent): unknown {
+    const obj: any = {};
+    if (message.siteName !== "") {
+      obj.siteName = message.siteName;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SiteEvent_ImportEvent>, I>>(base?: I): SiteEvent_ImportEvent {
+    return SiteEvent_ImportEvent.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SiteEvent_ImportEvent>, I>>(object: I): SiteEvent_ImportEvent {
+    const message = createBaseSiteEvent_ImportEvent();
+    message.siteName = object.siteName ?? "";
     return message;
   },
 };
