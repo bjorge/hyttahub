@@ -21,6 +21,49 @@ import {
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 
+// Helper to extract events.txt and photo buffers from an opened unzipper directory.
+// Throws an HttpsError('invalid-argument', ...) if the archive contains any
+// unexpected file that is neither `events.txt` at the root nor under `storage/`.
+export async function extractEventsAndPhotosFromZip(directory: any): Promise<{
+  eventsContent: string;
+  photos: Array<{ relativePath: string; buffer: Buffer }>;
+}> {
+  let eventsContent = "";
+  const photos: Array<{ relativePath: string; buffer: Buffer }> = [];
+
+  const storagePrefix = "storage/";
+  const rejectedFiles: string[] = [];
+
+  for (const file of directory.files) {
+    if (file.path === "events.txt") {
+      eventsContent = await file.buffer().then((buffer: Buffer) => buffer.toString());
+      continue;
+    }
+
+    if (file.path.startsWith(storagePrefix)) {
+      const relativePath = file.path.substring(storagePrefix.length);
+      const buffer = await file.buffer();
+      photos.push({ relativePath, buffer });
+      continue;
+    }
+
+    // Collect any unexpected files for logging and then reject.
+    rejectedFiles.push(file.path);
+  }
+
+  if (rejectedFiles.length > 0) {
+    logger.error('Import rejected due to unexpected files in archive:', JSON.stringify(rejectedFiles, null, 2));
+    throw new HttpsError("invalid-argument", `Unexpected files in archive: ${rejectedFiles.join(', ')}`);
+  }
+
+  if (!eventsContent) {
+    logger.error('Import rejected: events.txt missing from archive');
+    throw new HttpsError('invalid-argument', 'Archive is missing events.txt');
+  }
+
+  return { eventsContent, photos };
+}
+
 function generateId(): string {
   const validChars = "123456789ABCDE";
   const allValidChars = "123456789ABCDEFG";
@@ -424,7 +467,9 @@ export const exportSite = onCall({ cors: true }, async (request) => {
     for (const file of files) {
       const fileName = file.name.split("/").pop();
       if (fileName) {
-        archive.append(file.createReadStream(), { name: fileName });
+        // Put photos inside a storage/ folder in the zip so imports map them
+        // to storage paths and events.txt remains at the archive root.
+        archive.append(file.createReadStream(), { name: `storage/${fileName}` });
       }
     }
 
@@ -622,21 +667,16 @@ export const importSite = onCall({ cors: true }, async (request) => {
     const zipBuffer = Buffer.from(base64Data, "base64");
     const directory = await unzipper.Open.buffer(zipBuffer);
 
-    let eventsContent = "";
-    const photoUploadPromises: Promise<void>[] = [];
+    // Extract events and photos from the zip. This will throw an HttpsError
+    // with code 'invalid-argument' if the archive contains unexpected files.
+    const { eventsContent, photos } = await extractEventsAndPhotosFromZip(directory);
 
-    for (const file of directory.files) {
-      if (file.path === "events.txt") {
-        eventsContent = await file.buffer().then((buffer) => buffer.toString());
-      } else {
-        const photoUploadPromise = file.buffer().then(async (buffer) => {
-          const photoPath = firebasePhotosPath(appName, newSiteId, file.path);
-          const gcsFile = bucket.file(photoPath);
-          await gcsFile.save(buffer);
-        });
-        photoUploadPromises.push(photoUploadPromise);
-      }
-    }
+    // Upload all photos returned by the extractor
+    const photoUploadPromises: Promise<void>[] = photos.map(({ relativePath, buffer }) => {
+      const photoPath = firebasePhotosPath(appName, newSiteId, relativePath);
+      const gcsFile = bucket.file(photoPath);
+      return gcsFile.save(buffer);
+    });
 
     await Promise.all(photoUploadPromises);
     logger.info("All photos uploaded successfully");
