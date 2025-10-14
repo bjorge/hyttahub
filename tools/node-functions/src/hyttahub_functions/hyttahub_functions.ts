@@ -22,6 +22,7 @@ import {
   fbVersion,
   fbPayload,
   fbTimeStamp,
+  firebaseExportsPath,
 } from "../shared/constants";
 
 export const queryservice = onRequest({}, async (req, res) => {
@@ -319,6 +320,15 @@ async function cleanUp() {
           );
           await bucket.deleteFiles({ prefix });
           logger.info(`cleanUp: Photos for site ${siteId} deleted.`);
+        }
+        for (const siteId of orphanedSiteIds) {
+          // Pass an empty string for export name to get the directory path.
+          const prefix = firebaseExportsPath(appPathSegment, siteId, "");
+          logger.info(
+            `cleanUp: Deleting exports for site ${siteId} with prefix: ${prefix}`
+          );
+          await bucket.deleteFiles({ prefix });
+          logger.info(`cleanUp: Exports for site ${siteId} deleted.`);
         }
       }
     } catch (error) {
