@@ -3,7 +3,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
-import { SiteEvent, SiteEventRecord } from "../ts/site_events";
+import { SiteEvent, SiteEvent_ImportEvent, SiteEventRecord } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
 
 import {
@@ -832,25 +832,46 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
     .firestore()
     .collection(firebaseSiteUsersPath(appName, siteId));
 
+  const siteEventsCollectionRef = admin
+    .firestore()
+    .collection(firebaseSiteEventsPath(appName, siteId));
+
   const accountEventsCollectionRef = admin
     .firestore()
     .collection(firebaseAccountEventsPath(appName, email));
 
-  // Get the latest event version to increment it.
-  const lastEventSnapshot = await accountEventsCollectionRef
+  // Get the latest account event version to increment it.
+  const lastAccountEventSnapshot = await accountEventsCollectionRef
     .orderBy(fbVersion, "desc")
     .limit(1)
     .get();
-  let newVersion = 1;
-  if (!lastEventSnapshot.empty) {
-    const lastEventData = lastEventSnapshot.docs[0].data();
+  let newAccountEventVersion = 1;
+  if (!lastAccountEventSnapshot.empty) {
+    const lastEventData = lastAccountEventSnapshot.docs[0].data();
     if (
       lastEventData[fbVersion] &&
       typeof lastEventData[fbVersion] === "number"
     ) {
-      newVersion = lastEventData[fbVersion] + 1;
+      newAccountEventVersion = lastEventData[fbVersion] + 1;
     }
   }
+
+    // Get the latest site event version to increment it.
+  const lastSiteEventSnapshot = await siteEventsCollectionRef
+    .orderBy(fbVersion, "desc")
+    .limit(1)
+    .get();
+  let newSiteEventVersion = 1;
+  if (!lastSiteEventSnapshot.empty) {
+    const lastEventData = lastSiteEventSnapshot.docs[0].data();
+    if (
+      lastEventData[fbVersion] &&
+      typeof lastEventData[fbVersion] === "number"
+    ) {
+      newSiteEventVersion = lastEventData[fbVersion] + 1;
+    }
+  }
+
 
   const writeBatch = admin.firestore().batch();
 
@@ -860,17 +881,31 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
     [fbTimeStamp]: FieldValue.serverTimestamp(),
   });
 
-  const newAccountEventRef = accountEventsCollectionRef.doc();
+  const newAccountEventRef = accountEventsCollectionRef.doc(newAccountEventVersion.toString());
   const joinSiteEvent = AccountEvent.create({
     joinSite: siteId,
-    version: newVersion,
+    version: newAccountEventVersion,
   });
   writeBatch.set(newAccountEventRef, {
     [fbPayload]: Buffer.from(
       AccountEvent.encode(joinSiteEvent).finish()
     ).toString("base64"),
     [fbTimeStamp]: FieldValue.serverTimestamp(),
-    [fbVersion]: newVersion,
+    [fbVersion]: newAccountEventVersion,
+  });
+
+  const newSiteEventRef = siteEventsCollectionRef.doc(newSiteEventVersion.toString());
+  const importSiteEvent = SiteEvent.create({
+    importEvent: SiteEvent_ImportEvent.create({ }),
+    version: newSiteEventVersion,
+    author: Number(uid),
+  });
+  writeBatch.set(newSiteEventRef, {
+    [fbPayload]: Buffer.from(
+      SiteEvent.encode(importSiteEvent).finish()
+    ).toString("base64"),
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
+    [fbVersion]: newSiteEventVersion,
   });
 
   await writeBatch.commit();

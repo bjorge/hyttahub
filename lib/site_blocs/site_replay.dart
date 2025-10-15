@@ -111,6 +111,28 @@ SiteReplayBlocState siteReplay(
       replay.name = event.updateSiteName.name;
     }
 
+    if (event.hasImportEvent()) {
+      // update the site name if provided in the import event
+      if (event.importEvent.hasSiteName()) {
+        replay.name = event.importEvent.siteName;
+      } else {
+        // default - mark imported sites with ~...~
+        replay.name = '~${replay.name}~';
+      }
+
+      // the import does not assign any members except the author
+      final unassignedMembers = replay.members.entries
+          .where((entry) => entry.key != event.author)
+          .map((entry) => entry.key)
+          .toList();
+
+      // so remove all unassigned members
+      for (final memberId in unassignedMembers) {
+        replay.removedMembers[memberId] = replay.members[memberId]!.deepCopy();
+        replay.members.remove(memberId);
+      }
+    }
+
     // update the app state last by calling the user-defined replay function
     if (HyttaHubOptions.appReplay == null) {
       throw Exception(
