@@ -332,11 +332,11 @@ export const deleteAlbumPhotos = onCall({ cors: true }, async (request) => {
   }
 });
 
-export const exportSite = onDocumentWritten(
+export const backupSite = onDocumentWritten(
   {
     document: `hyttahub/{appPathSegment}/sites/{siteId}/site_exports/export_request`,
     memory: '1GiB',         // Sets the memory to 1 Gibibyte
-    timeoutSeconds: 600,    // Sets the timeout to 600 seconds (10 minutes)
+    timeoutSeconds: 540,    // Sets the timeout to 540 seconds (9 minutes)
   },
 
 
@@ -360,7 +360,7 @@ export const exportSite = onDocumentWritten(
     // If present, only perform export if at least 5 minutes have passed since fbTimeStamp on the request.
     let authorId = 0;
     try {
-      const lastExport = (docData as any)[fbLastExportTime];
+      // const lastExport = (docData as any)[fbLastExportTime];
       const reqTsRaw = (docData as any)[fbTimeStamp];
       authorId = (docData as any)[fbUserId];
 
@@ -369,12 +369,37 @@ export const exportSite = onDocumentWritten(
 
       const now = new Date();
 
+      // Read last export timestamp (if any) before deciding whether to run an export.
+      const lastExportRef = admin
+        .firestore()
+        .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/last_export`);
+      let lastExport: admin.firestore.Timestamp | null = null;
+      try {
+        const lastExportSnap = await lastExportRef.get();
+        if (lastExportSnap.exists) {
+          const lastExportData = lastExportSnap.data();
+          // Prefer explicit fbLastExportTime, fall back to fbTimeStamp
+          lastExport =
+            (lastExportData &&
+              (lastExportData[fbLastExportTime] || lastExportData[fbTimeStamp])) ||
+            null;
+          logger.info(
+            "exportSite: lastExport timestamp read:",
+            lastExport && lastExport.toDate ? lastExport.toDate().toISOString() : String(lastExport)
+          );
+        } else {
+          logger.info("exportSite: no last_export document found");
+        }
+      } catch (err) {
+        logger.warn("exportSite: failed to read last_export document", err);
+      }
+
       if (!lastExport) {
         // No previous export recorded: write fbLastExportTime and proceed
         await admin
           .firestore()
-          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
-          .set({ [fbLastExportTime]: FieldValue.serverTimestamp() }, { merge: true });
+          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/last_export`)
+          .set({ [fbTimeStamp]: FieldValue.serverTimestamp() }, { merge: true });
       } else {
         // lastExport exists; require request timestamp to be at least 5 minutes older than now
         if (!reqTsRaw) {
@@ -392,16 +417,15 @@ export const exportSite = onDocumentWritten(
         // Update fbLastExportTime to now (merge) before starting export
         await admin
           .firestore()
-          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
-          .set({ [fbLastExportTime]: FieldValue.serverTimestamp() }, { merge: true });
+          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/last_export`)
+          .set({ [fbTimeStamp]: FieldValue.serverTimestamp() }, { merge: true });
       }
     } catch (err) {
       logger.warn('exportSite: failed to read or write fbLastExportTime; proceeding', err);
     }
 
-    // Run the export in the background
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    (async () => {
+    // Run the export and return a Promise so the function waits for completion.
+    const exportPromise = (async () => {
       const bucket = admin.storage().bucket();
       const photoPrefix = firebasePhotosPath(appName, siteId, "");
       const [files] = await bucket.getFiles({ prefix: photoPrefix });
@@ -495,14 +519,25 @@ export const exportSite = onDocumentWritten(
         }
       }
 
+      logger.info(
+        `Finalize site export for site ${siteId} at ${exportFilePath}`
+      );
+
       await archive.finalize();
+
+      // Wait for the GCS write stream to finish before returning.
+      await new Promise<void>((resolve, reject) => {
+        stream.on('finish', () => resolve());
+        stream.on('error', (err) => reject(err));
+        archive.on('error', (err) => reject(err));
+      });
 
       logger.info(
         `Successfully created site export for site ${siteId} at ${exportFilePath}`
       );
     })();
 
-    return null;
+    return exportPromise;
   }
 );
 
