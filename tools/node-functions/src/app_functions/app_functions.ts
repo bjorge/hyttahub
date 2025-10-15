@@ -348,37 +348,17 @@ export const exportSite = onDocumentWritten(
 
     // Try to infer a requester email if the client wrote one into the request doc.
     const docData = after.data() || {};
-    const possibleEmail =
-      typeof (docData as any).requesterEmail === "string"
-        ? (docData as any).requesterEmail
-        : typeof (docData as any).email === "string"
-        ? (docData as any).email
-        : undefined;
-
-    let authorId = 0; // fallback author id when we can't determine the user
-    if (possibleEmail) {
-      try {
-        const emailRef = admin
-          .firestore()
-          .collection(firebaseSiteUsersPath(appName, siteId))
-          .doc(possibleEmail);
-        const emailDoc = await emailRef.get();
-        if (emailDoc.exists) {
-          const aid = emailDoc.get(fbUserId);
-          if (typeof aid === "number") {
-            authorId = aid;
-          }
-        }
-      } catch (err) {
-        logger.warn("exportSite: failed to resolve requester email to user id", err);
-      }
-    }
 
     // Check fbLastExportTime ('l'). If empty, perform export and merge fbLastExportTime as now.
     // If present, only perform export if at least 5 minutes have passed since fbTimeStamp on the request.
+    let authorId = 0;
     try {
       const lastExport = (docData as any)[fbLastExportTime];
       const reqTsRaw = (docData as any)[fbTimeStamp];
+      authorId = (docData as any)[fbUserId];
+
+      logger.info("Author ID for export request:", authorId);
+
 
       const now = new Date();
 

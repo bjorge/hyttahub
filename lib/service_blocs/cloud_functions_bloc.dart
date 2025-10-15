@@ -3,6 +3,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get_it/get_it.dart';
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -46,12 +48,31 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     emit(CloudFunctionsLoading());
     try {
       final firestore = FirebaseFirestore.instance;
-      final docRef = firestore.doc(firebaseSiteExportPath(siteId));
 
-      await docRef.set({
-        fbTimeStamp: FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      final email = GetIt.instance<AuthBloc>().state.email;
 
+      // The author must be an existing site user.
+      // We look up their ID from the site's users collection.
+      final userDoc = await FirebaseFirestore.instance
+          .collection(firebaseSiteUsersPath(siteId))
+          .doc(email)
+          .get();
+
+      if (userDoc.exists && userDoc.data()?.containsKey('u') == true) {
+        // The 'u' field holds the author ID.
+        final author = userDoc.data()!['u'];
+        final docRef = firestore.doc(firebaseSiteExportPath(siteId));
+
+        await docRef.set({
+          fbTimeStamp: FieldValue.serverTimestamp(),
+          fbUserId: author,
+        }, SetOptions(merge: true));
+      } else {
+        // This is an error case: an action is being performed by a non-site-user.
+        throw Exception(
+          "Author not found for email: $email in site $siteId. User is not a member or document is malformed.",
+        );
+      }
       emit(ExportSuccess('Export request created'));
     } catch (e) {
       emit(CloudFunctionsFailure(e.toString()));
