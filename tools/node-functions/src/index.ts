@@ -7,7 +7,7 @@ export {
   getPhoto,
   deletePhoto,
   deleteAlbumPhotos,
-  exportSite,
+  backupSite,
   listExports,
   deleteExport,
   exportDetails,
