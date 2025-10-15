@@ -20,6 +20,11 @@ service cloud.firestore {
         allow read, create: if isSiteEmailListed(app, siteid, request.auth.token.email);
       }
 
+      // Site export request
+      match /sites/{siteid}/site_exports/export_request {
+        allow read, create, write: if isSiteEmailListed(app, siteid, request.auth.token.email);
+      }
+
 
       // Service users
       match /services/status/service_users/{email} {

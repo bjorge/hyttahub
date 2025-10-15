@@ -387,7 +387,7 @@ export const exportSite = onDocumentWritten(
         await admin
           .firestore()
           .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
-          .set({ [fbLastExportTime]: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+          .set({ [fbLastExportTime]: FieldValue.serverTimestamp() }, { merge: true });
       } else {
         // lastExport exists; require request timestamp to be at least 5 minutes older than now
         if (!reqTsRaw) {
@@ -406,7 +406,7 @@ export const exportSite = onDocumentWritten(
         await admin
           .firestore()
           .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
-          .set({ [fbLastExportTime]: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+          .set({ [fbLastExportTime]: FieldValue.serverTimestamp() }, { merge: true });
       }
     } catch (err) {
       logger.warn('exportSite: failed to read or write fbLastExportTime; proceeding', err);

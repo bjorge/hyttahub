@@ -2,6 +2,8 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hyttahub/firebase_paths.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 
@@ -25,8 +27,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     }
   }
 
-  Future<void> assignUserToImportedSite(
-      String siteId, String memberId) async {
+  Future<void> assignUserToImportedSite(String siteId, String memberId) async {
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'assignUserToImportedSite',
@@ -44,14 +45,14 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   Future<void> exportPhotos(String siteId) async {
     emit(CloudFunctionsLoading());
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'exportSite',
-      );
-      final result = await callable.call(<String, dynamic>{
-        'siteId': siteId,
-        'appName': HyttaHubOptions.firebaseRootCollection,
-      });
-      emit(ExportSuccess(result.data['message']));
+      final firestore = FirebaseFirestore.instance;
+      final docRef = firestore.doc(firebaseSiteExportPath(siteId));
+
+      await docRef.set({
+        fbTimeStamp: FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      emit(ExportSuccess('Export request created'));
     } catch (e) {
       emit(CloudFunctionsFailure(e.toString()));
     }
