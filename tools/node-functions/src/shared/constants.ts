@@ -35,6 +35,12 @@ export const firebaseSiteUsersPath = (appPathSegment: string, siteId: string) =>
 export const firebaseSitesPath = (appPathSegment: string) =>
   `hyttahub/${appPathSegment}/sites`;
 
+export const firebaseSiteExportPath = (
+  appPathSegment: string,
+  siteId: string
+) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports/export_request`;
+
+
 export const firebasePhotosPath = (
   appPathSegment: string,
   siteId: string,
@@ -62,6 +68,7 @@ export const firebaseExportsPath = (
 // Document keys
 export const fbUserId = "u";
 export const fbTimeStamp = "t";
+export const fbLastExportTime = "l";
 export const fbVersion = "v";
 export const fbPayload = "p";
 export const fbBetaUsers = "b";

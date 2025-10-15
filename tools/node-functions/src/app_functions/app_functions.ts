@@ -9,6 +9,7 @@ import { AccountEvent } from "../ts/account_events";
 import {
   fbPayload,
   fbTimeStamp,
+  fbLastExportTime,
   firebaseAccountEventsPath,
   firebaseExportsPath,
   firebasePhotosPath,
@@ -20,6 +21,7 @@ import {
 } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
 
 // Helper to extract events.txt and photo buffers from an opened unzipper directory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
@@ -330,158 +332,192 @@ export const deleteAlbumPhotos = onCall({ cors: true }, async (request) => {
   }
 });
 
-export const exportSite = onCall({ cors: true }, async (request) => {
-  logger.info("exportSite function called");
+export const exportSite = onDocumentWritten(
+  `hyttahub/{appPathSegment}/sites/{siteId}/site_exports/export_request`,
+  async (event) => {
+    logger.info("exportSite trigger called for export_request document");
 
-  const uid = request.auth?.uid;
-  if (!uid) {
-    throw new HttpsError("unauthenticated", "User must be signed in");
-  }
-
-  const siteId = request.data.siteId;
-  const appName = request.data.appName;
-  const email =
-    typeof request.auth?.token?.email === "string"
-      ? request.auth.token.email
-      : undefined;
-  if (!email) {
-    throw new HttpsError(
-      "unauthenticated",
-      "User email is required and must be a string"
-    );
-  }
-
-  logger.info("exportSite function called, siteId:", siteId, "email:", email, "appName:", appName);
-
-  const emailRef = admin
-    .firestore()
-    .collection(firebaseSiteUsersPath(appName, siteId))
-    .doc(email);
-
-  const emailDoc = await emailRef.get();
-  if (!emailDoc.exists) {
-    throw new HttpsError(
-      "permission-denied",
-      "User is not a member of this site"
-    );
-  }
-
-  const authorId = emailDoc.get(fbUserId);
-  if (typeof authorId !== "number") {
-    throw new HttpsError(
-      "failed-precondition",
-      "User does not have a valid member ID"
-    );
-  }
-
-  // Return immediately and perform the export in the background
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  (async () => {
-    const bucket = admin.storage().bucket();
-    const photoPrefix = firebasePhotosPath(appName, siteId, "");
-    const [files] = await bucket.getFiles({ prefix: photoPrefix });
-
-    const eventsCollectionRef = admin
-      .firestore()
-      .collection(firebaseSiteEventsPath(appName, siteId));
-    const eventsSnapshot = await eventsCollectionRef.get();
-    let lastEventVersion = 0;
-    let events = eventsSnapshot.docs
-      .map((doc) => {
-        const docData = doc.data();
-        const payload = docData[fbPayload];
-        const timestamp = docData[fbTimeStamp] as admin.firestore.Timestamp;
-        const siteEvent = SiteEvent.decode(Buffer.from(payload, "base64"));
-        const version = docData[fbVersion] as number;
-
-        const record: SiteEventRecord = {
-          isoDate: timestamp.toDate().toISOString(),
-          version: version,
-          siteEvent: siteEvent,
-        };
-
-        logger.info("Event record to export:", SiteEventRecord.toJSON(record));
-
-        lastEventVersion = Math.max(lastEventVersion, version || 0);
-
-        const buffer = SiteEventRecord.encode(record).finish();
-        return Buffer.from(buffer).toString("base64");
-      })
-      .join("\n");
-
-    if (files.length === 0 && events.length === 0) {
-      logger.info(`No data found for site ${siteId} to export.`);
-      return;
+    const after = event.data?.after;
+    if (!after) {
+      logger.info("exportSite: No document data available (deleted?). Skipping.");
+      return null;
     }
 
+    const appName = event.params.appPathSegment;
+    const siteId = event.params.siteId;
 
-    const lastEvent: SiteEvent = {
-      version: lastEventVersion + 1,
-      author: authorId,
-      exportEvent: { previousSiteId: siteId },
-    };
+    // Try to infer a requester email if the client wrote one into the request doc.
+    const docData = after.data() || {};
+    const possibleEmail =
+      typeof (docData as any).requesterEmail === "string"
+        ? (docData as any).requesterEmail
+        : typeof (docData as any).email === "string"
+        ? (docData as any).email
+        : undefined;
 
+    let authorId = 0; // fallback author id when we can't determine the user
+    if (possibleEmail) {
+      try {
+        const emailRef = admin
+          .firestore()
+          .collection(firebaseSiteUsersPath(appName, siteId))
+          .doc(possibleEmail);
+        const emailDoc = await emailRef.get();
+        if (emailDoc.exists) {
+          const aid = emailDoc.get(fbUserId);
+          if (typeof aid === "number") {
+            authorId = aid;
+          }
+        }
+      } catch (err) {
+        logger.warn("exportSite: failed to resolve requester email to user id", err);
+      }
+    }
 
-    const lastRecord: SiteEventRecord = {
-      isoDate: new Date().toISOString(),
-      version: lastEventVersion + 1,
-      siteEvent: lastEvent,
-    };
+    // Check fbLastExportTime ('l'). If empty, perform export and merge fbLastExportTime as now.
+    // If present, only perform export if at least 5 minutes have passed since fbTimeStamp on the request.
+    try {
+      const lastExport = (docData as any)[fbLastExportTime];
+      const reqTsRaw = (docData as any)[fbTimeStamp];
 
-    const lastEncodedRecord = SiteEventRecord.encode(lastRecord).finish();
-    const lastBase64Record = Buffer.from(lastEncodedRecord).toString("base64");
-    events += "\n" +lastBase64Record;
+      const now = new Date();
 
-
-    const archive = archiver("zip", {
-      zlib: { level: 9 }, // Sets the compression level.
-    });
-
-    archive.on("warning", (err) => {
-      if (err.code === "ENOENT") {
-        logger.warn("Archiver warning:", err);
+      if (!lastExport) {
+        // No previous export recorded: write fbLastExportTime and proceed
+        await admin
+          .firestore()
+          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
+          .set({ [fbLastExportTime]: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
       } else {
+        // lastExport exists; require request timestamp to be at least 5 minutes older than now
+        if (!reqTsRaw) {
+          logger.info('exportSite: fbTimeStamp not present on request doc; skipping export.');
+          return null;
+        }
+
+        const reqTs = reqTsRaw.toDate ? reqTsRaw.toDate() : new Date(reqTsRaw);
+        const elapsedMs = now.getTime() - reqTs.getTime();
+        if (elapsedMs < 5 * 60 * 1000) {
+          logger.info(`exportSite: request timestamp is only ${elapsedMs}ms old (<5min). Skipping export.`);
+          return null;
+        }
+
+        // Update fbLastExportTime to now (merge) before starting export
+        await admin
+          .firestore()
+          .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/export_request`)
+          .set({ [fbLastExportTime]: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      }
+    } catch (err) {
+      logger.warn('exportSite: failed to read or write fbLastExportTime; proceeding', err);
+    }
+
+    // Run the export in the background
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    (async () => {
+      const bucket = admin.storage().bucket();
+      const photoPrefix = firebasePhotosPath(appName, siteId, "");
+      const [files] = await bucket.getFiles({ prefix: photoPrefix });
+
+      const eventsCollectionRef = admin
+        .firestore()
+        .collection(firebaseSiteEventsPath(appName, siteId));
+      const eventsSnapshot = await eventsCollectionRef.get();
+      let lastEventVersion = 0;
+      let events = eventsSnapshot.docs
+        .map((doc) => {
+          const docData = doc.data();
+          const payload = docData[fbPayload];
+          const timestamp = docData[fbTimeStamp] as admin.firestore.Timestamp;
+          const siteEvent = SiteEvent.decode(Buffer.from(payload, "base64"));
+          const version = docData[fbVersion] as number;
+
+          const record: SiteEventRecord = {
+            isoDate: timestamp.toDate().toISOString(),
+            version: version,
+            siteEvent: siteEvent,
+          };
+
+          logger.info("Event record to export:", SiteEventRecord.toJSON(record));
+
+          lastEventVersion = Math.max(lastEventVersion, version || 0);
+
+          const buffer = SiteEventRecord.encode(record).finish();
+          return Buffer.from(buffer).toString("base64");
+        })
+        .join("\n");
+
+      if (files.length === 0 && events.length === 0) {
+        logger.info(`No data found for site ${siteId} to export.`);
+        return;
+      }
+
+      const lastEvent: SiteEvent = {
+        version: lastEventVersion + 1,
+        author: authorId,
+        exportEvent: { previousSiteId: siteId },
+      };
+
+      const lastRecord: SiteEventRecord = {
+        isoDate: new Date().toISOString(),
+        version: lastEventVersion + 1,
+        siteEvent: lastEvent,
+      };
+
+      const lastEncodedRecord = SiteEventRecord.encode(lastRecord).finish();
+      const lastBase64Record = Buffer.from(lastEncodedRecord).toString("base64");
+      events += "\n" + lastBase64Record;
+
+      const archive = archiver("zip", {
+        zlib: { level: 9 }, // Sets the compression level.
+      });
+
+      archive.on("warning", (err) => {
+        if (err.code === "ENOENT") {
+          logger.warn("Archiver warning:", err);
+        } else {
+          throw err;
+        }
+      });
+
+      archive.on("error", (err) => {
         throw err;
+      });
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const zipFileName = `export-${siteId}-${timestamp}.zip`;
+      const exportFilePath = firebaseExportsPath(appName, siteId, zipFileName);
+      const exportFile = bucket.file(exportFilePath);
+      const stream = exportFile.createWriteStream({
+        gzip: true,
+        contentType: "application/zip",
+      });
+
+      archive.pipe(stream);
+
+      if (events.length > 0) {
+        archive.append(events, { name: "events.txt" });
       }
-    });
 
-    archive.on("error", (err) => {
-      throw err;
-    });
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const zipFileName = `export-${siteId}-${timestamp}.zip`;
-    const exportFilePath = firebaseExportsPath(appName, siteId, zipFileName);
-    const exportFile = bucket.file(exportFilePath);
-    const stream = exportFile.createWriteStream({
-      gzip: true,
-      contentType: "application/zip",
-    });
-
-    archive.pipe(stream);
-
-    if (events.length > 0) {
-      archive.append(events, { name: "events.txt" });
-    }
-
-    for (const file of files) {
-      const fileName = file.name.split("/").pop();
-      if (fileName) {
-        // Put photos inside a storage/ folder in the zip so imports map them
-        // to storage paths and events.txt remains at the archive root.
-        archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+      for (const file of files) {
+        const fileName = file.name.split("/").pop();
+        if (fileName) {
+          // Put photos inside a storage/ folder in the zip so imports map them
+          // to storage paths and events.txt remains at the archive root.
+          archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+        }
       }
-    }
 
-    await archive.finalize();
+      await archive.finalize();
 
-    logger.info(
-      `Successfully created site export for site ${siteId} at ${exportFilePath}`
-    );
-  })();
+      logger.info(
+        `Successfully created site export for site ${siteId} at ${exportFilePath}`
+      );
+    })();
 
-  return { status: "Export started" };
-});
+    return null;
+  }
+);
 
 export const listExports = onCall({ cors: true }, async (request) => {
   logger.info("listExports function called");
