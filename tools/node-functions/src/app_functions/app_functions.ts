@@ -333,7 +333,14 @@ export const deleteAlbumPhotos = onCall({ cors: true }, async (request) => {
 });
 
 export const exportSite = onDocumentWritten(
-  `hyttahub/{appPathSegment}/sites/{siteId}/site_exports/export_request`,
+  {
+    document: `hyttahub/{appPathSegment}/sites/{siteId}/site_exports/export_request`,
+    memory: '1GiB',         // Sets the memory to 1 Gibibyte
+    timeoutSeconds: 600,    // Sets the timeout to 600 seconds (10 minutes)
+  },
+
+
+
   async (event) => {
     logger.info("exportSite trigger called for export_request document");
 
