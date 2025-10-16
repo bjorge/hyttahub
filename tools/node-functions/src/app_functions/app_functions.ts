@@ -816,6 +816,8 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
     throw new HttpsError("unauthenticated", "User must be signed in");
   }
 
+  logger.info("uid is:", uid);
+
   const { siteId, memberId, appName } = request.data;
   const email =
     typeof request.auth?.token?.email === "string"
@@ -898,7 +900,7 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
   const importSiteEvent = SiteEvent.create({
     importEvent: SiteEvent_ImportEvent.create({ }),
     version: newSiteEventVersion,
-    author: Number(uid),
+    author: Number(memberId),
   });
   writeBatch.set(newSiteEventRef, {
     [fbPayload]: Buffer.from(
