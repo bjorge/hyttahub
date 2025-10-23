@@ -7,10 +7,11 @@ import 'package:get_it/get_it.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
-import 'package:hyttahub/models/cloud_functions.pb.dart';
+import 'package:hyttahub/proto/cloud_functions.pb.dart';
 
 class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
-  CloudFunctionsBloc() : super(CloudFunctionsState()..initial = CloudFunctionsInitial());
+  CloudFunctionsBloc()
+    : super(CloudFunctionsState()..initial = CloudFunctionsInitial());
 
   Future<Map<String, dynamic>> importSite(String base64Data) async {
     try {
@@ -71,10 +72,15 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
           "Author not found for email: $email in site $siteId. User is not a member or document is malformed.",
         );
       }
-      emit(CloudFunctionsState()
-        ..exportSuccess = ExportSuccess(message: 'Export request created'));
+      emit(
+        CloudFunctionsState()
+          ..exportSuccess = ExportSuccess(message: 'Export request created'),
+      );
     } catch (e) {
-      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
+      emit(
+        CloudFunctionsState()
+          ..failure = CloudFunctionsFailure(error: e.toString()),
+      );
     }
   }
 
@@ -94,10 +100,15 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
           ..name = fileMap['name']
           ..url = fileMap['url'];
       }).toList();
-      emit(CloudFunctionsState()
-        ..exportListSuccess = (ExportListSuccess()..files.addAll(files)));
+      emit(
+        CloudFunctionsState()
+          ..exportListSuccess = (ExportListSuccess()..files.addAll(files)),
+      );
     } catch (e) {
-      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
+      emit(
+        CloudFunctionsState()
+          ..failure = CloudFunctionsFailure(error: e.toString()),
+      );
     }
   }
 
@@ -114,7 +125,10 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       });
       emit(CloudFunctionsState()..exportDeleteSuccess = ExportDeleteSuccess());
     } catch (e) {
-      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
+      emit(
+        CloudFunctionsState()
+          ..failure = CloudFunctionsFailure(error: e.toString()),
+      );
     }
   }
 
@@ -129,11 +143,17 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         'appName': HyttaHubOptions.firebaseRootCollection,
         'fileName': fileName,
       });
-      emit(CloudFunctionsState()
-        ..exportDetailsSuccess =
-            ExportDetailsSuccess(events: result.data['events']));
+      emit(
+        CloudFunctionsState()
+          ..exportDetailsSuccess = ExportDetailsSuccess(
+            events: result.data['events'],
+          ),
+      );
     } catch (e) {
-      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
+      emit(
+        CloudFunctionsState()
+          ..failure = CloudFunctionsFailure(error: e.toString()),
+      );
     }
   }
 }

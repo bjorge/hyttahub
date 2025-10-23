@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/proto/cloud_functions.pb.dart';
 // import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
@@ -48,7 +49,7 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
         body: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
             if (state is ExportDetailsSuccess) {
-              final events = state.events.split('\n');
+              final events = state.exportDetailsSuccess.events.split('\n');
               final eventsMap = <int, String>{};
               for (final event in events) {
                 if (event.isNotEmpty) {
@@ -66,13 +67,13 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
             }
           },
           builder: (context, state) {
-            if (state is CloudFunctionsLoading) {
+            if (state.hasLoading()) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state is CloudFunctionsFailure) {
-              return Center(child: Text(state.error));
+            if (state.hasFailure()) {
+              return Center(child: Text(state.failure.error));
             }
-            if (state is ExportDetailsSuccess) {
+            if (state.hasExportDetailsSuccess()) {
               return Builder(
                 builder: (context) {
                   if (_replayBlocState == null) {
