@@ -67,7 +67,7 @@ class LandingPage extends StatelessWidget {
                               child: Text(switch (language) {
                                 AppLanguage.en => l10n.app_english,
                                 AppLanguage.it => l10n.app_italian,
-                                AppLanguage.es => l10n.app_italian,
+                                AppLanguage.es => l10n.app_spanish,
                               }),
                             );
                           }).toList(),
