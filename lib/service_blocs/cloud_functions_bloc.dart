@@ -6,13 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
-import 'package:equatable/equatable.dart';
 import 'package:hyttahub/hyttahub_options.dart';
-
-part 'cloud_functions_state.dart';
+import 'package:hyttahub/models/cloud_functions.pb.dart';
 
 class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
-  CloudFunctionsBloc() : super(CloudFunctionsInitial());
+  CloudFunctionsBloc() : super(CloudFunctionsState()..initial = CloudFunctionsInitial());
 
   Future<Map<String, dynamic>> importSite(String base64Data) async {
     try {
@@ -45,7 +43,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   }
 
   Future<void> exportSite(String siteId) async {
-    emit(CloudFunctionsLoading());
+    emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final firestore = FirebaseFirestore.instance;
 
@@ -73,14 +71,15 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
           "Author not found for email: $email in site $siteId. User is not a member or document is malformed.",
         );
       }
-      emit(ExportSuccess('Export request created'));
+      emit(CloudFunctionsState()
+        ..exportSuccess = ExportSuccess(message: 'Export request created'));
     } catch (e) {
-      emit(CloudFunctionsFailure(e.toString()));
+      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
     }
   }
 
   Future<void> listExports(String siteId) async {
-    emit(CloudFunctionsLoading());
+    emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'listExports',
@@ -89,17 +88,21 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         'siteId': siteId,
         'appName': HyttaHubOptions.firebaseRootCollection,
       });
-      final files = (result.data['files'] as List)
-          .map((file) => ExportFile.fromMap(file))
-          .toList();
-      emit(ExportListSuccess(files));
+      final files = (result.data['files'] as List).map((file) {
+        final fileMap = Map<String, dynamic>.from(file);
+        return ExportFile()
+          ..name = fileMap['name']
+          ..url = fileMap['url'];
+      }).toList();
+      emit(CloudFunctionsState()
+        ..exportListSuccess = (ExportListSuccess()..files.addAll(files)));
     } catch (e) {
-      emit(CloudFunctionsFailure(e.toString()));
+      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
     }
   }
 
   Future<void> deleteExport(String siteId, String fileName) async {
-    emit(CloudFunctionsLoading());
+    emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'deleteExport',
@@ -109,14 +112,14 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         'appName': HyttaHubOptions.firebaseRootCollection,
         'fileName': fileName,
       });
-      emit(ExportDeleteSuccess());
+      emit(CloudFunctionsState()..exportDeleteSuccess = ExportDeleteSuccess());
     } catch (e) {
-      emit(CloudFunctionsFailure(e.toString()));
+      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
     }
   }
 
   Future<void> getExportDetails(String siteId, String fileName) async {
-    emit(CloudFunctionsLoading());
+    emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'exportDetails',
@@ -126,9 +129,11 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         'appName': HyttaHubOptions.firebaseRootCollection,
         'fileName': fileName,
       });
-      emit(ExportDetailsSuccess(result.data['events']));
+      emit(CloudFunctionsState()
+        ..exportDetailsSuccess =
+            ExportDetailsSuccess(events: result.data['events']));
     } catch (e) {
-      emit(CloudFunctionsFailure(e.toString()));
+      emit(CloudFunctionsState()..failure = CloudFunctionsFailure(error: e.toString()));
     }
   }
 }
