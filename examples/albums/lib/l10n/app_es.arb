@@ -1,0 +1,86 @@
+{
+  "app_createAlbumTitle": "Crear Álbum",
+  "app_albumNameLabel": "Nombre del Álbum",
+  "app_addPhotosTitle": "Añadir Fotos",
+  "app_uploadingPhotosProgress": "Subiendo {count} de {total} archivos...",
+  "app_submissionError": "Error de Envío: {error}",
+  "app_pickPhotosButton": "Seleccionar Fotos",
+  "app_selectPhotosToUpload": "Selecciona fotos para subir:",
+  "app_hideCaptionTooltip": "Ocultar Leyenda",
+  "app_showCaptionTooltip": "Mostrar Leyenda",
+  "app_noPhotos": "no hay fotos",
+  "app_noAlbums": "no hay álbumes",
+  "app_updateCaption": "Actualizar Leyenda",
+  "app_reorderAlbumsTitle": "Reordenar Álbumes",
+  "app_renameAlbumTitle": "Renombrar Álbum",
+  "app_reorderPhotos": "Reordenar Fotos",
+  "app_photoInfoTitle": "Información de la Foto",
+  "app_photoNotFound": "Foto no encontrada.",
+  "app_albumLabel": "Álbum",
+  "app_notAvailable": "N/D",
+  "app_originalNameLabel": "Nombre Original",
+  "app_sizeLabel": "Tamaño",
+  "app_siteSettingsTitle": "Configuración del Sitio",
+  "app_addAlbumTitle": "Añadir Álbum",
+  "app_newAlbumNameLabel": "Nuevo Nombre de Álbum",
+  "app_addPhotoCaptionTitle": "Añadir Leyenda de la Foto",
+  "app_photoCaptionLabel": "Leyenda de la Foto",
+  "app_deletePhotoTitle": "Eliminar Foto",
+  "app_deletePhotoConfirmation": "¿Eliminar Foto? Esta acción no se puede deshacer.",
+  "app_deleteAlbumTitle": "Eliminar Álbum",
+  "app_deleteAlbumConfirmation": "¿Eliminar Álbum? Esta acción no se puede deshacer y eliminará a todos los miembros y fotos del álbum.",
+  "app_albumNotFound": "Álbum no encontrado",
+  "app_albumNameEmptyError": "El nombre del álbum no puede estar vacío.",
+  "app_photoSizeInKB": "{size} KB",
+  "@app_photoSizeInKB": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "app_unknownAlbum": "Álbum Desconocido",
+  "app_eventsTitle": "Eventos de la Aplicación",
+  "app_stateTitle": "Estado de la Aplicación",
+  "app_showAppEventsState": "Mostrar Eventos y Estado de la Aplicación",
+  "app_errorTitle": "Error",
+  "app_unexpectedError": "Error inesperado, comprueba tu conexión a internet, vuelve atrás e inténtalo de nuevo",
+  "app_accessDeniedTitle": "Acceso Denegado",
+  "app_sitePermissionDenied": "No tienes permiso para ver este sitio. Contacta al administrador del sitio si tu correo electrónico debería estar permitido.",
+  "app_networkError": "Ocurrió un error de red. Por favor, comprueba tu conexión.",
+  "app_editModeTitle": "Modo de Edición",
+  "app_adminPrivileges": "Tienes privilegios de administrador para este sitio.",
+  "app_howToProceed": "¿Cómo te gustaría proceder?",
+  "app_viewSite": "Ver Sitio",
+  "app_editSite": "Editar Sitio",
+  "app_renameSiteTitle": "Renombrar Sitio",
+  "app_manageSiteMembers": "Gestionar Miembros del Sitio",
+  "app_showSiteEventsState": "Mostrar Eventos y Estado del Sitio",
+  "app_showSiteAllowedEmails": "Mostrar Correos Electrónicos Permitidos del Sitio",
+  "app_appTitle": "Hytta Hub Álbumes",
+  "app_nightMode": "Modo Nocturno",
+  "app_themeSettingsAlwaysOff": "Siempre Desactivado",
+  "app_themeSettingsAlwaysOn": "Siempre Activado",
+  "app_themeSettingsAutomatic": "Automático",
+  "app_versionInfo": "Versión {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Seleccionar Idioma",
+  "app_english": "Inglés",
+  "app_italian": "Italiano",
+  "app_spanish": "Español",
+  "app_enterButton": "Entrar",
+  "app_otherAppsTitle": "Otras Aplicaciones de Hytta Hub",
+  "app_reservationsAppButton": "Hytta Hub Reservas",
+  "app_serviceLoginButton": "Inicio de Sesión de Servicio",
+  "app_exportSiteTitle": "Exportar Sitio",
+  "app_manageExportsTitle": "Gestionar Exportaciones"
+}
