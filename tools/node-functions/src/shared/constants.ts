@@ -40,6 +40,12 @@ export const firebaseSiteExportPath = (
   siteId: string
 ) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports/export_request`;
 
+export const firebaseSiteExportsBasePath = (
+  appPathSegment: string,
+  siteId: string
+) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports`;
+
+
 
 export const firebaseFilesPath = (
   appPathSegment: string,

@@ -15,6 +15,7 @@ import {
   firebaseSiteEventsPath,
   firebaseSitesPath,
   firebaseSiteUsersPath,
+  firebaseSiteExportsBasePath,
   isRunningInEmulator,
   fbMarkedForDeletion,
   fbUserId,
@@ -285,7 +286,19 @@ async function cleanUp() {
         // Queue deletions in the batch
         eventRefs.forEach((doc) => batch.delete(doc));
 
-        deletions += eventRefs.length;
+        const [exportRefs] = await Promise.all([
+          admin
+            .firestore()
+            .collection(firebaseSiteExportsBasePath(appPathSegment, siteId))
+            .listDocuments(),
+        ]);
+
+        logger.info(`cleanUp: Found ${exportRefs.length} exports to delete.`);
+
+        // Queue deletions in the batch
+        exportRefs.forEach((doc) => batch.delete(doc));
+
+        deletions += eventRefs.length + exportRefs.length;
 
         // Ensure Firestore batch limit (500 writes per commit)
         if (deletions >= 450) {
