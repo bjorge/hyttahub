@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+// Copyright (c) 2025 bjorge
+
+package hyttahub;
+
+message CloudFunctionsState {
+  oneof state {
+    CloudFunctionsInitial initial = 1;
+    CloudFunctionsLoading loading = 2;
+    ExportSuccess export_success = 3;
+    ExportListSuccess export_list_success = 4;
+    ExportDeleteSuccess export_delete_success = 5;
+    ExportDetailsSuccess export_details_success = 6;
+    CloudFunctionsFailure failure = 7;
+  }
+}
+
+message CloudFunctionsInitial {}
+
+message CloudFunctionsLoading {}
+
+message ExportSuccess {
+  string message = 1;
+}
+
+message ExportFile {
+  string name = 1;
+  string url = 2;
+}
+
+message ExportListSuccess {
+  repeated ExportFile files = 1;
+}
+
+message ExportDeleteSuccess {}
+
+message ExportDetailsSuccess {
+  string events = 1;
+}
+
+message CloudFunctionsFailure {
+  string error = 1;
+}

@@ -120,7 +120,7 @@ export const backupSite = onDocumentWritten(
       logger.info("Author ID for export request:", authorId);
 
 
-      const now = new Date();
+      // const now = new Date();
 
       // Read last export timestamp (if any) before deciding whether to run an export.
       const lastExportRef = admin
@@ -154,14 +154,15 @@ export const backupSite = onDocumentWritten(
           .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/last_export`)
           .set({ [fbTimeStamp]: FieldValue.serverTimestamp() }, { merge: true });
       } else {
-        // lastExport exists; require request timestamp to be at least 5 minutes older than now
+        // lastExport exists; require request timestamp to be at least 5 minutes older than last export
         if (!reqTsRaw) {
           logger.info('exportSite: fbTimeStamp not present on request doc; skipping export.');
           return null;
         }
 
         const reqTs = reqTsRaw.toDate ? reqTsRaw.toDate() : new Date(reqTsRaw);
-        const elapsedMs = now.getTime() - reqTs.getTime();
+        const lastExportTs = lastExport.toDate();
+        const elapsedMs = lastExportTs.getTime() - reqTs.getTime();
         if (elapsedMs < 5 * 60 * 1000) {
           logger.info(`exportSite: request timestamp is only ${elapsedMs}ms old (<5min). Skipping export.`);
           return null;

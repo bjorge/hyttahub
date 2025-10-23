@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'package:hyttahub/proto/cloud_functions.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
-// import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManageExportsScreen extends StatelessWidget {
@@ -35,18 +35,18 @@ class ManageExportsScreen extends StatelessWidget {
                 ),
               );
               context.read<CloudFunctionsBloc>().listExports(siteId);
-            } else if (state is CloudFunctionsFailure) {
+            } else if (state.hasFailure()) {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(SnackBar(content: Text(state.error)));
+              ).showSnackBar(SnackBar(content: Text(state.failure.error)));
             }
           },
           builder: (context, state) {
-            if (state is CloudFunctionsLoading) {
+            if (state.hasLoading()) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (state is ExportListSuccess) {
-              if (state.files.isEmpty) {
+            if (state.hasExportListSuccess()) {
+              if (state.exportListSuccess.files.isEmpty) {
                 return Center(
                   child: Text(
                     HyttaHubLocalizations.of(context)!.noExportsFound,
@@ -54,9 +54,9 @@ class ManageExportsScreen extends StatelessWidget {
                 );
               }
               return ListView.builder(
-                itemCount: state.files.length,
+                itemCount: state.exportListSuccess.files.length,
                 itemBuilder: (context, index) {
-                  final file = state.files[index];
+                  final file = state.exportListSuccess.files[index];
                   return ListTile(
                     title: Text(file.name),
                     trailing: Row(
