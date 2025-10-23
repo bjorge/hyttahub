@@ -43,7 +43,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
 
   Future<String> _getSignedUrl(String fileName) async {
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'getPhoto',
+      'getFile',
     );
     final result = await callable.call(<String, dynamic>{
       'appName': HyttaHubOptions.firebaseRootCollection,

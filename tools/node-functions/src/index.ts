@@ -3,19 +3,23 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 
 export {
-  uploadPhoto,
-  getPhoto,
-  deletePhoto,
-  deleteAlbumPhotos,
-  backupSite,
+  uploadFile,
+  deleteFile, 
+  deleteFiles,
+  getFile,
+} from "./file_functions/file_functions";
+
+export {
+  assignUserToImportedSite,
+  importSite,
   listExports,
   deleteExport,
   exportDetails,
-  importSite,
-  assignUserToImportedSite,
-} from "./app_functions/app_functions";
+  backupSite,
+} from "./backup_functions/backup_functions";
+
 export {
-  queryservice,
+  executetask,
   cleanupOrphanedSites,
   processMarkForDeleteRecords,
 } from "./hyttahub_functions/hyttahub_functions";

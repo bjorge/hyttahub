@@ -1,6 +1,6 @@
 import * as unzipper from 'unzipper';
 const archiver = require('archiver');
-import { extractEventsAndPhotosFromZip } from '../src/app_functions/app_functions';
+import { extractEventsAndPhotosFromZip } from '../src/backup_functions/backup_functions';
 import { HttpsError } from 'firebase-functions/v2/https';
 
 // Helper to create an in-memory zip buffer with given entries

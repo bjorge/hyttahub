@@ -44,7 +44,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     }
   }
 
-  Future<void> exportPhotos(String siteId) async {
+  Future<void> exportSite(String siteId) async {
     emit(CloudFunctionsLoading());
     try {
       final firestore = FirebaseFirestore.instance;

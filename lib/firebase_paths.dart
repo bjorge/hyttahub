@@ -36,8 +36,8 @@ String firebaseSiteExportPath(String siteId) =>
     'hyttahub/${HyttaHubOptions.firebaseRootCollection}/sites/$siteId/site_exports/export_request';
 
 // Storage paths
-String firebasePhotosPath(String siteId, String photoId) =>
-    'hyttahub/${HyttaHubOptions.firebaseRootCollection}/$siteId/$photoId';
+// String firebaseFilesPath(String siteId, String fileId) =>
+//     'hyttahub/${HyttaHubOptions.firebaseRootCollection}/$siteId/$fileId';
 
 // Document keys
 const fbUserId = 'u';

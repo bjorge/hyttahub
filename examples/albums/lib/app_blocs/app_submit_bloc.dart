@@ -64,9 +64,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
           throw Exception("Image data is empty for version $version");
         }
 
-        final callable = FirebaseFunctions.instance.httpsCallable(
-          'uploadPhoto',
-        );
+        final callable = FirebaseFunctions.instance.httpsCallable('uploadFile');
 
         // final base64Data = base64Encode(image.data);
 
@@ -152,9 +150,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
         emit(state.copyWith(submissionState: progressState..freeze()));
       }
     } else if (submitAppEvent.appEvent.hasDeletePhoto()) {
-      final callable = FirebaseFunctions.instance.httpsCallable(
-        'deletePhoto',
-      );
+      final callable = FirebaseFunctions.instance.httpsCallable('deleteFile');
 
       await callable.call({
         'appName': HyttaHubOptions.firebaseRootCollection,
@@ -172,9 +168,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
           })
           .timeout(firebaseTimeout);
     } else if (submitAppEvent.appEvent.hasDeleteAlbum()) {
-      final callable = FirebaseFunctions.instance.httpsCallable(
-        'deleteAlbumPhotos',
-      );
+      final callable = FirebaseFunctions.instance.httpsCallable('deleteFiles');
 
       await callable.call({
         'appName': HyttaHubOptions.firebaseRootCollection,

@@ -39,7 +39,7 @@ class ExportSiteScreen extends StatelessWidget {
             return Center(
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<CloudFunctionsBloc>().exportPhotos(siteId);
+                  context.read<CloudFunctionsBloc>().exportSite(siteId);
                 },
                 child: Text(HyttaHubLocalizations.of(context)!.exportSiteTitle),
               ),

@@ -12,7 +12,6 @@ import {
 import { onSchedule } from "firebase-functions/scheduler";
 import {
   firebaseAccountEventsPath,
-  firebasePhotosPath,
   firebaseSiteEventsPath,
   firebaseSitesPath,
   firebaseSiteUsersPath,
@@ -23,10 +22,11 @@ import {
   fbPayload,
   fbTimeStamp,
   firebaseExportsPath,
+  firebaseFilesPath,
 } from "../shared/constants";
 
-export const queryservice = onRequest({}, async (req, res) => {
-  if (req.query.test === "cleanup" && isRunningInEmulator()) {
+export const executetask = onRequest({}, async (req, res) => {
+  if (req.query.name === "cleanup" && isRunningInEmulator()) {
     // Execute the cleanup function
     logger.info("Cleanup function called");
     await cleanUp();
@@ -314,12 +314,12 @@ async function cleanUp() {
         const bucket = admin.storage().bucket();
         for (const siteId of orphanedSiteIds) {
           // Pass an empty string for photoId to get the directory path.
-          const prefix = firebasePhotosPath(appPathSegment, siteId, "");
+          const prefix = firebaseFilesPath(appPathSegment, siteId, "");
           logger.info(
-            `cleanUp: Deleting photos for site ${siteId} with prefix: ${prefix}`
+            `cleanUp: Deleting files for site ${siteId} with prefix: ${prefix}`
           );
           await bucket.deleteFiles({ prefix });
-          logger.info(`cleanUp: Photos for site ${siteId} deleted.`);
+          logger.info(`cleanUp: Files for site ${siteId} deleted.`);
         }
         for (const siteId of orphanedSiteIds) {
           // Pass an empty string for export name to get the directory path.

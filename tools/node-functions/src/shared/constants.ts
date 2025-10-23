@@ -41,15 +41,15 @@ export const firebaseSiteExportPath = (
 ) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports/export_request`;
 
 
-export const firebasePhotosPath = (
+export const firebaseFilesPath = (
   appPathSegment: string,
   siteId: string,
-  photoId: string
+  fileId: string
 ): string => {
   if (isRunningInEmulator()) {
-    return `emulator/${appPathSegment}/sites/${siteId}/${photoId}`;
+    return `emulator/${appPathSegment}/sites/${siteId}/${fileId}`;
   } else {
-    return `hyttahub/${appPathSegment}/sites/${siteId}/${photoId}`;
+    return `hyttahub/${appPathSegment}/sites/${siteId}/${fileId}`;
   }
 };
 
