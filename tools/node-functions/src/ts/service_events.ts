@@ -49,6 +49,8 @@ export interface ServiceEvent_InitialEvent {
   alias: string;
   /** the new bloom filter after the addition of the first user */
   filter?: BloomFilter | undefined;
+  appName: string;
+  appId: string;
 }
 
 export interface ServiceEvent_ServiceStatus {
@@ -389,7 +391,7 @@ export const ServiceEvent = {
 };
 
 function createBaseServiceEvent_InitialEvent(): ServiceEvent_InitialEvent {
-  return { instance: "", alias: "", filter: undefined };
+  return { instance: "", alias: "", filter: undefined, appName: "", appId: "" };
 }
 
 export const ServiceEvent_InitialEvent = {
@@ -402,6 +404,12 @@ export const ServiceEvent_InitialEvent = {
     }
     if (message.filter !== undefined) {
       BloomFilter.encode(message.filter, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.appName !== "") {
+      writer.uint32(34).string(message.appName);
+    }
+    if (message.appId !== "") {
+      writer.uint32(42).string(message.appId);
     }
     return writer;
   },
@@ -434,6 +442,20 @@ export const ServiceEvent_InitialEvent = {
 
           message.filter = BloomFilter.decode(reader, reader.uint32());
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.appName = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.appId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -448,6 +470,8 @@ export const ServiceEvent_InitialEvent = {
       instance: isSet(object.instance) ? globalThis.String(object.instance) : "",
       alias: isSet(object.alias) ? globalThis.String(object.alias) : "",
       filter: isSet(object.filter) ? BloomFilter.fromJSON(object.filter) : undefined,
+      appName: isSet(object.appName) ? globalThis.String(object.appName) : "",
+      appId: isSet(object.appId) ? globalThis.String(object.appId) : "",
     };
   },
 
@@ -462,6 +486,12 @@ export const ServiceEvent_InitialEvent = {
     if (message.filter !== undefined) {
       obj.filter = BloomFilter.toJSON(message.filter);
     }
+    if (message.appName !== "") {
+      obj.appName = message.appName;
+    }
+    if (message.appId !== "") {
+      obj.appId = message.appId;
+    }
     return obj;
   },
 
@@ -475,6 +505,8 @@ export const ServiceEvent_InitialEvent = {
     message.filter = (object.filter !== undefined && object.filter !== null)
       ? BloomFilter.fromPartial(object.filter)
       : undefined;
+    message.appName = object.appName ?? "";
+    message.appId = object.appId ?? "";
     return message;
   },
 };

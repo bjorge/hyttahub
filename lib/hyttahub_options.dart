@@ -21,5 +21,7 @@ class HyttaHubOptions {
 
   static BaseSiteRoutePath? siteScreenRoute;
 
-  static String? firebaseRootCollection;
+  static String? firebaseRootCollection; // the appName
+
+  static String? appId;
 }

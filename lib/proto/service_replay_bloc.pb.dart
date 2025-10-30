@@ -81,6 +81,8 @@ class ServiceReplayBlocState extends $pb.GeneratedMessage {
     $core.String? instance,
     $1.BloomFilter? betaUsersFilter,
     $core.Map<$core.int, ServiceAdmin>? removedServiceAdmins,
+    $core.String? appName,
+    $core.String? appId,
   }) {
     final $result = create();
     if (minVersion != null) {
@@ -122,6 +124,12 @@ class ServiceReplayBlocState extends $pb.GeneratedMessage {
     if (removedServiceAdmins != null) {
       $result.removedServiceAdmins.addAll(removedServiceAdmins);
     }
+    if (appName != null) {
+      $result.appName = appName;
+    }
+    if (appId != null) {
+      $result.appId = appId;
+    }
     return $result;
   }
   ServiceReplayBlocState._() : super();
@@ -142,6 +150,8 @@ class ServiceReplayBlocState extends $pb.GeneratedMessage {
     ..aOS(11, _omitFieldNames ? '' : 'instance')
     ..aOM<$1.BloomFilter>(12, _omitFieldNames ? '' : 'betaUsersFilter', protoName: 'betaUsersFilter', subBuilder: $1.BloomFilter.create)
     ..m<$core.int, ServiceAdmin>(13, _omitFieldNames ? '' : 'removedServiceAdmins', protoName: 'removedServiceAdmins', entryClassName: 'ServiceReplayBlocState.RemovedServiceAdminsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: ServiceAdmin.create, valueDefaultOrMaker: ServiceAdmin.getDefault)
+    ..aOS(14, _omitFieldNames ? '' : 'appName', protoName: 'appName')
+    ..aOS(15, _omitFieldNames ? '' : 'appId', protoName: 'appId')
     ..hasRequiredFields = false
   ;
 
@@ -268,6 +278,24 @@ class ServiceReplayBlocState extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(13)
   $core.Map<$core.int, ServiceAdmin> get removedServiceAdmins => $_getMap(12);
+
+  @$pb.TagNumber(14)
+  $core.String get appName => $_getSZ(13);
+  @$pb.TagNumber(14)
+  set appName($core.String v) { $_setString(13, v); }
+  @$pb.TagNumber(14)
+  $core.bool hasAppName() => $_has(13);
+  @$pb.TagNumber(14)
+  void clearAppName() => clearField(14);
+
+  @$pb.TagNumber(15)
+  $core.String get appId => $_getSZ(14);
+  @$pb.TagNumber(15)
+  set appId($core.String v) { $_setString(14, v); }
+  @$pb.TagNumber(15)
+  $core.bool hasAppId() => $_has(14);
+  @$pb.TagNumber(15)
+  void clearAppId() => clearField(15);
 }
 
 

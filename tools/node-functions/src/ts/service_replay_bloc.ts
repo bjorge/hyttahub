@@ -33,6 +33,8 @@ export interface ServiceReplayBlocState {
   instance: string;
   betaUsersFilter?: BloomFilter | undefined;
   removedServiceAdmins: { [key: number]: ServiceAdmin };
+  appName: string;
+  appId: string;
 }
 
 export interface ServiceReplayBlocState_EventsEntry {
@@ -122,6 +124,8 @@ function createBaseServiceReplayBlocState(): ServiceReplayBlocState {
     instance: "",
     betaUsersFilter: undefined,
     removedServiceAdmins: {},
+    appName: "",
+    appId: "",
   };
 }
 
@@ -167,6 +171,12 @@ export const ServiceReplayBlocState = {
       ServiceReplayBlocState_RemovedServiceAdminsEntry.encode({ key: key as any, value }, writer.uint32(106).fork())
         .ldelim();
     });
+    if (message.appName !== "") {
+      writer.uint32(114).string(message.appName);
+    }
+    if (message.appId !== "") {
+      writer.uint32(122).string(message.appId);
+    }
     return writer;
   },
 
@@ -277,6 +287,20 @@ export const ServiceReplayBlocState = {
             message.removedServiceAdmins[entry13.key] = entry13.value;
           }
           continue;
+        case 14:
+          if (tag !== 114) {
+            break;
+          }
+
+          message.appName = reader.string();
+          continue;
+        case 15:
+          if (tag !== 122) {
+            break;
+          }
+
+          message.appId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -316,6 +340,8 @@ export const ServiceReplayBlocState = {
           return acc;
         }, {})
         : {},
+      appName: isSet(object.appName) ? globalThis.String(object.appName) : "",
+      appId: isSet(object.appId) ? globalThis.String(object.appId) : "",
     };
   },
 
@@ -378,6 +404,12 @@ export const ServiceReplayBlocState = {
         });
       }
     }
+    if (message.appName !== "") {
+      obj.appName = message.appName;
+    }
+    if (message.appId !== "") {
+      obj.appId = message.appId;
+    }
     return obj;
   },
 
@@ -423,6 +455,8 @@ export const ServiceReplayBlocState = {
       }
       return acc;
     }, {});
+    message.appName = object.appName ?? "";
+    message.appId = object.appId ?? "";
     return message;
   },
 };

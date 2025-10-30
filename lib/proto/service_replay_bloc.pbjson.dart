@@ -42,6 +42,8 @@ const ServiceReplayBlocState$json = {
     {'1': 'instance', '3': 11, '4': 1, '5': 9, '10': 'instance'},
     {'1': 'betaUsersFilter', '3': 12, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'betaUsersFilter'},
     {'1': 'removedServiceAdmins', '3': 13, '4': 3, '5': 11, '6': '.ServiceReplayBlocState.RemovedServiceAdminsEntry', '10': 'removedServiceAdmins'},
+    {'1': 'appName', '3': 14, '4': 1, '5': 9, '10': 'appName'},
+    {'1': 'appId', '3': 15, '4': 1, '5': 9, '10': 'appId'},
   ],
   '3': [ServiceReplayBlocState_EventsEntry$json, ServiceReplayBlocState_ServiceAdminsEntry$json, ServiceReplayBlocState_RemovedServiceAdminsEntry$json],
 };
@@ -89,9 +91,10 @@ final $typed_data.Uint8List serviceReplayBlocStateDescriptor = $convert.base64De
     'dGVyUgZmaWx0ZXISGgoIaW5zdGFuY2UYCyABKAlSCGluc3RhbmNlEjYKD2JldGFVc2Vyc0ZpbH'
     'RlchgMIAEoCzIMLkJsb29tRmlsdGVyUg9iZXRhVXNlcnNGaWx0ZXISZQoUcmVtb3ZlZFNlcnZp'
     'Y2VBZG1pbnMYDSADKAsyMS5TZXJ2aWNlUmVwbGF5QmxvY1N0YXRlLlJlbW92ZWRTZXJ2aWNlQW'
-    'RtaW5zRW50cnlSFHJlbW92ZWRTZXJ2aWNlQWRtaW5zGjkKC0V2ZW50c0VudHJ5EhAKA2tleRgB'
-    'IAEoBVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAEaTwoSU2VydmljZUFkbWluc0VudH'
-    'J5EhAKA2tleRgBIAEoBVIDa2V5EiMKBXZhbHVlGAIgASgLMg0uU2VydmljZUFkbWluUgV2YWx1'
-    'ZToCOAEaVgoZUmVtb3ZlZFNlcnZpY2VBZG1pbnNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIjCg'
-    'V2YWx1ZRgCIAEoCzINLlNlcnZpY2VBZG1pblIFdmFsdWU6AjgB');
+    'RtaW5zRW50cnlSFHJlbW92ZWRTZXJ2aWNlQWRtaW5zEhgKB2FwcE5hbWUYDiABKAlSB2FwcE5h'
+    'bWUSFAoFYXBwSWQYDyABKAlSBWFwcElkGjkKC0V2ZW50c0VudHJ5EhAKA2tleRgBIAEoBVIDa2'
+    'V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAEaTwoSU2VydmljZUFkbWluc0VudHJ5EhAKA2tl'
+    'eRgBIAEoBVIDa2V5EiMKBXZhbHVlGAIgASgLMg0uU2VydmljZUFkbWluUgV2YWx1ZToCOAEaVg'
+    'oZUmVtb3ZlZFNlcnZpY2VBZG1pbnNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIjCgV2YWx1ZRgC'
+    'IAEoCzINLlNlcnZpY2VBZG1pblIFdmFsdWU6AjgB');
 

@@ -74,8 +74,8 @@ export const firebaseExportsPath = (
 // Document keys
 export const fbUserId = "u";
 export const fbTimeStamp = "t";
-export const fbLastExportTime = "l";
 export const fbVersion = "v";
 export const fbPayload = "p";
 export const fbBetaUsers = "b";
 export const fbMarkedForDeletion = "m";
+export const fbAppId = "a";

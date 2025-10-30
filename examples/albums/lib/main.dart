@@ -42,7 +42,9 @@ Future<void> main() async {
     return appReplay(siteReplay, event);
   };
 
-  HyttaHubOptions.firebaseRootCollection = 'albums';
+  HyttaHubOptions.firebaseRootCollection =
+      'albums'; // the appName, do not change
+  HyttaHubOptions.appId = 'hyttahub.example.album'; // do not change
 
   setupGetIt();
 

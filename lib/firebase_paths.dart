@@ -42,8 +42,8 @@ String firebaseSiteExportPath(String siteId) =>
 // Document keys
 const fbUserId = 'u';
 const fbTimeStamp = 't';
-const fbLastExportTime = "l";
 const fbVersion = 'v';
 const fbPayload = 'p';
 const fbBetaUsers = 'b';
 const fbMarkedForDeletion = 'm';
+const fbAppId = 'a';

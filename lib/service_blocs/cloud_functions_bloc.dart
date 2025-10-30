@@ -65,6 +65,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         await docRef.set({
           fbTimeStamp: FieldValue.serverTimestamp(),
           fbUserId: author,
+          fbAppId: HyttaHubOptions.appId,
         }, SetOptions(merge: true));
       } else {
         // This is an error case: an action is being performed by a non-site-user.

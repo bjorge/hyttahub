@@ -9,7 +9,6 @@ import { AccountEvent } from "../ts/account_events";
 import {
   fbPayload,
   fbTimeStamp,
-  fbLastExportTime,
   firebaseAccountEventsPath,
   firebaseExportsPath,
   firebaseSiteEventsPath,
@@ -18,6 +17,7 @@ import {
   fbUserId,
   fbVersion,
   firebaseFilesPath,
+  fbAppId,
 } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -106,17 +106,19 @@ export const backupSite = onDocumentWritten(
     const appName = event.params.appPathSegment;
     const siteId = event.params.siteId;
 
+
     // Try to infer a requester email if the client wrote one into the request doc.
     const docData = after.data() || {};
 
     // Check fbLastExportTime ('l'). If empty, perform export and merge fbLastExportTime as now.
     // If present, only perform export if at least 5 minutes have passed since fbTimeStamp on the request.
     let authorId = 0;
+    let appId = '';
     try {
       // const lastExport = (docData as any)[fbLastExportTime];
       const reqTsRaw = (docData as any)[fbTimeStamp];
       authorId = (docData as any)[fbUserId];
-
+      appId = (docData as any)[fbAppId];
       logger.info("Author ID for export request:", authorId);
 
 
@@ -131,10 +133,9 @@ export const backupSite = onDocumentWritten(
         const lastExportSnap = await lastExportRef.get();
         if (lastExportSnap.exists) {
           const lastExportData = lastExportSnap.data();
-          // Prefer explicit fbLastExportTime, fall back to fbTimeStamp
           lastExport =
             (lastExportData &&
-              (lastExportData[fbLastExportTime] || lastExportData[fbTimeStamp])) ||
+              lastExportData[fbTimeStamp]) ||
             null;
           logger.info(
             "exportSite: lastExport timestamp read:",
@@ -220,7 +221,7 @@ export const backupSite = onDocumentWritten(
       const lastEvent: SiteEvent = {
         version: lastEventVersion + 1,
         author: authorId,
-        exportEvent: { previousSiteId: siteId },
+        exportEvent: { previousSiteId: siteId, appName: appName, appId: appId },
       };
 
       const lastRecord: SiteEventRecord = {
@@ -483,6 +484,26 @@ export const importSite = onCall({ cors: true }, async (request) => {
     // with code 'invalid-argument' if the archive contains unexpected files.
     const { eventsContent, photos } = await extractEventsAndPhotosFromZip(directory);
 
+    // Make sure the last event is an export event for the expected app.
+    const eventLines = eventsContent.split("\n").filter((line) => line);
+    const lastEventRecordLine = eventLines[eventLines.length - 1];
+    const lastEventRecord = SiteEventRecord.decode(Buffer.from(lastEventRecordLine, "base64"));
+    logger.info("Last event record in import data:", SiteEventRecord.toJSON(lastEventRecord));
+
+    if (!lastEventRecord.siteEvent) {
+      throw new HttpsError("invalid-argument", "Site record is missing siteEvent.");
+    }
+
+    if (!lastEventRecord.siteEvent.exportEvent) {
+      throw new HttpsError("invalid-argument", "Last event is not an export event.");
+    }
+
+    if (lastEventRecord.siteEvent.exportEvent.appName !== request.data.appName) {
+      throw new HttpsError("invalid-argument", `Exported data is for the wrong app: expected ${request.data.appName} but got ${lastEventRecord.siteEvent.exportEvent.appName}`);
+    }
+
+    logger.info("TODO: in the future, make sure the appId matches in addition to appName.");
+
     // Upload all photos returned by the extractor
     const photoUploadPromises: Promise<void>[] = photos.map(({ relativePath, buffer }) => {
       const photoPath = firebaseFilesPath(appName, newSiteId, relativePath);
@@ -493,7 +514,7 @@ export const importSite = onCall({ cors: true }, async (request) => {
     await Promise.all(photoUploadPromises);
     logger.info("All photos uploaded successfully");
 
-    const eventLines = eventsContent.split("\n").filter((line) => line);
+    // Import all events
     const writeBatch = admin.firestore().batch();
     const siteEventsCollection = admin
       .firestore()
@@ -509,7 +530,7 @@ export const importSite = onCall({ cors: true }, async (request) => {
       }
 
 
-      logger.info("Event record to import:", SiteEventRecord.toJSON(eventRecord));
+      // logger.info("Event record to import:", SiteEventRecord.toJSON(eventRecord));
 
       writeBatch.set(docRef, {
         [fbPayload]: Buffer.from(
@@ -612,7 +633,7 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
     }
   }
 
-    // Get the latest site event version to increment it.
+  // Get the latest site event version to increment it.
   const lastSiteEventSnapshot = await siteEventsCollectionRef
     .orderBy(fbVersion, "desc")
     .limit(1)
@@ -652,7 +673,7 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
 
   const newSiteEventRef = siteEventsCollectionRef.doc(newSiteEventVersion.toString());
   const importSiteEvent = SiteEvent.create({
-    importEvent: SiteEvent_ImportEvent.create({ }),
+    importEvent: SiteEvent_ImportEvent.create({}),
     version: newSiteEventVersion,
     author: Number(memberId),
   });

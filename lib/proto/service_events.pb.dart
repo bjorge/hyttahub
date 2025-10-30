@@ -20,6 +20,8 @@ class ServiceEvent_InitialEvent extends $pb.GeneratedMessage {
     $core.String? instance,
     $core.String? alias,
     $1.BloomFilter? filter,
+    $core.String? appName,
+    $core.String? appId,
   }) {
     final $result = create();
     if (instance != null) {
@@ -31,6 +33,12 @@ class ServiceEvent_InitialEvent extends $pb.GeneratedMessage {
     if (filter != null) {
       $result.filter = filter;
     }
+    if (appName != null) {
+      $result.appName = appName;
+    }
+    if (appId != null) {
+      $result.appId = appId;
+    }
     return $result;
   }
   ServiceEvent_InitialEvent._() : super();
@@ -41,6 +49,8 @@ class ServiceEvent_InitialEvent extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'instance')
     ..aOS(2, _omitFieldNames ? '' : 'alias')
     ..aOM<$1.BloomFilter>(3, _omitFieldNames ? '' : 'filter', subBuilder: $1.BloomFilter.create)
+    ..aOS(4, _omitFieldNames ? '' : 'appName', protoName: 'appName')
+    ..aOS(5, _omitFieldNames ? '' : 'appId', protoName: 'appId')
     ..hasRequiredFields = false
   ;
 
@@ -93,6 +103,24 @@ class ServiceEvent_InitialEvent extends $pb.GeneratedMessage {
   void clearFilter() => clearField(3);
   @$pb.TagNumber(3)
   $1.BloomFilter ensureFilter() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  $core.String get appName => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set appName($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasAppName() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearAppName() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get appId => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set appId($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasAppId() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearAppId() => clearField(5);
 }
 
 class ServiceEvent_ServiceStatus extends $pb.GeneratedMessage {

@@ -42,6 +42,8 @@ message SiteEvent {
 
   message ExportEvent {
     string previousSiteId = 1;
+    string appId = 2;
+    string appName = 3;
   }
 
   message ImportEvent {

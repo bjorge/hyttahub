@@ -43,6 +43,8 @@ const ServiceEvent_InitialEvent$json = {
     {'1': 'instance', '3': 1, '4': 1, '5': 9, '10': 'instance'},
     {'1': 'alias', '3': 2, '4': 1, '5': 9, '10': 'alias'},
     {'1': 'filter', '3': 3, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {'1': 'appName', '3': 4, '4': 1, '5': 9, '10': 'appName'},
+    {'1': 'appId', '3': 5, '4': 1, '5': 9, '10': 'appId'},
   ],
 };
 
@@ -131,19 +133,20 @@ final $typed_data.Uint8List serviceEventDescriptor = $convert.base64Decode(
     'aWx0ZXIYCiABKAsyDC5CbG9vbUZpbHRlckgAUg9iZXRhVXNlcnNGaWx0ZXISUgoSdXBkYXRlU2'
     'VydmljZUFkbWluGAsgASgLMiAuU2VydmljZUV2ZW50LlVwZGF0ZVNlcnZpY2VBZG1pbkgAUhJ1'
     'cGRhdGVTZXJ2aWNlQWRtaW4SVQoTcmVzdG9yZVNlcnZpY2VBZG1pbhgMIAEoCzIhLlNlcnZpY2'
-    'VFdmVudC5SZXN0b3JlU2VydmljZUFkbWluSABSE3Jlc3RvcmVTZXJ2aWNlQWRtaW4aZgoMSW5p'
-    'dGlhbEV2ZW50EhoKCGluc3RhbmNlGAEgASgJUghpbnN0YW5jZRIUCgVhbGlhcxgCIAEoCVIFYW'
-    'xpYXMSJAoGZmlsdGVyGAMgASgLMgwuQmxvb21GaWx0ZXJSBmZpbHRlchoxCg1TZXJ2aWNlU3Rh'
-    'dHVzEiAKC3VuYXZhaWxhYmxlGAEgASgIUgt1bmF2YWlsYWJsZRoqCg5UZXJtc09mU2VydmljZR'
-    'IYCgdjb250ZW50GAEgASgJUgdjb250ZW50GikKDVByaXZhY3lQb2xpY3kSGAoHY29udGVudBgB'
-    'IAEoCVIHY29udGVudBpNCg9BZGRTZXJ2aWNlQWRtaW4SFAoFYWxpYXMYASABKAlSBWFsaWFzEi'
-    'QKBmZpbHRlchgCIAEoCzIMLkJsb29tRmlsdGVyUgZmaWx0ZXIaSgoSUmVtb3ZlU2VydmljZUFk'
-    'bWluEg4KAmlkGAEgASgFUgJpZBIkCgZmaWx0ZXIYAiABKAsyDC5CbG9vbUZpbHRlclIGZmlsdG'
-    'VyGmAKElVwZGF0ZVNlcnZpY2VBZG1pbhIOCgJpZBgBIAEoBVICaWQSFAoFYWxpYXMYAiABKAlS'
-    'BWFsaWFzEiQKBmZpbHRlchgDIAEoCzIMLkJsb29tRmlsdGVyUgZmaWx0ZXIaYQoTUmVzdG9yZV'
-    'NlcnZpY2VBZG1pbhIOCgJpZBgBIAEoBVICaWQSFAoFYWxpYXMYAiABKAlSBWFsaWFzEiQKBmZp'
-    'bHRlchgDIAEoCzIMLkJsb29tRmlsdGVyUgZmaWx0ZXIaLgoWTWluaW11bVZlcnNpb25SZXF1aX'
-    'JlZBIUCgV2YWx1ZRgBIAEoBVIFdmFsdWVCDAoKZXZlbnRfdHlwZQ==');
+    'VFdmVudC5SZXN0b3JlU2VydmljZUFkbWluSABSE3Jlc3RvcmVTZXJ2aWNlQWRtaW4algEKDElu'
+    'aXRpYWxFdmVudBIaCghpbnN0YW5jZRgBIAEoCVIIaW5zdGFuY2USFAoFYWxpYXMYAiABKAlSBW'
+    'FsaWFzEiQKBmZpbHRlchgDIAEoCzIMLkJsb29tRmlsdGVyUgZmaWx0ZXISGAoHYXBwTmFtZRgE'
+    'IAEoCVIHYXBwTmFtZRIUCgVhcHBJZBgFIAEoCVIFYXBwSWQaMQoNU2VydmljZVN0YXR1cxIgCg'
+    't1bmF2YWlsYWJsZRgBIAEoCFILdW5hdmFpbGFibGUaKgoOVGVybXNPZlNlcnZpY2USGAoHY29u'
+    'dGVudBgBIAEoCVIHY29udGVudBopCg1Qcml2YWN5UG9saWN5EhgKB2NvbnRlbnQYASABKAlSB2'
+    'NvbnRlbnQaTQoPQWRkU2VydmljZUFkbWluEhQKBWFsaWFzGAEgASgJUgVhbGlhcxIkCgZmaWx0'
+    'ZXIYAiABKAsyDC5CbG9vbUZpbHRlclIGZmlsdGVyGkoKElJlbW92ZVNlcnZpY2VBZG1pbhIOCg'
+    'JpZBgBIAEoBVICaWQSJAoGZmlsdGVyGAIgASgLMgwuQmxvb21GaWx0ZXJSBmZpbHRlchpgChJV'
+    'cGRhdGVTZXJ2aWNlQWRtaW4SDgoCaWQYASABKAVSAmlkEhQKBWFsaWFzGAIgASgJUgVhbGlhcx'
+    'IkCgZmaWx0ZXIYAyABKAsyDC5CbG9vbUZpbHRlclIGZmlsdGVyGmEKE1Jlc3RvcmVTZXJ2aWNl'
+    'QWRtaW4SDgoCaWQYASABKAVSAmlkEhQKBWFsaWFzGAIgASgJUgVhbGlhcxIkCgZmaWx0ZXIYAy'
+    'ABKAsyDC5CbG9vbUZpbHRlclIGZmlsdGVyGi4KFk1pbmltdW1WZXJzaW9uUmVxdWlyZWQSFAoF'
+    'dmFsdWUYASABKAVSBXZhbHVlQgwKCmV2ZW50X3R5cGU=');
 
 @$core.Deprecated('Use submitServiceEventDescriptor instead')
 const SubmitServiceEvent$json = {

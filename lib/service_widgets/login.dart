@@ -97,6 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 instance: generateId(), // a good enough random value
                 alias: '',
                 filter: BloomFilter(),
+                appName: HyttaHubOptions.firebaseRootCollection ?? '',
+                appId: HyttaHubOptions.appId ?? '',
               ),
             ),
           );

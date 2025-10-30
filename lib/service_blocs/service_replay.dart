@@ -65,6 +65,9 @@ ServiceReplayBlocState serviceReplay(
 
       replay.minVersion = 1;
       replay.serviceUnavailable = false;
+
+      replay.appName = event.initialEvent.appName;
+      replay.appId = event.initialEvent.appId;
     }
 
     if (event.hasAddServiceAdmin()) {

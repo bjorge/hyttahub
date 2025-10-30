@@ -16,6 +16,8 @@ message ServiceEvent {
     string alias = 2; // alias name for service admin
     BloomFilter filter =
         3; // the new bloom filter after the addition of the first user
+    string appName = 4;
+    string appId = 5;
   }
 
   message ServiceStatus { bool unavailable = 1; }

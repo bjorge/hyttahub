@@ -75,6 +75,8 @@ export interface SiteEvent_UpdateSiteName {
 
 export interface SiteEvent_ExportEvent {
   previousSiteId: string;
+  appId: string;
+  appName: string;
 }
 
 export interface SiteEvent_ImportEvent {
@@ -885,13 +887,19 @@ export const SiteEvent_UpdateSiteName = {
 };
 
 function createBaseSiteEvent_ExportEvent(): SiteEvent_ExportEvent {
-  return { previousSiteId: "" };
+  return { previousSiteId: "", appId: "", appName: "" };
 }
 
 export const SiteEvent_ExportEvent = {
   encode(message: SiteEvent_ExportEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.previousSiteId !== "") {
       writer.uint32(10).string(message.previousSiteId);
+    }
+    if (message.appId !== "") {
+      writer.uint32(18).string(message.appId);
+    }
+    if (message.appName !== "") {
+      writer.uint32(26).string(message.appName);
     }
     return writer;
   },
@@ -910,6 +918,20 @@ export const SiteEvent_ExportEvent = {
 
           message.previousSiteId = reader.string();
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.appId = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.appName = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -920,13 +942,23 @@ export const SiteEvent_ExportEvent = {
   },
 
   fromJSON(object: any): SiteEvent_ExportEvent {
-    return { previousSiteId: isSet(object.previousSiteId) ? globalThis.String(object.previousSiteId) : "" };
+    return {
+      previousSiteId: isSet(object.previousSiteId) ? globalThis.String(object.previousSiteId) : "",
+      appId: isSet(object.appId) ? globalThis.String(object.appId) : "",
+      appName: isSet(object.appName) ? globalThis.String(object.appName) : "",
+    };
   },
 
   toJSON(message: SiteEvent_ExportEvent): unknown {
     const obj: any = {};
     if (message.previousSiteId !== "") {
       obj.previousSiteId = message.previousSiteId;
+    }
+    if (message.appId !== "") {
+      obj.appId = message.appId;
+    }
+    if (message.appName !== "") {
+      obj.appName = message.appName;
     }
     return obj;
   },
@@ -937,6 +969,8 @@ export const SiteEvent_ExportEvent = {
   fromPartial<I extends Exact<DeepPartial<SiteEvent_ExportEvent>, I>>(object: I): SiteEvent_ExportEvent {
     const message = createBaseSiteEvent_ExportEvent();
     message.previousSiteId = object.previousSiteId ?? "";
+    message.appId = object.appId ?? "";
+    message.appName = object.appName ?? "";
     return message;
   },
 };

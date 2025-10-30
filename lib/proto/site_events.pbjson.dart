@@ -104,6 +104,8 @@ const SiteEvent_ExportEvent$json = {
   '1': 'ExportEvent',
   '2': [
     {'1': 'previousSiteId', '3': 1, '4': 1, '5': 9, '10': 'previousSiteId'},
+    {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
+    {'1': 'appName', '3': 3, '4': 1, '5': 9, '10': 'appName'},
   ],
 };
 
@@ -137,9 +139,10 @@ final $typed_data.Uint8List siteEventDescriptor = $convert.base64Decode(
     'pgCgxVcGRhdGVNZW1iZXISGgoIbWVtYmVySWQYASABKAVSCG1lbWJlcklkEh4KCm1lbWJlck5h'
     'bWUYAiABKAlSCm1lbWJlck5hbWUSFAoFYWRtaW4YAyABKAhSBWFkbWluGicKCUxlYXZlU2l0ZR'
     'IaCghtZW1iZXJJZBgBIAEoBVIIbWVtYmVySWQaJAoOVXBkYXRlU2l0ZU5hbWUSEgoEbmFtZRgB'
-    'IAEoCVIEbmFtZRo1CgtFeHBvcnRFdmVudBImCg5wcmV2aW91c1NpdGVJZBgBIAEoCVIOcHJldm'
-    'lvdXNTaXRlSWQaKQoLSW1wb3J0RXZlbnQSGgoIc2l0ZU5hbWUYASABKAlSCHNpdGVOYW1lQgwK'
-    'CmV2ZW50X3R5cGU=');
+    'IAEoCVIEbmFtZRplCgtFeHBvcnRFdmVudBImCg5wcmV2aW91c1NpdGVJZBgBIAEoCVIOcHJldm'
+    'lvdXNTaXRlSWQSFAoFYXBwSWQYAiABKAlSBWFwcElkEhgKB2FwcE5hbWUYAyABKAlSB2FwcE5h'
+    'bWUaKQoLSW1wb3J0RXZlbnQSGgoIc2l0ZU5hbWUYASABKAlSCHNpdGVOYW1lQgwKCmV2ZW50X3'
+    'R5cGU=');
 
 @$core.Deprecated('Use submitSiteEventDescriptor instead')
 const SubmitSiteEvent$json = {

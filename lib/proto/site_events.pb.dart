@@ -469,10 +469,18 @@ class SiteEvent_UpdateSiteName extends $pb.GeneratedMessage {
 class SiteEvent_ExportEvent extends $pb.GeneratedMessage {
   factory SiteEvent_ExportEvent({
     $core.String? previousSiteId,
+    $core.String? appId,
+    $core.String? appName,
   }) {
     final $result = create();
     if (previousSiteId != null) {
       $result.previousSiteId = previousSiteId;
+    }
+    if (appId != null) {
+      $result.appId = appId;
+    }
+    if (appName != null) {
+      $result.appName = appName;
     }
     return $result;
   }
@@ -482,6 +490,8 @@ class SiteEvent_ExportEvent extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteEvent.ExportEvent', createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'previousSiteId', protoName: 'previousSiteId')
+    ..aOS(2, _omitFieldNames ? '' : 'appId', protoName: 'appId')
+    ..aOS(3, _omitFieldNames ? '' : 'appName', protoName: 'appName')
     ..hasRequiredFields = false
   ;
 
@@ -514,6 +524,24 @@ class SiteEvent_ExportEvent extends $pb.GeneratedMessage {
   $core.bool hasPreviousSiteId() => $_has(0);
   @$pb.TagNumber(1)
   void clearPreviousSiteId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get appId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set appId($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasAppId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAppId() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get appName => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set appName($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasAppName() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearAppName() => clearField(3);
 }
 
 class SiteEvent_ImportEvent extends $pb.GeneratedMessage {

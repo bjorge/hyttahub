@@ -21,6 +21,8 @@ message ServiceReplayBlocState {
   string instance = 11; // the instance of this event stream
   BloomFilter betaUsersFilter = 12;
   map<int32, ServiceAdmin> removedServiceAdmins = 13;
+  string appName = 14;
+  string appId = 15;
 }
 
 
