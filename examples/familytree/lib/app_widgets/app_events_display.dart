@@ -12,7 +12,7 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hyttahub/utilities/pack_any.dart';
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
 class AppEventsDisplayScreen extends StatelessWidget {
   const AppEventsDisplayScreen({super.key, required this.siteId});

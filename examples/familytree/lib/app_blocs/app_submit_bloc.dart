@@ -13,7 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
-import 'package:hyttahub/utilities/pack_any.dart';
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:protobuf/protobuf.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);

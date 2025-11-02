@@ -5,7 +5,7 @@ import 'package:albums/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
-import 'package:hyttahub/utilities/pack_any.dart';
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
 AppReplayWrapper appReplay(SiteReplayBlocState siteReplay, SiteEvent event) {
   if (!siteReplay.hasAppBlocState()) {

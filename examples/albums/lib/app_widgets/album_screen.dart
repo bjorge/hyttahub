@@ -13,7 +13,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import '../proto/app_replay_bloc.pb.dart';
-import 'package:hyttahub/utilities/pack_any.dart';
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
