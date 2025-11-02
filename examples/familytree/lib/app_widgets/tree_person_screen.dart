@@ -46,7 +46,10 @@ class TreePersonScreen extends StatelessWidget {
           }
 
           final appBlocState =
-              unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
+              unpackAppReplayWrapper(
+                siteState.appBlocState,
+                () => AppReplayBlocState(),
+              )!;
 
           final tree = appBlocState.trees.firstWhereOrNull(
             (t) => t.id == treeId,

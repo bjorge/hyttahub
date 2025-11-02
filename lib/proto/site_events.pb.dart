@@ -13,7 +13,7 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'any.pb.dart' as $2;
+import 'app_wrapper.pb.dart' as $2;
 
 /// events should be messages to allow for ease in future updates
 class SiteEvent_NewSite extends $pb.GeneratedMessage {
@@ -623,7 +623,7 @@ class SiteEvent extends $pb.GeneratedMessage {
     SiteEvent_UpdateMember? updateMember,
     SiteEvent_ExportEvent? exportEvent,
     SiteEvent_ImportEvent? importEvent,
-    $2.Any? appEvent,
+    $2.AppEventWrapper? appEvent,
   }) {
     final $result = create();
     if (version != null) {
@@ -694,7 +694,7 @@ class SiteEvent extends $pb.GeneratedMessage {
     ..aOM<SiteEvent_UpdateMember>(10, _omitFieldNames ? '' : 'updateMember', protoName: 'updateMember', subBuilder: SiteEvent_UpdateMember.create)
     ..aOM<SiteEvent_ExportEvent>(11, _omitFieldNames ? '' : 'exportEvent', protoName: 'exportEvent', subBuilder: SiteEvent_ExportEvent.create)
     ..aOM<SiteEvent_ImportEvent>(12, _omitFieldNames ? '' : 'importEvent', protoName: 'importEvent', subBuilder: SiteEvent_ImportEvent.create)
-    ..aOM<$2.Any>(20, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: $2.Any.create)
+    ..aOM<$2.AppEventWrapper>(20, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: $2.AppEventWrapper.create)
     ..hasRequiredFields = false
   ;
 
@@ -840,15 +840,15 @@ class SiteEvent extends $pb.GeneratedMessage {
   SiteEvent_ImportEvent ensureImportEvent() => $_ensure(10);
 
   @$pb.TagNumber(20)
-  $2.Any get appEvent => $_getN(11);
+  $2.AppEventWrapper get appEvent => $_getN(11);
   @$pb.TagNumber(20)
-  set appEvent($2.Any v) { setField(20, v); }
+  set appEvent($2.AppEventWrapper v) { setField(20, v); }
   @$pb.TagNumber(20)
   $core.bool hasAppEvent() => $_has(11);
   @$pb.TagNumber(20)
   void clearAppEvent() => clearField(20);
   @$pb.TagNumber(20)
-  $2.Any ensureAppEvent() => $_ensure(11);
+  $2.AppEventWrapper ensureAppEvent() => $_ensure(11);
 }
 
 /// The SubmitSiteEvent is passed to the submit bloc handler

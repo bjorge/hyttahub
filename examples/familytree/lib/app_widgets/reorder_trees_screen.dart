@@ -119,7 +119,10 @@ class ReorderTreesInputWidget
     final siteState = context.read<SiteReplayBloc>().state;
     final treeIds = payload.appEvent.reorderTrees.treeIds;
     final appBlocState =
-        unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
+        unpackAppReplayWrapper(
+          siteState.appBlocState,
+          () => AppReplayBlocState(),
+        )!;
     return treeIds.map((id) {
       final treeName =
           appBlocState.trees.firstWhere((test) => test.id == id).name;

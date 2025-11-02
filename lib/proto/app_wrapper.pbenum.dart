@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: any.proto
+//  source: app_wrapper.proto
 //
 // @dart = 2.12
 

@@ -56,7 +56,7 @@ class AppEventsConfig
       ..version = siteEvent.version
       ..appEvent =
           siteEvent.hasAppEvent()
-              ? unpackAny(siteEvent.appEvent, () => AppEvent())!
+              ? unpackAppEventWrapper(siteEvent.appEvent, () => AppEvent())!
               : AppEvent()
       ..freeze();
   }
@@ -69,7 +69,10 @@ class AppEventsConfig
   AppReplayBlocState replay(Map<int, String> base64Events) {
     final replay = siteReplay(SiteReplayBlocState(), base64Events);
     return replay.hasAppBlocState()
-        ? unpackAny(replay.appBlocState, () => AppReplayBlocState())!
+        ? unpackAppReplayWrapper(
+          replay.appBlocState,
+          () => AppReplayBlocState(),
+        )!
         : AppReplayBlocState();
   }
 }

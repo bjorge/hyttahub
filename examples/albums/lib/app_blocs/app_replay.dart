@@ -2,23 +2,26 @@
 
 import 'package:albums/proto/app_events.pb.dart';
 import 'package:albums/proto/app_replay_bloc.pb.dart';
-import 'package:hyttahub/proto/any.pb.dart';
+import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/utilities/pack_any.dart';
 
-Any appReplay(SiteReplayBlocState siteReplay, SiteEvent event) {
+AppReplayWrapper appReplay(SiteReplayBlocState siteReplay, SiteEvent event) {
   if (!siteReplay.hasAppBlocState()) {
-    return packAny(AppReplayBlocState());
+    return packAppReplayWrapper(AppReplayBlocState().writeToBuffer());
   }
 
   final appBlocState =
       siteReplay.hasAppBlocState()
-          ? unpackAny(siteReplay.appBlocState, () => AppReplayBlocState())!
+          ? unpackAppReplayWrapper(
+            siteReplay.appBlocState,
+            () => AppReplayBlocState(),
+          )!
           : AppReplayBlocState();
 
   if (event.hasAppEvent()) {
-    final appEvent = unpackAny(event.appEvent, () => AppEvent())!;
+    final appEvent = unpackAppEventWrapper(event.appEvent, () => AppEvent())!;
 
     final eventVersion = event.version;
 
@@ -107,5 +110,5 @@ Any appReplay(SiteReplayBlocState siteReplay, SiteEvent event) {
     }
   }
 
-  return packAny(appBlocState);
+  return packAppReplayWrapper(appBlocState.writeToBuffer());
 }

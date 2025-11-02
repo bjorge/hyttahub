@@ -191,7 +191,7 @@ class SiteScreen extends StatelessWidget {
 
                   final appBlocState =
                       siteState.hasAppBlocState()
-                          ? unpackAny(
+                          ? unpackAppReplayWrapper(
                             siteState.appBlocState,
                             () => AppReplayBlocState(),
                           )!
@@ -273,7 +273,10 @@ class _SiteSettingsButtonState extends State<SiteSettingsButton> {
   @override
   Widget build(BuildContext context) {
     final appBlocState =
-        unpackAny(widget.siteState.appBlocState, () => AppReplayBlocState())!;
+        unpackAppReplayWrapper(
+          widget.siteState.appBlocState,
+          () => AppReplayBlocState(),
+        )!;
 
     return IconButton(
       onPressed: () {

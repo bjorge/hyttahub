@@ -1,22 +1,32 @@
-import 'package:hyttahub/proto/any.pb.dart';
+import 'dart:typed_data';
+
+import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
-/// Packs a message into an Any.
-Any packAny(GeneratedMessage msg) {
-  return Any()
-    ..typeUrl = 'type.hyttehub.com/${msg.info_.qualifiedMessageName}'
-    ..value = msg.writeToBuffer();
+AppReplayWrapper packAppReplayWrapper(Uint8List appState) {
+  return AppReplayWrapper()..payload = appState;
 }
 
-/// Unpacks an Any into a target message type (e.g. MyMessage()).
-/// Returns null if typeUrl doesn't match.
-T? unpackAny<T extends GeneratedMessage>(Any any, T Function() create) {
+AppEventWrapper packAppEventWrapper(Uint8List appEvent) {
+  return AppEventWrapper()..payload = appEvent;
+}
+
+/// Unpacks an AppReplayWrapper into a target message type
+T? unpackAppReplayWrapper<T extends GeneratedMessage>(
+  AppReplayWrapper any,
+  T Function() create,
+) {
   final message = create();
-  final expectedUrl = 'type.hyttehub.com/${message.info_.qualifiedMessageName}';
-  if (any.typeUrl != expectedUrl) {
-    // print('Type mismatch: expected $expectedUrl, got ${any.typeUrl}');
-    return null;
-  }
-  message.mergeFromBuffer(any.value);
+  message.mergeFromBuffer(any.payload);
+  return message;
+}
+
+/// Unpacks an AppEventWrapper into a target message type
+T? unpackAppEventWrapper<T extends GeneratedMessage>(
+  AppEventWrapper any,
+  T Function() create,
+) {
+  final message = create();
+  message.mergeFromBuffer(any.payload);
   return message;
 }

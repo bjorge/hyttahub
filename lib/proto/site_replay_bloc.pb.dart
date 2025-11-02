@@ -13,7 +13,7 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'any.pb.dart' as $2;
+import 'app_wrapper.pb.dart' as $2;
 import 'common_blocs.pbenum.dart' as $0;
 
 class SiteReplayBlocState_Member extends $pb.GeneratedMessage {
@@ -87,7 +87,7 @@ class SiteReplayBlocState extends $pb.GeneratedMessage {
     $core.String? name,
     $core.Map<$core.int, SiteReplayBlocState_Member>? members,
     $core.Map<$core.int, SiteReplayBlocState_Member>? removedMembers,
-    $2.Any? appBlocState,
+    $2.AppReplayWrapper? appBlocState,
   }) {
     final $result = create();
     if (state != null) {
@@ -120,7 +120,7 @@ class SiteReplayBlocState extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..m<$core.int, SiteReplayBlocState_Member>(4, _omitFieldNames ? '' : 'members', entryClassName: 'SiteReplayBlocState.MembersEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: SiteReplayBlocState_Member.create, valueDefaultOrMaker: SiteReplayBlocState_Member.getDefault)
     ..m<$core.int, SiteReplayBlocState_Member>(5, _omitFieldNames ? '' : 'removedMembers', protoName: 'removedMembers', entryClassName: 'SiteReplayBlocState.RemovedMembersEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: SiteReplayBlocState_Member.create, valueDefaultOrMaker: SiteReplayBlocState_Member.getDefault)
-    ..aOM<$2.Any>(20, _omitFieldNames ? '' : 'appBlocState', protoName: 'appBlocState', subBuilder: $2.Any.create)
+    ..aOM<$2.AppReplayWrapper>(20, _omitFieldNames ? '' : 'appBlocState', protoName: 'appBlocState', subBuilder: $2.AppReplayWrapper.create)
     ..hasRequiredFields = false
   ;
 
@@ -173,15 +173,15 @@ class SiteReplayBlocState extends $pb.GeneratedMessage {
   $core.Map<$core.int, SiteReplayBlocState_Member> get removedMembers => $_getMap(4);
 
   @$pb.TagNumber(20)
-  $2.Any get appBlocState => $_getN(5);
+  $2.AppReplayWrapper get appBlocState => $_getN(5);
   @$pb.TagNumber(20)
-  set appBlocState($2.Any v) { setField(20, v); }
+  set appBlocState($2.AppReplayWrapper v) { setField(20, v); }
   @$pb.TagNumber(20)
   $core.bool hasAppBlocState() => $_has(5);
   @$pb.TagNumber(20)
   void clearAppBlocState() => clearField(20);
   @$pb.TagNumber(20)
-  $2.Any ensureAppBlocState() => $_ensure(5);
+  $2.AppReplayWrapper ensureAppBlocState() => $_ensure(5);
 }
 
 

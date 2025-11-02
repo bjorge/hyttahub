@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { Any } from "./any";
+import { AppReplayWrapper } from "./app_wrapper";
 import { CommonReplayStateEnum, commonReplayStateEnumFromJSON, commonReplayStateEnumToJSON } from "./common_blocs";
 
 export const protobufPackage = "";
@@ -21,7 +21,7 @@ export interface SiteReplayBlocState {
   members: { [key: number]: SiteReplayBlocState_Member };
   /** members that have been removed */
   removedMembers: { [key: number]: SiteReplayBlocState_Member };
-  appBlocState?: Any | undefined;
+  appBlocState?: AppReplayWrapper | undefined;
 }
 
 export interface SiteReplayBlocState_Member {
@@ -66,7 +66,7 @@ export const SiteReplayBlocState = {
       SiteReplayBlocState_RemovedMembersEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).ldelim();
     });
     if (message.appBlocState !== undefined) {
-      Any.encode(message.appBlocState, writer.uint32(162).fork()).ldelim();
+      AppReplayWrapper.encode(message.appBlocState, writer.uint32(162).fork()).ldelim();
     }
     return writer;
   },
@@ -127,7 +127,7 @@ export const SiteReplayBlocState = {
             break;
           }
 
-          message.appBlocState = Any.decode(reader, reader.uint32());
+          message.appBlocState = AppReplayWrapper.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -163,7 +163,7 @@ export const SiteReplayBlocState = {
           {},
         )
         : {},
-      appBlocState: isSet(object.appBlocState) ? Any.fromJSON(object.appBlocState) : undefined,
+      appBlocState: isSet(object.appBlocState) ? AppReplayWrapper.fromJSON(object.appBlocState) : undefined,
     };
   },
 
@@ -203,7 +203,7 @@ export const SiteReplayBlocState = {
       }
     }
     if (message.appBlocState !== undefined) {
-      obj.appBlocState = Any.toJSON(message.appBlocState);
+      obj.appBlocState = AppReplayWrapper.toJSON(message.appBlocState);
     }
     return obj;
   },
@@ -239,7 +239,7 @@ export const SiteReplayBlocState = {
       return acc;
     }, {});
     message.appBlocState = (object.appBlocState !== undefined && object.appBlocState !== null)
-      ? Any.fromPartial(object.appBlocState)
+      ? AppReplayWrapper.fromPartial(object.appBlocState)
       : undefined;
     return message;
   },

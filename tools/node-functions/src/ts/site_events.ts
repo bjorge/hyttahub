@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { Any } from "./any";
+import { AppEventWrapper } from "./app_wrapper";
 
 export const protobufPackage = "";
 
@@ -32,7 +32,7 @@ export interface SiteEvent {
   updateMember?: SiteEvent_UpdateMember | undefined;
   exportEvent?: SiteEvent_ExportEvent | undefined;
   importEvent?: SiteEvent_ImportEvent | undefined;
-  appEvent?: Any | undefined;
+  appEvent?: AppEventWrapper | undefined;
 }
 
 /** events should be messages to allow for ease in future updates */
@@ -168,7 +168,7 @@ export const SiteEvent = {
       SiteEvent_ImportEvent.encode(message.importEvent, writer.uint32(98).fork()).ldelim();
     }
     if (message.appEvent !== undefined) {
-      Any.encode(message.appEvent, writer.uint32(162).fork()).ldelim();
+      AppEventWrapper.encode(message.appEvent, writer.uint32(162).fork()).ldelim();
     }
     return writer;
   },
@@ -262,7 +262,7 @@ export const SiteEvent = {
             break;
           }
 
-          message.appEvent = Any.decode(reader, reader.uint32());
+          message.appEvent = AppEventWrapper.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -288,7 +288,7 @@ export const SiteEvent = {
       updateMember: isSet(object.updateMember) ? SiteEvent_UpdateMember.fromJSON(object.updateMember) : undefined,
       exportEvent: isSet(object.exportEvent) ? SiteEvent_ExportEvent.fromJSON(object.exportEvent) : undefined,
       importEvent: isSet(object.importEvent) ? SiteEvent_ImportEvent.fromJSON(object.importEvent) : undefined,
-      appEvent: isSet(object.appEvent) ? Any.fromJSON(object.appEvent) : undefined,
+      appEvent: isSet(object.appEvent) ? AppEventWrapper.fromJSON(object.appEvent) : undefined,
     };
   },
 
@@ -328,7 +328,7 @@ export const SiteEvent = {
       obj.importEvent = SiteEvent_ImportEvent.toJSON(message.importEvent);
     }
     if (message.appEvent !== undefined) {
-      obj.appEvent = Any.toJSON(message.appEvent);
+      obj.appEvent = AppEventWrapper.toJSON(message.appEvent);
     }
     return obj;
   },
@@ -368,7 +368,7 @@ export const SiteEvent = {
       ? SiteEvent_ImportEvent.fromPartial(object.importEvent)
       : undefined;
     message.appEvent = (object.appEvent !== undefined && object.appEvent !== null)
-      ? Any.fromPartial(object.appEvent)
+      ? AppEventWrapper.fromPartial(object.appEvent)
       : undefined;
     return message;
   },

@@ -41,10 +41,19 @@ class PhotoInfoScreen extends StatelessWidget {
               throw UnimplementedError('Site state is uninitialized');
             }
 
-            final appBlocState = unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
-            final album = appBlocState.albums.firstWhere((a) => a.id == albumId, orElse: () => AppReplayBlocState_AlbumInfo());
-            final photoInfo = album.photos.firstWhere((p) => p.id == photoId, orElse: () => AppReplayBlocState_Photo());
-
+            final appBlocState =
+                unpackAppReplayWrapper(
+                  siteState.appBlocState,
+                  () => AppReplayBlocState(),
+                )!;
+            final album = appBlocState.albums.firstWhere(
+              (a) => a.id == albumId,
+              orElse: () => AppReplayBlocState_AlbumInfo(),
+            );
+            final photoInfo = album.photos.firstWhere(
+              (p) => p.id == photoId,
+              orElse: () => AppReplayBlocState_Photo(),
+            );
 
             if (photoInfo.id == 0) {
               return Center(
@@ -58,12 +67,16 @@ class PhotoInfoScreen extends StatelessWidget {
                 ListTile(
                   title: Text(AppLocalizations.of(context)!.app_albumLabel),
                   subtitle: Text(
-                    album.name.isNotEmpty ? album.name : AppLocalizations.of(context)!.app_notAvailable,
+                    album.name.isNotEmpty
+                        ? album.name
+                        : AppLocalizations.of(context)!.app_notAvailable,
                   ),
                   leading: const Icon(Icons.photo_album_outlined),
                 ),
                 ListTile(
-                  title: Text(AppLocalizations.of(context)!.app_originalNameLabel),
+                  title: Text(
+                    AppLocalizations.of(context)!.app_originalNameLabel,
+                  ),
                   subtitle: Text(
                     photoInfo.name.isNotEmpty
                         ? photoInfo.name
@@ -76,7 +89,8 @@ class PhotoInfoScreen extends StatelessWidget {
                   subtitle: Text(
                     photoInfo.hasSize()
                         ? AppLocalizations.of(context)!.app_photoSizeInKB(
-                            (photoInfo.size / 1024).toStringAsFixed(2))
+                          (photoInfo.size / 1024).toStringAsFixed(2),
+                        )
                         : AppLocalizations.of(context)!.app_notAvailable,
                   ),
                   leading: const Icon(Icons.sd_storage_outlined),

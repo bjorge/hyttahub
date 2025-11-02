@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "any.proto";
+import "app_wrapper.proto";
 
 // The SiteEvent is persisted in immutable firestore collection
 // do not store email addresses or any other PII in this message
@@ -63,7 +63,7 @@ message SiteEvent {
 
     /****** Application specific events ********/
 
-    Any appEvent = 20;
+    AppEventWrapper appEvent = 20;
   }
 }
 

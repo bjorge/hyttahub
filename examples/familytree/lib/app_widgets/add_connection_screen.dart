@@ -100,7 +100,10 @@ class _AddConnectionScreenState extends State<AddConnectionScreen> {
             }
 
             final appBlocState =
-                unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
+                unpackAppReplayWrapper(
+                  siteState.appBlocState,
+                  () => AppReplayBlocState(),
+                )!;
 
             final treeInfo = appBlocState.trees.firstWhere(
               (test) => test.id == widget.treeId,

@@ -48,7 +48,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     // now base64 encode the event part
     final siteEvent = SiteEvent(
       version: submitAppEvent.siteEvent.version,
-      appEvent: packAny(submitAppEvent.appEvent),
+      appEvent: packAppEventWrapper(submitAppEvent.appEvent.writeToBuffer()),
       author: submitAppEvent.siteEvent.author,
     );
 
@@ -91,7 +91,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
         final siteEvent = SiteEvent(
           version: version,
-          appEvent: packAny(newEvent),
+          appEvent: packAppEventWrapper(newEvent.writeToBuffer()),
           author: submitAppEvent.siteEvent.author,
         );
 

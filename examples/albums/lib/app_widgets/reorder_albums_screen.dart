@@ -81,7 +81,9 @@ class _ReorderAlbumsScreenState extends State<ReorderAlbumsScreen> {
                       ReorderAlbumsInputWidget(
                         formKey: _formKey,
                         labelText:
-                            AppLocalizations.of(context)!.app_reorderAlbumsTitle,
+                            AppLocalizations.of(
+                              context,
+                            )!.app_reorderAlbumsTitle,
                         eventFactory: appEventSubmissionFactory,
                       ),
                     ],
@@ -116,12 +118,22 @@ class ReorderAlbumsInputWidget
     SubmitAppEvent payload,
   ) {
     final siteState = context.read<SiteReplayBloc>().state;
-    final appBlocState = unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
+    final appBlocState =
+        unpackAppReplayWrapper(
+          siteState.appBlocState,
+          () => AppReplayBlocState(),
+        )!;
     final albumIds = payload.appEvent.reorderAlbums.albumIds;
 
     return albumIds.map((id) {
-      final album = appBlocState.albums.firstWhere((a) => a.id == id, orElse: () => AppReplayBlocState_AlbumInfo());
-      final albumName = album.name.isNotEmpty ? album.name : AppLocalizations.of(context)!.app_unknownAlbum;
+      final album = appBlocState.albums.firstWhere(
+        (a) => a.id == id,
+        orElse: () => AppReplayBlocState_AlbumInfo(),
+      );
+      final albumName =
+          album.name.isNotEmpty
+              ? album.name
+              : AppLocalizations.of(context)!.app_unknownAlbum;
       return ReorderableItem(
         id: id,
         title: albumName,

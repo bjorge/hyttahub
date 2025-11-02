@@ -53,7 +53,7 @@ class _TreeScreenState extends State<TreeScreen> {
               final isEditMode =
                   context.watch<SiteEditModeCubit>().state ?? false;
               final appBlocState =
-                  unpackAny(
+                  unpackAppReplayWrapper(
                     siteState.appBlocState,
                     () => AppReplayBlocState(),
                   )!;
@@ -91,11 +91,12 @@ class _TreeScreenState extends State<TreeScreen> {
                 body:
                     treeInfo.treePersons.isEmpty
                         ? Center(
-                            child: Text(
-                              AppLocalizations.of(context)!
-                                  .app_noMembersInThisTree,
-                            ),
-                          )
+                          child: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.app_noMembersInThisTree,
+                          ),
+                        )
                         : ListView.builder(
                           itemCount: treeInfo.treePersons.length,
                           itemBuilder: (context, index) {
@@ -107,16 +108,17 @@ class _TreeScreenState extends State<TreeScreen> {
                                 personInfo.connections.length;
                             String subtitleText = '';
                             if (photoCount > 0) {
-                              subtitleText +=
-                                  AppLocalizations.of(context)!
-                                      .app_photosCount(photoCount);
+                              subtitleText += AppLocalizations.of(
+                                context,
+                              )!.app_photosCount(photoCount);
                             }
                             if (connectionCount > 0) {
                               if (subtitleText.isNotEmpty) {
                                 subtitleText += ' / ';
                               }
-                              subtitleText += AppLocalizations.of(context)!
-                                  .app_connectionsCount(connectionCount);
+                              subtitleText += AppLocalizations.of(
+                                context,
+                              )!.app_connectionsCount(connectionCount);
                             }
 
                             return ListTile(
@@ -144,8 +146,10 @@ class _TreeScreenState extends State<TreeScreen> {
                                         children: [
                                           IconButton(
                                             icon: const Icon(Icons.add_link),
-                                            tooltip: AppLocalizations.of(context)!
-                                                .app_addConnectionTooltip,
+                                            tooltip:
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.app_addConnectionTooltip,
                                             onPressed: () {
                                               final submmitValue = SubmitAppEvent(
                                                 authorEmail:
@@ -190,8 +194,10 @@ class _TreeScreenState extends State<TreeScreen> {
                                           ),
                                           IconButton(
                                             icon: const Icon(Icons.add_a_photo),
-                                            tooltip: AppLocalizations.of(context)!
-                                                .app_addPhotoTooltip,
+                                            tooltip:
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.app_addPhotoTooltip,
                                             onPressed: () {
                                               final submmitValue = SubmitAppEvent(
                                                 authorEmail:
@@ -303,7 +309,7 @@ class TreeSettingsButton extends StatelessWidget {
                     Navigator.pop(dialogContext);
 
                     final appBlocState =
-                        unpackAny(
+                        unpackAppReplayWrapper(
                           siteState.appBlocState,
                           () => AppReplayBlocState(),
                         )!;

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+// The SiteEvent is persisted in immutable firestore collection
+// do not store email addresses or any other PII in this message
+message AppEventWrapper {
+  bytes payload = 1;
+}
+
+message AppReplayWrapper {
+  bytes payload = 1;
+}

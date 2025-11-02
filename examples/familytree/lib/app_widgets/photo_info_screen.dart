@@ -44,7 +44,10 @@ class PhotoInfoScreen extends StatelessWidget {
 
             // final photoInfo = siteState.appBlocState.photos[photoId];
             final appBlocState =
-                unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
+                unpackAppReplayWrapper(
+                  siteState.appBlocState,
+                  () => AppReplayBlocState(),
+                )!;
 
             final photoInfo = appBlocState.trees
                 .firstWhere((test) => test.id == treeId)

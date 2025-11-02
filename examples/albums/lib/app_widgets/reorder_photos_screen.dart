@@ -82,7 +82,8 @@ class _ReorderPhotosScreenState extends State<ReorderPhotosScreen> {
                     children: [
                       ReorderPhotosInputWidget(
                         formKey: _formKey,
-                        labelText: AppLocalizations.of(context)!.app_reorderPhotos,
+                        labelText:
+                            AppLocalizations.of(context)!.app_reorderPhotos,
                         albumId: widget.albumId,
                       ),
                     ],
@@ -119,12 +120,23 @@ class ReorderPhotosInputWidget
     SubmitAppEvent payload,
   ) {
     final siteState = context.read<SiteReplayBloc>().state;
-    final appBlocState = unpackAny(siteState.appBlocState, () => AppReplayBlocState())!;
-    final album = appBlocState.albums.firstWhere((a) => a.id == albumId, orElse: () => AppReplayBlocState_AlbumInfo());
+    final appBlocState =
+        unpackAppReplayWrapper(
+          siteState.appBlocState,
+          () => AppReplayBlocState(),
+        )!;
+    final album = appBlocState.albums.firstWhere(
+      (a) => a.id == albumId,
+      orElse: () => AppReplayBlocState_AlbumInfo(),
+    );
 
     return payload.appEvent.reorderPhotos.photoIds.map((id) {
-      final photoInfo = album.photos.firstWhere((p) => p.id == id, orElse: () => AppReplayBlocState_Photo());
-      final photoName = photoInfo.name.isNotEmpty ? photoInfo.name : id.toString();
+      final photoInfo = album.photos.firstWhere(
+        (p) => p.id == id,
+        orElse: () => AppReplayBlocState_Photo(),
+      );
+      final photoName =
+          photoInfo.name.isNotEmpty ? photoInfo.name : id.toString();
 
       return ReorderableItem(
         id: id,

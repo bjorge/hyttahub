@@ -28,7 +28,7 @@ const SiteEvent$json = {
     {'1': 'updateMember', '3': 10, '4': 1, '5': 11, '6': '.SiteEvent.UpdateMember', '9': 0, '10': 'updateMember'},
     {'1': 'exportEvent', '3': 11, '4': 1, '5': 11, '6': '.SiteEvent.ExportEvent', '9': 0, '10': 'exportEvent'},
     {'1': 'importEvent', '3': 12, '4': 1, '5': 11, '6': '.SiteEvent.ImportEvent', '9': 0, '10': 'importEvent'},
-    {'1': 'appEvent', '3': 20, '4': 1, '5': 11, '6': '.Any', '9': 0, '10': 'appEvent'},
+    {'1': 'appEvent', '3': 20, '4': 1, '5': 11, '6': '.AppEventWrapper', '9': 0, '10': 'appEvent'},
   ],
   '3': [SiteEvent_NewSite$json, SiteEvent_AddMember$json, SiteEvent_RemoveMember$json, SiteEvent_RestoreMember$json, SiteEvent_UpdateMember$json, SiteEvent_LeaveSite$json, SiteEvent_UpdateSiteName$json, SiteEvent_ExportEvent$json, SiteEvent_ImportEvent$json],
   '8': [
@@ -129,20 +129,20 @@ final $typed_data.Uint8List siteEventDescriptor = $convert.base64Decode(
     'RvcmVNZW1iZXJIAFINcmVzdG9yZU1lbWJlchI9Cgx1cGRhdGVNZW1iZXIYCiABKAsyFy5TaXRl'
     'RXZlbnQuVXBkYXRlTWVtYmVySABSDHVwZGF0ZU1lbWJlchI6CgtleHBvcnRFdmVudBgLIAEoCz'
     'IWLlNpdGVFdmVudC5FeHBvcnRFdmVudEgAUgtleHBvcnRFdmVudBI6CgtpbXBvcnRFdmVudBgM'
-    'IAEoCzIWLlNpdGVFdmVudC5JbXBvcnRFdmVudEgAUgtpbXBvcnRFdmVudBIiCghhcHBFdmVudB'
-    'gUIAEoCzIELkFueUgAUghhcHBFdmVudBphCgdOZXdTaXRlEhoKCHNpdGVOYW1lGAEgASgJUghz'
-    'aXRlTmFtZRIeCgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhoKCGluc3RhbmNlGAMgAS'
-    'gJUghpbnN0YW5jZRpBCglBZGRNZW1iZXISHgoKbWVtYmVyTmFtZRgBIAEoCVIKbWVtYmVyTmFt'
-    'ZRIUCgVhZG1pbhgCIAEoCFIFYWRtaW4aKgoMUmVtb3ZlTWVtYmVyEhoKCG1lbWJlcklkGAEgAS'
-    'gFUghtZW1iZXJJZBphCg1SZXN0b3JlTWVtYmVyEhoKCG1lbWJlcklkGAEgASgFUghtZW1iZXJJ'
-    'ZBIeCgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhQKBWFkbWluGAMgASgIUgVhZG1pbh'
-    'pgCgxVcGRhdGVNZW1iZXISGgoIbWVtYmVySWQYASABKAVSCG1lbWJlcklkEh4KCm1lbWJlck5h'
-    'bWUYAiABKAlSCm1lbWJlck5hbWUSFAoFYWRtaW4YAyABKAhSBWFkbWluGicKCUxlYXZlU2l0ZR'
-    'IaCghtZW1iZXJJZBgBIAEoBVIIbWVtYmVySWQaJAoOVXBkYXRlU2l0ZU5hbWUSEgoEbmFtZRgB'
-    'IAEoCVIEbmFtZRplCgtFeHBvcnRFdmVudBImCg5wcmV2aW91c1NpdGVJZBgBIAEoCVIOcHJldm'
-    'lvdXNTaXRlSWQSFAoFYXBwSWQYAiABKAlSBWFwcElkEhgKB2FwcE5hbWUYAyABKAlSB2FwcE5h'
-    'bWUaKQoLSW1wb3J0RXZlbnQSGgoIc2l0ZU5hbWUYASABKAlSCHNpdGVOYW1lQgwKCmV2ZW50X3'
-    'R5cGU=');
+    'IAEoCzIWLlNpdGVFdmVudC5JbXBvcnRFdmVudEgAUgtpbXBvcnRFdmVudBIuCghhcHBFdmVudB'
+    'gUIAEoCzIQLkFwcEV2ZW50V3JhcHBlckgAUghhcHBFdmVudBphCgdOZXdTaXRlEhoKCHNpdGVO'
+    'YW1lGAEgASgJUghzaXRlTmFtZRIeCgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhoKCG'
+    'luc3RhbmNlGAMgASgJUghpbnN0YW5jZRpBCglBZGRNZW1iZXISHgoKbWVtYmVyTmFtZRgBIAEo'
+    'CVIKbWVtYmVyTmFtZRIUCgVhZG1pbhgCIAEoCFIFYWRtaW4aKgoMUmVtb3ZlTWVtYmVyEhoKCG'
+    '1lbWJlcklkGAEgASgFUghtZW1iZXJJZBphCg1SZXN0b3JlTWVtYmVyEhoKCG1lbWJlcklkGAEg'
+    'ASgFUghtZW1iZXJJZBIeCgptZW1iZXJOYW1lGAIgASgJUgptZW1iZXJOYW1lEhQKBWFkbWluGA'
+    'MgASgIUgVhZG1pbhpgCgxVcGRhdGVNZW1iZXISGgoIbWVtYmVySWQYASABKAVSCG1lbWJlcklk'
+    'Eh4KCm1lbWJlck5hbWUYAiABKAlSCm1lbWJlck5hbWUSFAoFYWRtaW4YAyABKAhSBWFkbWluGi'
+    'cKCUxlYXZlU2l0ZRIaCghtZW1iZXJJZBgBIAEoBVIIbWVtYmVySWQaJAoOVXBkYXRlU2l0ZU5h'
+    'bWUSEgoEbmFtZRgBIAEoCVIEbmFtZRplCgtFeHBvcnRFdmVudBImCg5wcmV2aW91c1NpdGVJZB'
+    'gBIAEoCVIOcHJldmlvdXNTaXRlSWQSFAoFYXBwSWQYAiABKAlSBWFwcElkEhgKB2FwcE5hbWUY'
+    'AyABKAlSB2FwcE5hbWUaKQoLSW1wb3J0RXZlbnQSGgoIc2l0ZU5hbWUYASABKAlSCHNpdGVOYW'
+    '1lQgwKCmV2ZW50X3R5cGU=');
 
 @$core.Deprecated('Use submitSiteEventDescriptor instead')
 const SubmitSiteEvent$json = {
