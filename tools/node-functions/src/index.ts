@@ -1,6 +1,7 @@
-import * as admin from "firebase-admin";
-
-admin.initializeApp();
+/**
+ * Main entry point for the @hyttahub/functions package.
+ * This file exports all the cloud functions that can be reused in other Firebase projects.
+ */
 
 export {
   uploadFile,

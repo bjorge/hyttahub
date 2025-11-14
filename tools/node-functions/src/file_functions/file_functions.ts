@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import { admin } from "../shared/firebase";
 import * as logger from "firebase-functions/logger";
 
 import {

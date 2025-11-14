@@ -28,5 +28,5 @@ EXPOSE 4000 4500 5000 5001 8080 8085 9000 9099 9199
 
 # Start Firebase Emulator
 # CMD ["sh", "-c", "firebase emulators:start --project demo-project"]
-CMD ["sh", "-c", "cd node-functions && npm install && npm run build && cd .. && firebase emulators:start --project demo-project"]
+CMD ["sh", "-c", "cd node-functions && npm install && npm run build && npm pack && cd .. && firebase emulators:start --project demo-project"]
 

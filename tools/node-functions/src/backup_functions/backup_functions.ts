@@ -1,5 +1,5 @@
-import * as admin from "firebase-admin";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
+import { admin } from "../shared/firebase";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
