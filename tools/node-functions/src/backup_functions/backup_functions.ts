@@ -26,7 +26,7 @@ import { onDocumentWritten } from "firebase-functions/v2/firestore";
 // Helper to extract events.txt and photo buffers from an opened unzipper directory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
 // unexpected file that is neither `events.txt` at the root nor under `storage/`.
-export async function extractEventsAndPhotosFromZip(directory: any): Promise<{
+async function extractEventsAndFilesFromZip(directory: any): Promise<{
   eventsContent: string;
   photos: Array<{ relativePath: string; buffer: Buffer }>;
 }> {
@@ -476,7 +476,7 @@ export const importSite = onCall({ cors: true }, async (request) => {
 
     // Extract events and photos from the zip. This will throw an HttpsError
     // with code 'invalid-argument' if the archive contains unexpected files.
-    const { eventsContent, photos } = await extractEventsAndPhotosFromZip(directory);
+    const { eventsContent, photos } = await extractEventsAndFilesFromZip(directory);
 
     // Make sure the last event is an export event for the expected app.
     const eventLines = eventsContent.split("\n").filter((line) => line);
