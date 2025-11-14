@@ -107,22 +107,16 @@ export const backupSite = onDocumentWritten(
     const siteId = event.params.siteId;
 
 
-    // Try to infer a requester email if the client wrote one into the request doc.
     const docData = after.data() || {};
 
-    // Check fbLastExportTime ('l'). If empty, perform export and merge fbLastExportTime as now.
     // If present, only perform export if at least 5 minutes have passed since fbTimeStamp on the request.
     let authorId = 0;
     let appId = '';
     try {
-      // const lastExport = (docData as any)[fbLastExportTime];
       const reqTsRaw = (docData as any)[fbTimeStamp];
       authorId = (docData as any)[fbUserId];
       appId = (docData as any)[fbAppId];
       logger.info("Author ID for export request:", authorId);
-
-
-      // const now = new Date();
 
       // Read last export timestamp (if any) before deciding whether to run an export.
       const lastExportRef = admin
@@ -149,22 +143,22 @@ export const backupSite = onDocumentWritten(
       }
 
       if (!lastExport) {
-        // No previous export recorded: write fbLastExportTime and proceed
         await admin
           .firestore()
           .doc(`hyttahub/${appName}/sites/${siteId}/site_exports/last_export`)
           .set({ [fbTimeStamp]: FieldValue.serverTimestamp() }, { merge: true });
       } else {
-        // lastExport exists; require request timestamp to be at least 5 minutes older than last export
         if (!reqTsRaw) {
           logger.info('exportSite: fbTimeStamp not present on request doc; skipping export.');
           return null;
         }
 
+        const EXPORT_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+        // lastExport exists; require request timestamp to be at least 5 minutes greater than last export
         const reqTs = reqTsRaw.toDate ? reqTsRaw.toDate() : new Date(reqTsRaw);
         const lastExportTs = lastExport.toDate();
-        const elapsedMs = lastExportTs.getTime() - reqTs.getTime();
-        if (elapsedMs < 5 * 60 * 1000) {
+        const elapsedMs = reqTs.getTime() - lastExportTs.getTime();
+        if (elapsedMs < EXPORT_COOLDOWN_MS) {
           logger.info(`exportSite: request timestamp is only ${elapsedMs}ms old (<5min). Skipping export.`);
           return null;
         }
