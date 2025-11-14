@@ -75,7 +75,7 @@ flutter gen-l10n
 
 ```sh
 git tag v0.1.9
-push origin --tags
+git push origin --tags
 ```
 
 **How do I compile the protocol buffer files?**
