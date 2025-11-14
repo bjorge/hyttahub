@@ -25,6 +25,15 @@ export {
   processMarkForDeleteRecords,
 } from "./hyttahub_functions/hyttahub_functions";
 
+// Export helper functions for app cloud functions.
 export {
   createSiteEventPayload,
 } from "./shared/app_payload";
+
+export {
+  fbPayload,
+  fbTimeStamp,
+  firebaseSiteEventsPath,
+  fbVersion,
+  firebaseSitesPath,
+} from "./shared/constants";
