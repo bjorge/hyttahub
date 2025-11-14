@@ -65,6 +65,14 @@ After updating the `.arb` files, run:
 flutter gen-l10n
 ```
 
+**How do I tag a new release?**
+
+```sh
+git tag v0.1.9
+push origin --tags
+```
+
+
 **How do I compile the protocol buffer files?**
 
 Protocol buffer files can be compiled for both Dart and TypeScript using Podman or Docker. See the README in [`dev_tools/protobuf-compiler`](dev_tools/protobuf-compiler) for instructions.
