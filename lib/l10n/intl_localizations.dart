@@ -117,12 +117,6 @@ abstract class HyttaHubLocalizations {
   /// **'Create Account'**
   String get createAccountTitle;
 
-  /// No description provided for @loginWelcomeMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to Hytta Hub Connections!'**
-  String get loginWelcomeMessage;
-
   /// No description provided for @loginEmailLabel.
   ///
   /// In en, this message translates to:

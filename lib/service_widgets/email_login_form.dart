@@ -63,7 +63,6 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
                 // spacing: 10.0,
                 submitState: state,
                 children: [
-                  Center(child: Text(localizations.loginWelcomeMessage)),
                   EmailFormField(
                     formKey: _formKey,
                     labelText: localizations.loginEmailLabel,

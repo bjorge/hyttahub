@@ -15,9 +15,6 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String get createAccountTitle => 'Crea Account';
 
   @override
-  String get loginWelcomeMessage => 'Benvenuto in Hytta Hub Connections!';
-
-  @override
   String get loginEmailLabel => 'Email';
 
   @override

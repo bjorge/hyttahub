@@ -2,7 +2,6 @@
   "@@locale": "en",
   "loginTitle": "Login",
   "createAccountTitle": "Create Account",
-  "loginWelcomeMessage": "Welcome to Hytta Hub Connections!",
   "loginEmailLabel": "Email",
   "loginPasswordLabel": "Password",
   "loginPasswordHelperText": "Password must be at least 16 characters long.",

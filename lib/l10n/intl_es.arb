@@ -2,7 +2,6 @@
   "@@locale": "es",
   "loginTitle": "Iniciar sesión",
   "createAccountTitle": "Crear cuenta",
-  "loginWelcomeMessage": "¡Bienvenido a Hytta Hub Connections!",
   "loginEmailLabel": "Correo electrónico",
   "loginPasswordLabel": "Contraseña",
   "loginPasswordHelperText": "La contraseña debe tener al menos 16 caracteres.",
