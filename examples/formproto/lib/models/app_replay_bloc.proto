@@ -4,5 +4,4 @@ package hyttahub.example.formproto;
 
 message AppReplayBlocState {
   string text = 1;
-  bool submitted = 2;
 }

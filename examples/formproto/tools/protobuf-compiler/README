@@ -1,0 +1,29 @@
+# To update protocol buffer files for flutter and firebase functions, use this Podman
+
+# run the following to check the local architecture:
+uname -m
+
+# install docker or podman
+
+# Example podman in chromeos flex virtual machine:
+sudo podman build -t localhost/formproto-protobuf-compiler-image --build-arg ARCH=x64 -f Podmanfile
+
+# Example docker on mac m1:
+docker build -t formproto-protobuf-compiler-image --build-arg ARCH=arm64 -f Podmanfile .
+
+# Example running the podman:
+sudo podman run --rm -it \
+  --name protobuf-compiler-container \
+  -v "$(pwd)/../../lib/models:/workspace/proto_input:ro" \
+  -v "$(pwd)/../../lib/proto:/workspace/flutter_output" \
+  localhost/formproto-protobuf-compiler-image \
+  /workspace/compile_proto.sh
+
+# Example running docker (mac m1)
+docker run --rm -it \
+  --name protobuf-compiler-container \
+  -v "$(pwd)/../../lib/models:/workspace/proto_input:ro" \
+  -v "$(pwd)/../../lib/proto:/workspace/flutter_output" \
+  formproto-protobuf-compiler-image \
+  /workspace/compile_proto.sh
+
