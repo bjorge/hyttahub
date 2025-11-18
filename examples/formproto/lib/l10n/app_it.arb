@@ -1,0 +1,26 @@
+{
+  "app_appTitle": "Hytta Hub Modulo Proto",
+  "app_nightMode": "Modalità notturna",
+  "app_themeSettingsAlwaysOff": "Sempre spento",
+  "app_themeSettingsAlwaysOn": "Sempre acceso",
+  "app_themeSettingsAutomatic": "Automatico",
+  "app_versionInfo": "Versione {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Seleziona la lingua",
+  "app_english": "Inglese",
+  "app_italian": "Italiano",
+  "app_spanish": "Spagnolo",
+  "app_enterButton": "Entra",
+  "app_otherAppsTitle": "Altre applicazioni Hytta Hub",
+  "app_reservationsAppButton": "Hytta Hub Prenotazioni",
+  "app_serviceLoginButton": "Accesso al servizio"
+}

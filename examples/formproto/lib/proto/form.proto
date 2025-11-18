@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package hyttahub.example.formproto;
+
+message Form {
+  string text = 1;
+  bool submitted = 2;
+}

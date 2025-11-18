@@ -1,0 +1,26 @@
+{
+  "app_appTitle": "Hytta Hub Formulario Proto",
+  "app_nightMode": "Modo nocturno",
+  "app_themeSettingsAlwaysOff": "Siempre apagado",
+  "app_themeSettingsAlwaysOn": "Siempre encendido",
+  "app_themeSettingsAutomatic": "Automático",
+  "app_versionInfo": "Versión {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Seleccionar idioma",
+  "app_english": "Inglés",
+  "app_italian": "Italiano",
+  "app_spanish": "Español",
+  "app_enterButton": "Entrar",
+  "app_otherAppsTitle": "Otras aplicaciones de Hytta Hub",
+  "app_reservationsAppButton": "Reservas de Hytta Hub",
+  "app_serviceLoginButton": "Inicio de sesión de servicio"
+}
