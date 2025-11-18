@@ -25,7 +25,7 @@ AppReplayWrapper appReplay(
 
   if (siteEvent.hasAppEvent()) {
     final appEvent = unpackAppEventWrapper(siteEvent.appEvent, AppEvent.create);
-    if (appEvent != null && appEvent.hasUpdateText()) {
+    if (appEvent.hasUpdateText()) {
       appBlocState.text = appEvent.updateText.text;
     }
   }

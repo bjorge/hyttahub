@@ -22,7 +22,7 @@ T unpackAppReplayWrapper<T extends GeneratedMessage>(
 }
 
 /// Unpacks an AppEventWrapper into a target message type
-T? unpackAppEventWrapper<T extends GeneratedMessage>(
+T unpackAppEventWrapper<T extends GeneratedMessage>(
   AppEventWrapper any,
   T Function() create,
 ) {

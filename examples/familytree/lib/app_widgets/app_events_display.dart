@@ -56,7 +56,7 @@ class AppEventsConfig
       ..version = siteEvent.version
       ..appEvent =
           siteEvent.hasAppEvent()
-              ? unpackAppEventWrapper(siteEvent.appEvent, () => AppEvent())!
+              ? unpackAppEventWrapper(siteEvent.appEvent, () => AppEvent())
               : AppEvent()
       ..freeze();
   }

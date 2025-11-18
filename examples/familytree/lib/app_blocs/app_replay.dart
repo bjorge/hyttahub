@@ -21,7 +21,7 @@ AppReplayWrapper appReplay(SiteReplayBlocState siteReplay, SiteEvent event) {
           : AppReplayBlocState();
 
   if (event.hasAppEvent()) {
-    final appEvent = unpackAppEventWrapper(event.appEvent, () => AppEvent())!;
+    final appEvent = unpackAppEventWrapper(event.appEvent, () => AppEvent());
 
     final eventVersion = event.version;
 
