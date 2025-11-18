@@ -52,11 +52,10 @@ class _TreeScreenState extends State<TreeScreen> {
             builder: (context) {
               final isEditMode =
                   context.watch<SiteEditModeCubit>().state ?? false;
-              final appBlocState =
-                  unpackAppReplayWrapper(
-                    siteState.appBlocState,
-                    () => AppReplayBlocState(),
-                  )!;
+              final appBlocState = unpackAppReplayWrapper(
+                siteState.appBlocState,
+                () => AppReplayBlocState(),
+              );
 
               final treeInfo = appBlocState.trees.firstWhere(
                 (test) => test.id == widget.treeId,
@@ -308,11 +307,10 @@ class TreeSettingsButton extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(dialogContext);
 
-                    final appBlocState =
-                        unpackAppReplayWrapper(
-                          siteState.appBlocState,
-                          () => AppReplayBlocState(),
-                        )!;
+                    final appBlocState = unpackAppReplayWrapper(
+                      siteState.appBlocState,
+                      () => AppReplayBlocState(),
+                    );
 
                     final submmitValue = SubmitAppEvent(
                       authorEmail: GetIt.instance<AuthBloc>().state.email,

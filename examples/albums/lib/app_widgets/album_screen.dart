@@ -79,11 +79,10 @@ class _AlbumScreenState extends State<AlbumScreen> {
           }
           return Builder(
             builder: (context) {
-              final appState =
-                  unpackAppReplayWrapper(
-                    siteState.appBlocState,
-                    () => AppReplayBlocState(),
-                  )!;
+              final appState = unpackAppReplayWrapper(
+                siteState.appBlocState,
+                () => AppReplayBlocState(),
+              );
 
               final album = appState.albums.firstWhere(
                 (test) => test.id == widget.albumId,
@@ -362,11 +361,10 @@ class AlbumSettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final siteState = context.read<SiteReplayBloc>().state;
-    final appState =
-        unpackAppReplayWrapper(
-          siteState.appBlocState,
-          () => AppReplayBlocState(),
-        )!;
+    final appState = unpackAppReplayWrapper(
+      siteState.appBlocState,
+      () => AppReplayBlocState(),
+    );
     final album = appState.albums.firstWhere(
       (a) => a.id == albumId,
       orElse: () => AppReplayBlocState_AlbumInfo(),

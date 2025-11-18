@@ -99,11 +99,10 @@ class _AddConnectionScreenState extends State<AddConnectionScreen> {
               return const CircularProgressIndicator();
             }
 
-            final appBlocState =
-                unpackAppReplayWrapper(
-                  siteState.appBlocState,
-                  () => AppReplayBlocState(),
-                )!;
+            final appBlocState = unpackAppReplayWrapper(
+              siteState.appBlocState,
+              () => AppReplayBlocState(),
+            );
 
             final treeInfo = appBlocState.trees.firstWhere(
               (test) => test.id == widget.treeId,

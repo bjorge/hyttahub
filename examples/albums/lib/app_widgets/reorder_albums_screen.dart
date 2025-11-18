@@ -118,11 +118,10 @@ class ReorderAlbumsInputWidget
     SubmitAppEvent payload,
   ) {
     final siteState = context.read<SiteReplayBloc>().state;
-    final appBlocState =
-        unpackAppReplayWrapper(
-          siteState.appBlocState,
-          () => AppReplayBlocState(),
-        )!;
+    final appBlocState = unpackAppReplayWrapper(
+      siteState.appBlocState,
+      () => AppReplayBlocState(),
+    );
     final albumIds = payload.appEvent.reorderAlbums.albumIds;
 
     return albumIds.map((id) {

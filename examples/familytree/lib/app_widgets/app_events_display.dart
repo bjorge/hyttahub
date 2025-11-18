@@ -72,7 +72,7 @@ class AppEventsConfig
         ? unpackAppReplayWrapper(
           replay.appBlocState,
           () => AppReplayBlocState(),
-        )!
+        )
         : AppReplayBlocState();
   }
 }

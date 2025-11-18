@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formproto/l10n/app_localizations.dart';
 import 'package:formproto/app_widgets/site_screen_settings_button.dart';
 import 'package:formproto/proto/app_events.pb.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
@@ -13,44 +12,11 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
-import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
-import 'package:protobuf/protobuf.dart';
-
-/// Handles the different states of the [SiteReplayBloc] and returns a widget
-/// for loading or error states.
-///
-/// Returns a [Widget] to display if the state is not 'ok', otherwise returns `null`.
-/// TODO: Move to common utils in hyttahub package
-Widget? handleSiteReplayState(
-  BuildContext context,
-  SiteReplayBlocState siteState,
-) {
-  final l10n = AppLocalizations.of(context)!;
-  if (!siteState.hasState() ||
-      siteState.state == CommonReplayStateEnum.fetchingConfig) {
-    return const Center(child: CircularProgressIndicator());
-  }
-
-  switch (siteState.state) {
-    case CommonReplayStateEnum.ok:
-      if (!siteState.hasState()) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return null;
-    case CommonReplayStateEnum.fetchingConfig:
-      return const Center(child: CircularProgressIndicator());
-    case CommonReplayStateEnum.uninitialized:
-    case CommonReplayStateEnum.networkError:
-      return Center(child: Text(l10n.app_unexpectedError));
-    case CommonReplayStateEnum.permissionDenied:
-      return Center(child: Text(l10n.app_sitePermissionDenied));
-    default:
-      return Center(child: Text(l10n.app_unexpectedError));
-  }
-}
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class SiteScreen extends StatelessWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -76,11 +42,7 @@ class SiteScreen extends StatelessWidget {
         ),
         body: CommonListViewLayout(
           spacing: 10.0,
-          children: [
-            Text('Site ID: $siteId'),
-            TextValue(),
-            UpdateButton(siteId: siteId),
-          ],
+          children: [TextValue(), UpdateButton(siteId: siteId)],
         ),
       ),
     );
@@ -184,13 +146,4 @@ class ScreenTitle extends StatelessWidget {
       },
     );
   }
-}
-
-T unpackAppReplayWrapper<T extends GeneratedMessage>(
-  AppReplayWrapper any,
-  T Function() create,
-) {
-  final message = create();
-  message.mergeFromBuffer(any.payload);
-  return message;
 }

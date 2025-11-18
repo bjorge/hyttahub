@@ -120,11 +120,10 @@ class ReorderPhotosInputWidget
     SubmitAppEvent payload,
   ) {
     final siteState = context.read<SiteReplayBloc>().state;
-    final appBlocState =
-        unpackAppReplayWrapper(
-          siteState.appBlocState,
-          () => AppReplayBlocState(),
-        )!;
+    final appBlocState = unpackAppReplayWrapper(
+      siteState.appBlocState,
+      () => AppReplayBlocState(),
+    );
     final album = appBlocState.albums.firstWhere(
       (a) => a.id == albumId,
       orElse: () => AppReplayBlocState_AlbumInfo(),

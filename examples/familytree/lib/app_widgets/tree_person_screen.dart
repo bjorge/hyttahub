@@ -45,11 +45,10 @@ class TreePersonScreen extends StatelessWidget {
             throw UnimplementedError('Site state is uninitialized');
           }
 
-          final appBlocState =
-              unpackAppReplayWrapper(
-                siteState.appBlocState,
-                () => AppReplayBlocState(),
-              )!;
+          final appBlocState = unpackAppReplayWrapper(
+            siteState.appBlocState,
+            () => AppReplayBlocState(),
+          );
 
           final tree = appBlocState.trees.firstWhereOrNull(
             (t) => t.id == treeId,

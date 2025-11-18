@@ -12,7 +12,7 @@ AppEventWrapper packAppEventWrapper(Uint8List appEvent) {
 }
 
 /// Unpacks an AppReplayWrapper into a target message type
-T? unpackAppReplayWrapper<T extends GeneratedMessage>(
+T unpackAppReplayWrapper<T extends GeneratedMessage>(
   AppReplayWrapper any,
   T Function() create,
 ) {
