@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formproto/l10n/app_localizations.dart';
+import 'package:formproto/app_widgets/site_screen_settings_button.dart';
 import 'package:formproto/proto/app_events.pb.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
 import 'package:formproto/routers/app_routes.dart';
@@ -17,6 +19,39 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:protobuf/protobuf.dart';
 
+/// Handles the different states of the [SiteReplayBloc] and returns a widget
+/// for loading or error states.
+///
+/// Returns a [Widget] to display if the state is not 'ok', otherwise returns `null`.
+/// TODO: Move to common utils in hyttahub package
+Widget? handleSiteReplayState(
+  BuildContext context,
+  SiteReplayBlocState siteState,
+) {
+  final l10n = AppLocalizations.of(context)!;
+  if (!siteState.hasState() ||
+      siteState.state == CommonReplayStateEnum.fetchingConfig) {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  switch (siteState.state) {
+    case CommonReplayStateEnum.ok:
+      if (!siteState.hasState()) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return null;
+    case CommonReplayStateEnum.fetchingConfig:
+      return const Center(child: CircularProgressIndicator());
+    case CommonReplayStateEnum.uninitialized:
+    case CommonReplayStateEnum.networkError:
+      return Center(child: Text(l10n.app_unexpectedError));
+    case CommonReplayStateEnum.permissionDenied:
+      return Center(child: Text(l10n.app_sitePermissionDenied));
+    default:
+      return Center(child: Text(l10n.app_unexpectedError));
+  }
+}
+
 class SiteScreen extends StatelessWidget {
   const SiteScreen({super.key, required this.siteId});
 
@@ -24,19 +59,22 @@ class SiteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Form Proto')),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider<SiteReplayBloc>(
-            key: Key('SiteReplayBloc-albums-$siteId'),
-            create:
-                (_) =>
-                    SiteReplayBloc(siteId)
-                      ..add(CommonReplayBlocEvent(listen: true)),
-          ),
-        ],
-        child: CommonListViewLayout(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SiteReplayBloc>(
+          key: Key('SiteReplayBloc-albums-$siteId'),
+          create:
+              (_) =>
+                  SiteReplayBloc(siteId)
+                    ..add(CommonReplayBlocEvent(listen: true)),
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: const ScreenTitle(),
+          actions: [SiteSettingsButton(siteId: siteId)],
+        ),
+        body: CommonListViewLayout(
           spacing: 10.0,
           children: [
             Text('Site ID: $siteId'),
@@ -58,11 +96,9 @@ class UpdateButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
       builder: (context, siteState) {
-        if (!siteState.hasState() ||
-            siteState.state == CommonReplayStateEnum.fetchingConfig) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (siteState.state == CommonReplayStateEnum.uninitialized) {
-          throw UnimplementedError('Site state is uninitialized');
+        final errorWidget = handleSiteReplayState(context, siteState);
+        if (errorWidget != null) {
+          return errorWidget;
         }
 
         final appReplay =
@@ -110,11 +146,9 @@ class TextValue extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
       builder: (context, siteState) {
-        if (!siteState.hasState() ||
-            siteState.state == CommonReplayStateEnum.fetchingConfig) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (siteState.state == CommonReplayStateEnum.uninitialized) {
-          throw UnimplementedError('Site state is uninitialized');
+        final errorWidget = handleSiteReplayState(context, siteState);
+        if (errorWidget != null) {
+          return errorWidget;
         }
 
         final appReplay =
@@ -127,6 +161,26 @@ class TextValue extends StatelessWidget {
         final textValue = appReplay.hasText() ? appReplay.text : '';
 
         return Text("Text Value: $textValue ");
+      },
+    );
+  }
+}
+
+class ScreenTitle extends StatelessWidget {
+  const ScreenTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
+      builder: (context, siteState) {
+        final errorWidget = handleSiteReplayState(context, siteState);
+        if (errorWidget != null) {
+          return errorWidget;
+        }
+
+        final siteName = siteState.name;
+
+        return Text(siteName);
       },
     );
   }

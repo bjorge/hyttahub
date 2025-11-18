@@ -56,7 +56,24 @@ class SiteScreenFormRoute extends GoRoute {
 
 final siteScreenFormRoute = SiteScreenFormRoute(routes: []);
 
-final siteScreenRoute = SiteScreenRoute(routes: [siteScreenFormRoute]);
+final renameSiteRoute = RenameSiteRoute();
+final exportSiteRoute = ExportSiteRoute();
+final manageExportsRoute = ManageExportsRoute();
+final siteMembersRoute = SiteMembersRoute();
+final displaySiteRoute = SiteEventsDisplayRoute();
+final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
+
+final siteScreenRoute = SiteScreenRoute(
+  routes: [
+    siteScreenFormRoute,
+    renameSiteRoute,
+    exportSiteRoute,
+    manageExportsRoute,
+    siteMembersRoute,
+    displaySiteRoute,
+    siteEmailsDisplayRoute,
+  ],
+);
 
 /// A route for the landing page.
 class LandingScreenRoute extends GoRoute {

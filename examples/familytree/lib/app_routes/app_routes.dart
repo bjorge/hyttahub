@@ -18,9 +18,6 @@ import 'package:familytree/app_widgets/update_photo_caption_screen.dart';
 import 'package:familytree/app_widgets/update_tree_member_screen.dart';
 import 'package:hyttahub/common_widgets/unimplemented_screen.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/site_widgets/rename_site_screen.dart';
-import 'package:hyttahub/site_widgets/site_emails_display.dart';
-import 'package:hyttahub/site_widgets/site_events_display.dart';
 import 'package:familytree/app_widgets/site_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -160,43 +157,43 @@ class SiteScreenRoute extends GoRoute {
       '${AccountScreenRoute.fullPath}/site/$siteId';
 }
 
-class SiteEventsDisplayRoute extends GoRoute {
-  /// Creates an [SiteEventsDisplayRoute].
-  SiteEventsDisplayRoute()
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final siteId = state.pathParameters['siteId'] ?? '';
-          return SiteEventsDisplayScreen(siteId: siteId);
-        },
-      );
+// class SiteEventsDisplayRoute extends GoRoute {
+//   /// Creates an [SiteEventsDisplayRoute].
+//   SiteEventsDisplayRoute()
+//     : super(
+//         path: pathSegment,
+//         builder: (BuildContext context, GoRouterState state) {
+//           final siteId = state.pathParameters['siteId'] ?? '';
+//           return SiteEventsDisplayScreen(siteId: siteId);
+//         },
+//       );
 
-  /// The path segment for this route.
-  static const String pathSegment = 'events_display';
+//   /// The path segment for this route.
+//   static const String pathSegment = 'events_display';
 
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
-}
+//   /// A builder for the full path to this route.
+//   static String fullPath({required String siteId}) =>
+//       '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
+// }
 
-class SiteEmailsDisplayRoute extends GoRoute {
-  /// Creates an [SiteEmailsDisplayRoute].
-  SiteEmailsDisplayRoute()
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final siteId = state.pathParameters['siteId'] ?? '';
-          return SiteEmailsDisplayScreen(siteId: siteId);
-        },
-      );
+// class SiteEmailsDisplayRoute extends GoRoute {
+//   /// Creates an [SiteEmailsDisplayRoute].
+//   SiteEmailsDisplayRoute()
+//     : super(
+//         path: pathSegment,
+//         builder: (BuildContext context, GoRouterState state) {
+//           final siteId = state.pathParameters['siteId'] ?? '';
+//           return SiteEmailsDisplayScreen(siteId: siteId);
+//         },
+//       );
 
-  /// The path segment for this route.
-  static const String pathSegment = 'emails_display';
+//   /// The path segment for this route.
+//   static const String pathSegment = 'emails_display';
 
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
-}
+//   /// A builder for the full path to this route.
+//   static String fullPath({required String siteId}) =>
+//       '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
+// }
 
 // class AddMemberRoute extends GoRoute {
 //   /// Creates an [AddMemberRoute].
@@ -219,25 +216,25 @@ class SiteEmailsDisplayRoute extends GoRoute {
 // }
 
 /// A route for renaming a site.
-class RenameSiteRoute extends GoRoute {
-  /// Creates a [RenameSiteRoute].
-  RenameSiteRoute()
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final event = state.uri.queryParameters['event'] ?? '';
-          final siteId = state.pathParameters['siteId'] ?? '';
-          return RenameSiteScreen(event: event, siteId: siteId);
-        },
-      );
+// class RenameSiteRoute extends GoRoute {
+//   /// Creates a [RenameSiteRoute].
+//   RenameSiteRoute()
+//     : super(
+//         path: pathSegment,
+//         builder: (BuildContext context, GoRouterState state) {
+//           final event = state.uri.queryParameters['event'] ?? '';
+//           final siteId = state.pathParameters['siteId'] ?? '';
+//           return RenameSiteScreen(event: event, siteId: siteId);
+//         },
+//       );
 
-  /// The path segment for this route.
-  static const String pathSegment = 'rename';
+//   /// The path segment for this route.
+//   static const String pathSegment = 'rename';
 
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
-}
+//   /// A builder for the full path to this route.
+//   static String fullPath({required String siteId}) =>
+//       '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
+// }
 
 class SiteUnimplementedRoute extends GoRoute {
   /// Creates an [SiteUnimplementedRoute].

@@ -100,10 +100,316 @@ abstract class AppLocalizations {
     Locale('it'),
   ];
 
+  /// No description provided for @app_createAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Album'**
+  String get app_createAlbumTitle;
+
+  /// No description provided for @app_albumNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Album Name'**
+  String get app_albumNameLabel;
+
+  /// No description provided for @app_addPhotosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photos'**
+  String get app_addPhotosTitle;
+
+  /// No description provided for @app_uploadingPhotosProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading {count} of {total} files...'**
+  String app_uploadingPhotosProgress(Object count, Object total);
+
+  /// No description provided for @app_submissionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission Error: {error}'**
+  String app_submissionError(Object error);
+
+  /// No description provided for @app_pickPhotosButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Photos'**
+  String get app_pickPhotosButton;
+
+  /// No description provided for @app_selectPhotosToUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos to upload:'**
+  String get app_selectPhotosToUpload;
+
+  /// No description provided for @app_hideCaptionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Caption'**
+  String get app_hideCaptionTooltip;
+
+  /// No description provided for @app_showCaptionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Caption'**
+  String get app_showCaptionTooltip;
+
+  /// No description provided for @app_noPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'no photos'**
+  String get app_noPhotos;
+
+  /// No description provided for @app_noAlbums.
+  ///
+  /// In en, this message translates to:
+  /// **'no albums'**
+  String get app_noAlbums;
+
+  /// No description provided for @app_updateCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Caption'**
+  String get app_updateCaption;
+
+  /// No description provided for @app_reorderAlbumsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder Albums'**
+  String get app_reorderAlbumsTitle;
+
+  /// No description provided for @app_renameAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Album'**
+  String get app_renameAlbumTitle;
+
+  /// No description provided for @app_reorderPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder Photos'**
+  String get app_reorderPhotos;
+
+  /// No description provided for @app_photoInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Info'**
+  String get app_photoInfoTitle;
+
+  /// No description provided for @app_photoNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo not found.'**
+  String get app_photoNotFound;
+
+  /// No description provided for @app_albumLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Album'**
+  String get app_albumLabel;
+
+  /// No description provided for @app_notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get app_notAvailable;
+
+  /// No description provided for @app_originalNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Name'**
+  String get app_originalNameLabel;
+
+  /// No description provided for @app_sizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get app_sizeLabel;
+
+  /// No description provided for @app_siteSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Settings'**
+  String get app_siteSettingsTitle;
+
+  /// No description provided for @app_addAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Album'**
+  String get app_addAlbumTitle;
+
+  /// No description provided for @app_newAlbumNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Album Name'**
+  String get app_newAlbumNameLabel;
+
+  /// No description provided for @app_addPhotoCaptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo Caption'**
+  String get app_addPhotoCaptionTitle;
+
+  /// No description provided for @app_photoCaptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Caption'**
+  String get app_photoCaptionLabel;
+
+  /// No description provided for @app_deletePhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Photo'**
+  String get app_deletePhotoTitle;
+
+  /// No description provided for @app_deletePhotoConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Photo? This action cannot be undone.'**
+  String get app_deletePhotoConfirmation;
+
+  /// No description provided for @app_deleteAlbumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Album'**
+  String get app_deleteAlbumTitle;
+
+  /// No description provided for @app_deleteAlbumConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Album? This action cannot be undone and will delete all members and photos in the album.'**
+  String get app_deleteAlbumConfirmation;
+
+  /// No description provided for @app_albumNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Album not found'**
+  String get app_albumNotFound;
+
+  /// No description provided for @app_albumNameEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Album name cannot be empty.'**
+  String get app_albumNameEmptyError;
+
+  /// No description provided for @app_photoSizeInKB.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String app_photoSizeInKB(String size);
+
+  /// No description provided for @app_unknownAlbum.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Album'**
+  String get app_unknownAlbum;
+
+  /// No description provided for @app_eventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App Events'**
+  String get app_eventsTitle;
+
+  /// No description provided for @app_stateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App State'**
+  String get app_stateTitle;
+
+  /// No description provided for @app_showAppEventsState.
+  ///
+  /// In en, this message translates to:
+  /// **'Show App Events & State'**
+  String get app_showAppEventsState;
+
+  /// No description provided for @app_errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get app_errorTitle;
+
+  /// No description provided for @app_unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error, check internet, go back and try again'**
+  String get app_unexpectedError;
+
+  /// No description provided for @app_accessDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get app_accessDeniedTitle;
+
+  /// No description provided for @app_sitePermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view this site. Contact the site administrator if your email should be allowed.'**
+  String get app_sitePermissionDenied;
+
+  /// No description provided for @app_networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'A network error occurred. Please check your connection.'**
+  String get app_networkError;
+
+  /// No description provided for @app_editModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Mode'**
+  String get app_editModeTitle;
+
+  /// No description provided for @app_adminPrivileges.
+  ///
+  /// In en, this message translates to:
+  /// **'You have admin privileges for this site.'**
+  String get app_adminPrivileges;
+
+  /// No description provided for @app_howToProceed.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to proceed?'**
+  String get app_howToProceed;
+
+  /// No description provided for @app_viewSite.
+  ///
+  /// In en, this message translates to:
+  /// **'View Site'**
+  String get app_viewSite;
+
+  /// No description provided for @app_editSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Site'**
+  String get app_editSite;
+
+  /// No description provided for @app_renameSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Site'**
+  String get app_renameSiteTitle;
+
+  /// No description provided for @app_manageSiteMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Site Members'**
+  String get app_manageSiteMembers;
+
+  /// No description provided for @app_showSiteEventsState.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Site Events & State'**
+  String get app_showSiteEventsState;
+
+  /// No description provided for @app_showSiteAllowedEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Site Allowed Emails'**
+  String get app_showSiteAllowedEmails;
+
   /// No description provided for @app_appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Hytta Hub Form Proto'**
+  /// **'Hytta Hub Albums'**
   String get app_appTitle;
 
   /// No description provided for @app_nightMode.
@@ -183,6 +489,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Service Login'**
   String get app_serviceLoginButton;
+
+  /// No description provided for @app_exportSiteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Site'**
+  String get app_exportSiteTitle;
+
+  /// No description provided for @app_manageExportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Exports'**
+  String get app_manageExportsTitle;
 }
 
 class _AppLocalizationsDelegate

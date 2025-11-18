@@ -31,7 +31,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/site_widgets/add_member_screen.dart';
 import 'package:hyttahub/site_widgets/remove_member_screen.dart';
+import 'package:hyttahub/site_widgets/rename_site_screen.dart';
 import 'package:hyttahub/site_widgets/restore_member_screen.dart';
+import 'package:hyttahub/site_widgets/site_emails_display.dart';
+import 'package:hyttahub/site_widgets/site_events_display.dart';
 import 'package:hyttahub/site_widgets/update_member_screen.dart';
 import 'package:hyttahub/site_widgets/site_members_screen.dart';
 import 'package:hyttahub/site_widgets/export_site_screen.dart';
@@ -163,12 +166,12 @@ class AddSiteRoute extends GoRoute {
 class ImportSiteRoute extends GoRoute {
   /// Creates an [ImportSiteRoute].
   ImportSiteRoute({required super.routes})
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            return ImportSiteScreen();
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return ImportSiteScreen();
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'importsite';
@@ -180,23 +183,19 @@ class ImportSiteRoute extends GoRoute {
 class SelectAdminRoute extends GoRoute {
   /// Creates a [SelectAdminRoute].
   SelectAdminRoute()
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            final siteId = state.pathParameters['siteId'] ?? '';
-            return SelectAdminScreen(
-              siteId: siteId,
-            );
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return SelectAdminScreen(siteId: siteId);
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'selectadmin/:siteId';
 
   /// A builder for the full path to this route.
-  static String fullPath({
-    required String siteId,
-  }) =>
+  static String fullPath({required String siteId}) =>
       '${ImportSiteRoute.fullPath}/selectadmin/$siteId';
 }
 
@@ -238,6 +237,65 @@ class ExportSiteRoute extends GoRoute {
       '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
 }
 
+/// A route for renaming a site.
+class RenameSiteRoute extends GoRoute {
+  /// Creates a [RenameSiteRoute].
+  RenameSiteRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return RenameSiteScreen(event: event, siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'rename';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class SiteEventsDisplayRoute extends GoRoute {
+  /// Creates an [SiteEventsDisplayRoute].
+  SiteEventsDisplayRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return SiteEventsDisplayScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'events_display';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class SiteEmailsDisplayRoute extends GoRoute {
+  /// Creates an [SiteEmailsDisplayRoute].
+  SiteEmailsDisplayRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return SiteEmailsDisplayScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'emails_display';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
 class ManageExportsRoute extends GoRoute {
   /// Creates a [ManageExportsRoute].
   ManageExportsRoute({super.routes})
@@ -265,10 +323,7 @@ class ExportDetailsRoute extends GoRoute {
         builder: (BuildContext context, GoRouterState state) {
           final siteId = state.pathParameters['siteId'] ?? '';
           final fileName = state.pathParameters['fileName'] ?? '';
-          return ExportDetailsScreen(
-            siteId: siteId,
-            fileName: fileName,
-          );
+          return ExportDetailsScreen(siteId: siteId, fileName: fileName);
         },
       );
 
@@ -276,10 +331,7 @@ class ExportDetailsRoute extends GoRoute {
   static const String pathSegment = 'details/:fileName';
 
   /// A builder for the full path to this route.
-  static String fullPath({
-    required String siteId,
-    required String fileName,
-  }) =>
+  static String fullPath({required String siteId, required String fileName}) =>
       '${ManageExportsRoute.fullPath(siteId: siteId)}/details/$fileName';
 }
 
@@ -659,31 +711,30 @@ Future<bool> showLogoutDialog(BuildContext context) async {
 class ServiceAdminsRoute extends GoRoute {
   /// Creates an [SiteMembersRoute].
   ServiceAdminsRoute({super.routes})
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            return const ServiceAdminsScreen();
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ServiceAdminsScreen();
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'admins';
 
   /// A builder for the full path to this route.
-  static String fullPath =
-      '${ServiceAdminScreenRoute.fullPath}/$pathSegment';
+  static String fullPath = '${ServiceAdminScreenRoute.fullPath}/$pathSegment';
 }
 
 class AddServiceAdminRoute extends GoRoute {
   /// Creates an [AddMemberRoute].
   AddServiceAdminRoute()
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            final event = state.uri.queryParameters['event'] ?? '';
-            return AddServiceAdminScreen(event: event);
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          return AddServiceAdminScreen(event: event);
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'add';
@@ -695,13 +746,13 @@ class AddServiceAdminRoute extends GoRoute {
 class RemoveServiceAdminRoute extends GoRoute {
   /// Creates a [RemoveMemberRoute].
   RemoveServiceAdminRoute()
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            final event = state.uri.queryParameters['event'] ?? '';
-            return RemoveServiceAdminScreen(event: event);
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          return RemoveServiceAdminScreen(event: event);
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'remove';
@@ -713,18 +764,18 @@ class RemoveServiceAdminRoute extends GoRoute {
 class UpdateServiceAdminRoute extends GoRoute {
   /// Creates a [UpdateMemberRoute].
   UpdateServiceAdminRoute()
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            final event = state.uri.queryParameters['event'] ?? '';
-            final originalEmail =
-                state.uri.queryParameters['originalEmail'] ?? '';
-            return UpdateServiceAdminScreen(
-              event: event,
-              originalEmail: originalEmail,
-            );
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          final originalEmail =
+              state.uri.queryParameters['originalEmail'] ?? '';
+          return UpdateServiceAdminScreen(
+            event: event,
+            originalEmail: originalEmail,
+          );
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'update';
@@ -736,13 +787,13 @@ class UpdateServiceAdminRoute extends GoRoute {
 class RestoreServiceAdminRoute extends GoRoute {
   /// Creates a [RestoreMemberRoute].
   RestoreServiceAdminRoute()
-      : super(
-          path: pathSegment,
-          builder: (BuildContext context, GoRouterState state) {
-            final event = state.uri.queryParameters['event'] ?? '';
-            return RestoreServiceAdminScreen(event: event);
-          },
-        );
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          return RestoreServiceAdminScreen(event: event);
+        },
+      );
 
   /// The path segment for this route.
   static const String pathSegment = 'restore';
@@ -756,17 +807,13 @@ final landingUnimplementedRoute = ServiceUnimplementedRoute();
 
 final exportDetailsRoute = ExportDetailsRoute();
 final exportSiteRoute = ExportSiteRoute();
-final manageExportsRoute = ManageExportsRoute(
-  routes: [exportDetailsRoute],
-);
+final manageExportsRoute = ManageExportsRoute(routes: [exportDetailsRoute]);
 
 final addSiteRoute = AddSiteRoute();
 final joinSiteRoute = JoinSiteRoute();
 final removeSiteRoute = RemoveSiteRoute();
 final selectAdminRoute = SelectAdminRoute();
-final importSiteRoute = ImportSiteRoute(
-  routes: [selectAdminRoute],
-);
+final importSiteRoute = ImportSiteRoute(routes: [selectAdminRoute]);
 
 final manageSitesRoute = ManageSitesRoute(routes: [removeSiteRoute]);
 final accountOptionUnimplementedRoute = AccountOptionUnimplementedRoute();
