@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formjson/app_blocs/app_submit_bloc.dart';
 import 'package:formjson/app_widgets/app_submit_button.dart';
 import 'package:formjson/models/app_events.dart';
-import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
+import 'package:hyttahub/common_blocs/base_submit_dart_bloc.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -39,7 +39,8 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
       create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
       child: Form(
         key: _formKey,
-        child: BlocConsumer<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
+        child:
+            BlocConsumer<AppSubmitBloc, BaseSubmitDartState<SubmitAppEvent>>(
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
@@ -51,7 +52,7 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
           },
           listener: (
             BuildContext context,
-            BaseSubmitState<SubmitAppEvent> state,
+            BaseSubmitDartState<SubmitAppEvent> state,
           ) {
             if (state.submissionState.state ==
                 CommonSubmitBlocState_State.success) {
@@ -65,7 +66,7 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
 
   Widget _buildBody(
     BuildContext context,
-    BaseSubmitState<SubmitAppEvent> submitState,
+    BaseSubmitDartState<SubmitAppEvent> submitState,
   ) {
     return CommonSubmitFormLayout<SubmitAppEvent>(
       submitState: submitState,
@@ -76,8 +77,8 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
   }
 }
 
-class TextValueInputWidget
-    extends BaseTextFormField<AppSubmitBloc, AppEventSubmission, SubmitAppEvent> {
+class TextValueInputWidget extends BaseTextFormField<AppSubmitBloc,
+    AppEventSubmission, SubmitAppEvent> {
   const TextValueInputWidget({
     super.key,
     required super.formKey,

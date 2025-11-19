@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:formjson/models/app_events.dart';
-import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
+import 'package:hyttahub/common_blocs/base_submit_dart_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
@@ -13,7 +13,7 @@ import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);
 
-class AppEventSubmission extends BaseSubmitEvent<SubmitAppEvent> {
+class AppEventSubmission extends BaseSubmitDartEvent<SubmitAppEvent> {
   AppEventSubmission({super.updatedPayload, required super.submission});
 }
 
@@ -27,16 +27,16 @@ AppEventSubmission appEventSubmissionFactory({
   );
 }
 
-class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
+class AppSubmitBloc extends BaseSubmitDartBloc<SubmitAppEvent> {
   AppSubmitBloc(this.siteId, SubmitAppEvent initialPayload)
       : super(initialPayload: initialPayload);
 
   final String siteId;
 
   @override
-  Future<BaseSubmitState<SubmitAppEvent>> submit(
-    BaseSubmitState<SubmitAppEvent> state,
-    Emitter<BaseSubmitState<SubmitAppEvent>> emit,
+  Future<BaseSubmitDartState<SubmitAppEvent>> submit(
+    BaseSubmitDartState<SubmitAppEvent> state,
+    Emitter<BaseSubmitDartState<SubmitAppEvent>> emit,
   ) async {
     final submitAppEvent = state.payload!;
 
@@ -65,15 +65,15 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
         })
         .timeout(firebaseTimeout);
 
-    final successState = state.submissionState.deepCopy();
-    successState.state = CommonSubmitBlocState_State.success;
+    final successState = state.submissionState.deepCopy()
+      ..state = CommonSubmitBlocState_State.success;
 
-    return state.copyWith(submissionState: successState..freeze());
+    return state.copyWith(submissionState: successState);
   }
 
   @override
-  Future<BaseSubmitState<SubmitAppEvent>> getAuthor(
-    BaseSubmitState<SubmitAppEvent> state,
+  Future<BaseSubmitDartState<SubmitAppEvent>> getAuthor(
+    BaseSubmitDartState<SubmitAppEvent> state,
   ) async {
     final email = state.payload!.authorEmail;
 
