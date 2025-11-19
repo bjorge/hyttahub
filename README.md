@@ -11,7 +11,7 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/to/develop-packages).
 -->
 
-A serverless Flutter framework designed to be a solid starting point for new applications, demonstrated with a sample photo album app.
+A serverless Flutter framework designed to be a solid starting point for new applications, demonstrated with an example app.
 
 --  **Note:** Under construction, breaking changes may occur.
 
@@ -57,7 +57,9 @@ The repo includes examples for using the library. Follow the instructions below.
 ### Running the Application
 
 ```sh
-# Once the firebase emulator is running, in a separate terminal cd to the examples/albums directory, then run:
+# Once the firebase emulator is running, in a separate terminal cd to the examples/formproto folder and run:
+flutter run -d chrome
+irectory, then run:
 flutter run -d chrome
 ```
 
