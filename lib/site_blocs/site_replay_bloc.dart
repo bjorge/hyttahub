@@ -14,9 +14,65 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
+// Top-level isolate handler for site replay. Runs in a background isolate
+// via `compute()` and must be a top-level function.
+FutureOr<String> siteReplayIsolateHandler(Map<String, dynamic> payload) {
+  final String stateB64 = payload['state_proto_base64'] as String;
+  final dynamic eventsDynamic = payload['events'];
+
+  if (kDebugMode) {
+    print("siteReplayIsolateHandler: stateB64 length: ${stateB64.length}");
+    print("siteReplayIsolateHandler: eventsDynamic: $eventsDynamic");
+  }
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final List<int> stateBytes = base64Decode(stateB64);
+  final SiteReplayBlocState state = SiteReplayBlocState.fromBuffer(stateBytes);
+
+  final SiteReplayBlocState newState = siteReplay(state, eventsMap);
+
+  return base64Encode(newState.writeToBuffer());
+}
+
+// Top-level isolate handler for constructing initial state from hydrated events.
+FutureOr<String> siteHydrateIsolateHandler(Map<String, dynamic> payload) {
+  final dynamic eventsDynamic = payload['hydrated_events'];
+
+  if (kDebugMode) {
+    print("siteHydrateIsolateHandler: called");
+  }
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final SiteReplayBlocState newState = siteReplay(
+    SiteReplayBlocState(),
+    eventsMap,
+  );
+
+  return base64Encode(newState.writeToBuffer());
+}
+
 class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
   SiteReplayBloc(this.collectionName, {FirebaseFirestore? firestore})
-    : super(SiteReplayBlocState(), firestore: firestore);
+    : super(
+        SiteReplayBlocState(),
+        firestore: firestore,
+        replayIsolateHandler: siteReplayIsolateHandler,
+        hydrateIsolateHandler: siteHydrateIsolateHandler,
+      );
 
   @override
   final String collectionName;
@@ -44,6 +100,12 @@ class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
 
   @override
   Map<int, String> stateGetEventsMap(SiteReplayBlocState state) => state.events;
+
+  @override
+  SiteReplayBlocState stateFromProtoBytes(List<int> bytes) {
+    final restored = SiteReplayBlocState.fromBuffer(bytes);
+    return restored..freeze();
+  }
 
   @override
   Future<bool> validateLocalEventCache(
@@ -106,6 +168,9 @@ class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
     Map<int, String> hydratedEvents,
   ) {
     final restoredState = siteReplay(SiteReplayBlocState(), hydratedEvents);
+
+    // Schedule async isolate-based reconstruction and apply when ready.
+    scheduleAsyncHydration(hydratedEvents);
 
     return restoredState..freeze();
   }

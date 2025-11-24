@@ -1,6 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,6 +35,33 @@ class MockStorage implements Storage {
   }
 }
 
+// Top-level isolate handler for tests. Compatible with BaseReplayBloc's
+// `replayIsolateHandler` — decodes protobuf state bytes, applies events,
+// and returns base64-encoded protobuf bytes of the new state.
+FutureOr<String> testReplayIsolateHandler(Map<String, dynamic> payload) {
+  final String stateB64 = payload['state_proto_base64'] as String;
+  final dynamic eventsDynamic = payload['events'];
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final List<int> stateBytes = base64Decode(stateB64);
+  final ServiceReplayBlocState state = ServiceReplayBlocState.fromBuffer(
+    stateBytes,
+  );
+
+  // For tests we simply merge the events into the state's events map.
+  final ServiceReplayBlocState newState = state.deepCopy();
+  newState.events.addAll(eventsMap);
+
+  return base64Encode(newState.writeToBuffer());
+}
+
 // A concrete implementation of BaseReplayBloc for testing purposes
 class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   TestReplayBloc(
@@ -41,7 +69,14 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
     required FirebaseFirestore firestore,
     this.validationResult = true,
     this.handleEmptySnapshotCompleter,
-  }) : super(ServiceReplayBlocState(), firestore: firestore);
+  }) : super(
+         ServiceReplayBlocState(),
+         firestore: firestore,
+         // During unit tests we avoid running compute/isolate to keep
+         // behavior deterministic and fast. The testReplayIsolateHandler
+         // is kept for manual testing if desired.
+         replayIsolateHandler: null,
+       );
 
   final String collectionPath;
   final bool validationResult;
@@ -97,6 +132,12 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
       events: hydratedEvents,
       instance: json['instance'] as String?,
     );
+  }
+
+  @override
+  ServiceReplayBlocState stateFromProtoBytes(List<int> bytes) {
+    final restored = ServiceReplayBlocState.fromBuffer(bytes);
+    return restored..freeze();
   }
 
   @override

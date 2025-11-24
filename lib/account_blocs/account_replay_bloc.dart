@@ -14,9 +14,58 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
+// Top-level isolate handler for account replay. Runs in a background isolate
+// via `compute()` and must be a top-level function.
+FutureOr<String> accountReplayIsolateHandler(Map<String, dynamic> payload) {
+  final String stateB64 = payload['state_proto_base64'] as String;
+  final dynamic eventsDynamic = payload['events'];
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final List<int> stateBytes = base64Decode(stateB64);
+  final AccountReplayBlocState state = AccountReplayBlocState.fromBuffer(
+    stateBytes,
+  );
+
+  final AccountReplayBlocState newState = accountReplay(state, eventsMap);
+
+  return base64Encode(newState.writeToBuffer());
+}
+
+// Top-level isolate handler for constructing initial state from hydrated events.
+FutureOr<String> accountHydrateIsolateHandler(Map<String, dynamic> payload) {
+  final dynamic eventsDynamic = payload['hydrated_events'];
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final AccountReplayBlocState newState = accountReplay(
+    AccountReplayBlocState(),
+    eventsMap,
+  );
+
+  return base64Encode(newState.writeToBuffer());
+}
+
 class AccountReplayBloc extends BaseReplayBloc<AccountReplayBlocState> {
   AccountReplayBloc(this.collectionName, {FirebaseFirestore? firestore})
-    : super(AccountReplayBlocState(), firestore: firestore);
+    : super(
+        AccountReplayBlocState(),
+        firestore: firestore,
+        replayIsolateHandler: accountReplayIsolateHandler,
+        hydrateIsolateHandler: accountHydrateIsolateHandler,
+      );
 
   @override
   final String collectionName;
@@ -45,6 +94,12 @@ class AccountReplayBloc extends BaseReplayBloc<AccountReplayBlocState> {
   @override
   Map<int, String> stateGetEventsMap(AccountReplayBlocState state) =>
       state.events;
+
+  @override
+  AccountReplayBlocState stateFromProtoBytes(List<int> bytes) {
+    final restored = AccountReplayBlocState.fromBuffer(bytes);
+    return restored..freeze();
+  }
 
   @override
   Future<bool> validateLocalEventCache(
@@ -112,6 +167,9 @@ class AccountReplayBloc extends BaseReplayBloc<AccountReplayBlocState> {
       AccountReplayBlocState(),
       hydratedEvents,
     );
+
+    // Schedule async isolate-based reconstruction and apply when ready.
+    scheduleAsyncHydration(hydratedEvents);
 
     return restoredState..freeze();
   }

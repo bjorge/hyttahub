@@ -8,19 +8,74 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:flutter/foundation.dart'; // For compute()
 import 'package:protobuf/protobuf.dart'; // For GeneratedMessage
 
 abstract class BaseReplayBloc<S extends GeneratedMessage>
     extends HydratedBloc<CommonReplayBlocEvent, S> {
-  BaseReplayBloc(super.initialState, {FirebaseFirestore? firestore})
-    : _initialState = initialState,
-      _firestore = firestore ?? FirebaseFirestore.instance {
+  /// Optional top-level isolate handler that performs the replay operation.
+  ///
+  /// If provided, this must be a top-level or static function with signature
+  /// `FutureOr<String> handler(Map<String, dynamic> payload)` where `payload`
+  /// contains keys `state_proto_base64` (the base64-encoded protobuf bytes of
+  /// the current state) and `events` (the Map\<int, String> of new events).
+  /// The handler must return the new state's protobuf bytes encoded as a
+  /// base64 `String`. The main isolate will decode those bytes and call
+  /// `stateFromProtoBytes` (implemented by the subclass) to reconstruct `S`.
+  BaseReplayBloc(
+    super.initialState, {
+    FirebaseFirestore? firestore,
+    FutureOr<String> Function(Map<String, dynamic>)? replayIsolateHandler,
+    FutureOr<String> Function(Map<String, dynamic>)? hydrateIsolateHandler,
+  }) : _initialState = initialState,
+       _firestore = firestore ?? FirebaseFirestore.instance,
+       _replayIsolateHandler = replayIsolateHandler,
+       _hydrateIsolateHandler = hydrateIsolateHandler {
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
   StreamSubscription? _subscription;
   final S _initialState;
   final FirebaseFirestore _firestore;
+  final FutureOr<String> Function(Map<String, dynamic>)? _replayIsolateHandler;
+  // This field is reserved for an optional async hydrate handler that cannot
+  // be used synchronously inside `fromJson`. It's kept for future async
+  // rehydration workflows. Suppress unused-field analyzer warning.
+  // ignore: unused_field
+  final FutureOr<String> Function(Map<String, dynamic>)? _hydrateIsolateHandler;
+
+  // (removed) per-bloc hydration-complete callback — unused
+
+  /// If a hydrate isolate handler was provided, schedule running it in a
+  /// background isolate to reconstruct a full protobuf-based state from the
+  /// given `hydratedEvents` map. When reconstruction completes, the resulting
+  /// state will be applied to this bloc via `applyHydratedStateFromProtoBytes`.
+  ///
+  /// This method is safe to call from synchronous `fromJson` implementations.
+  void scheduleAsyncHydration(Map<int, String> hydratedEvents) {
+    if (_hydrateIsolateHandler == null) return;
+
+    final Map<String, dynamic> payload = {'hydrated_events': hydratedEvents};
+
+    compute(_hydrateIsolateHandler, payload)
+        .then((String resultB64) {
+          try {
+            final List<int> resultBytes = base64Decode(resultB64);
+            applyHydratedStateFromProtoBytes(resultBytes);
+          } catch (e) {
+            if (kDebugMode) {
+              print(
+                'scheduleAsyncHydration: failed to apply hydrated bytes: $e',
+              );
+            }
+          }
+        })
+        .catchError((e) {
+          if (kDebugMode) {
+            print('scheduleAsyncHydration: isolate handler failed: $e');
+          }
+        });
+  }
 
   // --- Abstract methods and getters to be implemented by subclasses ---
 
@@ -59,6 +114,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   /// Creates an instance of state S from a JSON map and hydrated events.
   /// Subclasses implement this to reconstruct their specific state parts.
   S stateFromJson(Map<String, dynamic> json, Map<int, String> hydratedEvents);
+
+  /// Creates an instance of state S from protobuf bytes.
+  /// Subclasses must implement this to parse their generated message from
+  /// `bytes` (e.g., `MyState.fromBuffer(bytes`).
+  S stateFromProtoBytes(List<int> bytes);
 
   /// Converts state S to a JSON map for persistence (excluding the event map).
   Map<String, dynamic> stateToJson(S state);
@@ -111,7 +171,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     Map<int, String> eventsData,
     Emitter<S> emit,
   ) async {
-    final S newState = replayEvents(state, eventsData);
+    final S newState = await _runReplay(state, eventsData);
     emit(newState..freeze());
   }
 
@@ -201,7 +261,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           .toList();
 
       if (newEventsFromServer.isNotEmpty) {
-        currentProcessingState = replayEvents(
+        currentProcessingState = await _runReplay(
           currentProcessingState,
           Map.fromEntries(newEventsFromServer),
         );
@@ -289,6 +349,35 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     }
   }
 
+  /// Helper that runs the replay either on the main isolate (by calling
+  /// `replayEvents`) or on a background isolate using the provided
+  /// `_replayIsolateHandler` and `compute()`.
+  Future<S> _runReplay(S currentState, Map<int, String> eventsData) async {
+    if (_replayIsolateHandler == null) {
+      return replayEvents(currentState, eventsData);
+    }
+
+    try {
+      // Encode current state's protobuf bytes as base64 so it can be sent to
+      // the isolate. This avoids JSON serialization and preserves the
+      // protobuf binary representation.
+      final String stateProtoB64 = base64Encode(currentState.writeToBuffer());
+      final Map<String, dynamic> arg = {
+        'state_proto_base64': stateProtoB64,
+        'events': eventsData,
+      };
+
+      final String resultBase64 = await compute(_replayIsolateHandler, arg);
+
+      final List<int> resultBytes = base64Decode(resultBase64);
+
+      return stateFromProtoBytes(resultBytes);
+    } catch (e) {
+      // Fall back to main isolate execution if anything fails.
+      return replayEvents(currentState, eventsData);
+    }
+  }
+
   @override
   Future<void> close() async {
     await _subscription?.cancel();
@@ -329,5 +418,28 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     } catch (e, _) {
       return null; // Prevents corrupt data from being saved
     }
+  }
+
+  /// Apply a hydrated state constructed from protobuf bytes.
+  ///
+  /// This is intended for use by an async bootstrap that reconstructs state
+  /// in a background isolate and then applies it to the running bloc.
+  Future<void> applyHydratedStateFromProtoBytes(List<int> bytes) async {
+    if (isClosed) return;
+    try {
+      final S restored = stateFromProtoBytes(bytes);
+      (this as dynamic).emit(restored..freeze());
+    } catch (e) {
+      // If applying fails, keep existing state.
+      if (kDebugMode) {
+        print('applyHydratedStateFromProtoBytes failed: $e');
+      }
+    }
+  }
+
+  /// Apply a hydrated state instance directly.
+  Future<void> applyHydratedState(S newState) async {
+    if (isClosed) return;
+    (this as dynamic).emit(newState..freeze());
   }
 }

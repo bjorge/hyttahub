@@ -14,9 +14,58 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
+// Top-level isolate handler for service replay. Runs in a background isolate
+// via `compute()` and must be a top-level function.
+FutureOr<String> serviceReplayIsolateHandler(Map<String, dynamic> payload) {
+  final String stateB64 = payload['state_proto_base64'] as String;
+  final dynamic eventsDynamic = payload['events'];
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final List<int> stateBytes = base64Decode(stateB64);
+  final ServiceReplayBlocState state = ServiceReplayBlocState.fromBuffer(
+    stateBytes,
+  );
+
+  final ServiceReplayBlocState newState = serviceReplay(state, eventsMap);
+
+  return base64Encode(newState.writeToBuffer());
+}
+
+// Top-level isolate handler for constructing initial state from hydrated events.
+FutureOr<String> serviceHydrateIsolateHandler(Map<String, dynamic> payload) {
+  final dynamic eventsDynamic = payload['hydrated_events'];
+
+  final Map<int, String> eventsMap = <int, String>{};
+  if (eventsDynamic is Map) {
+    eventsDynamic.forEach((k, v) {
+      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
+      eventsMap[key] = v as String;
+    });
+  }
+
+  final ServiceReplayBlocState newState = serviceReplay(
+    ServiceReplayBlocState(),
+    eventsMap,
+  );
+
+  return base64Encode(newState.writeToBuffer());
+}
+
 class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   ServiceReplayBloc({FirebaseFirestore? firestore})
-    : super(ServiceReplayBlocState(), firestore: firestore);
+    : super(
+        ServiceReplayBlocState(),
+        firestore: firestore,
+        replayIsolateHandler: serviceReplayIsolateHandler,
+        hydrateIsolateHandler: serviceHydrateIsolateHandler,
+      );
 
   @override
   final String collectionName = firebaseServiceCollectionName;
@@ -45,6 +94,12 @@ class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   @override
   Map<int, String> stateGetEventsMap(ServiceReplayBlocState state) =>
       state.events;
+
+  @override
+  ServiceReplayBlocState stateFromProtoBytes(List<int> bytes) {
+    final restored = ServiceReplayBlocState.fromBuffer(bytes);
+    return restored..freeze();
+  }
 
   @override
   Future<bool> validateLocalEventCache(
@@ -117,6 +172,9 @@ class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
       ServiceReplayBlocState(),
       hydratedEvents,
     );
+    // Schedule async hydrate in a background isolate to perform full
+    // protobuf-based reconstruction and replace the state when ready.
+    scheduleAsyncHydration(hydratedEvents);
     return restoredState..freeze();
   }
 
