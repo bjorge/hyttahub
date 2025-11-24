@@ -5,7 +5,6 @@
 
 export {
   uploadFile,
-  deleteFile, 
   deleteFiles,
   getFile,
 } from "./file_functions/file_functions";
