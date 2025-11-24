@@ -128,69 +128,8 @@ export const getFile = onCall({ cors: true }, async (request) => {
     });
     return { downloadUrl: signedUrl };
   }
-
-  // const bucket = admin.storage().bucket();
-  // const file = bucket.file(`sites/${siteId}/photos/${fileName}`);
-
-  // const [signedUrl] = await file.getSignedUrl({
-  //   action: "read",
-  //   expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-  // });
-
-  // return { downloadUrl: signedUrl };
 });
 
-export const deleteFile = onCall({ cors: true }, async (request) => {
-  const uid = request.auth?.uid;
-  if (!uid) {
-    throw new HttpsError("unauthenticated", "User must be signed in");
-  }
-
-  const siteId = request.data.siteId;
-  const appName = request.data.appName;
-  const fileName = request.data.fileName;
-
-  const bucket = admin.storage().bucket();
-
-  // Enforce site membership
-  const email =
-    typeof request.auth?.token?.email === "string"
-      ? request.auth.token.email
-      : undefined;
-  if (!email) {
-    throw new HttpsError(
-      "unauthenticated",
-      "User email is required and must be a string"
-    );
-  }
-
-  logger.info("deleteFile function called, siteId:", siteId, "email:", email);
-
-  const emailRef = admin
-    .firestore()
-    .collection(firebaseSiteUsersPath(appName, siteId))
-    .doc(email);
-
-  const emailDoc = await emailRef.get();
-  if (!emailDoc.exists) {
-    throw new HttpsError(
-      "permission-denied",
-      "User is not a member of this site"
-    );
-  }
-
-  const filePath = firebaseFilesPath(appName, siteId, fileName);
-  const file = bucket.file(filePath);
-
-  try {
-    await file.delete();
-    logger.info(`Successfully deleted photo: ${filePath}`);
-    return { success: true };
-  } catch (error) {
-    logger.error(`Failed to delete photo: ${filePath}`, error);
-    throw new HttpsError("internal", "Failed to delete photo");
-  }
-});
 
 export const deleteFiles = onCall({ cors: true }, async (request) => {
   const uid = request.auth?.uid;
