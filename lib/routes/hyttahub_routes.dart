@@ -11,6 +11,7 @@ import 'package:hyttahub/account_widgets/manage_sites_screen.dart';
 import 'package:hyttahub/account_widgets/leave_site_screen.dart';
 import 'package:hyttahub/common_widgets/unimplemented_screen.dart';
 import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/service_widgets/service_events_display.dart';
 import 'package:hyttahub/service_widgets/service_privacy_display.dart';
@@ -681,15 +682,17 @@ class CreateAccountPrivacyDisplayRoute extends GoRoute {
 }
 
 Future<bool> showLogoutDialog(BuildContext context) async {
+  final loc = HyttaHubLocalizations.of(context)!;
+
   return await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Logout?'),
-          content: const Text('Are you sure you want to log out?'),
+          title: Text(loc.logoutDialogTitle),
+          content: Text(loc.logoutDialogMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false), // Stay on page
-              child: const Text('Cancel'),
+              child: Text(loc.cancelButton),
             ),
             TextButton(
               onPressed: () {
@@ -700,7 +703,7 @@ Future<bool> showLogoutDialog(BuildContext context) async {
                 // FirebaseAuth.instance.signOut(); // Sign out user
                 Navigator.pop(context, true); // Allow navigation away
               },
-              child: const Text('Logout'),
+              child: Text(loc.logout),
             ),
           ],
         ),

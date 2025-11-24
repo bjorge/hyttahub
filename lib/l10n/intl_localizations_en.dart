@@ -102,6 +102,15 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get logout => 'Logout';
 
   @override
+  String get logoutDialogTitle => 'Logout?';
+
+  @override
+  String get logoutDialogMessage => 'Are you sure you want to log out?';
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
   String get createSiteTitle => 'Create Site';
 
   @override

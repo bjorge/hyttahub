@@ -279,6 +279,24 @@ abstract class HyttaHubLocalizations {
   /// **'Logout'**
   String get logout;
 
+  /// No description provided for @logoutDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout?'**
+  String get logoutDialogTitle;
+
+  /// No description provided for @logoutDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutDialogMessage;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
   /// No description provided for @createSiteTitle.
   ///
   /// In en, this message translates to:

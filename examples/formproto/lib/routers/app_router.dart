@@ -15,7 +15,6 @@ import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:formproto/main.dart';
-import 'package:hyttahub/proto/auth_bloc.pb.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -105,34 +104,4 @@ class _AppRouterState extends State<AppRouter> {
       ),
     );
   }
-}
-
-Future<bool> showLogoutDialog(BuildContext context) async {
-  return await showDialog<bool>(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Logout?'),
-              content: const Text('Are you sure you want to log out?'),
-              actions: [
-                TextButton(
-                  onPressed:
-                      () => Navigator.pop(context, false), // Stay on page
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(
-                      AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-                    );
-
-                    // FirebaseAuth.instance.signOut(); // Sign out user
-                    Navigator.pop(context, true); // Allow navigation away
-                  },
-                  child: const Text('Logout'),
-                ),
-              ],
-            ),
-      ) ??
-      false; // Default to false if dialog is dismissed
 }

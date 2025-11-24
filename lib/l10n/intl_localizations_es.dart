@@ -104,6 +104,16 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get logout => 'Cerrar sesión';
 
   @override
+  String get logoutDialogTitle => '¿Cerrar sesión?';
+
+  @override
+  String get logoutDialogMessage =>
+      '¿Estás seguro de que deseas cerrar sesión?';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
   String get createSiteTitle => 'Crear sitio';
 
   @override

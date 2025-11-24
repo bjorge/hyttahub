@@ -9,501 +9,512 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   HyttaHubLocalizationsNb([String locale = 'nb']) : super(locale);
 
   @override
-  String get loginTitle => 'Login';
+  String get loginTitle => 'Logg inn';
 
   @override
-  String get createAccountTitle => 'Create Account';
+  String get createAccountTitle => 'Opprett konto';
 
   @override
-  String get loginEmailLabel => 'Email';
+  String get loginEmailLabel => 'E-post';
 
   @override
-  String get loginPasswordLabel => 'Password';
+  String get loginPasswordLabel => 'Passord';
 
   @override
   String get loginPasswordHelperText =>
-      'Password must be at least 16 characters long.';
+      'Passordet må være minst 16 tegn langt.';
 
   @override
-  String get loginSuccessTitle => 'Login Success';
+  String get loginSuccessTitle => 'Innlogging vellykket';
 
   @override
-  String get loginEmailEmptyError => 'Email cannot be empty';
+  String get loginEmailEmptyError => 'E-post kan ikke være tom';
 
   @override
   String get loginEmailInvalidFormatError =>
-      'Please enter a valid email address format.';
+      'Vennligst oppgi en gyldig e-postadresse.';
 
   @override
   String get loginEmailReservedError =>
-      'Email format (matches __.*__) is not allowed.';
+      'E-postformatet (matcher __.*__) er ikke tillatt.';
 
   @override
-  String get loginEmailTooLongError => 'Email is too long (max 1500 bytes).';
+  String get loginEmailTooLongError => 'E-posten er for lang (maks 1500 byte).';
 
   @override
-  String get loginNotServiceAdminError => 'Not a service admin';
+  String get loginNotServiceAdminError => 'Ikke en tjenesteadministrator';
 
   @override
-  String get loginNotBetaUserError => 'Not a beta user';
+  String get loginNotBetaUserError => 'Ikke en betabruker';
 
   @override
-  String get loginPasswordTooShortError => 'Password is too short.';
+  String get loginPasswordTooShortError => 'Passordet er for kort.';
 
   @override
-  String get loginAgreeToTermsCheckbox => 'I agree to the Terms';
+  String get loginAgreeToTermsCheckbox => 'Jeg godtar vilkårene';
 
   @override
   String get loginAgreeToPrivacyPolicyCheckbox =>
-      'I agree to the Privacy Policy';
+      'Jeg godtar personvernreglene';
 
   @override
-  String get loginAlreadyHaveAccountButton => 'Already have an account?';
+  String get loginAlreadyHaveAccountButton => 'Har du allerede en konto?';
 
   @override
-  String get loginNeedToCreateAccountButton => 'Need to create an account?';
+  String get loginNeedToCreateAccountButton =>
+      'Trenger du å opprette en konto?';
 
   @override
-  String get loginForgotPasswordButton => 'Forgot Password?';
+  String get loginForgotPasswordButton => 'Glemt passord?';
 
   @override
   String get loginGoToEmailResetPasswordMessage =>
-      'Go to your email inbox, open the email, and click the link to create a new password. Then return here and login.';
+      'Gå til e-postinnboksen din, åpne e-posten og klikk på lenken for å opprette et nytt passord. Gå deretter tilbake hit og logg inn.';
 
   @override
   String get loginGoToEmailVerifyEmailMessage =>
-      'Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.';
+      'Gå til e-postinnboksen din, åpne e-posten og klikk på lenken for å bekrefte e-postadressen din. Gå deretter tilbake hit og logg inn.';
 
   @override
-  String get sites => 'Sites';
+  String get sites => 'Nettsteder';
 
   @override
-  String get noSites => 'no sites';
+  String get noSites => 'ingen nettsteder';
 
   @override
-  String get initializingAccountTitle => 'Initializing Account';
+  String get initializingAccountTitle => 'Initialiserer konto';
 
   @override
-  String get serviceCreateAccountTitle => 'Service Create Account';
+  String get serviceCreateAccountTitle => 'Opprett tjenestekonto';
 
   @override
-  String get serviceLoginTitle => 'Service Login';
+  String get serviceLoginTitle => 'Tjenestepålogging';
 
   @override
-  String get accountSettingsTitle => 'Account Settings';
+  String get accountSettingsTitle => 'Kontoinnstillinger';
 
   @override
-  String get manageSitesTitle => 'Leave Site';
+  String get manageSitesTitle => 'Forlat sted';
 
   @override
-  String get removeAccountTitle => 'Remove Account';
+  String get removeAccountTitle => 'Fjern konto';
 
   @override
-  String get logout => 'Logout';
+  String get logout => 'Logg ut';
 
   @override
-  String get createSiteTitle => 'Create Site';
+  String get logoutDialogTitle => 'Logg ut?';
 
   @override
-  String get joinSiteTitle => 'Join Site';
+  String get logoutDialogMessage => 'Er du sikker på at du vil logge ut?';
 
   @override
-  String get unimplementedTitle => 'Unimplemented';
+  String get cancelButton => 'Avbryt';
 
   @override
-  String get toBeImplemented => 'Coming Soon!';
+  String get createSiteTitle => 'Opprett sted';
 
   @override
-  String get siteNameLabel => 'Site Name';
+  String get joinSiteTitle => 'Bli med i et sted';
 
   @override
-  String get siteNameEmptyError => 'Site name cannot be empty';
+  String get unimplementedTitle => 'Ikke implementert';
 
   @override
-  String get userNameLabel => 'User Name';
+  String get toBeImplemented => 'Kommer snart!';
 
   @override
-  String get userNameEmptyError => 'Site user name cannot be empty';
+  String get siteNameLabel => 'Stedsnavn';
 
   @override
-  String get pasteCodeTooltip => 'Paste Code';
+  String get siteNameEmptyError => 'Stedsnavn kan ikke være tomt';
 
   @override
-  String get backspaceTooltip => 'Backspace';
+  String get userNameLabel => 'Brukernavn';
 
   @override
-  String get joinSiteCodeLabel => 'Enter 8-character Site Code';
+  String get userNameEmptyError => 'Brukernavn kan ikke være tomt';
 
   @override
-  String get siteCodeEmptyError => 'Site code cannot be empty';
+  String get pasteCodeTooltip => 'Lim inn kode';
 
   @override
-  String get siteCodeLengthError => 'Site code must be 8 characters long';
+  String get backspaceTooltip => 'Tilbake';
 
   @override
-  String get leaveSiteTooltip => 'Leave Site';
+  String get joinSiteCodeLabel => 'Skriv inn 8-tegns stedskode';
 
   @override
-  String get removeSiteTitle => 'Remove Site';
+  String get siteCodeEmptyError => 'Stedskode kan ikke være tom';
+
+  @override
+  String get siteCodeLengthError => 'Stedskode må være 8 tegn lang';
+
+  @override
+  String get leaveSiteTooltip => 'Forlat stedet';
+
+  @override
+  String get removeSiteTitle => 'Fjern sted';
 
   @override
   String get leaveSiteConfirmation =>
-      'Leave Site? Only an admin can add you back.';
+      'Forlate stedet? Kun en administrator kan legge deg til igjen.';
 
   @override
-  String get updateTermsTitle => 'Update Terms';
+  String get updateTermsTitle => 'Oppdater vilkår';
 
   @override
-  String get viewTerms => 'View Terms';
+  String get viewTerms => 'Vis vilkår';
 
   @override
-  String get viewPrivacyPolicy => 'View Privacy Policy';
+  String get viewPrivacyPolicy => 'Vis personvernreglene';
 
   @override
-  String get agreeToTerms => 'I agree to the Terms of Service';
+  String get agreeToTerms => 'Jeg godtar tjenestevilkårene';
 
   @override
-  String get agreeToPrivacyPolicy => 'I agree to the Privacy Policy';
+  String get agreeToPrivacyPolicy => 'Jeg godtar personvernreglene';
 
   @override
-  String get showAccountEventsState => 'Show Account Events & State';
+  String get showAccountEventsState => 'Vis kontohendelser og tilstand';
 
   @override
-  String get serviceAdminTitle => 'Service Admin';
+  String get serviceAdminTitle => 'Tjenesteadministrator';
 
   @override
-  String get serviceStatusTitle => 'Service Status';
+  String get serviceStatusTitle => 'Tjenestestatus';
 
   @override
-  String get minRequiredVersionTitle => 'Minimum Required Version';
+  String get minRequiredVersionTitle => 'Minimum påkrevd versjon';
 
   @override
-  String get manageBetaUsersTitle => 'Manage Beta Users';
+  String get manageBetaUsersTitle => 'Administrer betabrukere';
 
   @override
-  String get errorFetchingBetaUsers => 'Error fetching beta users';
+  String get errorFetchingBetaUsers => 'Feil ved henting av betabrukere';
 
   @override
-  String get newTermsOfServiceTitle => 'New Terms of Service';
+  String get newTermsOfServiceTitle => 'Nye tjenestevilkår';
 
   @override
-  String get newPrivacyPolicyTitle => 'New Privacy Policy';
+  String get newPrivacyPolicyTitle => 'Ny personvernpolicy';
 
   @override
-  String get manageServiceAdminsTitle => 'Manage Service Admins';
+  String get manageServiceAdminsTitle => 'Administrer tjenesteadministratorer';
 
   @override
-  String get showServiceEventsStateTitle => 'Show Service Events & State';
+  String get showServiceEventsStateTitle => 'Vis tjenestehendelser og tilstand';
 
   @override
-  String get serviceDownTitle => 'Service Down';
+  String get serviceDownTitle => 'Tjenesten er nede';
 
   @override
   String get serviceDownMessage =>
-      'The service is temporarily unavailable. Please wait while we work to restore it.';
+      'Tjenesten er midlertidig utilgjengelig. Vennligst vent mens vi jobber med å gjenopprette den.';
 
   @override
-  String get accountEventsTitle => 'Account Events (database)';
+  String get accountEventsTitle => 'Kontohendelser (database)';
 
   @override
-  String get accountStateTitle => 'Account State (local replay)';
+  String get accountStateTitle => 'Konto‑tilstand (lokal avspilling)';
 
   @override
-  String get serviceEventsTitle => 'Service Events (database)';
+  String get serviceEventsTitle => 'Tjenestehendelser (database)';
 
   @override
-  String get serviceStateTitle => 'Service State (local replay)';
+  String get serviceStateTitle => 'Tjenestetilstand (lokal avspilling)';
 
   @override
-  String get networkErrorTitle => 'Network Error';
+  String get networkErrorTitle => 'Nettverksfeil';
 
   @override
   String get serviceNetworkErrorMessage =>
-      'There was an error contacting the service. Please check your internet connection and try again.';
+      'Det oppstod en feil ved kontakt med tjenesten. Sjekk internettforbindelsen og prøv igjen.';
 
   @override
-  String get newVersionAvailableTitle => 'New Version Available';
+  String get newVersionAvailableTitle => 'Ny versjon tilgjengelig';
 
   @override
   String get newVersionAvailableMessage =>
-      'Please update your browser or app to the latest version.';
+      'Vennligst oppdater nettleseren eller appen til siste versjon.';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy';
+  String get privacyPolicyTitle => 'Personvernregler';
 
   @override
-  String get noPrivacyPolicyAvailable => 'No privacy policy available.';
+  String get noPrivacyPolicyAvailable => 'Ingen personvernpolicy tilgjengelig.';
 
   @override
-  String get termsOfServiceTitle => 'Terms of Service';
+  String get termsOfServiceTitle => 'Vilkår for bruk';
 
   @override
-  String get noTermsAvailable => 'No terms available.';
+  String get noTermsAvailable => 'Ingen vilkår tilgjengelig.';
 
   @override
-  String get uninitializedErrorTitle => 'Uninitialized Error';
+  String get uninitializedErrorTitle => 'Initialiseringsfeil';
 
   @override
-  String get errorTodo => 'Error: todo';
+  String get errorTodo => 'Feil: todo';
 
   @override
-  String get initializeFirebaseEmulator => 'Initialize the firebase emulator.';
+  String get initializeFirebaseEmulator => 'Initialiser Firebase-emulatoren.';
 
   @override
   String get successfullySubmittedTodo =>
-      'successfully submitted, todo: grey out fields';
+      'Sendt inn vellykket. TODO: grå ut feltene';
 
   @override
-  String get errorSubmittingForm => 'Error submitting form';
+  String get errorSubmittingForm => 'Feil ved innsending av skjema';
 
   @override
   String get disallowedCharactersError =>
-      'Characters \'[\' and \']\' are not allowed';
+      'Tegnene \'[\' og \']\' er ikke tillatt';
 
   @override
-  String get errorTitle => 'Error';
+  String get errorTitle => 'Feil';
 
   @override
   String get unexpectedError =>
-      'Unexpected error, check internet, go back and try again';
+      'Uventet feil, sjekk internett, gå tilbake og prøv igjen';
 
   @override
   String get permissionDenied =>
-      'You do not have permission to perform this action.';
+      'Du har ikke tillatelse til å utføre denne handlingen.';
 
   @override
-  String get addMemberTitle => 'Add Member';
+  String get addMemberTitle => 'Legg til medlem';
 
   @override
-  String get memberNameLabel => 'Member Name';
+  String get memberNameLabel => 'Medlemsnavn';
 
   @override
-  String get memberNameEmptyError => 'Member name cannot be empty';
+  String get memberNameEmptyError => 'Medlemsnavn kan ikke være tomt';
 
   @override
-  String get memberNameExistsError => 'Member name already exists';
+  String get memberNameExistsError => 'Medlemsnavn finnes allerede';
 
   @override
   String get administratorLabel => 'Administrator';
 
   @override
-  String get emailExistsError => 'Email already exists in the site';
+  String get emailExistsError => 'E-post finnes allerede på stedet';
 
   @override
-  String get renameSiteTitle => 'Rename Site';
+  String get renameSiteTitle => 'Gi nytt navn til sted';
 
   @override
-  String get newSiteNameLabel => 'New Site Name';
+  String get newSiteNameLabel => 'Nytt stedsnavn';
 
   @override
-  String get siteEmailsTitle => 'Site Emails (database)';
+  String get siteEmailsTitle => 'Stedets e-poster (database)';
 
   @override
-  String get siteEventsTitle => 'Site Events (database)';
+  String get siteEventsTitle => 'Stedhendelser (database)';
 
   @override
-  String get siteStateTitle => 'Site State (local replay)';
+  String get siteStateTitle => 'Stedtilstand (lokal avspilling)';
 
   @override
-  String get membersTitle => 'Members';
+  String get membersTitle => 'Medlemmer';
 
   @override
-  String get serviceSettingsTitle => 'Service Settings';
+  String get serviceSettingsTitle => 'Tjenesteinnstillinger';
 
   @override
-  String get termsOfServiceContentLabel => 'Terms of Service Content';
+  String get termsOfServiceContentLabel => 'Innhold i tjenestevilkårene';
 
   @override
   String get termsOfServiceContentEmptyError =>
-      'Please enter terms of service content.';
+      'Vennligst skriv inn innholdet i tjenestevilkårene.';
 
   @override
-  String get contentTooShortError => 'Content is too short.';
+  String get contentTooShortError => 'Innholdet er for kort.';
 
   @override
-  String get privacyPolicyContentLabel => 'Privacy Policy Content';
+  String get privacyPolicyContentLabel => 'Innhold i personvernpolicy';
 
   @override
   String get privacyPolicyContentEmptyError =>
-      'Please enter privacy policy content.';
+      'Vennligst skriv inn innholdet i personvernpolicyen.';
 
   @override
-  String get serviceUnavailableLabel => 'Service Unavailable';
+  String get serviceUnavailableLabel => 'Tjenesten utilgjengelig';
 
   @override
-  String get minVersionLabel => 'Min Version';
+  String get minVersionLabel => 'Min versjon';
 
   @override
-  String get versionNumberEmptyError => 'Please enter a version number.';
+  String get versionNumberEmptyError =>
+      'Vennligst skriv inn et versjonsnummer.';
 
   @override
   String get versionNumberInvalidError =>
-      'Please enter a valid positive number.';
+      'Vennligst skriv inn et gyldig positivt tall.';
 
   @override
-  String get betaUserEmailsLabel => 'Beta User Emails (comma-separated)';
+  String get betaUserEmailsLabel =>
+      'E-postadresser for betabrukere (kommadelt)';
 
   @override
   String get aliasLabel => 'Alias';
 
   @override
-  String get nicknameEmptyError => 'Nickname cannot be empty';
+  String get nicknameEmptyError => 'Kallenavn kan ikke være tomt';
 
   @override
-  String get adminAliasExistsError => 'Admin alias already exists';
+  String get adminAliasExistsError => 'Administratoralias finnes allerede';
 
   @override
-  String get failedToLoadEmails => 'Failed to load emails.';
+  String get failedToLoadEmails => 'Kunne ikke laste inn e-poster.';
 
   @override
   String get permissionDeniedViewList =>
-      'You do not have permission to view this list.';
+      'Du har ikke tillatelse til å se denne listen.';
 
   @override
-  String get noEmailsFound => 'No emails found.';
+  String get noEmailsFound => 'Ingen e-poster funnet.';
 
   @override
   String userId(int userId) {
-    return 'User ID: $userId';
+    return 'Bruker-ID: $userId';
   }
 
   @override
-  String get removeMemberTooltip => 'Remove Member';
+  String get removeMemberTooltip => 'Fjern medlem';
 
   @override
-  String get removeMemberTitle => 'Remove Member';
+  String get removeMemberTitle => 'Fjern medlem';
 
   @override
   String get removeMemberConfirmation =>
-      'Remove Member? This action cannot be undone.';
+      'Fjerne medlem? Denne handlingen kan ikke angres.';
 
   @override
-  String get updateMemberTooltip => 'Update Member';
+  String get updateMemberTooltip => 'Oppdater medlem';
 
   @override
-  String get updateMemberTitle => 'Update Member';
+  String get updateMemberTitle => 'Oppdater medlem';
 
   @override
-  String get restoreMemberTooltip => 'Restore Member';
+  String get restoreMemberTooltip => 'Gjenopprett medlem';
 
   @override
-  String get restoreMemberTitle => 'Restore Member';
+  String get restoreMemberTitle => 'Gjenopprett medlem';
 
   @override
-  String get removedMembersTitle => 'Removed Members';
+  String get removedMembersTitle => 'Slettede medlemmer';
 
   @override
-  String get addAdminTitle => 'Add Admin';
+  String get addAdminTitle => 'Legg til administrator';
 
   @override
-  String get updateAdminTitle => 'Update Admin';
+  String get updateAdminTitle => 'Oppdater administrator';
 
   @override
-  String get removeAdminTitle => 'Remove Admin';
+  String get removeAdminTitle => 'Fjern administrator';
 
   @override
   String get removeAdminConfirmation =>
-      'Remove Admin? This action cannot be undone.';
+      'Fjerne administrator? Denne handlingen kan ikke angres.';
 
   @override
-  String get restoreAdminTitle => 'Restore Admin';
+  String get restoreAdminTitle => 'Gjenopprett administrator';
 
   @override
   String get removeAccountConfirmation =>
-      'Remove Account? This action cannot be undone.';
+      'Fjerne konto? Denne handlingen kan ikke angres.';
 
   @override
-  String get cannotRemoveAccountTitle => 'Cannot Remove Account';
+  String get cannotRemoveAccountTitle => 'Kan ikke fjerne konto';
 
   @override
   String get cannotRemoveAccountContent =>
-      'You must leave all sites before you can remove your account.';
+      'Du må forlate alle steder før du kan fjerne kontoen din.';
 
   @override
   String get cannotChangeEmailWhenOnlyAdminError =>
-      'Cannot change your email when you are the only admin.';
+      'Du kan ikke endre e-posten din når du er den eneste administratoren.';
 
   @override
   String get okButton => 'OK';
 
   @override
-  String get copySiteIdTooltip => 'Copy Site ID';
+  String get copySiteIdTooltip => 'Kopier sted-ID';
 
   @override
-  String get siteIdCopied => 'Site ID copied to clipboard';
+  String get siteIdCopied => 'Sted-ID kopiert til utklippstavlen';
 
   @override
   String get and => '&';
 
   @override
-  String get mustAgreeToTermsError => 'You must agree to the terms.';
+  String get mustAgreeToTermsError => 'Du må godta vilkårene.';
 
   @override
-  String get mustAgreeToPrivacyPolicyError =>
-      'You must agree to the privacy policy.';
+  String get mustAgreeToPrivacyPolicyError => 'Du må godta personvernpolicyen.';
 
   @override
   String get leadingTrailingSpacesError =>
-      'Leading or trailing spaces are not allowed.';
+      'Innledende eller avsluttende mellomrom er ikke tillatt.';
 
   @override
-  String get emailLowercaseError => 'Email must be in lowercase.';
+  String get emailLowercaseError => 'E-post må være skrevet med små bokstaver.';
 
   @override
   String get emailLeadingTrailingSpacesError =>
-      'Email cannot have leading or trailing spaces.';
+      'E-post kan ikke ha innledende eller avsluttende mellomrom.';
 
   @override
   String get formSubmissionError =>
-      'Error submitting the form, check internet connection, go back and try again.';
+      'Feil ved innsending av skjemaet, sjekk internettforbindelsen, gå tilbake og prøv igjen.';
 
   @override
   String failedToLoadEvents(String error) {
-    return 'Failed to load events: $error';
+    return 'Kunne ikke laste hendelser: $error';
   }
 
   @override
-  String get showEventsListTooltip => 'Show Events List';
+  String get showEventsListTooltip => 'Vis hendelsesliste';
 
   @override
-  String get showReplayStateTooltip => 'Show Replay State';
+  String get showReplayStateTooltip => 'Vis avspillingsstatus';
 
   @override
-  String get toggleSortOrderTooltip => 'Toggle Sort Order';
+  String get toggleSortOrderTooltip => 'Bytt sorteringsrekkefølge';
 
   @override
-  String get noEventsToReplay => 'No events to replay.';
+  String get noEventsToReplay => 'Ingen hendelser å spille av.';
 
   @override
   String eventVersion(int version) {
-    return 'Version: $version';
+    return 'Versjon: $version';
   }
 
   @override
-  String get loadingTitle => 'Loading...';
+  String get loadingTitle => 'Laster...';
 
   @override
   String authenticationErrorWithDetails(String details) {
-    return 'Authentication error: $details';
+    return 'Autentiseringsfeil: $details';
   }
 
   @override
   String get loadingEllipsis => '...';
 
   @override
-  String get loginDismissSnackbar => 'Dismiss';
+  String get loginDismissSnackbar => 'Lukk';
 
   @override
-  String get passwordEmptyError => 'Password cannot be empty.';
+  String get passwordEmptyError => 'Passord kan ikke være tomt.';
 
   @override
-  String get passwordTooShortError => 'Password is too short.';
+  String get passwordTooShortError => 'Passordet er for kort.';
 
   @override
-  String get passwordTooLongError => 'Password is too long.';
+  String get passwordTooLongError => 'Passordet er for langt.';
 
   @override
-  String get exportSiteTitle => 'Eksporter nettsted';
+  String get exportSiteTitle => 'Eksporter sted';
 
   @override
   String get manageExportsTitle => 'Administrer eksport';
@@ -515,24 +526,24 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get noExportsFound => 'Ingen eksport funnet.';
 
   @override
-  String get failedToLoadExports => 'Kunne ikke laste inn eksport.';
+  String get failedToLoadExports => 'Kunne ikke laste eksportene.';
 
   @override
-  String get importSiteTitle => 'Import Site';
+  String get importSiteTitle => 'Importer sted';
 
   @override
-  String get selectFileButton => 'Select File';
+  String get selectFileButton => 'Velg fil';
 
   @override
-  String get importButton => 'Import';
+  String get importButton => 'Importer';
 
   @override
-  String get selectAdminTitle => 'Select Your Admin Account';
+  String get selectAdminTitle => 'Velg din administrator-konto';
 
   @override
   String get selectAdminInstruction =>
-      'Please select your administrator account from the list of admins for the imported site.';
+      'Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.';
 
   @override
-  String get assignUserButton => 'Assign User';
+  String get assignUserButton => 'Tildel bruker';
 }
