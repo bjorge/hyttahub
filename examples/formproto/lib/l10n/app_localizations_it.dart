@@ -210,12 +210,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get app_enterButton => 'Invio';
 
   @override
-  String get app_otherAppsTitle => 'Altre Applicazioni Hytta Hub';
-
-  @override
-  String get app_reservationsAppButton => 'Hytta Hub Prenotazioni';
-
-  @override
   String get app_serviceLoginButton => 'Accesso Servizio';
 
   @override

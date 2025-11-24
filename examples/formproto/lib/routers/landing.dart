@@ -131,19 +131,7 @@ class LandingPage extends StatelessWidget {
               },
               child: Text(l10n.app_enterButton),
             ),
-            const SizedBox(height: 48),
-            Text(
-              l10n.app_otherAppsTitle,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                // final uri = Uri.parse('https://friendlyreservations.com');
-                // launchUrl(uri);
-              },
-              child: Text(l10n.app_reservationsAppButton),
-            ),
+
             const Spacer(flex: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

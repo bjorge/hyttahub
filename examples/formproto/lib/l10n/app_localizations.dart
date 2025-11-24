@@ -472,18 +472,6 @@ abstract class AppLocalizations {
   /// **'Enter'**
   String get app_enterButton;
 
-  /// No description provided for @app_otherAppsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Other Hytta Hub Applications'**
-  String get app_otherAppsTitle;
-
-  /// No description provided for @app_reservationsAppButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Hytta Hub Reservations'**
-  String get app_reservationsAppButton;
-
   /// No description provided for @app_serviceLoginButton.
   ///
   /// In en, this message translates to:

@@ -70,11 +70,11 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
 
   @override
   String get loginGoToEmailResetPasswordMessage =>
-      'Ve a tu correo electrónico, abre el correo de Reservas Amigables y haz clic en el enlace para crear una nueva contraseña. Luego vuelve aquí e inicia sesión.';
+      'Ve a tu correo electrónico, abre el correo y haz clic en el enlace para crear una nueva contraseña. Luego vuelve aquí e inicia sesión.';
 
   @override
   String get loginGoToEmailVerifyEmailMessage =>
-      'Ve a tu correo electrónico, abre el correo de Reservas Amigables y haz clic en el enlace para verificar tu dirección de correo. Luego vuelve aquí e inicia sesión.';
+      'Ve a tu correo electrónico, abre el correo y haz clic en el enlace para verificar tu dirección de correo. Luego vuelve aquí e inicia sesión.';
 
   @override
   String get sites => 'Sitios';

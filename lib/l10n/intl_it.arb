@@ -18,8 +18,8 @@
   "loginAlreadyHaveAccountButton": "Hai già un account?",
   "loginNeedToCreateAccountButton": "Devi creare un account?",
   "loginForgotPasswordButton": "Password dimenticata?",
-  "loginGoToEmailResetPasswordMessage": "Vai alla tua casella di posta elettronica, apri l'email da Prenotazioni Amichevoli e clicca sul link per creare una nuova password. Quindi torna qui e accedi.",
-  "loginGoToEmailVerifyEmailMessage": "Vai alla tua casella di posta elettronica, apri l'email da Prenotazioni Amichevoli e clicca sul link per verificare il tuo indirizzo email. Quindi torna qui e accedi.",
+  "loginGoToEmailResetPasswordMessage": "Vai alla tua casella di posta elettronica, apri l'email e clicca sul link per creare una nuova password. Quindi torna qui e accedi.",
+  "loginGoToEmailVerifyEmailMessage": "Vai alla tua casella di posta elettronica, apri l'email e clicca sul link per verificare il tuo indirizzo email. Quindi torna qui e accedi.",
   "@app_versionInfo": {
     "placeholders": {
       "appVersion": {

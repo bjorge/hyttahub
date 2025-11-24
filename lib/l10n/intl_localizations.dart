@@ -216,13 +216,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @loginGoToEmailResetPasswordMessage.
   ///
   /// In en, this message translates to:
-  /// **'Go to your email inbox, open the email from Friendly Reservations, and click the link to create a new password. Then return here and login.'**
+  /// **'Go to your email inbox, open the email, and click the link to create a new password. Then return here and login.'**
   String get loginGoToEmailResetPasswordMessage;
 
   /// No description provided for @loginGoToEmailVerifyEmailMessage.
   ///
   /// In en, this message translates to:
-  /// **'Go to your email inbox, open the email from Friendly Reservations, and click the link to verify your email address. Then return here and login.'**
+  /// **'Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.'**
   String get loginGoToEmailVerifyEmailMessage;
 
   /// No description provided for @sites.

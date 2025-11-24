@@ -70,11 +70,11 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
 
   @override
   String get loginGoToEmailResetPasswordMessage =>
-      'Vai alla tua casella di posta elettronica, apri l\'email da Prenotazioni Amichevoli e clicca sul link per creare una nuova password. Quindi torna qui e accedi.';
+      'Vai alla tua casella di posta elettronica, apri l\'email e clicca sul link per creare una nuova password. Quindi torna qui e accedi.';
 
   @override
   String get loginGoToEmailVerifyEmailMessage =>
-      'Vai alla tua casella di posta elettronica, apri l\'email da Prenotazioni Amichevoli e clicca sul link per verificare il tuo indirizzo email. Quindi torna qui e accedi.';
+      'Vai alla tua casella di posta elettronica, apri l\'email e clicca sul link per verificare il tuo indirizzo email. Quindi torna qui e accedi.';
 
   @override
   String get sites => 'Siti';

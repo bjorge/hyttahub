@@ -68,11 +68,11 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get loginGoToEmailResetPasswordMessage =>
-      'Go to your email inbox, open the email from Friendly Reservations, and click the link to create a new password. Then return here and login.';
+      'Go to your email inbox, open the email, and click the link to create a new password. Then return here and login.';
 
   @override
   String get loginGoToEmailVerifyEmailMessage =>
-      'Go to your email inbox, open the email from Friendly Reservations, and click the link to verify your email address. Then return here and login.';
+      'Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.';
 
   @override
   String get sites => 'Sites';

@@ -18,8 +18,8 @@
   "loginAlreadyHaveAccountButton": "¿Ya tienes una cuenta?",
   "loginNeedToCreateAccountButton": "¿Necesitas crear una cuenta?",
   "loginForgotPasswordButton": "¿Olvidaste tu contraseña?",
-  "loginGoToEmailResetPasswordMessage": "Ve a tu correo electrónico, abre el correo de Reservas Amigables y haz clic en el enlace para crear una nueva contraseña. Luego vuelve aquí e inicia sesión.",
-  "loginGoToEmailVerifyEmailMessage": "Ve a tu correo electrónico, abre el correo de Reservas Amigables y haz clic en el enlace para verificar tu dirección de correo. Luego vuelve aquí e inicia sesión.",
+  "loginGoToEmailResetPasswordMessage": "Ve a tu correo electrónico, abre el correo y haz clic en el enlace para crear una nueva contraseña. Luego vuelve aquí e inicia sesión.",
+  "loginGoToEmailVerifyEmailMessage": "Ve a tu correo electrónico, abre el correo y haz clic en el enlace para verificar tu dirección de correo. Luego vuelve aquí e inicia sesión.",
   "@app_versionInfo": {
     "placeholders": {
       "appVersion": {
