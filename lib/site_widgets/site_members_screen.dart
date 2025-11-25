@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class SiteMembersScreen extends StatelessWidget {
   const SiteMembersScreen({super.key, required this.siteId});
@@ -39,8 +40,9 @@ class SiteMembersScreen extends StatelessWidget {
         ),
         BlocProvider<SiteReplayBloc>(
           key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
-          create: (_) =>
-              SiteReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) => SiteReplayBloc(siteId)
+            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
+            ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
@@ -77,9 +79,9 @@ class SiteMembersScreen extends StatelessWidget {
             key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
             builder: (context, siteState) {
               // first check if the account state is initialized
-              if (!siteState.hasState() ||
-                  siteState.state == CommonReplayStateEnum.fetchingConfig) {
-                return const Center(child: CircularProgressIndicator());
+              final errorWidget = handleSiteReplayState(context, siteState);
+              if (errorWidget != null) {
+                return errorWidget;
               }
 
               final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
@@ -138,19 +140,19 @@ class SiteMembersScreen extends StatelessWidget {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (entry.value.admin)
-                                  const Icon(Icons.shield),
+                                if (entry.value.admin) const Icon(Icons.shield),
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   tooltip: HyttaHubLocalizations.of(
                                     context,
-                                  )!
-                                      .updateMemberTooltip,
+                                  )!.updateMemberTooltip,
                                   onPressed: () {
                                     final originalEmail = allowedEmailsState
-                                        .emails.entries
+                                        .emails
+                                        .entries
                                         .firstWhere(
-                                            (e) => e.value.userId == entry.key)
+                                          (e) => e.value.userId == entry.key,
+                                        )
                                         .key;
 
                                     final submitValue = SubmitSiteEvent(
@@ -165,14 +167,13 @@ class SiteMembersScreen extends StatelessWidget {
                                         ),
                                         version:
                                             siteState.events.keys.fold<int>(
-                                                  0,
-                                                  (p, e) => e > p ? e : p,
-                                                ) +
-                                                1,
+                                              0,
+                                              (p, e) => e > p ? e : p,
+                                            ) +
+                                            1,
                                       ),
                                     );
-                                    final encodedSubmitValue =
-                                        base64UrlEncode(
+                                    final encodedSubmitValue = base64UrlEncode(
                                       submitValue.writeToBuffer(),
                                     );
                                     context.push(
@@ -184,14 +185,13 @@ class SiteMembersScreen extends StatelessWidget {
                                   icon: const Icon(Icons.delete_outline),
                                   tooltip: HyttaHubLocalizations.of(
                                     context,
-                                  )!
-                                      .removeMemberTooltip,
-                                  onPressed: currentUserEmail ==
+                                  )!.removeMemberTooltip,
+                                  onPressed:
+                                      currentUserEmail ==
                                           allowedEmailsState.emails.entries
                                               .firstWhere(
                                                 (e) =>
-                                                    e.value.userId ==
-                                                    entry.key,
+                                                    e.value.userId == entry.key,
                                                 orElse: () => MapEntry(
                                                   '',
                                                   AllowedEmailsBlocState_UserInfo(),
@@ -202,24 +202,26 @@ class SiteMembersScreen extends StatelessWidget {
                                       : () {
                                           final submitValue = SubmitSiteEvent(
                                             authorEmail: currentUserEmail,
-                                            removeMemberEmail:
-                                                allowedEmailsState.emails.entries
-                                                    .firstWhere(
-                                                      (e) =>
-                                                          e.value.userId ==
-                                                          entry.key,
-                                                      orElse: () => MapEntry(
-                                                        '',
-                                                        AllowedEmailsBlocState_UserInfo(),
-                                                      ), // Return empty string if no match
-                                                    )
-                                                    .key,
+                                            removeMemberEmail: allowedEmailsState
+                                                .emails
+                                                .entries
+                                                .firstWhere(
+                                                  (e) =>
+                                                      e.value.userId ==
+                                                      entry.key,
+                                                  orElse: () => MapEntry(
+                                                    '',
+                                                    AllowedEmailsBlocState_UserInfo(),
+                                                  ), // Return empty string if no match
+                                                )
+                                                .key,
                                             event: SiteEvent(
                                               removeMember:
                                                   SiteEvent_RemoveMember(
-                                                memberId: entry.key,
-                                              ),
-                                              version: siteState.events.keys
+                                                    memberId: entry.key,
+                                                  ),
+                                              version:
+                                                  siteState.events.keys
                                                       .fold<int>(
                                                         0,
                                                         (p, e) => e > p ? e : p,
@@ -229,8 +231,8 @@ class SiteMembersScreen extends StatelessWidget {
                                           );
                                           final encodedSubmitValue =
                                               base64UrlEncode(
-                                            submitValue.writeToBuffer(),
-                                          );
+                                                submitValue.writeToBuffer(),
+                                              );
                                           context.push(
                                             '${RemoveMemberRoute.fullPath(siteId: siteId)}?event=$encodedSubmitValue',
                                           );
@@ -245,8 +247,9 @@ class SiteMembersScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          HyttaHubLocalizations.of(context)!
-                              .removedMembersTitle,
+                          HyttaHubLocalizations.of(
+                            context,
+                          )!.removedMembersTitle,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
@@ -257,8 +260,7 @@ class SiteMembersScreen extends StatelessWidget {
                             icon: const Icon(Icons.restore),
                             tooltip: HyttaHubLocalizations.of(
                               context,
-                            )!
-                                .restoreMemberTooltip,
+                            )!.restoreMemberTooltip,
                             onPressed: () {
                               final submitValue = SubmitSiteEvent(
                                 authorEmail: currentUserEmail,
@@ -269,7 +271,8 @@ class SiteMembersScreen extends StatelessWidget {
                                     memberName: entry.value.name,
                                     admin: entry.value.admin,
                                   ),
-                                  version: siteState.events.keys.fold<int>(
+                                  version:
+                                      siteState.events.keys.fold<int>(
                                         0,
                                         (p, e) => e > p ? e : p,
                                       ) +

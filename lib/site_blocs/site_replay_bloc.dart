@@ -1,74 +1,44 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
-import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
-// Top-level isolate handler for site replay. Runs in a background isolate
+// Top-level isolate handler for service replay. Runs in a background isolate
 // via `compute()` and must be a top-level function.
-FutureOr<String> siteReplayIsolateHandler(Map<String, dynamic> payload) {
-  final String stateB64 = payload['state_proto_base64'] as String;
-  final dynamic eventsDynamic = payload['events'];
+FutureOr<Uint8List> siteReplayIsolateHandler(Map<String, dynamic> payload) {
+  final Uint8List serializedState = payload['serialized_state'] as Uint8List;
+  final Map<int, String> eventsMap = payload['events'];
 
-  if (kDebugMode) {
-    print("siteReplayIsolateHandler: stateB64 length: ${stateB64.length}");
-    print("siteReplayIsolateHandler: eventsDynamic: $eventsDynamic");
-  }
-
-  final Map<int, String> eventsMap = <int, String>{};
-  if (eventsDynamic is Map) {
-    eventsDynamic.forEach((k, v) {
-      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
-      eventsMap[key] = v as String;
-    });
-  }
-
-  final List<int> stateBytes = base64Decode(stateB64);
-  final SiteReplayBlocState state = SiteReplayBlocState.fromBuffer(stateBytes);
+  final SiteReplayBlocState state = SiteReplayBlocState.fromBuffer(
+    serializedState,
+  );
 
   final SiteReplayBlocState newState = siteReplay(state, eventsMap);
-
-  return base64Encode(newState.writeToBuffer());
+  return newState.writeToBuffer();
 }
 
 // Top-level isolate handler for constructing initial state from hydrated events.
-FutureOr<String> siteHydrateIsolateHandler(Map<String, dynamic> payload) {
-  final dynamic eventsDynamic = payload['hydrated_events'];
-
-  if (kDebugMode) {
-    print("siteHydrateIsolateHandler: called");
-  }
-
-  final Map<int, String> eventsMap = <int, String>{};
-  if (eventsDynamic is Map) {
-    eventsDynamic.forEach((k, v) {
-      final int key = int.tryParse(k.toString()) ?? (k is int ? k : 0);
-      eventsMap[key] = v as String;
-    });
-  }
-
+FutureOr<Uint8List> siteHydrateIsolateHandler(Map<int, String> eventsMap) {
   final SiteReplayBlocState newState = siteReplay(
     SiteReplayBlocState(),
     eventsMap,
   );
 
-  return base64Encode(newState.writeToBuffer());
+  return newState.writeToBuffer();
 }
 
 class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
   SiteReplayBloc(this.collectionName, {FirebaseFirestore? firestore})
     : super(
-        SiteReplayBlocState(),
+        SiteReplayBlocState(state: CommonReplayStateEnum.hydrating),
         firestore: firestore,
         replayIsolateHandler: siteReplayIsolateHandler,
         hydrateIsolateHandler: siteHydrateIsolateHandler,
@@ -102,86 +72,12 @@ class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
   Map<int, String> stateGetEventsMap(SiteReplayBlocState state) => state.events;
 
   @override
-  SiteReplayBlocState stateFromProtoBytes(List<int> bytes) {
-    final restored = SiteReplayBlocState.fromBuffer(bytes);
-    return restored..freeze();
+  SiteReplayBlocState fromBuffer(Uint8List bytes) {
+    return SiteReplayBlocState.fromBuffer(bytes);
   }
 
   @override
-  Future<bool> validateLocalEventCache(
-    SiteReplayBlocState localState,
-    String collectionPath,
-  ) async {
-    final cachedEventsMap = stateGetEventsMap(localState);
-
-    if (cachedEventsMap.isEmpty) {
-      return true; // Local state is empty, so cache is valid.
-    }
-
-    if (!cachedEventsMap.containsKey(1)) {
-      return false; // Local cache is invalid if it doesn't contain the first event.
-    }
-
-    // check if cache exists but data has been removed from server
-    final firstEventDoc = await getFirstEventDocument(collectionPath);
-    if (!firstEventDoc.exists ||
-        !firstEventDoc.data()!.containsKey(payloadField)) {
-      return false; // First event document does not exist, clear local cache
-    }
-
-    final base64Event = firstEventDoc.data()![payloadField] as String;
-
-    final firstEventInCache = SiteEvent.fromBuffer(
-      base64Decode(cachedEventsMap[1]!),
-    );
-
-    final firstEventOnServer = SiteEvent.fromBuffer(base64Decode(base64Event));
-
-    if (kDebugMode) {
-      print(
-        "SiteReplayBloc: validateLocalEventCache: firstEventInCache: ${firstEventInCache.toProto3Json()}",
-      );
-      print(
-        "SiteReplayBloc: validateLocalEventCache: firstEventOnServer: ${firstEventOnServer.toProto3Json()}",
-      );
-      print("cache matches server: ${firstEventInCache == firstEventOnServer}");
-    }
-
-    return firstEventInCache == firstEventOnServer;
-  }
-
-  @override
-  void handleEmptyInitialSnapshot(
-    Emitter<SiteReplayBlocState> emit,
-    SiteReplayBlocState currentState,
-  ) {
-    emit(
-      SiteReplayBlocState()
-        ..state = CommonReplayStateEnum.uninitialized
-        ..freeze(),
-    );
-  }
-
-  @override
-  SiteReplayBlocState stateFromJson(
-    Map<String, dynamic> json,
-    Map<int, String> hydratedEvents,
-  ) {
-    final restoredState = siteReplay(SiteReplayBlocState(), hydratedEvents);
-
-    // Schedule async isolate-based reconstruction and apply when ready.
-    scheduleAsyncHydration(hydratedEvents);
-
-    return restoredState..freeze();
-  }
-
-  @override
-  Map<String, dynamic> stateToJson(SiteReplayBlocState state) {
-    return {};
-  }
-
-  @override
-  CommonReplayStateEnum stateGetStatusEnum(SiteReplayBlocState state) {
-    return state.state;
+  Uint8List toBuffer(SiteReplayBlocState state) {
+    return state.writeToBuffer();
   }
 }

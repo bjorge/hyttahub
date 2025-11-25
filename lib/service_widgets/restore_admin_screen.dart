@@ -20,6 +20,7 @@ import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:protobuf/protobuf.dart';
 
 class RestoreServiceAdminScreen extends StatefulWidget {
@@ -57,8 +58,9 @@ class _RestoreServiceAdminScreenState extends State<RestoreServiceAdminScreen> {
           create: (_) => ServiceSubmitBloc(submitEvent),
         ),
         BlocProvider<ServiceReplayBloc>(
-          create: (_) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) => ServiceReplayBloc()
+            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
+            ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: Form(
@@ -95,11 +97,14 @@ class _RestoreServiceAdminScreenState extends State<RestoreServiceAdminScreen> {
 
             return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
               builder: (context, serviceState) {
-                if (!serviceState.hasState() ||
-                    serviceState.state ==
-                        CommonReplayStateEnum.fetchingConfig) {
-                  return const Center(child: CircularProgressIndicator());
+                final errorWidget = handleServiceReplayState(
+                  context,
+                  serviceState,
+                );
+                if (errorWidget != null) {
+                  return errorWidget;
                 }
+
                 return BlocConsumer<
                   ServiceSubmitBloc,
                   BaseSubmitState<SubmitServiceEvent>

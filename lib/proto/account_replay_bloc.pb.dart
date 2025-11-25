@@ -46,7 +46,7 @@ class AccountReplayBlocState extends $pb.GeneratedMessage {
   factory AccountReplayBlocState.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AccountReplayBlocState', createEmptyInstance: create)
-    ..e<$0.CommonReplayStateEnum>(1, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.ok, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
+    ..e<$0.CommonReplayStateEnum>(1, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.hydrating, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
     ..a<$core.int>(2, _omitFieldNames ? '' : 'termsVersion', $pb.PbFieldType.O3, protoName: 'termsVersion')
     ..a<$core.int>(3, _omitFieldNames ? '' : 'privacyVersion', $pb.PbFieldType.O3, protoName: 'privacyVersion')
     ..m<$core.int, $core.String>(4, _omitFieldNames ? '' : 'events', entryClassName: 'AccountReplayBlocState.EventsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS)

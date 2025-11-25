@@ -72,8 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       builder: (context, serviceState) {
-        if (!serviceState.hasState() ||
-            serviceState.state == CommonReplayStateEnum.fetchingConfig) {
+        if (serviceState.state == CommonReplayStateEnum.hydrating) {
           return Scaffold(
             appBar: AppBar(title: Text(localizations.loadingTitle)),
             body: Center(

@@ -143,7 +143,7 @@ class ServiceReplayBlocState extends $pb.GeneratedMessage {
     ..a<$core.int>(4, _omitFieldNames ? '' : 'termsVersion', $pb.PbFieldType.O3, protoName: 'termsVersion')
     ..aOS(5, _omitFieldNames ? '' : 'privacy')
     ..a<$core.int>(6, _omitFieldNames ? '' : 'privacyVersion', $pb.PbFieldType.O3, protoName: 'privacyVersion')
-    ..e<$0.CommonReplayStateEnum>(7, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.ok, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
+    ..e<$0.CommonReplayStateEnum>(7, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.hydrating, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
     ..m<$core.int, $core.String>(8, _omitFieldNames ? '' : 'events', entryClassName: 'ServiceReplayBlocState.EventsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS)
     ..m<$core.int, ServiceAdmin>(9, _omitFieldNames ? '' : 'serviceAdmins', protoName: 'serviceAdmins', entryClassName: 'ServiceReplayBlocState.ServiceAdminsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: ServiceAdmin.create, valueDefaultOrMaker: ServiceAdmin.getDefault)
     ..aOM<$1.BloomFilter>(10, _omitFieldNames ? '' : 'filter', subBuilder: $1.BloomFilter.create)

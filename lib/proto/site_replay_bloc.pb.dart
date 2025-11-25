@@ -115,7 +115,7 @@ class SiteReplayBlocState extends $pb.GeneratedMessage {
   factory SiteReplayBlocState.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SiteReplayBlocState', createEmptyInstance: create)
-    ..e<$0.CommonReplayStateEnum>(1, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.ok, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
+    ..e<$0.CommonReplayStateEnum>(1, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: $0.CommonReplayStateEnum.hydrating, valueOf: $0.CommonReplayStateEnum.valueOf, enumValues: $0.CommonReplayStateEnum.values)
     ..m<$core.int, $core.String>(2, _omitFieldNames ? '' : 'events', entryClassName: 'SiteReplayBlocState.EventsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS)
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..m<$core.int, SiteReplayBlocState_Member>(4, _omitFieldNames ? '' : 'members', entryClassName: 'SiteReplayBlocState.MembersEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OM, valueCreator: SiteReplayBlocState_Member.create, valueDefaultOrMaker: SiteReplayBlocState_Member.getDefault)

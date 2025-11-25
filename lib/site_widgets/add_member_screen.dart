@@ -18,6 +18,7 @@ import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:protobuf/protobuf.dart';
 
 class AddMemberScreen extends StatefulWidget {
@@ -54,9 +55,9 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
         ),
         BlocProvider<SiteReplayBloc>(
-          create: (_) =>
-              SiteReplayBloc(widget.siteId)
-                ..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) => SiteReplayBloc(widget.siteId)
+            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
+            ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: Form(
@@ -95,10 +96,11 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
 
             return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
               builder: (context, siteState) {
-                if (!siteState.hasState() ||
-                    siteState.state == CommonReplayStateEnum.fetchingConfig) {
-                  return const Center(child: CircularProgressIndicator());
+                final errorWidget = handleSiteReplayState(context, siteState);
+                if (errorWidget != null) {
+                  return errorWidget;
                 }
+
                 return BlocConsumer<
                   SiteSubmitBloc,
                   BaseSubmitState<SubmitSiteEvent>

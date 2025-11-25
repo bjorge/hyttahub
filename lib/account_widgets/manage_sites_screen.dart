@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class ManageSitesScreen extends StatefulWidget {
   const ManageSitesScreen({super.key});
@@ -33,11 +34,17 @@ class _ManageSitesScreenState extends State<ManageSitesScreen> {
 
           create: (_) =>
               AccountReplayBloc(GetIt.instance<AuthBloc>().state.email)
+                ..add(CommonReplayBlocEvent(loadFromHydrate: true))
                 ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: BlocBuilder<AccountReplayBloc, AccountReplayBlocState>(
         builder: (context, accountState) {
+          final errorWidget = handleAccountReplayState(context, accountState);
+          if (errorWidget != null) {
+            return errorWidget;
+          }
+
           return Scaffold(
             appBar: AppBar(
               title: Text(HyttaHubLocalizations.of(context)!.manageSitesTitle),

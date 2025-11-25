@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formproto/proto/app_events.pb.dart';
@@ -25,6 +26,9 @@ class SiteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("Building SiteScreen for siteId: $siteId");
+    }
     return MultiBlocProvider(
       providers: [
         BlocProvider<SiteReplayBloc>(
@@ -32,6 +36,7 @@ class SiteScreen extends StatelessWidget {
           create:
               (_) =>
                   SiteReplayBloc(siteId)
+                    ..add(CommonReplayBlocEvent(loadFromHydrate: true))
                     ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
@@ -60,7 +65,14 @@ class UpdateButton extends StatelessWidget {
       builder: (context, siteState) {
         final errorWidget = handleSiteReplayState(context, siteState);
         if (errorWidget != null) {
+          if (kDebugMode) {
+            print("UpdateButton: encountered error state, not showing button.");
+          }
           return errorWidget;
+        }
+
+        if (kDebugMode) {
+          print("UpdateButton: no error, showing button.");
         }
 
         final appReplay =

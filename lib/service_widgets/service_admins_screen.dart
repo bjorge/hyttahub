@@ -19,6 +19,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class ServiceAdminsScreen extends StatelessWidget {
   const ServiceAdminsScreen({super.key});
@@ -38,8 +39,9 @@ class ServiceAdminsScreen extends StatelessWidget {
               ),
         ),
         BlocProvider<ServiceReplayBloc>(
-          create: (_) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) => ServiceReplayBloc()
+            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
+            ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
@@ -75,9 +77,13 @@ class ServiceAdminsScreen extends StatelessWidget {
           return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
             builder: (context, serviceState) {
               // first check if the account state is initialized
-              if (!serviceState.hasState() ||
-                  serviceState.state == CommonReplayStateEnum.fetchingConfig) {
-                return const Center(child: CircularProgressIndicator());
+
+              final errorWidget = handleServiceReplayState(
+                context,
+                serviceState,
+              );
+              if (errorWidget != null) {
+                return errorWidget;
               }
 
               final currentUserEmail = GetIt.instance<AuthBloc>().state.email;

@@ -17,9 +17,9 @@ class SiteNameDisplay extends StatelessWidget {
     return BlocProvider(
       key: Key("SiteNameDisplay-$collectionName"),
 
-      create: (_) =>
-          SiteReplayBloc(collectionName)
-            ..add(CommonReplayBlocEvent(listen: true)),
+      create: (_) => SiteReplayBloc(collectionName)
+        ..add(CommonReplayBlocEvent(loadFromHydrate: true))
+        ..add(CommonReplayBlocEvent(listen: true)),
       child: BlocSelector<SiteReplayBloc, SiteReplayBlocState, String>(
         selector: (state) => state.name,
         builder: (context, name) {

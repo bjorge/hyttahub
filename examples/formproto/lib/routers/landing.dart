@@ -120,6 +120,10 @@ class LandingPage extends StatelessWidget {
               ),
               onPressed: () {
                 context.read<ServiceReplayBloc>().add(
+                  CommonReplayBlocEvent(loadFromHydrate: true),
+                );
+
+                context.read<ServiceReplayBloc>().add(
                   CommonReplayBlocEvent(listen: true),
                 );
                 context.read<AuthBloc>().add(
@@ -149,6 +153,10 @@ class LandingPage extends StatelessWidget {
                     textStyle: Theme.of(context).textTheme.bodySmall,
                   ),
                   onPressed: () {
+                    context.read<ServiceReplayBloc>().add(
+                      CommonReplayBlocEvent(loadFromHydrate: true),
+                    );
+
                     context.read<ServiceReplayBloc>().add(
                       CommonReplayBlocEvent(listen: true),
                     );

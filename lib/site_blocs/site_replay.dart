@@ -14,6 +14,10 @@ SiteReplayBlocState siteReplay(
   SiteReplayBlocState siteReplay,
   Map<int, String> base64Events,
 ) {
+  if (kDebugMode) {
+    print('siteReplay: called with ${base64Events.length} events');
+  }
+
   final lastVersion = siteReplay.events.keys.fold(
     0,
     (previousValue, element) =>

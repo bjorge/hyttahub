@@ -65,6 +65,7 @@ enum CommonReplayBlocEvent_EventType {
   listen, 
   newEvents, 
   errorOccurred, 
+  loadFromHydrate, 
   notSet
 }
 
@@ -73,6 +74,7 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
     $core.bool? listen,
     CommonReplayBlocEvent_NewEvents? newEvents,
     $core.String? errorOccurred,
+    $core.bool? loadFromHydrate,
   }) {
     final $result = create();
     if (listen != null) {
@@ -84,6 +86,9 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
     if (errorOccurred != null) {
       $result.errorOccurred = errorOccurred;
     }
+    if (loadFromHydrate != null) {
+      $result.loadFromHydrate = loadFromHydrate;
+    }
     return $result;
   }
   CommonReplayBlocEvent._() : super();
@@ -94,13 +99,15 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
     1 : CommonReplayBlocEvent_EventType.listen,
     2 : CommonReplayBlocEvent_EventType.newEvents,
     3 : CommonReplayBlocEvent_EventType.errorOccurred,
+    4 : CommonReplayBlocEvent_EventType.loadFromHydrate,
     0 : CommonReplayBlocEvent_EventType.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'CommonReplayBlocEvent', createEmptyInstance: create)
-    ..oo(0, [1, 2, 3])
+    ..oo(0, [1, 2, 3, 4])
     ..aOB(1, _omitFieldNames ? '' : 'listen')
     ..aOM<CommonReplayBlocEvent_NewEvents>(2, _omitFieldNames ? '' : 'newEvents', protoName: 'newEvents', subBuilder: CommonReplayBlocEvent_NewEvents.create)
     ..aOS(3, _omitFieldNames ? '' : 'errorOccurred', protoName: 'errorOccurred')
+    ..aOB(4, _omitFieldNames ? '' : 'loadFromHydrate', protoName: 'loadFromHydrate')
     ..hasRequiredFields = false
   ;
 
@@ -156,6 +163,15 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
   $core.bool hasErrorOccurred() => $_has(2);
   @$pb.TagNumber(3)
   void clearErrorOccurred() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.bool get loadFromHydrate => $_getBF(3);
+  @$pb.TagNumber(4)
+  set loadFromHydrate($core.bool v) { $_setBool(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasLoadFromHydrate() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearLoadFromHydrate() => clearField(4);
 }
 
 class EventMapProto extends $pb.GeneratedMessage {
