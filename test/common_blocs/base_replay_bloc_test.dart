@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,8 @@ import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
+import 'package:hyttahub/service_blocs/service_replay.dart';
+import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -62,20 +65,59 @@ FutureOr<String> testReplayIsolateHandler(Map<String, dynamic> payload) {
   return base64Encode(newState.writeToBuffer());
 }
 
+// Top-level isolate handler for service replay. Runs in a background isolate
+// via `compute()` and must be a top-level function.
+FutureOr<Uint8List> serviceReplayIsolateHandler(Map<String, dynamic> payload) {
+  final Uint8List serializedState = payload['serialized_state'] as Uint8List;
+  final Map<int, String> eventsMap = payload['events'];
+
+  final ServiceReplayBlocState state = ServiceReplayBlocState.fromBuffer(
+    serializedState,
+  );
+
+  final ServiceReplayBlocState newState = serviceReplay(state, eventsMap);
+
+  return newState.writeToBuffer();
+}
+
+// Top-level isolate handler for constructing initial state from hydrated events.
+FutureOr<Uint8List> serviceHydrateIsolateHandler(Map<int, String> eventsMap) {
+  // print('[test] serviceHydrateIsolateHandler eventsMap: $eventsMap');
+
+  final ServiceReplayBlocState newState = serviceReplay(
+    ServiceReplayBlocState(),
+    eventsMap,
+  );
+
+  return newState.writeToBuffer();
+}
+
+// Simpler hydrate handler for tests that does not assume events are base64
+// encoded protobufs - useful when events are simple string placeholders.
+FutureOr<Uint8List> testHydrateIsolateHandler(Map<int, String> eventsMap) {
+  final ServiceReplayBlocState newState = ServiceReplayBlocState();
+  newState.events.addAll(eventsMap);
+  return newState.writeToBuffer();
+}
+
 // A concrete implementation of BaseReplayBloc for testing purposes
 class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   TestReplayBloc(
     this.collectionPath, {
     required FirebaseFirestore firestore,
     this.validationResult = true,
+    FutureOr<Uint8List> Function(Map<String, dynamic>)?
+    replayIsolateHandlerOverride,
+    FutureOr<Uint8List> Function(Map<int, String>)?
+    hydrateIsolateHandlerOverride,
     this.handleEmptySnapshotCompleter,
   }) : super(
          ServiceReplayBlocState(),
          firestore: firestore,
-         // During unit tests we avoid running compute/isolate to keep
-         // behavior deterministic and fast. The testReplayIsolateHandler
-         // is kept for manual testing if desired.
-         replayIsolateHandler: null,
+         replayIsolateHandler:
+             replayIsolateHandlerOverride ?? serviceReplayIsolateHandler,
+         hydrateIsolateHandler:
+             hydrateIsolateHandlerOverride ?? serviceHydrateIsolateHandler,
        );
 
   final String collectionPath;
@@ -111,46 +153,13 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
       state.events;
 
   @override
-  CommonReplayStateEnum stateGetStatusEnum(ServiceReplayBlocState state) =>
-      state.state;
-
-  @override
-  void handleEmptyInitialSnapshot(
-    Emitter<ServiceReplayBlocState> emit,
-    ServiceReplayBlocState currentState,
-  ) {
-    emit(currentState.deepCopy()..state = CommonReplayStateEnum.uninitialized);
-    handleEmptySnapshotCompleter?.complete();
+  ServiceReplayBlocState fromBuffer(Uint8List bytes) {
+    return ServiceReplayBlocState.fromBuffer(bytes);
   }
 
   @override
-  ServiceReplayBlocState stateFromJson(
-    Map<String, dynamic> json,
-    Map<int, String> hydratedEvents,
-  ) {
-    return ServiceReplayBlocState(
-      events: hydratedEvents,
-      instance: json['instance'] as String?,
-    );
-  }
-
-  @override
-  ServiceReplayBlocState stateFromProtoBytes(List<int> bytes) {
-    final restored = ServiceReplayBlocState.fromBuffer(bytes);
-    return restored..freeze();
-  }
-
-  @override
-  Map<String, dynamic> stateToJson(ServiceReplayBlocState state) {
-    return {'instance': state.instance};
-  }
-
-  @override
-  Future<bool> validateLocalEventCache(
-    ServiceReplayBlocState localState,
-    String collectionPath,
-  ) async {
-    return validationResult;
+  Uint8List toBuffer(ServiceReplayBlocState state) {
+    return state.writeToBuffer();
   }
 }
 
@@ -167,24 +176,30 @@ void main() {
     TestReplayBloc buildBloc({
       bool validationResult = true,
       Completer? emptySnapshotCompleter,
+      FutureOr<Uint8List> Function(Map<int, String>)?
+      hydrateIsolateHandlerOverride,
+      FutureOr<Uint8List> Function(Map<String, dynamic>)?
+      replayIsolateHandlerOverride,
     }) {
       return TestReplayBloc(
         collectionPath,
         firestore: fakeFirestore,
         validationResult: validationResult,
         handleEmptySnapshotCompleter: emptySnapshotCompleter,
+        hydrateIsolateHandlerOverride: hydrateIsolateHandlerOverride,
+        replayIsolateHandlerOverride: replayIsolateHandlerOverride,
       );
     }
 
     test('initial state is correct', () {
       final bloc = buildBloc();
       expect(bloc.state, ServiceReplayBlocState());
-      expect(bloc.state.state, CommonReplayStateEnum.ok);
+      expect(bloc.state.state, CommonReplayStateEnum.hydrating);
     });
 
     group('Listen Event', () {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
-        'emits [fetching, ok] when fetching initial data',
+        'emits ok with combined events when fetching initial data',
         setUp: () async {
           await fakeFirestore.collection(collectionPath).doc('1').set({
             fbVersion: 1,
@@ -197,12 +212,11 @@ void main() {
         },
         build: buildBloc,
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
+        // In the refactor the bloc now emits a single `ok` state that contains
+        // the combined events; assert the final state instead of the full
+        // emission sequence for robustness.
+        wait: const Duration(milliseconds: 200),
         expect: () => [
-          isA<ServiceReplayBlocState>().having(
-            (s) => s.state,
-            'state',
-            CommonReplayStateEnum.fetchingConfig,
-          ),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
               .having((s) => s.events, 'events', {1: 'event1', 2: 'event2'}),
@@ -210,19 +224,20 @@ void main() {
       );
 
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
-        'emits [fetching, uninitialized] on empty initial snapshot',
+        'emits [uninitialized, ok] on empty initial snapshot (new ordering)',
         build: buildBloc,
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
+        wait: const Duration(milliseconds: 200),
         expect: () => [
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
             'state',
-            CommonReplayStateEnum.fetchingConfig,
+            CommonReplayStateEnum.uninitialized,
           ),
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
             'state',
-            CommonReplayStateEnum.uninitialized,
+            CommonReplayStateEnum.ok,
           ),
         ],
       );
@@ -238,18 +253,17 @@ void main() {
         build: buildBloc,
         act: (bloc) async {
           bloc.add(CommonReplayBlocEvent(listen: true));
-          await Future.delayed(const Duration(milliseconds: 100));
+          // Allow Firebase listener to initialize and apply the first event
+          await Future.delayed(const Duration(milliseconds: 150));
           await fakeFirestore.collection(collectionPath).doc('2').set({
             fbVersion: 2,
             fbPayload: 'event2',
           });
         },
+        wait: const Duration(milliseconds: 300),
+        // The listener will emit an initial state containing the first event,
+        // then a second emission once the new event is processed.
         expect: () => [
-          isA<ServiceReplayBlocState>().having(
-            (s) => s.state,
-            'state',
-            CommonReplayStateEnum.fetchingConfig,
-          ),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
               .having((s) => s.events, 'events', {1: 'event1'}),
@@ -304,20 +318,15 @@ void main() {
           });
           bloc.add(CommonReplayBlocEvent(listen: true));
         },
+        wait: const Duration(milliseconds: 300),
+        // The validation failure path should first emit an uninitialized
+        // state, and then the refreshed OK state with the fresh event.
         expect: () => [
-          // event 1 should be ignored by consumers since in the fetching state
-          // but we should think about also clearing it out here in the bloc...
-          isA<ServiceReplayBlocState>()
-              .having(
-                (s) => s.state,
-                'state',
-                CommonReplayStateEnum.fetchingConfig,
-              )
-              .having((s) => s.events, 'events', {1: 'stale_event'}),
-          // kind of weird that an empty state is emitted here, maybe we should
-          // just emit the fetching state again?
-          isA<ServiceReplayBlocState>(),
-          // validate that event 1 is has been cleared out, i.e. only event 2 is present
+          isA<ServiceReplayBlocState>().having(
+            (s) => s.state,
+            'state',
+            CommonReplayStateEnum.uninitialized,
+          ),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
               .having((s) => s.events, 'events', {2: 'fresh_event'}),
@@ -337,6 +346,7 @@ void main() {
             ),
           ),
         ),
+        wait: const Duration(milliseconds: 100),
         expect: () => [
           isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
             1: 'event1',
@@ -365,33 +375,60 @@ void main() {
     });
 
     group('Hydration', () {
-      test('toJson and fromJson work correctly', () {
-        final bloc = buildBloc();
-        final state = ServiceReplayBlocState(
-          events: {1: 'event1', 2: 'event2'},
-          instance: 'test_instance',
+      test('toJson and fromJson work correctly', () async {
+        final bloc = buildBloc(
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
         );
+        // `state` not used here; we'll construct the serializable state below
 
-        final json = bloc.toJson(state);
-        final newState = bloc.fromJson(json!);
+        // Build a state that uses base64-encoded ServiceEvent payloads so the
+        // real service hydrate handler (which decodes base64) can restore
+        // full state values like `instance`.
+        final serviceEvent = ServiceEvent()
+          ..initialEvent = (ServiceEvent_InitialEvent()
+            ..alias = 'alias'
+            ..instance = 'test_instance'
+            ..appName = 'hytta'
+            ..appId = 'com.test.hytta');
 
-        expect(newState?.events, state.events);
-        expect(newState?.instance, state.instance);
+        final encodedEvent = base64Encode(serviceEvent.writeToBuffer());
+
+        final json = bloc.toJson(
+          ServiceReplayBlocState(events: {1: encodedEvent}),
+        );
+        final restoringState = bloc.fromJson(json!);
+        expect(restoringState?.state, CommonReplayStateEnum.hydrating);
+
+        // Trigger the real hydrate flow which should decode the event and set
+        // the instance field accordingly.
+        bloc.add(CommonReplayBlocEvent(loadFromHydrate: true));
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        expect(bloc.state.events, {1: encodedEvent});
+        expect(bloc.state.instance, 'test_instance');
       });
 
       test('fromJson returns null on error', () {
-        final bloc = buildBloc();
+        final bloc = buildBloc(
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
         final json = {'events_map': 'invalid data'};
         final newState = bloc.fromJson(json);
         expect(newState, isNull);
       });
 
-      test('toJson handles empty events map', () {
-        final bloc = buildBloc();
+      test('toJson handles empty events map', () async {
+        final bloc = buildBloc(
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
         final state = ServiceReplayBlocState(); // Empty events map
         final json = bloc.toJson(state);
-        final newState = bloc.fromJson(json!);
-        expect(newState?.events, isEmpty);
+        final restoringState = bloc.fromJson(json!);
+        expect(restoringState?.state, CommonReplayStateEnum.hydrating);
+
+        bloc.add(CommonReplayBlocEvent(loadFromHydrate: true));
+        await Future.delayed(const Duration(milliseconds: 100));
+        expect(bloc.state.events, isEmpty);
       });
     });
   });
