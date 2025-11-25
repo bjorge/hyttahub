@@ -309,6 +309,18 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String get renameSiteTitle => 'Rinomina Sito';
 
   @override
+  String get manageSiteMembers => 'Gestisci Membri del Sito';
+
+  @override
+  String get showSiteEventsState => 'Mostra Eventi e Stato del Sito';
+
+  @override
+  String get showSiteAllowedEmails => 'Mostra Email Autorizzate del Sito';
+
+  @override
+  String get siteSettingsTitle => 'Impostazioni Sito';
+
+  @override
   String get newSiteNameLabel => 'Nuovo Nome Sito';
 
   @override

@@ -303,6 +303,18 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get renameSiteTitle => 'Gi nytt navn til sted';
 
   @override
+  String get manageSiteMembers => 'Manage Site Members';
+
+  @override
+  String get showSiteEventsState => 'Show Site Events & State';
+
+  @override
+  String get showSiteAllowedEmails => 'Show Site Allowed Emails';
+
+  @override
+  String get siteSettingsTitle => 'Site Settings';
+
+  @override
   String get newSiteNameLabel => 'Nytt stedsnavn';
 
   @override

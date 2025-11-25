@@ -663,6 +663,30 @@ abstract class HyttaHubLocalizations {
   /// **'Rename Site'**
   String get renameSiteTitle;
 
+  /// No description provided for @manageSiteMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Site Members'**
+  String get manageSiteMembers;
+
+  /// No description provided for @showSiteEventsState.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Site Events & State'**
+  String get showSiteEventsState;
+
+  /// No description provided for @showSiteAllowedEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Site Allowed Emails'**
+  String get showSiteAllowedEmails;
+
+  /// No description provided for @siteSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Settings'**
+  String get siteSettingsTitle;
+
   /// No description provided for @newSiteNameLabel.
   ///
   /// In en, this message translates to:

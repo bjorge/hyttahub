@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formproto/app_widgets/site_screen_settings_button.dart';
 import 'package:formproto/proto/app_events.pb.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
 import 'package:formproto/routers/app_routes.dart';
@@ -15,6 +14,7 @@ import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
+import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 
