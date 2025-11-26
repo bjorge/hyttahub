@@ -64,7 +64,6 @@ class CommonReplayBlocEvent_NewEvents extends $pb.GeneratedMessage {
 enum CommonReplayBlocEvent_EventType {
   listen, 
   newEvents, 
-  errorOccurred, 
   notSet
 }
 
@@ -72,7 +71,6 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
   factory CommonReplayBlocEvent({
     $core.bool? listen,
     CommonReplayBlocEvent_NewEvents? newEvents,
-    $core.String? errorOccurred,
   }) {
     final $result = create();
     if (listen != null) {
@@ -80,9 +78,6 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
     }
     if (newEvents != null) {
       $result.newEvents = newEvents;
-    }
-    if (errorOccurred != null) {
-      $result.errorOccurred = errorOccurred;
     }
     return $result;
   }
@@ -93,14 +88,12 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, CommonReplayBlocEvent_EventType> _CommonReplayBlocEvent_EventTypeByTag = {
     1 : CommonReplayBlocEvent_EventType.listen,
     2 : CommonReplayBlocEvent_EventType.newEvents,
-    3 : CommonReplayBlocEvent_EventType.errorOccurred,
     0 : CommonReplayBlocEvent_EventType.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'CommonReplayBlocEvent', createEmptyInstance: create)
-    ..oo(0, [1, 2, 3])
+    ..oo(0, [1, 2])
     ..aOB(1, _omitFieldNames ? '' : 'listen')
     ..aOM<CommonReplayBlocEvent_NewEvents>(2, _omitFieldNames ? '' : 'newEvents', protoName: 'newEvents', subBuilder: CommonReplayBlocEvent_NewEvents.create)
-    ..aOS(3, _omitFieldNames ? '' : 'errorOccurred', protoName: 'errorOccurred')
     ..hasRequiredFields = false
   ;
 
@@ -147,15 +140,6 @@ class CommonReplayBlocEvent extends $pb.GeneratedMessage {
   void clearNewEvents() => clearField(2);
   @$pb.TagNumber(2)
   CommonReplayBlocEvent_NewEvents ensureNewEvents() => $_ensure(1);
-
-  @$pb.TagNumber(3)
-  $core.String get errorOccurred => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set errorOccurred($core.String v) { $_setString(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasErrorOccurred() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearErrorOccurred() => clearField(3);
 }
 
 class EventMapProto extends $pb.GeneratedMessage {

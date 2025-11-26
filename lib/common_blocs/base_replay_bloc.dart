@@ -75,7 +75,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   ) {
     return _firestore
         .collection(collectionPath)
-        .doc('1') // Assumes version '1' is the document ID for the first event.
+        .doc(firstCollectionEventVersion.toString())
         .get();
   }
 
@@ -86,8 +86,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       await _onListenForEvents(event.listen, emit);
     } else if (event.hasNewEvents()) {
       await _onNewEvents(event.newEvents.events, emit);
-    } else if (event.hasErrorOccurred()) {
-      await _onErrorOccurred(event.errorOccurred, emit);
     }
   }
 
@@ -104,14 +102,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     // still listening if we got a new event
     emit(
       stateCopyWithStatus(newState.deepCopy(), CommonReplayStateEnum.listening)
-        ..freeze(),
-    );
-  }
-
-  Future<void> _onErrorOccurred(String errorText, Emitter<S> emit) async {
-    // might be transient... leave the bloc state alone
-    emit(
-      stateCopyWithStatus(state.deepCopy(), CommonReplayStateEnum.networkError)
         ..freeze(),
     );
   }
@@ -160,7 +150,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           if (kDebugMode) {
             print('onLoadFromHydrate compute failed: $e');
           }
-          // continue processing
+          // continue processing, perhaps this version does not handle
+          // some event correctly, just remove the hydrated events
         }
       }
 
@@ -178,8 +169,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         return;
       }
 
-      // --- State Validation ---
-
       // check that the cloud event stream exists
       final firstEventDoc = await getFirstEventDocument(path);
       if (kDebugMode) {
@@ -187,103 +176,110 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           '[BaseReplayBloc] first event docs exists: ${firstEventDoc.exists}',
         );
       }
+
+      var versionForSnapshotListener = 0;
       if (!firstEventDoc.exists) {
         _hydratedEvents.clear();
         emit(
           stateCopyWithStatus(
             _initialState.deepCopy(),
+            // start listening for events on empty collection
             CommonReplayStateEnum.uninitialized,
           )..freeze(),
         );
-        return;
-      }
-
-      // check that the local and remote event streams are consistent
-      final firstCloudEvent = firstEventDoc.data()?[payloadField] as String?;
-      if (kDebugMode) {
-        print('[BaseReplayBloc] firstCloudEvent: $firstCloudEvent');
-      }
-      if (_hydratedEvents.isNotEmpty && _hydratedEvents.containsKey(1)) {
-        final firstCachedEvent = _hydratedEvents[1];
-        if (firstCloudEvent != firstCachedEvent) {
-          // somehow the event stream has changed, clear local cache and continue
-          _hydratedEvents.clear();
-          emit(
-            stateCopyWithStatus(
-              _initialState.deepCopy(),
-              CommonReplayStateEnum.hydrating,
-            )..freeze(),
-          );
-        }
-      }
-
-      // find the last cached version
-      int maxVersionFromLocalState = _hydratedEvents.keys.fold<int>(
-        0,
-        (p, e) => e > p ? e : p,
-      );
-
-      // Initial fetch for events newer than what we have locally
-      Query query = _firestore
-          .collection(path)
-          .orderBy(versionField, descending: false);
-      if (maxVersionFromLocalState > 0) {
-        query = query.where(
-          versionField,
-          isGreaterThan: maxVersionFromLocalState,
-        );
-      }
-
-      final querySnapshot = await query.get();
-
-      final List<MapEntry<int, String>> newEventsFromServer = querySnapshot.docs
-          .map((doc) {
-            try {
-              return MapEntry(
-                doc[versionField] as int,
-                doc[payloadField] as String,
-              );
-            } catch (e) {
-              return null;
-            }
-          })
-          .where((e) => e != null)
-          .cast<MapEntry<int, String>>()
-          .toList();
-
-      var versionForSnapshotListener = maxVersionFromLocalState;
-      var currentProcessingState = state;
-      if (newEventsFromServer.isNotEmpty) {
+      } else {
+        // check that the local and remote event streams are consistent
+        final firstCloudEvent = firstEventDoc.data()?[payloadField] as String?;
         if (kDebugMode) {
-          print(
-            '[BaseReplayBloc] new events from server: $newEventsFromServer',
-          );
+          print('[BaseReplayBloc] firstCloudEvent: $firstCloudEvent');
         }
-        // ok, there are some newer events in the service
-        final mapOfEvents = Map.fromEntries(newEventsFromServer);
-        versionForSnapshotListener = mapOfEvents.keys.fold<int>(
-          maxVersionFromLocalState,
+        if (_hydratedEvents.isNotEmpty &&
+            _hydratedEvents.containsKey(firstCollectionEventVersion)) {
+          final firstCachedEvent = _hydratedEvents[firstCollectionEventVersion];
+          if (firstCloudEvent != firstCachedEvent) {
+            // the event stream has changed, clear local cache and continue
+            // for example, a user has removed their account and then re-added it
+            // in a different app instance
+            _hydratedEvents.clear();
+            emit(
+              stateCopyWithStatus(
+                _initialState.deepCopy(),
+                CommonReplayStateEnum.hydrating,
+              )..freeze(),
+            );
+          }
+        }
+
+        // find the last cached version
+        int maxVersionFromLocalState = _hydratedEvents.keys.fold<int>(
+          0,
           (p, e) => e > p ? e : p,
         );
 
-        currentProcessingState = await _runReplay(state, mapOfEvents);
-
-        if (isClosed) {
-          return;
+        // Initial fetch for events newer than what we have locally
+        Query query = _firestore
+            .collection(path)
+            .orderBy(versionField, descending: false);
+        if (maxVersionFromLocalState > 0) {
+          query = query.where(
+            versionField,
+            isGreaterThan: maxVersionFromLocalState,
+          );
         }
-      }
 
-      if (kDebugMode) {
-        print(
-          '[BaseReplayBloc] emitting ok with state events: ${stateGetEventsMap(currentProcessingState)}',
+        final querySnapshot = await query.get();
+
+        final List<MapEntry<int, String>> newEventsFromServer = querySnapshot
+            .docs
+            .map((doc) {
+              try {
+                return MapEntry(
+                  doc[versionField] as int,
+                  doc[payloadField] as String,
+                );
+              } catch (e) {
+                return null;
+              }
+            })
+            .where((e) => e != null)
+            .cast<MapEntry<int, String>>()
+            .toList();
+
+        versionForSnapshotListener = maxVersionFromLocalState;
+        var currentProcessingState = state;
+        if (newEventsFromServer.isNotEmpty) {
+          if (kDebugMode) {
+            print(
+              '[BaseReplayBloc] new events from server: $newEventsFromServer',
+            );
+          }
+          // ok, there are some newer events in the service
+          final mapOfEvents = Map.fromEntries(newEventsFromServer);
+          versionForSnapshotListener = mapOfEvents.keys.fold<int>(
+            maxVersionFromLocalState,
+            (p, e) => e > p ? e : p,
+          );
+
+          currentProcessingState = await _runReplay(state, mapOfEvents);
+
+          if (isClosed) {
+            return;
+          }
+        }
+
+        if (kDebugMode) {
+          print(
+            '[BaseReplayBloc] emitting ok with state events: ${stateGetEventsMap(currentProcessingState)}',
+          );
+        }
+        emit(
+          stateCopyWithStatus(
+            currentProcessingState,
+            // start listening for events on non-empty collection
+            CommonReplayStateEnum.listening,
+          )..freeze(),
         );
       }
-      emit(
-        stateCopyWithStatus(
-          currentProcessingState,
-          CommonReplayStateEnum.listening,
-        )..freeze(),
-      );
 
       // Setup listener for subsequent changes
       _subscription = _firestore
@@ -316,9 +312,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
                         events: Map<int, String>.fromEntries(newEventsList),
                       ),
                     ),
-
-                    // createNewEventsBlocEvent(
-                    //   Map<int, String>.fromEntries(newEventsList),
                   );
                 }
               }
@@ -338,14 +331,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     }
   }
 
-  /// Helper that runs the replay either on the main isolate (by calling
-  /// `replayEvents`) or on a background isolate using the provided
-  /// `_replayIsolateHandler` and `compute()`.
   Future<S> _runReplay(S currentState, Map<int, String> eventsData) async {
     try {
-      // Encode current state's protobuf bytes as base64 so it can be sent to
-      // the isolate. This avoids JSON serialization and preserves the
-      // protobuf binary representation.
       final Uint8List serializedState = toBuffer(currentState);
       final Map<String, dynamic> arg = {
         'serialized_state': serializedState,
@@ -363,7 +350,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   @override
   Future<void> close() async {
-    // No special hydration lifecycle to wait for anymore.
     await _subscription?.cancel();
     return await super.close();
   }

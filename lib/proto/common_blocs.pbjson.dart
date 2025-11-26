@@ -37,7 +37,6 @@ const CommonReplayBlocEvent$json = {
   '2': [
     {'1': 'listen', '3': 1, '4': 1, '5': 8, '9': 0, '10': 'listen'},
     {'1': 'newEvents', '3': 2, '4': 1, '5': 11, '6': '.CommonReplayBlocEvent.NewEvents', '9': 0, '10': 'newEvents'},
-    {'1': 'errorOccurred', '3': 3, '4': 1, '5': 9, '9': 0, '10': 'errorOccurred'},
   ],
   '3': [CommonReplayBlocEvent_NewEvents$json],
   '8': [
@@ -68,10 +67,9 @@ const CommonReplayBlocEvent_NewEvents_EventsEntry$json = {
 final $typed_data.Uint8List commonReplayBlocEventDescriptor = $convert.base64Decode(
     'ChVDb21tb25SZXBsYXlCbG9jRXZlbnQSGAoGbGlzdGVuGAEgASgISABSBmxpc3RlbhJACgluZX'
     'dFdmVudHMYAiABKAsyIC5Db21tb25SZXBsYXlCbG9jRXZlbnQuTmV3RXZlbnRzSABSCW5ld0V2'
-    'ZW50cxImCg1lcnJvck9jY3VycmVkGAMgASgJSABSDWVycm9yT2NjdXJyZWQajAEKCU5ld0V2ZW'
-    '50cxJECgZldmVudHMYASADKAsyLC5Db21tb25SZXBsYXlCbG9jRXZlbnQuTmV3RXZlbnRzLkV2'
-    'ZW50c0VudHJ5UgZldmVudHMaOQoLRXZlbnRzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdm'
-    'FsdWUYAiABKAlSBXZhbHVlOgI4AUIMCgpldmVudF90eXBl');
+    'ZW50cxqMAQoJTmV3RXZlbnRzEkQKBmV2ZW50cxgBIAMoCzIsLkNvbW1vblJlcGxheUJsb2NFdm'
+    'VudC5OZXdFdmVudHMuRXZlbnRzRW50cnlSBmV2ZW50cxo5CgtFdmVudHNFbnRyeRIQCgNrZXkY'
+    'ASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgBQgwKCmV2ZW50X3R5cGU=');
 
 @$core.Deprecated('Use eventMapProtoDescriptor instead')
 const EventMapProto$json = {

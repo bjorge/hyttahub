@@ -357,23 +357,6 @@ void main() {
       );
     });
 
-    group('ErrorOccurred Event', () {
-      blocTest<TestReplayBloc, ServiceReplayBlocState>(
-        'emits a networkError state',
-        build: buildBloc,
-        act: (bloc) => bloc.add(
-          CommonReplayBlocEvent(errorOccurred: 'Something went wrong'),
-        ),
-        expect: () => [
-          isA<ServiceReplayBlocState>().having(
-            (s) => s.state,
-            'state',
-            CommonReplayStateEnum.networkError,
-          ),
-        ],
-      );
-    });
-
     group('Hydration', () {
       test('toJson and fromJson work correctly', () async {
         final bloc = buildBloc(

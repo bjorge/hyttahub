@@ -1,21 +1,23 @@
 syntax = "proto3";
 
 enum CommonReplayStateEnum {
-  hydrating = 0;
-  listening = 1;
-  uninitialized = 2;
-  networkError = 3;
-  permissionDenied = 4;
+  hydrating = 0; // startup, not listening yet
+  listening = 1; // listening to non-empty events collection
+  uninitialized = 2; // listening to an empty events collection
+  networkError = 3; // network error at startup
+  permissionDenied = 4; // permission denied at startup
 }
 
 message CommonReplayBlocEvent {
   oneof event_type {
-    bool listen = 1;
-    NewEvents newEvents = 2;
-    string errorOccurred = 3;
+    bool listen = 1; // true or false
+    NewEvents newEvents = 2; // internal to bloc
   }
   message NewEvents { map<int32, string> events = 1; }
 }
+
+// listen == true -> hydrating -> listening, uninitialized, networkError, permissionDenied
+// listen == false -> hydrating
 
 message EventMapProto { map<int32, string> events = 1; }
 

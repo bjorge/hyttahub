@@ -47,3 +47,5 @@ const fbPayload = 'p';
 const fbBetaUsers = 'b';
 const fbMarkedForDeletion = 'm';
 const fbAppId = 'a';
+
+const firstCollectionEventVersion = 1;
