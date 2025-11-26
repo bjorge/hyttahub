@@ -101,15 +101,19 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       return;
     }
 
-    emit(newState..freeze());
+    // still listening if we got a new event
+    emit(
+      stateCopyWithStatus(newState.deepCopy(), CommonReplayStateEnum.listening)
+        ..freeze(),
+    );
   }
 
   Future<void> _onErrorOccurred(String errorText, Emitter<S> emit) async {
-    final S newState = stateCopyWithStatus(
-      state.deepCopy(),
-      CommonReplayStateEnum.networkError,
+    // might be transient... leave the bloc state alone
+    emit(
+      stateCopyWithStatus(state.deepCopy(), CommonReplayStateEnum.networkError)
+        ..freeze(),
     );
-    emit(newState..freeze());
   }
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {
@@ -167,7 +171,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       if (path == null || path.isEmpty) {
         emit(
           stateCopyWithStatus(
-            state.deepCopy(),
+            _initialState.deepCopy(),
             CommonReplayStateEnum.networkError,
           )..freeze(),
         );
