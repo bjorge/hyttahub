@@ -15,14 +15,14 @@ import 'package:protobuf/protobuf.dart' as $pb;
 
 class CommonReplayStateEnum extends $pb.ProtobufEnum {
   static const CommonReplayStateEnum hydrating = CommonReplayStateEnum._(0, _omitEnumNames ? '' : 'hydrating');
-  static const CommonReplayStateEnum ok = CommonReplayStateEnum._(1, _omitEnumNames ? '' : 'ok');
+  static const CommonReplayStateEnum listening = CommonReplayStateEnum._(1, _omitEnumNames ? '' : 'listening');
   static const CommonReplayStateEnum uninitialized = CommonReplayStateEnum._(2, _omitEnumNames ? '' : 'uninitialized');
   static const CommonReplayStateEnum networkError = CommonReplayStateEnum._(3, _omitEnumNames ? '' : 'networkError');
   static const CommonReplayStateEnum permissionDenied = CommonReplayStateEnum._(4, _omitEnumNames ? '' : 'permissionDenied');
 
   static const $core.List<CommonReplayStateEnum> values = <CommonReplayStateEnum> [
     hydrating,
-    ok,
+    listening,
     uninitialized,
     networkError,
     permissionDenied,

@@ -55,9 +55,9 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
         ),
         BlocProvider<SiteReplayBloc>(
-          create: (_) => SiteReplayBloc(widget.siteId)
-            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
-            ..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) =>
+              SiteReplayBloc(widget.siteId)
+                ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: Form(

@@ -36,7 +36,6 @@ class AccountScreen extends StatelessWidget {
           key: Key('AccountScreenBlocProvider'),
           create: (_) =>
               AccountReplayBloc(GetIt.instance<AuthBloc>().state.email)
-                ..add(CommonReplayBlocEvent(loadFromHydrate: true))
                 ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],

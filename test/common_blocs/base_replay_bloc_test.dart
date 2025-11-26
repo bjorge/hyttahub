@@ -218,7 +218,7 @@ void main() {
         wait: const Duration(milliseconds: 200),
         expect: () => [
           isA<ServiceReplayBlocState>()
-              .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {1: 'event1', 2: 'event2'}),
         ],
       );
@@ -237,7 +237,7 @@ void main() {
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
             'state',
-            CommonReplayStateEnum.ok,
+            CommonReplayStateEnum.listening,
           ),
         ],
       );
@@ -265,10 +265,10 @@ void main() {
         // then a second emission once the new event is processed.
         expect: () => [
           isA<ServiceReplayBlocState>()
-              .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {1: 'event1'}),
           isA<ServiceReplayBlocState>()
-              .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {1: 'event1', 2: 'event2'}),
         ],
       );
@@ -328,7 +328,7 @@ void main() {
             CommonReplayStateEnum.uninitialized,
           ),
           isA<ServiceReplayBlocState>()
-              .having((s) => s.state, 'state', CommonReplayStateEnum.ok)
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {2: 'fresh_event'}),
         ],
       );
@@ -401,7 +401,6 @@ void main() {
 
         // Trigger the real hydrate flow which should decode the event and set
         // the instance field accordingly.
-        bloc.add(CommonReplayBlocEvent(loadFromHydrate: true));
         await Future.delayed(const Duration(milliseconds: 200));
 
         expect(bloc.state.events, {1: encodedEvent});
@@ -426,7 +425,6 @@ void main() {
         final restoringState = bloc.fromJson(json!);
         expect(restoringState?.state, CommonReplayStateEnum.hydrating);
 
-        bloc.add(CommonReplayBlocEvent(loadFromHydrate: true));
         await Future.delayed(const Duration(milliseconds: 100));
         expect(bloc.state.events, isEmpty);
       });

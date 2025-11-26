@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:protobuf/protobuf.dart';
@@ -134,8 +133,6 @@ ServiceReplayBlocState serviceReplay(
       replay.privacy = event.privacy.content;
       replay.privacyVersion = eventVersion;
     }
-
-    replay.state = CommonReplayStateEnum.ok;
   }
 
   return replay;

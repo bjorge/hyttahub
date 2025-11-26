@@ -2,7 +2,7 @@ syntax = "proto3";
 
 enum CommonReplayStateEnum {
   hydrating = 0;
-  ok = 1;
+  listening = 1;
   uninitialized = 2;
   networkError = 3;
   permissionDenied = 4;
@@ -13,7 +13,6 @@ message CommonReplayBlocEvent {
     bool listen = 1;
     NewEvents newEvents = 2;
     string errorOccurred = 3;
-    bool loadFromHydrate = 4;
   }
   message NewEvents { map<int32, string> events = 1; }
 }

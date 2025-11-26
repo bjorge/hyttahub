@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:protobuf/protobuf.dart';
 
 // update the passed in replay state with the new events
@@ -96,8 +95,6 @@ AccountReplayBlocState accountReplay(
     if (event.hasLeaveSite()) {
       replay.sitesIds.remove(event.leaveSite);
     }
-
-    replay.state = CommonReplayStateEnum.ok;
   }
 
   return replay;

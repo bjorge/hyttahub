@@ -63,9 +63,8 @@ class _UpdateServiceAdminScreenState extends State<UpdateServiceAdminScreen> {
           create: (_) => ServiceSubmitBloc(submitEvent),
         ),
         BlocProvider<ServiceReplayBloc>(
-          create: (_) => ServiceReplayBloc()
-            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
-            ..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) =>
+              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: Form(

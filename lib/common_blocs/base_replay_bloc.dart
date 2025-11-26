@@ -82,9 +82,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   // --- Common BLoC Logic ---
 
   FutureOr<void> _onEvent(CommonReplayBlocEvent event, Emitter<S> emit) async {
-    if (event.hasLoadFromHydrate()) {
-      await _onLoadFromHydrate(emit);
-    } else if (event.hasListen()) {
+    if (event.hasListen()) {
       await _onListenForEvents(event.listen, emit);
     } else if (event.hasNewEvents()) {
       await _onNewEvents(event.newEvents.events, emit);
@@ -93,36 +91,16 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     }
   }
 
-  Future<void> _onLoadFromHydrate(Emitter<S> emit) async {
-    if (_hydratedEvents.isNotEmpty) {
-      try {
-        Uint8List serializedState = await compute(
-          _hydrateIsolateHandler,
-          _hydratedEvents,
-        );
-
-        S resultState = fromBuffer(serializedState);
-
-        if (isClosed) {
-          return;
-        }
-
-        // todo: set to hydrated first...
-        emit(resultState..freeze());
-      } catch (e) {
-        _hydratedEvents.clear();
-        if (kDebugMode) {
-          print('onLoadFromHydrate compute failed: $e');
-        }
-      }
-    }
-  }
-
   Future<void> _onNewEvents(
     Map<int, String> eventsData,
     Emitter<S> emit,
   ) async {
     final S newState = await _runReplay(state, eventsData);
+
+    if (isClosed) {
+      return;
+    }
+
     emit(newState..freeze());
   }
 
@@ -136,16 +114,56 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {
     try {
+      if (kDebugMode) {
+        // Helpful traces during unit tests to understand emitted paths.
+        print('[BaseReplayBloc] _onListenForEvents(listen: $listen) starting');
+      }
       await _subscription?.cancel();
       _subscription = null;
 
       if (!listen) {
-        // turn off listening
-        _hydratedEvents.clear();
+        // turn off listening, and update hydrated events in case
+        // listening is turned on again
+        _hydratedEvents = stateGetEventsMap(state);
+        emit(
+          stateCopyWithStatus(
+            _initialState.deepCopy(),
+            CommonReplayStateEnum.hydrating,
+          )..freeze(),
+        );
         return;
       }
 
+      if (_hydratedEvents.isNotEmpty) {
+        try {
+          Uint8List serializedState = await compute(
+            _hydrateIsolateHandler,
+            _hydratedEvents,
+          );
+
+          S resultState = fromBuffer(serializedState);
+
+          if (isClosed) {
+            return;
+          }
+
+          emit(
+            stateCopyWithStatus(resultState, CommonReplayStateEnum.hydrating)
+              ..freeze(),
+          );
+        } catch (e) {
+          _hydratedEvents.clear();
+          if (kDebugMode) {
+            print('onLoadFromHydrate compute failed: $e');
+          }
+          // continue processing
+        }
+      }
+
       final path = await getCollectionPath();
+      if (kDebugMode) {
+        print('[BaseReplayBloc] collection path: $path');
+      }
       if (path == null || path.isEmpty) {
         emit(
           stateCopyWithStatus(
@@ -160,6 +178,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
       // check that the cloud event stream exists
       final firstEventDoc = await getFirstEventDocument(path);
+      if (kDebugMode) {
+        print(
+          '[BaseReplayBloc] first event docs exists: ${firstEventDoc.exists}',
+        );
+      }
       if (!firstEventDoc.exists) {
         _hydratedEvents.clear();
         emit(
@@ -168,10 +191,14 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             CommonReplayStateEnum.uninitialized,
           )..freeze(),
         );
+        return;
       }
 
       // check that the local and remote event streams are consistent
       final firstCloudEvent = firstEventDoc.data()?[payloadField] as String?;
+      if (kDebugMode) {
+        print('[BaseReplayBloc] firstCloudEvent: $firstCloudEvent');
+      }
       if (_hydratedEvents.isNotEmpty && _hydratedEvents.containsKey(1)) {
         final firstCachedEvent = _hydratedEvents[1];
         if (firstCloudEvent != firstCachedEvent) {
@@ -223,6 +250,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       var versionForSnapshotListener = maxVersionFromLocalState;
       var currentProcessingState = state;
       if (newEventsFromServer.isNotEmpty) {
+        if (kDebugMode) {
+          print(
+            '[BaseReplayBloc] new events from server: $newEventsFromServer',
+          );
+        }
         // ok, there are some newer events in the service
         final mapOfEvents = Map.fromEntries(newEventsFromServer);
         versionForSnapshotListener = mapOfEvents.keys.fold<int>(
@@ -231,11 +263,22 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         );
 
         currentProcessingState = await _runReplay(state, mapOfEvents);
+
+        if (isClosed) {
+          return;
+        }
       }
 
+      if (kDebugMode) {
+        print(
+          '[BaseReplayBloc] emitting ok with state events: ${stateGetEventsMap(currentProcessingState)}',
+        );
+      }
       emit(
-        stateCopyWithStatus(currentProcessingState, CommonReplayStateEnum.ok)
-          ..freeze(),
+        stateCopyWithStatus(
+          currentProcessingState,
+          CommonReplayStateEnum.listening,
+        )..freeze(),
       );
 
       // Setup listener for subsequent changes

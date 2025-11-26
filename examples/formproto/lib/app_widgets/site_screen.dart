@@ -36,7 +36,6 @@ class SiteScreen extends StatelessWidget {
           create:
               (_) =>
                   SiteReplayBloc(siteId)
-                    ..add(CommonReplayBlocEvent(loadFromHydrate: true))
                     ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],

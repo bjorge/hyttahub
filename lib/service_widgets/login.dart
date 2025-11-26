@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
       listener: (context, serviceState) {
         if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.ok &&
+            serviceState.state == CommonReplayStateEnum.listening &&
             serviceState.serviceUnavailable == true) {
           // logout and then rebuild the navigation stack
           context.read<AuthBloc>().add(
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.ok &&
+            serviceState.state == CommonReplayStateEnum.listening &&
             serviceState.minVersion > HyttaHubOptions.appBuildNumber!) {
           // logout and then rebuild the navigation stack
           context.read<AuthBloc>().add(
@@ -112,13 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.ok &&
+            serviceState.state == CommonReplayStateEnum.listening &&
             serviceState.serviceUnavailable == true) {
           return ServiceDownPage();
         }
 
         if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.ok &&
+            serviceState.state == CommonReplayStateEnum.listening &&
             serviceState.minVersion > HyttaHubOptions.appBuildNumber!) {
           return ServiceNewVersionPage();
         }
@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return BlocConsumer<AuthBloc, AuthBlocState>(
               listener: (context, authState) {
                 if (authState.authState == AuthState.authenticated &&
-                    serviceState.state == CommonReplayStateEnum.ok) {
+                    serviceState.state == CommonReplayStateEnum.listening) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     // Ensure the widget is still in the tree
                     if (mounted) {

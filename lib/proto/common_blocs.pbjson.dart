@@ -18,7 +18,7 @@ const CommonReplayStateEnum$json = {
   '1': 'CommonReplayStateEnum',
   '2': [
     {'1': 'hydrating', '2': 0},
-    {'1': 'ok', '2': 1},
+    {'1': 'listening', '2': 1},
     {'1': 'uninitialized', '2': 2},
     {'1': 'networkError', '2': 3},
     {'1': 'permissionDenied', '2': 4},
@@ -27,8 +27,9 @@ const CommonReplayStateEnum$json = {
 
 /// Descriptor for `CommonReplayStateEnum`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List commonReplayStateEnumDescriptor = $convert.base64Decode(
-    'ChVDb21tb25SZXBsYXlTdGF0ZUVudW0SDQoJaHlkcmF0aW5nEAASBgoCb2sQARIRCg11bmluaX'
-    'RpYWxpemVkEAISEAoMbmV0d29ya0Vycm9yEAMSFAoQcGVybWlzc2lvbkRlbmllZBAE');
+    'ChVDb21tb25SZXBsYXlTdGF0ZUVudW0SDQoJaHlkcmF0aW5nEAASDQoJbGlzdGVuaW5nEAESEQ'
+    'oNdW5pbml0aWFsaXplZBACEhAKDG5ldHdvcmtFcnJvchADEhQKEHBlcm1pc3Npb25EZW5pZWQQ'
+    'BA==');
 
 @$core.Deprecated('Use commonReplayBlocEventDescriptor instead')
 const CommonReplayBlocEvent$json = {
@@ -37,7 +38,6 @@ const CommonReplayBlocEvent$json = {
     {'1': 'listen', '3': 1, '4': 1, '5': 8, '9': 0, '10': 'listen'},
     {'1': 'newEvents', '3': 2, '4': 1, '5': 11, '6': '.CommonReplayBlocEvent.NewEvents', '9': 0, '10': 'newEvents'},
     {'1': 'errorOccurred', '3': 3, '4': 1, '5': 9, '9': 0, '10': 'errorOccurred'},
-    {'1': 'loadFromHydrate', '3': 4, '4': 1, '5': 8, '9': 0, '10': 'loadFromHydrate'},
   ],
   '3': [CommonReplayBlocEvent_NewEvents$json],
   '8': [
@@ -68,11 +68,10 @@ const CommonReplayBlocEvent_NewEvents_EventsEntry$json = {
 final $typed_data.Uint8List commonReplayBlocEventDescriptor = $convert.base64Decode(
     'ChVDb21tb25SZXBsYXlCbG9jRXZlbnQSGAoGbGlzdGVuGAEgASgISABSBmxpc3RlbhJACgluZX'
     'dFdmVudHMYAiABKAsyIC5Db21tb25SZXBsYXlCbG9jRXZlbnQuTmV3RXZlbnRzSABSCW5ld0V2'
-    'ZW50cxImCg1lcnJvck9jY3VycmVkGAMgASgJSABSDWVycm9yT2NjdXJyZWQSKgoPbG9hZEZyb2'
-    '1IeWRyYXRlGAQgASgISABSD2xvYWRGcm9tSHlkcmF0ZRqMAQoJTmV3RXZlbnRzEkQKBmV2ZW50'
-    'cxgBIAMoCzIsLkNvbW1vblJlcGxheUJsb2NFdmVudC5OZXdFdmVudHMuRXZlbnRzRW50cnlSBm'
-    'V2ZW50cxo5CgtFdmVudHNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIF'
-    'dmFsdWU6AjgBQgwKCmV2ZW50X3R5cGU=');
+    'ZW50cxImCg1lcnJvck9jY3VycmVkGAMgASgJSABSDWVycm9yT2NjdXJyZWQajAEKCU5ld0V2ZW'
+    '50cxJECgZldmVudHMYASADKAsyLC5Db21tb25SZXBsYXlCbG9jRXZlbnQuTmV3RXZlbnRzLkV2'
+    'ZW50c0VudHJ5UgZldmVudHMaOQoLRXZlbnRzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdm'
+    'FsdWUYAiABKAlSBXZhbHVlOgI4AUIMCgpldmVudF90eXBl');
 
 @$core.Deprecated('Use eventMapProtoDescriptor instead')
 const EventMapProto$json = {

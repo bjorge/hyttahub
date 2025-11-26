@@ -27,7 +27,7 @@ Widget? handleSiteReplayState(
   }
 
   switch (siteState.state) {
-    case CommonReplayStateEnum.ok:
+    case CommonReplayStateEnum.listening:
       return null;
     case CommonReplayStateEnum.hydrating:
       return const Center(child: CircularProgressIndicator());
@@ -57,7 +57,7 @@ Widget? handleAccountReplayState(
   }
 
   switch (accountState.state) {
-    case CommonReplayStateEnum.ok:
+    case CommonReplayStateEnum.listening:
       return null;
     case CommonReplayStateEnum.hydrating:
       return const Center(child: CircularProgressIndicator());
@@ -90,7 +90,7 @@ Widget? handleServiceReplayState(
   }
 
   switch (serviceState.state) {
-    case CommonReplayStateEnum.ok:
+    case CommonReplayStateEnum.listening:
       return null;
     case CommonReplayStateEnum.hydrating:
       return const Center(child: CircularProgressIndicator());

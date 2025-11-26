@@ -40,9 +40,8 @@ class SiteMembersScreen extends StatelessWidget {
         ),
         BlocProvider<SiteReplayBloc>(
           key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
-          create: (_) => SiteReplayBloc(siteId)
-            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
-            ..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) =>
+              SiteReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(

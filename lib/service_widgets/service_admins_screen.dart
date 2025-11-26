@@ -39,9 +39,8 @@ class ServiceAdminsScreen extends StatelessWidget {
               ),
         ),
         BlocProvider<ServiceReplayBloc>(
-          create: (_) => ServiceReplayBloc()
-            ..add(CommonReplayBlocEvent(loadFromHydrate: true))
-            ..add(CommonReplayBlocEvent(listen: true)),
+          create: (_) =>
+              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(

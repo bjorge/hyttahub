@@ -34,7 +34,6 @@ class _ManageSitesScreenState extends State<ManageSitesScreen> {
 
           create: (_) =>
               AccountReplayBloc(GetIt.instance<AuthBloc>().state.email)
-                ..add(CommonReplayBlocEvent(loadFromHydrate: true))
                 ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],

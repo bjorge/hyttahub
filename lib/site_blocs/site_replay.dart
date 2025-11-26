@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:protobuf/protobuf.dart';
 
 // update the passed in replay state with the new events
@@ -144,8 +143,6 @@ SiteReplayBlocState siteReplay(
       );
     }
     replay.appBlocState = HyttaHubOptions.appReplay!(replay, event);
-
-    replay.state = CommonReplayStateEnum.ok;
   }
 
   return replay;
