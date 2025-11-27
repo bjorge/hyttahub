@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hyttahub/account_widgets/account_screen.dart';
@@ -9,97 +8,115 @@ import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
-/// Handles the different states of the [SiteReplayBloc] and returns a widget
-/// for loading or error states.
-///
-/// Returns a [Widget] to display if the state is not 'ok', otherwise returns `null`.
 Widget? handleSiteReplayState(
   BuildContext context,
   SiteReplayBlocState siteState,
 ) {
-  if (kDebugMode) {
-    print("handleSiteReplayState: siteState = ${siteState.toProto3Json()}");
-  }
+  Widget? errorWidget;
+  final inScaffold = Scaffold.maybeOf(context) != null;
 
   final l10n = HyttaHubLocalizations.of(context)!;
   if (!siteState.hasState()) {
-    return const Center(child: CircularProgressIndicator());
+    errorWidget = const Center(child: CircularProgressIndicator());
   }
 
   switch (siteState.state) {
     case CommonReplayStateEnum.listening:
-      return null;
+      errorWidget = null;
     case CommonReplayStateEnum.hydrating:
-      return const Center(child: CircularProgressIndicator());
-    case CommonReplayStateEnum.uninitialized:
+      errorWidget = const Center(child: CircularProgressIndicator());
+    case CommonReplayStateEnum.uninitializedListening:
     case CommonReplayStateEnum.networkError:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
     case CommonReplayStateEnum.permissionDenied:
-      return Center(child: Text(l10n.permissionDenied));
+      errorWidget = Center(child: Text(l10n.permissionDenied));
     default:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
   }
+
+  if (errorWidget != null) {
+    if (!inScaffold) {
+      return Scaffold(body: Center(child: errorWidget));
+    } else {
+      return errorWidget;
+    }
+  }
+  return null;
 }
 
 Widget? handleAccountReplayState(
   BuildContext context,
   AccountReplayBlocState accountState,
 ) {
-  if (kDebugMode) {
-    print(
-      "handleAccountReplayState: accountState = ${accountState.toProto3Json()}",
-    );
-  }
+  Widget? errorWidget;
+  final inScaffold = Scaffold.maybeOf(context) != null;
+
   final l10n = HyttaHubLocalizations.of(context)!;
 
   if (!accountState.hasState()) {
-    return const Center(child: CircularProgressIndicator());
+    errorWidget = const Center(child: CircularProgressIndicator());
   }
 
   switch (accountState.state) {
     case CommonReplayStateEnum.listening:
-      return null;
+      errorWidget = null;
     case CommonReplayStateEnum.hydrating:
-      return const Center(child: CircularProgressIndicator());
-    case CommonReplayStateEnum.uninitialized:
-      return AccountInitializingWidget(
+      errorWidget = const Center(child: CircularProgressIndicator());
+    case CommonReplayStateEnum.uninitializedListening:
+      errorWidget = AccountInitializingWidget(
         email: GetIt.instance<AuthBloc>().state.email,
       );
 
     case CommonReplayStateEnum.networkError:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
     case CommonReplayStateEnum.permissionDenied:
-      return Center(child: Text(l10n.permissionDenied));
+      errorWidget = Center(child: Text(l10n.permissionDenied));
     default:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
   }
+
+  if (errorWidget != null) {
+    if (!inScaffold) {
+      return Scaffold(body: Center(child: errorWidget));
+    } else {
+      return errorWidget;
+    }
+  }
+  return null;
 }
 
 Widget? handleServiceReplayState(
   BuildContext context,
   ServiceReplayBlocState serviceState,
 ) {
-  if (kDebugMode) {
-    print(
-      "handleServiceReplayState: serviceState = ${serviceState.toProto3Json()}",
-    );
-  }
+  Widget? errorWidget;
+  final inScaffold = Scaffold.maybeOf(context) != null;
+
   final l10n = HyttaHubLocalizations.of(context)!;
   if (!serviceState.hasState()) {
-    return const Center(child: CircularProgressIndicator());
+    errorWidget = const Center(child: CircularProgressIndicator());
   }
 
   switch (serviceState.state) {
     case CommonReplayStateEnum.listening:
-      return null;
+      errorWidget = null;
     case CommonReplayStateEnum.hydrating:
-      return const Center(child: CircularProgressIndicator());
-    case CommonReplayStateEnum.uninitialized:
+    case CommonReplayStateEnum.uninitializedListening:
+      errorWidget = const Center(child: CircularProgressIndicator());
     case CommonReplayStateEnum.networkError:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
     case CommonReplayStateEnum.permissionDenied:
-      return Center(child: Text(l10n.permissionDenied));
+      errorWidget = Center(child: Text(l10n.permissionDenied));
     default:
-      return Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.unexpectedError));
   }
+
+  if (errorWidget != null) {
+    if (!inScaffold) {
+      return Scaffold(body: Center(child: errorWidget));
+    } else {
+      return errorWidget;
+    }
+  }
+  return null;
 }

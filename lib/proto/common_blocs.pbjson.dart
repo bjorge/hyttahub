@@ -19,7 +19,7 @@ const CommonReplayStateEnum$json = {
   '2': [
     {'1': 'hydrating', '2': 0},
     {'1': 'listening', '2': 1},
-    {'1': 'uninitialized', '2': 2},
+    {'1': 'uninitializedListening', '2': 2},
     {'1': 'networkError', '2': 3},
     {'1': 'permissionDenied', '2': 4},
   ],
@@ -27,9 +27,9 @@ const CommonReplayStateEnum$json = {
 
 /// Descriptor for `CommonReplayStateEnum`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List commonReplayStateEnumDescriptor = $convert.base64Decode(
-    'ChVDb21tb25SZXBsYXlTdGF0ZUVudW0SDQoJaHlkcmF0aW5nEAASDQoJbGlzdGVuaW5nEAESEQ'
-    'oNdW5pbml0aWFsaXplZBACEhAKDG5ldHdvcmtFcnJvchADEhQKEHBlcm1pc3Npb25EZW5pZWQQ'
-    'BA==');
+    'ChVDb21tb25SZXBsYXlTdGF0ZUVudW0SDQoJaHlkcmF0aW5nEAASDQoJbGlzdGVuaW5nEAESGg'
+    'oWdW5pbml0aWFsaXplZExpc3RlbmluZxACEhAKDG5ldHdvcmtFcnJvchADEhQKEHBlcm1pc3Np'
+    'b25EZW5pZWQQBA==');
 
 @$core.Deprecated('Use commonReplayBlocEventDescriptor instead')
 const CommonReplayBlocEvent$json = {

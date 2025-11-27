@@ -86,7 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
 
-        if (serviceState.state == CommonReplayStateEnum.uninitialized) {
+        if (serviceState.state ==
+            CommonReplayStateEnum.uninitializedListening) {
           final submitServiceEvent = SubmitServiceEvent(
             email: '',
             event: ServiceEvent(

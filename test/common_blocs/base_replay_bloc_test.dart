@@ -232,7 +232,7 @@ void main() {
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
             'state',
-            CommonReplayStateEnum.uninitialized,
+            CommonReplayStateEnum.uninitializedListening,
           ),
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
@@ -325,7 +325,7 @@ void main() {
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
             'state',
-            CommonReplayStateEnum.uninitialized,
+            CommonReplayStateEnum.uninitializedListening,
           ),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.listening)

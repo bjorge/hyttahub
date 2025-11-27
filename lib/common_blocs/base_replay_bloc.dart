@@ -28,6 +28,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   }
 
   Map<int, String> _hydratedEvents = {};
+  S? _hydratedState;
 
   StreamSubscription? _subscription;
   final S _initialState;
@@ -108,10 +109,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {
     try {
-      if (kDebugMode) {
-        // Helpful traces during unit tests to understand emitted paths.
-        print('[BaseReplayBloc] _onListenForEvents(listen: $listen) starting');
-      }
       await _subscription?.cancel();
       _subscription = null;
 
@@ -119,6 +116,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         // turn off listening, and update hydrated events in case
         // listening is turned on again
         _hydratedEvents = stateGetEventsMap(state);
+        _hydratedState = state;
+
         emit(
           stateCopyWithStatus(
             _initialState.deepCopy(),
@@ -128,7 +127,12 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         return;
       }
 
-      if (_hydratedEvents.isNotEmpty) {
+      if (_hydratedState != null) {
+        emit(
+          stateCopyWithStatus(_hydratedState!, CommonReplayStateEnum.hydrating)
+            ..freeze(),
+        );
+      } else if (_hydratedEvents.isNotEmpty) {
         try {
           Uint8List serializedState = await compute(
             _hydrateIsolateHandler,
@@ -147,8 +151,10 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           );
         } catch (e) {
           _hydratedEvents.clear();
+          _hydratedState = null;
+
           if (kDebugMode) {
-            print('onLoadFromHydrate compute failed: $e');
+            print('BaseReplayBloc: onLoadFromHydrate compute failed: $e');
           }
           // continue processing, perhaps this version does not handle
           // some event correctly, just remove the hydrated events
@@ -156,10 +162,9 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
 
       final path = await getCollectionPath();
-      if (kDebugMode) {
-        print('[BaseReplayBloc] collection path: $path');
-      }
       if (path == null || path.isEmpty) {
+        // this would only happen if the implementation is broken
+        // getCollectionPath() is required to be implemented
         emit(
           stateCopyWithStatus(
             _initialState.deepCopy(),
@@ -171,28 +176,20 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
       // check that the cloud event stream exists
       final firstEventDoc = await getFirstEventDocument(path);
-      if (kDebugMode) {
-        print(
-          '[BaseReplayBloc] first event docs exists: ${firstEventDoc.exists}',
-        );
-      }
-
-      var versionForSnapshotListener = 0;
       if (!firstEventDoc.exists) {
         _hydratedEvents.clear();
+        _hydratedState = null;
+
         emit(
           stateCopyWithStatus(
             _initialState.deepCopy(),
             // start listening for events on empty collection
-            CommonReplayStateEnum.uninitialized,
+            CommonReplayStateEnum.uninitializedListening,
           )..freeze(),
         );
       } else {
         // check that the local and remote event streams are consistent
         final firstCloudEvent = firstEventDoc.data()?[payloadField] as String?;
-        if (kDebugMode) {
-          print('[BaseReplayBloc] firstCloudEvent: $firstCloudEvent');
-        }
         if (_hydratedEvents.isNotEmpty &&
             _hydratedEvents.containsKey(firstCollectionEventVersion)) {
           final firstCachedEvent = _hydratedEvents[firstCollectionEventVersion];
@@ -201,6 +198,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             // for example, a user has removed their account and then re-added it
             // in a different app instance
             _hydratedEvents.clear();
+            _hydratedState = null;
             emit(
               stateCopyWithStatus(
                 _initialState.deepCopy(),
@@ -210,76 +208,20 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           }
         }
 
-        // find the last cached version
-        int maxVersionFromLocalState = _hydratedEvents.keys.fold<int>(
-          0,
-          (p, e) => e > p ? e : p,
-        );
-
-        // Initial fetch for events newer than what we have locally
-        Query query = _firestore
-            .collection(path)
-            .orderBy(versionField, descending: false);
-        if (maxVersionFromLocalState > 0) {
-          query = query.where(
-            versionField,
-            isGreaterThan: maxVersionFromLocalState,
-          );
-        }
-
-        final querySnapshot = await query.get();
-
-        final List<MapEntry<int, String>> newEventsFromServer = querySnapshot
-            .docs
-            .map((doc) {
-              try {
-                return MapEntry(
-                  doc[versionField] as int,
-                  doc[payloadField] as String,
-                );
-              } catch (e) {
-                return null;
-              }
-            })
-            .where((e) => e != null)
-            .cast<MapEntry<int, String>>()
-            .toList();
-
-        versionForSnapshotListener = maxVersionFromLocalState;
-        var currentProcessingState = state;
-        if (newEventsFromServer.isNotEmpty) {
-          if (kDebugMode) {
-            print(
-              '[BaseReplayBloc] new events from server: $newEventsFromServer',
-            );
-          }
-          // ok, there are some newer events in the service
-          final mapOfEvents = Map.fromEntries(newEventsFromServer);
-          versionForSnapshotListener = mapOfEvents.keys.fold<int>(
-            maxVersionFromLocalState,
-            (p, e) => e > p ? e : p,
-          );
-
-          currentProcessingState = await _runReplay(state, mapOfEvents);
-
-          if (isClosed) {
-            return;
-          }
-        }
-
-        if (kDebugMode) {
-          print(
-            '[BaseReplayBloc] emitting ok with state events: ${stateGetEventsMap(currentProcessingState)}',
-          );
-        }
         emit(
           stateCopyWithStatus(
-            currentProcessingState,
+            state.deepCopy(),
             // start listening for events on non-empty collection
             CommonReplayStateEnum.listening,
           )..freeze(),
         );
       }
+
+      // find the last cached version
+      final versionForSnapshotListener = _hydratedEvents.keys.fold<int>(
+        0,
+        (p, e) => e > p ? e : p,
+      );
 
       // Setup listener for subsequent changes
       _subscription = _firestore
@@ -306,6 +248,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
               if (newEventsList.isNotEmpty) {
                 if (!isClosed) {
+                  if (kDebugMode) {
+                    print(
+                      "BaseReplayBloc: new events size: ${newEventsList.length}",
+                    );
+                  }
                   add(
                     CommonReplayBlocEvent(
                       newEvents: CommonReplayBlocEvent_NewEvents(
@@ -367,6 +314,14 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         );
       }
 
+      final serializedState =
+          json[HyttaHubOptions.appBuildNumber.toString()] as String?;
+      if (serializedState != null && serializedState.isNotEmpty) {
+        _hydratedState = fromBuffer(base64Decode(serializedState));
+      } else {
+        _hydratedState = null;
+      }
+
       final restoringState = stateCopyWithStatus(
         state,
         CommonReplayStateEnum.hydrating,
@@ -385,7 +340,12 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       final eventMapProto = EventMapProto(events: eventsToSerialize);
       final serializedEventsMap = base64Encode(eventMapProto.writeToBuffer());
 
-      return {'events_map': serializedEventsMap};
+      final serializedState = base64Encode(toBuffer(state));
+
+      return {
+        'events_map': serializedEventsMap,
+        HyttaHubOptions.appBuildNumber.toString(): serializedState,
+      };
     } catch (e, _) {
       return null; // Prevents corrupt data from being saved
     }

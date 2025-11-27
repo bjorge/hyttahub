@@ -3,7 +3,7 @@ syntax = "proto3";
 enum CommonReplayStateEnum {
   hydrating = 0; // startup, not listening yet
   listening = 1; // listening to non-empty events collection
-  uninitialized = 2; // listening to an empty events collection
+  uninitializedListening = 2; // listening to an empty events collection
   networkError = 3; // network error at startup
   permissionDenied = 4; // permission denied at startup
 }
