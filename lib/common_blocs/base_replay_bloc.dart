@@ -20,10 +20,18 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     replayIsolateHandler,
     required FutureOr<Uint8List> Function(Map<int, String>)
     hydrateIsolateHandler,
+
+    /// Whether to use Flutter isolates via `compute()` for heavy CPU work.
+    ///
+    /// The site replay function accesses a global function pointer to the
+    /// app replay function, which is not allowed in an isolate. Once a way
+    /// to fix this is figured out we can change this back to true.
+    bool useIsolate = false,
   }) : _initialState = initialState,
        _firestore = firestore ?? FirebaseFirestore.instance,
        _replayIsolateHandler = replayIsolateHandler,
        _hydrateIsolateHandler = hydrateIsolateHandler {
+    _useIsolate = useIsolate;
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
@@ -37,6 +45,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   _replayIsolateHandler;
 
   final FutureOr<Uint8List> Function(Map<int, String>) _hydrateIsolateHandler;
+  // Whether to use compute() to run handlers in isolates. Default true.
+  late final bool _useIsolate;
 
   // --- Abstract methods and getters to be implemented by subclasses ---
 
@@ -128,16 +138,31 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
 
       if (_hydratedState != null) {
+        if (kDebugMode) {
+          print('BaseReplayBloc: hydrate from state');
+        }
         emit(
           stateCopyWithStatus(_hydratedState!, CommonReplayStateEnum.hydrating)
             ..freeze(),
         );
       } else if (_hydratedEvents.isNotEmpty) {
         try {
-          Uint8List serializedState = await compute(
-            _hydrateIsolateHandler,
-            _hydratedEvents,
-          );
+          if (kDebugMode) {
+            print(
+              'BaseReplayBloc: hydrate from events (${_hydratedEvents.length})',
+            );
+          }
+          // Use `compute()` to offload heavy work if enabled; otherwise call
+          // the handler directly on the current isolate.
+          Uint8List serializedState;
+          if (_useIsolate) {
+            serializedState = await compute(
+              _hydrateIsolateHandler,
+              _hydratedEvents,
+            );
+          } else {
+            serializedState = await _hydrateIsolateHandler(_hydratedEvents);
+          }
 
           S resultState = fromBuffer(serializedState);
 
@@ -152,9 +177,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         } catch (e) {
           _hydratedEvents.clear();
           _hydratedState = null;
-
           if (kDebugMode) {
-            print('BaseReplayBloc: onLoadFromHydrate compute failed: $e');
+            print('BaseReplayBloc: onLoadFromHydrate processing failed: $e');
           }
           // continue processing, perhaps this version does not handle
           // some event correctly, just remove the hydrated events
@@ -223,6 +247,12 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         (p, e) => e > p ? e : p,
       );
 
+      if (kDebugMode) {
+        print(
+          'BaseReplayBloc: listen after event version: $versionForSnapshotListener',
+        );
+      }
+
       // Setup listener for subsequent changes
       _subscription = _firestore
           .collection(path)
@@ -286,7 +316,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         'events': eventsData,
       };
 
-      final Uint8List resultBytes = await compute(_replayIsolateHandler, arg);
+      // Use `compute()` to offload heavy work into an isolate if requested by
+      // constructor option; otherwise call the handler directly.
+      final Uint8List resultBytes = _useIsolate
+          ? await compute(_replayIsolateHandler, arg)
+          : await _replayIsolateHandler(arg);
 
       return fromBuffer(resultBytes);
     } catch (e) {
