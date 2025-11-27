@@ -37,6 +37,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   Map<int, String> _hydratedEvents = {};
   S? _hydratedState;
+  int _lastVersion = 0;
 
   StreamSubscription? _subscription;
   final S _initialState;
@@ -104,7 +105,28 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     Map<int, String> eventsData,
     Emitter<S> emit,
   ) async {
-    final S newState = await _runReplay(state, eventsData);
+    // remove all events before the last version
+    // do this because firebase fires off many events from its cache at times
+    eventsData.removeWhere((key, value) => key <= _lastVersion);
+
+    if (kDebugMode) {
+      print(
+        "BaseReplayBloc: _onNewEvents $eventsData _lastVersion: $_lastVersion",
+      );
+    }
+
+    final S newState = eventsData.isEmpty
+        ? state
+        : await _runReplay(state, eventsData);
+
+    // set last version to the largest key of eventsData
+    if (eventsData.isNotEmpty) {
+      _lastVersion = eventsData.keys.fold<int>(0, (p, e) => e > p ? e : p);
+    }
+
+    if (kDebugMode) {
+      print("BaseReplayBloc: new _lastVersion: $_lastVersion");
+    }
 
     if (isClosed) {
       return;
@@ -242,21 +264,16 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
 
       // find the last cached version
-      final versionForSnapshotListener = _hydratedEvents.keys.fold<int>(
-        0,
-        (p, e) => e > p ? e : p,
-      );
+      _lastVersion = _hydratedEvents.keys.fold<int>(0, (p, e) => e > p ? e : p);
 
       if (kDebugMode) {
-        print(
-          'BaseReplayBloc: listen after event version: $versionForSnapshotListener',
-        );
+        print('BaseReplayBloc: listen after event version: $_lastVersion');
       }
 
       // Setup listener for subsequent changes
       _subscription = _firestore
           .collection(path)
-          .where(versionField, isGreaterThan: versionForSnapshotListener)
+          .where(versionField, isGreaterThan: _lastVersion)
           .orderBy(versionField, descending: false)
           .snapshots()
           .listen(
@@ -278,11 +295,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
               if (newEventsList.isNotEmpty) {
                 if (!isClosed) {
-                  if (kDebugMode) {
-                    print(
-                      "BaseReplayBloc: new events size: ${newEventsList.length}",
-                    );
-                  }
                   add(
                     CommonReplayBlocEvent(
                       newEvents: CommonReplayBlocEvent_NewEvents(
