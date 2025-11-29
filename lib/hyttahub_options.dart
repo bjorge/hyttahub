@@ -13,10 +13,6 @@ typedef BaseSiteRoutePath = String Function(String siteId);
 
 /// A class to hold global options for the HyttaHub library.
 class HyttaHubOptions {
-  /// The app-specific replay function.
-  /// This must be set by the application using the library before any site replay logic is run.
-  static AppReplay? appReplay;
-
   static int? appBuildNumber;
 
   static BaseSiteRoutePath? siteScreenRoute;

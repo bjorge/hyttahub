@@ -18,8 +18,4 @@ message SiteReplayBlocState {
   string name = 3;                // name of the site
   map<int32, Member> members = 4; // map of user id to user info
   map<int32, Member> removedMembers = 5; // members that have been removed
-
-  /****** Application specific state ********/
-
-  AppReplayWrapper appBlocState = 20;
 }

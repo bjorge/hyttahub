@@ -1,7 +1,6 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:convert';
-import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:protobuf/protobuf.dart';
@@ -124,14 +123,6 @@ SiteReplayBlocState siteReplay(
         replay.members.remove(memberId);
       }
     }
-
-    // update the app state last by calling the user-defined replay function
-    if (HyttaHubOptions.appReplay == null) {
-      throw Exception(
-        'HyttaHubOptions.appReplay must be set by the application.',
-      );
-    }
-    replay.appBlocState = HyttaHubOptions.appReplay!(replay, event);
   }
 
   return replay;

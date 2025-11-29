@@ -26,7 +26,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     /// The site replay function accesses a global function pointer to the
     /// app replay function, which is not allowed in an isolate. Once a way
     /// to fix this is figured out we can change this back to true.
-    bool useIsolate = false,
+    bool useIsolate = true,
   }) : _initialState = initialState,
        _firestore = firestore ?? FirebaseFirestore.instance,
        _replayIsolateHandler = replayIsolateHandler,

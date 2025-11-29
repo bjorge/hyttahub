@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:formproto/app_blocs/app_replay.dart';
 import 'package:formproto/routers/app_routes.dart';
 import 'package:formproto/routers/app_router.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -37,10 +36,6 @@ Future<void> main() async {
   };
 
   HyttaHubOptions.appBuildNumber = appBuildNumber;
-
-  HyttaHubOptions.appReplay = (siteReplay, event) {
-    return appReplay(siteReplay, event);
-  };
 
   HyttaHubOptions.firebaseRootCollection =
       'formproto'; // the appName, do not change

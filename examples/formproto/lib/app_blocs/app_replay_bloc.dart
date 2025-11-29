@@ -21,13 +21,13 @@ FutureOr<Uint8List> appReplayIsolateHandler(Map<String, dynamic> payload) {
     serializedState,
   );
 
-  final AppReplayBlocState newState = appReplay1(state, eventsMap);
+  final AppReplayBlocState newState = appReplay(state, eventsMap);
   return newState.writeToBuffer();
 }
 
 // Top-level isolate handler for constructing initial state from hydrated events.
 FutureOr<Uint8List> appHydrateIsolateHandler(Map<int, String> eventsMap) {
-  final AppReplayBlocState newState = appReplay1(
+  final AppReplayBlocState newState = appReplay(
     AppReplayBlocState(),
     eventsMap,
   );
@@ -57,7 +57,7 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
     AppReplayBlocState currentState,
     Map<int, String> newEventsData,
   ) {
-    return appReplay1(currentState, newEventsData);
+    return appReplay(currentState, newEventsData);
   }
 
   @override

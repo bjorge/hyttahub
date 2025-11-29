@@ -22,7 +22,6 @@ const SiteReplayBlocState$json = {
     {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
     {'1': 'members', '3': 4, '4': 3, '5': 11, '6': '.SiteReplayBlocState.MembersEntry', '10': 'members'},
     {'1': 'removedMembers', '3': 5, '4': 3, '5': 11, '6': '.SiteReplayBlocState.RemovedMembersEntry', '10': 'removedMembers'},
-    {'1': 'appBlocState', '3': 20, '4': 1, '5': 11, '6': '.AppReplayWrapper', '10': 'appBlocState'},
   ],
   '3': [SiteReplayBlocState_Member$json, SiteReplayBlocState_EventsEntry$json, SiteReplayBlocState_MembersEntry$json, SiteReplayBlocState_RemovedMembersEntry$json],
 };
@@ -73,11 +72,10 @@ final $typed_data.Uint8List siteReplayBlocStateDescriptor = $convert.base64Decod
     'c0VudHJ5UgZldmVudHMSEgoEbmFtZRgDIAEoCVIEbmFtZRI7CgdtZW1iZXJzGAQgAygLMiEuU2'
     'l0ZVJlcGxheUJsb2NTdGF0ZS5NZW1iZXJzRW50cnlSB21lbWJlcnMSUAoOcmVtb3ZlZE1lbWJl'
     'cnMYBSADKAsyKC5TaXRlUmVwbGF5QmxvY1N0YXRlLlJlbW92ZWRNZW1iZXJzRW50cnlSDnJlbW'
-    '92ZWRNZW1iZXJzEjUKDGFwcEJsb2NTdGF0ZRgUIAEoCzIRLkFwcFJlcGxheVdyYXBwZXJSDGFw'
-    'cEJsb2NTdGF0ZRoyCgZNZW1iZXISEgoEbmFtZRgBIAEoCVIEbmFtZRIUCgVhZG1pbhgCIAEoCF'
-    'IFYWRtaW4aOQoLRXZlbnRzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAlS'
-    'BXZhbHVlOgI4ARpXCgxNZW1iZXJzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSMQoFdmFsdWUYAi'
-    'ABKAsyGy5TaXRlUmVwbGF5QmxvY1N0YXRlLk1lbWJlclIFdmFsdWU6AjgBGl4KE1JlbW92ZWRN'
-    'ZW1iZXJzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSMQoFdmFsdWUYAiABKAsyGy5TaXRlUmVwbG'
-    'F5QmxvY1N0YXRlLk1lbWJlclIFdmFsdWU6AjgB');
+    '92ZWRNZW1iZXJzGjIKBk1lbWJlchISCgRuYW1lGAEgASgJUgRuYW1lEhQKBWFkbWluGAIgASgI'
+    'UgVhZG1pbho5CgtFdmVudHNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCV'
+    'IFdmFsdWU6AjgBGlcKDE1lbWJlcnNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIxCgV2YWx1ZRgC'
+    'IAEoCzIbLlNpdGVSZXBsYXlCbG9jU3RhdGUuTWVtYmVyUgV2YWx1ZToCOAEaXgoTUmVtb3ZlZE'
+    '1lbWJlcnNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIxCgV2YWx1ZRgCIAEoCzIbLlNpdGVSZXBs'
+    'YXlCbG9jU3RhdGUuTWVtYmVyUgV2YWx1ZToCOAE=');
 
