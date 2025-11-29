@@ -4,9 +4,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formproto/app_blocs/app_replay_bloc.dart';
 import 'package:formproto/proto/app_events.pb.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
 import 'package:formproto/routers/app_routes.dart';
+import 'package:formproto/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -15,7 +17,6 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
-import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class SiteScreen extends StatelessWidget {
@@ -32,6 +33,13 @@ class SiteScreen extends StatelessWidget {
           create:
               (_) =>
                   SiteReplayBloc(siteId)
+                    ..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AppReplayBloc>(
+          key: Key('AppReplayBloc-albums-$siteId'),
+          create:
+              (_) =>
+                  AppReplayBloc(siteId)
                     ..add(CommonReplayBlocEvent(listen: true)),
         ),
       ],
@@ -56,26 +64,19 @@ class UpdateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
-      builder: (context, siteState) {
-        final errorWidget = handleSiteReplayState(context, siteState);
+    return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
+      builder: (context, appState) {
+        final errorWidget = handleAppReplayState(context, appState);
         if (errorWidget != null) {
           return errorWidget;
         }
 
-        final appReplay =
-            siteState.hasAppBlocState() && siteState.appBlocState.hasPayload()
-                ? unpackAppReplayWrapper(
-                  siteState.appBlocState,
-                  AppReplayBlocState.create,
-                )
-                : AppReplayBlocState();
-        final textValue = appReplay.hasText() ? appReplay.text : '';
+        final textValue = appState.hasText() ? appState.text : '';
 
         final version =
-            siteState.events.isEmpty
+            appState.events.isEmpty
                 ? 1
-                : siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
+                : appState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
                     1;
 
         return ElevatedButton(
@@ -106,21 +107,14 @@ class TextValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
-      builder: (context, siteState) {
-        final errorWidget = handleSiteReplayState(context, siteState);
+    return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
+      builder: (context, appState) {
+        final errorWidget = handleAppReplayState(context, appState);
         if (errorWidget != null) {
           return errorWidget;
         }
 
-        final appReplay =
-            siteState.hasAppBlocState() && siteState.appBlocState.hasPayload()
-                ? unpackAppReplayWrapper(
-                  siteState.appBlocState,
-                  AppReplayBlocState.create,
-                )
-                : AppReplayBlocState();
-        final textValue = appReplay.hasText() ? appReplay.text : '';
+        final textValue = appState.hasText() ? appState.text : '';
 
         return Text("Text Value: $textValue ");
       },

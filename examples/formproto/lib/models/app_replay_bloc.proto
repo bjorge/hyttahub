@@ -2,6 +2,17 @@ syntax = "proto3";
 
 package hyttahub.example.formproto;
 
+enum AppReplayStateEnum {
+  hydrating = 0;              // startup, not listening yet
+  listening = 1;              // listening to non-empty events collection
+  uninitializedListening = 2; // listening to an empty events collection
+  networkError = 3;           // network error at startup
+  permissionDenied = 4;       // permission denied at startup
+}
+
 message AppReplayBlocState {
-  string text = 1;
+  map<int32, string> events = 1; // base64 encoded events
+  AppReplayStateEnum state = 2;
+
+  string text = 3;
 }

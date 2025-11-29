@@ -13,11 +13,23 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'app_replay_bloc.pbenum.dart';
+
+export 'app_replay_bloc.pbenum.dart';
+
 class AppReplayBlocState extends $pb.GeneratedMessage {
   factory AppReplayBlocState({
+    $core.Map<$core.int, $core.String>? events,
+    AppReplayStateEnum? state,
     $core.String? text,
   }) {
     final $result = create();
+    if (events != null) {
+      $result.events.addAll(events);
+    }
+    if (state != null) {
+      $result.state = state;
+    }
     if (text != null) {
       $result.text = text;
     }
@@ -28,7 +40,9 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   factory AppReplayBlocState.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppReplayBlocState', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.formproto'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'text')
+    ..m<$core.int, $core.String>(1, _omitFieldNames ? '' : 'events', entryClassName: 'AppReplayBlocState.EventsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('hyttahub.example.formproto'))
+    ..e<AppReplayStateEnum>(2, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: AppReplayStateEnum.hydrating, valueOf: AppReplayStateEnum.valueOf, enumValues: AppReplayStateEnum.values)
+    ..aOS(3, _omitFieldNames ? '' : 'text')
     ..hasRequiredFields = false
   ;
 
@@ -54,13 +68,25 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   static AppReplayBlocState? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get text => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set text($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasText() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearText() => clearField(1);
+  $core.Map<$core.int, $core.String> get events => $_getMap(0);
+
+  @$pb.TagNumber(2)
+  AppReplayStateEnum get state => $_getN(1);
+  @$pb.TagNumber(2)
+  set state(AppReplayStateEnum v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasState() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearState() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get text => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set text($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasText() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearText() => clearField(3);
 }
 
 
