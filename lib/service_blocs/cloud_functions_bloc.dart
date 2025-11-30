@@ -13,13 +13,17 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   CloudFunctionsBloc()
     : super(CloudFunctionsState()..initial = CloudFunctionsInitial());
 
-  Future<Map<String, dynamic>> importSite(String base64Data) async {
+  Future<Map<String, dynamic>> importSite({
+    String? base64Data,
+    String? storagePath,
+  }) async {
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'importSite',
       );
       final result = await callable.call(<String, dynamic>{
-        'base64Data': base64Data,
+        if (base64Data != null) 'base64Data': base64Data,
+        if (storagePath != null) 'storagePath': storagePath,
         'appName': HyttaHubOptions.firebaseRootCollection,
       });
       return Map<String, dynamic>.from(result.data);

@@ -467,11 +467,27 @@ export const importSite = onCall({ cors: true }, async (request) => {
 
   const appName = request.data.appName;
   const base64Data = request.data.base64Data;
+  const storagePath = request.data.storagePath;
   const newSiteId = generateId();
   const bucket = admin.storage().bucket();
 
+  let zipBuffer: Buffer;
+  let fileToDelete: any = null;
+
   try {
-    const zipBuffer = Buffer.from(base64Data, "base64");
+    if (storagePath) {
+      logger.info(`Reading zip from storage path: ${storagePath}`);
+      const file = bucket.file(storagePath);
+      const [buffer] = await file.download();
+      zipBuffer = buffer;
+      fileToDelete = file;
+    } else if (base64Data) {
+      logger.info("Reading zip from base64 data");
+      zipBuffer = Buffer.from(base64Data, "base64");
+    } else {
+      throw new HttpsError("invalid-argument", "Either base64Data or storagePath must be provided");
+    }
+
     const directory = await unzipper.Open.buffer(zipBuffer);
 
     // Extract events and photos from the zip. This will throw an HttpsError
@@ -574,6 +590,15 @@ export const importSite = onCall({ cors: true }, async (request) => {
   } catch (error) {
     logger.error("Error importing site:", error);
     throw new HttpsError("internal", "Failed to import site");
+  } finally {
+    if (fileToDelete) {
+      try {
+        await fileToDelete.delete();
+        logger.info(`Deleted temporary import file: ${fileToDelete.name}`);
+      } catch (cleanupError) {
+        logger.warn(`Failed to delete temporary import file: ${fileToDelete.name}`, cleanupError);
+      }
+    }
   }
 });
 

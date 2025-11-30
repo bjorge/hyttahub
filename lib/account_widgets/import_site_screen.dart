@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,10 +45,28 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
       _isLoading = true;
     });
 
-    final base64Data = base64Encode(_zipFileBytes!);
-    context
-        .read<CloudFunctionsBloc>()
-        .importSite(base64Data)
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User must be signed in to import site')),
+      );
+      return;
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final storagePath = 'imports/$uid/${timestamp}_$_fileName';
+    final storageRef = FirebaseStorage.instance.ref().child(storagePath);
+
+    storageRef
+        .putData(_zipFileBytes!)
+        .then((_) {
+          return context.read<CloudFunctionsBloc>().importSite(
+            storagePath: storagePath,
+          );
+        })
         .then((response) {
           setState(() {
             _isLoading = false;
