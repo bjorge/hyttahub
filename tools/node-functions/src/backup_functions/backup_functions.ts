@@ -457,7 +457,11 @@ export const exportDetails = onCall({ cors: true }, async (request) => {
   });
 });
 
-export const importSite = onCall({ cors: true }, async (request) => {
+export const importSite = onCall({
+  cors: true,
+  memory: '1GiB',         // Sets the memory to 1 Gibibyte
+  timeoutSeconds: 540,    // Sets the timeout to 540 seconds (9 minutes)
+}, async (request) => {
   logger.info("importSite function called");
 
   const uid = request.auth?.uid;

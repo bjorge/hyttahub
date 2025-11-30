@@ -1,6 +1,6 @@
 {
   "name": "@hyttahub/functions",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Hyttahub Firebase Functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
