@@ -558,4 +558,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get assignUserButton => 'Tildel bruker';
+
+  @override
+  String get exportDetailsTitle => 'Eksportdetaljer';
 }

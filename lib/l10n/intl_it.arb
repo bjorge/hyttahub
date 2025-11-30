@@ -208,5 +208,6 @@
   "importButton": "Importa",
   "selectAdminTitle": "Seleziona il tuo Account Amministratore",
   "selectAdminInstruction": "Seleziona il tuo account amministratore dall'elenco degli amministratori del sito importato.",
-  "assignUserButton": "Assegna Utente"
+  "assignUserButton": "Assegna Utente",
+  "exportDetailsTitle": "Dettagli esportazione"
 }

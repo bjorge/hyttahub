@@ -208,5 +208,6 @@
   "importButton": "Importer",
   "selectAdminTitle": "Velg din administrator-konto",
   "selectAdminInstruction": "Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.",
-  "assignUserButton": "Tildel bruker"
+  "assignUserButton": "Tildel bruker",
+  "exportDetailsTitle": "Eksportdetaljer"
 }

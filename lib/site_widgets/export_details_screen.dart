@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/proto/cloud_functions.pb.dart';
-// import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 // import 'package:hyttahub/service_blocs/cloud_functions_state.dart';
@@ -43,12 +43,11 @@ class _ExportDetailsScreenState extends State<ExportDetailsScreen> {
             ..getExportDetails(widget.siteId, widget.fileName),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('exportDetailsTitle'),
-          // title: Text(HyttaHubLocalizations.of(context)!.exportDetailsTitle),
+          title: Text(HyttaHubLocalizations.of(context)!.exportDetailsTitle),
         ),
         body: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
-            if (state is ExportDetailsSuccess) {
+            if (state.hasExportDetailsSuccess()) {
               final events = state.exportDetailsSuccess.events.split('\n');
               final eventsMap = <int, String>{};
               for (final event in events) {

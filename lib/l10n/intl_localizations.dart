@@ -1130,6 +1130,12 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Assign User'**
   String get assignUserButton;
+
+  /// No description provided for @exportDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Details'**
+  String get exportDetailsTitle;
 }
 
 class _HyttaHubLocalizationsDelegate

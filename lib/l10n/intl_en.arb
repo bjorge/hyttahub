@@ -208,5 +208,6 @@
   "importButton": "Import",
   "selectAdminTitle": "Select Your Admin Account",
   "selectAdminInstruction": "Please select your administrator account from the list of admins for the imported site.",
-  "assignUserButton": "Assign User"
+  "assignUserButton": "Assign User",
+  "exportDetailsTitle": "Export Details"
 }

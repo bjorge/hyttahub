@@ -570,4 +570,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
 
   @override
   String get assignUserButton => 'Asignar usuario';
+
+  @override
+  String get exportDetailsTitle => 'Detalles de exportación';
 }

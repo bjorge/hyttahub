@@ -58,7 +58,8 @@ final siteScreenFormRoute = SiteScreenFormRoute(routes: []);
 
 final renameSiteRoute = RenameSiteRoute();
 final exportSiteRoute = ExportSiteRoute();
-final manageExportsRoute = ManageExportsRoute();
+final exportDetailsRoute = ExportDetailsRoute();
+final manageExportsRoute = ManageExportsRoute(routes: [exportDetailsRoute]);
 final siteMembersRoute = SiteMembersRoute();
 final displaySiteRoute = SiteEventsDisplayRoute();
 final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
