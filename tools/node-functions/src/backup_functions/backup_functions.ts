@@ -88,7 +88,7 @@ function generateId(): string {
 export const backupSite = onDocumentWritten(
   {
     document: `hyttahub/{appPathSegment}/sites/{siteId}/site_exports/export_request`,
-    memory: '1GiB',         // Sets the memory to 1 Gibibyte
+    memory: '8GiB',         // Sets the memory to 8 Gibibyte
     timeoutSeconds: 540,    // Sets the timeout to 540 seconds (9 minutes)
   },
 
@@ -459,8 +459,8 @@ export const exportDetails = onCall({ cors: true }, async (request) => {
 
 export const importSite = onCall({
   cors: true,
-  memory: '1GiB',         // Sets the memory to 1 Gibibyte
-  timeoutSeconds: 540,    // Sets the timeout to 540 seconds (9 minutes)
+  memory: '8GiB',         // Sets the memory to 8 Gibibyte
+  timeoutSeconds: 1200,    // Sets the timeout to 1200 seconds (20 minutes)
 }, async (request) => {
   logger.info("importSite function called");
 
