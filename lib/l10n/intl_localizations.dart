@@ -1136,6 +1136,48 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Export Details'**
   String get exportDetailsTitle;
+
+  /// No description provided for @largeFileWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Large file detected ({sizeInMB}MB). Upload may take several minutes.'**
+  String largeFileWarning(int sizeInMB);
+
+  /// No description provided for @selectedFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected file: {fileName}'**
+  String selectedFile(String fileName);
+
+  /// No description provided for @fileSizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Size: {sizeInMB}MB'**
+  String fileSizeLabel(int sizeInMB);
+
+  /// No description provided for @uploadingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading: {progress}%'**
+  String uploadingProgress(String progress);
+
+  /// No description provided for @processingImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing import...'**
+  String get processingImport;
+
+  /// No description provided for @userMustBeSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'User must be signed in to import site'**
+  String get userMustBeSignedIn;
+
+  /// No description provided for @errorImportingSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Error importing site: {error}'**
+  String errorImportingSite(String error);
 }
 
 class _HyttaHubLocalizationsDelegate

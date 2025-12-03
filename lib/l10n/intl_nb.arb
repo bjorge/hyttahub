@@ -209,5 +209,47 @@
   "selectAdminTitle": "Velg din administrator-konto",
   "selectAdminInstruction": "Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.",
   "assignUserButton": "Tildel bruker",
-  "exportDetailsTitle": "Eksportdetaljer"
+  "exportDetailsTitle": "Eksportdetaljer",
+  "largeFileWarning": "Stor fil oppdaget ({sizeInMB}MB). Opplasting kan ta flere minutter.",
+  "@largeFileWarning": {
+    "placeholders": {
+      "sizeInMB": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFile": "Valgt fil: {fileName}",
+  "@selectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileSizeLabel": "Størrelse: {sizeInMB}MB",
+  "@fileSizeLabel": {
+    "placeholders": {
+      "sizeInMB": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadingProgress": "Laster opp: {progress}%",
+  "@uploadingProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "processingImport": "Behandler import...",
+  "userMustBeSignedIn": "Bruker må være pålogget for å importere sted",
+  "errorImportingSite": "Feil ved import av sted: {error}",
+  "@errorImportingSite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

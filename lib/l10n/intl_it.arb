@@ -209,5 +209,47 @@
   "selectAdminTitle": "Seleziona il tuo Account Amministratore",
   "selectAdminInstruction": "Seleziona il tuo account amministratore dall'elenco degli amministratori del sito importato.",
   "assignUserButton": "Assegna Utente",
-  "exportDetailsTitle": "Dettagli esportazione"
+  "exportDetailsTitle": "Dettagli esportazione",
+  "largeFileWarning": "File di grandi dimensioni rilevato ({sizeInMB}MB). Il caricamento potrebbe richiedere diversi minuti.",
+  "@largeFileWarning": {
+    "placeholders": {
+      "sizeInMB": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFile": "File selezionato: {fileName}",
+  "@selectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "fileSizeLabel": "Dimensione: {sizeInMB}MB",
+  "@fileSizeLabel": {
+    "placeholders": {
+      "sizeInMB": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadingProgress": "Caricamento: {progress}%",
+  "@uploadingProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "processingImport": "Elaborazione importazione...",
+  "userMustBeSignedIn": "L'utente deve essere autenticato per importare il sito",
+  "errorImportingSite": "Errore durante l'importazione del sito: {error}",
+  "@errorImportingSite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

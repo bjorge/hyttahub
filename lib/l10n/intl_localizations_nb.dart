@@ -561,4 +561,36 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get exportDetailsTitle => 'Eksportdetaljer';
+
+  @override
+  String largeFileWarning(int sizeInMB) {
+    return 'Stor fil oppdaget (${sizeInMB}MB). Opplasting kan ta flere minutter.';
+  }
+
+  @override
+  String selectedFile(String fileName) {
+    return 'Valgt fil: $fileName';
+  }
+
+  @override
+  String fileSizeLabel(int sizeInMB) {
+    return 'Størrelse: ${sizeInMB}MB';
+  }
+
+  @override
+  String uploadingProgress(String progress) {
+    return 'Laster opp: $progress%';
+  }
+
+  @override
+  String get processingImport => 'Behandler import...';
+
+  @override
+  String get userMustBeSignedIn =>
+      'Bruker må være pålogget for å importere sted';
+
+  @override
+  String errorImportingSite(String error) {
+    return 'Feil ved import av sted: $error';
+  }
 }

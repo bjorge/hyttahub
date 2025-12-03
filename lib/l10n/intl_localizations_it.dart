@@ -568,4 +568,36 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
 
   @override
   String get exportDetailsTitle => 'Dettagli esportazione';
+
+  @override
+  String largeFileWarning(int sizeInMB) {
+    return 'File di grandi dimensioni rilevato (${sizeInMB}MB). Il caricamento potrebbe richiedere diversi minuti.';
+  }
+
+  @override
+  String selectedFile(String fileName) {
+    return 'File selezionato: $fileName';
+  }
+
+  @override
+  String fileSizeLabel(int sizeInMB) {
+    return 'Dimensione: ${sizeInMB}MB';
+  }
+
+  @override
+  String uploadingProgress(String progress) {
+    return 'Caricamento: $progress%';
+  }
+
+  @override
+  String get processingImport => 'Elaborazione importazione...';
+
+  @override
+  String get userMustBeSignedIn =>
+      'L\'utente deve essere autenticato per importare il sito';
+
+  @override
+  String errorImportingSite(String error) {
+    return 'Errore durante l\'importazione del sito: $error';
+  }
 }

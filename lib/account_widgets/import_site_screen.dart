@@ -47,7 +47,7 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Large file detected (${sizeInMB}MB). Upload may take several minutes.',
+              HyttaHubLocalizations.of(context)!.largeFileWarning(sizeInMB),
             ),
             duration: const Duration(seconds: 5),
           ),
@@ -65,7 +65,9 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     if (uid == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User must be signed in to import site')),
+        SnackBar(
+          content: Text(HyttaHubLocalizations.of(context)!.userMustBeSignedIn),
+        ),
       );
       return;
     }
@@ -140,7 +142,11 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error importing site: $error'),
+          content: Text(
+            HyttaHubLocalizations.of(
+              context,
+            )!.errorImportingSite(error.toString()),
+          ),
           duration: const Duration(seconds: 5),
         ),
       );
@@ -168,10 +174,16 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Column(
                   children: [
-                    Text('Selected file: $_fileName'),
+                    Text(
+                      HyttaHubLocalizations.of(
+                        context,
+                      )!.selectedFile(_fileName!),
+                    ),
                     if (_fileSizeInMB != null)
                       Text(
-                        'Size: ${_fileSizeInMB}MB',
+                        HyttaHubLocalizations.of(
+                          context,
+                        )!.fileSizeLabel(_fileSizeInMB!),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                   ],
@@ -185,7 +197,9 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
                       LinearProgressIndicator(value: _uploadProgress),
                       const SizedBox(height: 8),
                       Text(
-                        'Uploading: ${(_uploadProgress * 100).toStringAsFixed(0)}%',
+                        HyttaHubLocalizations.of(context)!.uploadingProgress(
+                          (_uploadProgress * 100).toStringAsFixed(0),
+                        ),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -193,13 +207,13 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
                 ),
               ],
               if (_isProcessing)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 8),
-                      Text('Processing import...'),
+                      const CircularProgressIndicator(),
+                      const SizedBox(height: 8),
+                      Text(HyttaHubLocalizations.of(context)!.processingImport),
                     ],
                   ),
                 ),
