@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,9 +18,12 @@ class ImportSiteScreen extends StatefulWidget {
 }
 
 class _ImportSiteScreenState extends State<ImportSiteScreen> {
-  Uint8List? _zipFileBytes;
+  PlatformFile? _selectedFile;
   String? _fileName;
-  bool _isLoading = false;
+  bool _isUploading = false;
+  bool _isProcessing = false;
+  double _uploadProgress = 0.0;
+  int? _fileSizeInMB;
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -29,74 +32,125 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     );
 
     if (result != null) {
+      final file = result.files.single;
+      final sizeInMB = file.size ~/ (1024 * 1024);
+
       setState(() {
-        _zipFileBytes = result.files.single.bytes;
-        _fileName = result.files.single.name;
+        _selectedFile = file;
+        _fileName = file.name;
+        _fileSizeInMB = sizeInMB;
+        _uploadProgress = 0.0;
       });
+
+      // Show warning for large files
+      if (sizeInMB > 500 && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Large file detected (${sizeInMB}MB). Upload may take several minutes.',
+            ),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
-  void _importSite() {
-    if (_zipFileBytes == null) {
+  void _importSite() async {
+    if (_selectedFile == null) {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User must be signed in to import site')),
       );
       return;
     }
 
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final storagePath = 'imports/$uid/${timestamp}_$_fileName';
-    final storageRef = FirebaseStorage.instance.ref().child(storagePath);
+    setState(() {
+      _isUploading = true;
+      _uploadProgress = 0.0;
+    });
 
-    storageRef
-        .putData(_zipFileBytes!)
-        .then((_) {
-          return context.read<CloudFunctionsBloc>().importSite(
-            storagePath: storagePath,
-          );
-        })
-        .then((response) {
-          setState(() {
-            _isLoading = false;
-          });
-          final siteId = response['siteId'] as String;
-          final adminMembers = (response['adminMembers'] as List<dynamic>).map((
-            member,
-          ) {
-            return member as Map<String, dynamic>;
-          }).toList();
+    try {
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final storagePath = 'imports/$uid/${timestamp}_$_fileName';
+      final storageRef = FirebaseStorage.instance.ref().child(storagePath);
 
-          if (!mounted) return;
-          context.push(
-            SelectAdminRoute.fullPath(siteId: siteId),
-            extra: adminMembers,
-          );
-        })
-        .catchError((error) {
-          setState(() {
-            _isLoading = false;
-          });
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error importing site: $error')),
-          );
+      // Use putBlob for web (better for large files), putData for other platforms
+      late UploadTask uploadTask;
+
+      if (kIsWeb) {
+        // For web, use putBlob which handles large files better
+        // Note: _selectedFile.bytes is still needed to get the blob reference
+        // but putBlob handles it more efficiently than putData
+        uploadTask = storageRef.putBlob(_selectedFile!.bytes);
+      } else {
+        // For non-web platforms, use putData
+        uploadTask = storageRef.putData(_selectedFile!.bytes!);
+      }
+
+      // Listen to upload progress
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
+        setState(() {
+          _uploadProgress = progress;
         });
+      });
+
+      // Wait for upload to complete
+      await uploadTask;
+
+      if (!mounted) return;
+
+      setState(() {
+        _isUploading = false;
+        _isProcessing = true;
+      });
+
+      // Call cloud function to process the import
+      final response = await context.read<CloudFunctionsBloc>().importSite(
+        storagePath: storagePath,
+      );
+
+      setState(() {
+        _isProcessing = false;
+      });
+
+      final siteId = response['siteId'] as String;
+      final adminMembers = (response['adminMembers'] as List<dynamic>).map((
+        member,
+      ) {
+        return member as Map<String, dynamic>;
+      }).toList();
+
+      if (!mounted) return;
+      context.push(
+        SelectAdminRoute.fullPath(siteId: siteId),
+        extra: adminMembers,
+      );
+    } catch (error) {
+      setState(() {
+        _isUploading = false;
+        _isProcessing = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error importing site: $error'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = _isUploading || _isProcessing;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(HyttaHubLocalizations.of(context)!.importSiteTitle),
@@ -106,21 +160,55 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
         child: Column(
           children: [
             HyttaHubButton(
-              onPressed: _pickFile,
+              onPressed: isLoading ? null : _pickFile,
               child: Text(HyttaHubLocalizations.of(context)!.selectFileButton),
             ),
-            if (_fileName != null)
+            if (_fileName != null) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text('Selected file: $_fileName'),
+                child: Column(
+                  children: [
+                    Text('Selected file: $_fileName'),
+                    if (_fileSizeInMB != null)
+                      Text(
+                        'Size: ${_fileSizeInMB}MB',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
               ),
-            if (_zipFileBytes != null)
-              HyttaHubButton(
-                onPressed: _isLoading ? null : _importSite,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(HyttaHubLocalizations.of(context)!.importButton),
-              ),
+              if (_isUploading) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    children: [
+                      LinearProgressIndicator(value: _uploadProgress),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Uploading: ${(_uploadProgress * 100).toStringAsFixed(0)}%',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              if (_isProcessing)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 8),
+                      Text('Processing import...'),
+                    ],
+                  ),
+                ),
+              if (!isLoading)
+                HyttaHubButton(
+                  onPressed: _importSite,
+                  child: Text(HyttaHubLocalizations.of(context)!.importButton),
+                ),
+            ],
           ],
         ),
       ),
