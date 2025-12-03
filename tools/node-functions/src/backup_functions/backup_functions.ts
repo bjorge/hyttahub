@@ -13,7 +13,6 @@ import {
   firebaseExportsPath,
   firebaseSiteEventsPath,
   firebaseSiteUsersPath,
-  firebaseSitesPath,
   isRunningInEmulator,
   fbUserId,
   fbVersion,
@@ -24,7 +23,6 @@ import {
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
-import { onSchedule } from "firebase-functions/v2/scheduler";
 
 // Helper to stream and process tar entries without loading the entire archive into memory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
@@ -215,7 +213,6 @@ export const backupSite = onDocumentWritten(
 
     const appName = event.params.appPathSegment;
     const siteId = event.params.siteId;
-    const processArchive = false;
 
 
     const docData = after.data() || {};
@@ -367,7 +364,7 @@ export const backupSite = onDocumentWritten(
 
       logger.info(`Found ${currentFileNames.size} files in storage for site ${siteId}`);
 
-      if (archiveExists && currentFileNames.size > 0 && processArchive) {
+      if (archiveExists && currentFileNames.size > 0) {
         logger.info(`Using incremental archive at ${archivePath}`);
 
         try {
@@ -953,194 +950,4 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
   await writeBatch.commit();
 
   return { success: true };
-});
-
-/**
- * Scheduled function that runs daily to rebuild TAR archives,
- * removing files that have been deleted from storage.
- * This keeps the archives lean and accurate by streaming the process.
- */
-export const cleanupArchives = onSchedule({
-  schedule: "0 2 * * *", // Run at 2 AM every day
-  timeZone: "UTC",
-  memory: "2GiB",
-  timeoutSeconds: 540,
-}, async (event) => {
-  logger.info("cleanupArchives: Starting daily archive cleanup");
-
-  const bucket = admin.storage().bucket();
-  const db = admin.firestore();
-
-  // Dynamically discover all app path segments under the top-level `hyttahub` collection
-  const hyttahubRoot = db.collection('hyttahub');
-  const appDocs = await hyttahubRoot.listDocuments();
-
-  if (appDocs.length === 0) {
-    logger.info('cleanupArchives: No app documents found under hyttahub.');
-    return;
-  }
-
-  for (const appDoc of appDocs) {
-    const appName = appDoc.id;
-    logger.info(`cleanupArchives: Processing app: ${appName}`);
-    try {
-      // Get all sites for this app
-      const sitesCollection = db.collection(firebaseSitesPath(appName));
-      const sitesSnapshot = await sitesCollection.listDocuments();
-
-      logger.info(`cleanupArchives: Found ${sitesSnapshot.length} sites for app ${appName}`);
-
-      for (const siteDoc of sitesSnapshot) {
-        const siteId = siteDoc.id;
-
-        // Define the paths for the final archive (A) and temporary archive (B)
-        const archivePath = firebaseArchivePath(appName, siteId);
-        const archiveFile = bucket.file(archivePath);
-        const tempArchivePath = `${archivePath}.tmp.cleanup.${Date.now()}`;
-        const tempArchiveFile = bucket.file(tempArchivePath);
-
-        try {
-          // Check for archive existence
-          const [archiveExists] = await archiveFile.exists();
-
-          if (!archiveExists) {
-            logger.info(`cleanupArchives: No archive for site ${siteId}, skipping`);
-            continue;
-          }
-
-          // Get current files from storage (source of truth) and their metadata
-          const photoPrefix = firebaseFilesPath(appName, siteId, "");
-          // getFiles returns File objects which contain the size property in metadata
-          const [files] = await bucket.getFiles({ prefix: photoPrefix });
-
-          if (files.length === 0) {
-            logger.info(`cleanupArchives: No files in storage for site ${siteId}, deleting archive`);
-            await archiveFile.delete();
-            continue;
-          }
-
-          // --- COST OPTIMIZATION CHECK START ---
-
-          // 1. Calculate the expected size of the rebuilt archive (sum of all valid file sizes)
-          const totalValidFileSize = files.reduce((sum, file) => {
-            // FIX: Template literal ensures the argument to parseInt is always a string.
-            const fileSize = parseInt(`${file.metadata?.size ?? 0}`, 10);
-            // We add a conservative overhead of 1024 bytes (1KB) per file for TAR headers
-            return sum + fileSize + 1024;
-          }, 0);
-
-          // 2. Get the existing archive size (Class B operation)
-          const [metadata] = await archiveFile.getMetadata();
-          const existingArchiveSize = parseInt(`${metadata?.size ?? 0}`, 10);
-
-          // Define the allowed tolerance (e.g., 20% difference)
-          const rebuildToleranceFactor = 1.20; // Rebuild only if current size is > 120% of expected size
-
-          if (existingArchiveSize < totalValidFileSize * rebuildToleranceFactor) {
-            logger.info(`cleanupArchives: Archive for site ${siteId} is efficient enough (Current: ${existingArchiveSize} bytes, Expected: ${totalValidFileSize} bytes). Skipping rebuild.`);
-            continue;
-          }
-
-          logger.warn(`cleanupArchives: Archive for site ${siteId} is inefficient (Current: ${existingArchiveSize} bytes, Expected: ${totalValidFileSize} bytes). STARTING REBUILD.`);
-
-          // --- COST OPTIMIZATION CHECK END ---
-
-          // Create a Set of valid file names (source of truth)
-          const currentFileNames = new Set(
-            files.map(f => f.name.split('/').pop()).filter((name): name is string => !!name)
-          );
-
-          // --- START STREAMING REBUILD PROCESS (A to B) ---
-
-          const existingArchiveStream = archiveFile.createReadStream();
-          const writeStreamB = tempArchiveFile.createWriteStream({
-            contentType: "application/x-tar",
-          });
-
-          const extract = tar.extract();
-          const pack = tar.pack();
-
-          let filesInArchive = 0;
-          let filesRemoved = 0;
-          let streamFailed = false;
-
-          // Logic to keep valid entries and discard deleted ones
-          extract.on("entry", (header: tar.Headers, stream: Readable, next: () => void) => {
-            const fileName = header.name.replace(/^storage\//, '');
-
-            if (currentFileNames.has(fileName)) {
-              // Keep: Pipe the entry data to the new packer stream
-              filesInArchive++;
-
-              // FIX for TS2345: Explicitly clone and map problematic numeric fields (uid/gid) 
-              // to strings to ensure compatibility with strict TypeScript definition of pack.entry().
-              const packHeader = {
-                ...header,
-                uid: header.uid ? String(header.uid) : undefined,
-                gid: header.gid ? String(header.gid) : undefined,
-              } as tar.Headers; // Cast back to Headers, accepting the minor type coercion.
-
-              stream.pipe(pack.entry(packHeader, (err) => {
-                if (err) logger.error(`Error adding entry to pack: ${err}`);
-                next();
-              }));
-            } else {
-              // Discard: Drain the stream to move to the next entry
-              filesRemoved++;
-              logger.info(`cleanupArchives: Removing deleted file from archive: ${fileName}`);
-              stream.resume(); // Drain the stream to consume data
-              stream.on('end', () => next());
-            }
-          });
-
-          extract.on("error", (err: Error) => {
-            // If archive corrupted during extraction, flag failure
-            logger.error(`cleanupArchives: Archive extraction failed: ${err.message}`);
-            streamFailed = true;
-          });
-
-          // Pipeline connection
-          existingArchiveStream.pipe(extract); // GCS (A) -> Extractor
-          pack.pipe(writeStreamB);            // Packer -> GCS (B)
-
-          // Wait for the entire stream to finish processing
-          await new Promise<void>((resolve, reject) => {
-            existingArchiveStream.on("error", reject); // Catch GCS read errors
-            writeStreamB.on("error", reject);          // Catch GCS write errors
-            extract.on("error", reject);
-
-            // Once extraction is complete, finalize the pack (no more entries will be added)
-            extract.on("finish", () => {
-              pack.finalize();
-            });
-            writeStreamB.on("finish", resolve); // Resolve when the final write to B is done
-          });
-
-          if (streamFailed) {
-            // If extraction failed, we cannot trust the new file, so we skip the move.
-            throw new Error("Archive rebuild failed due to stream corruption or error.");
-          }
-
-          // --- END STREAMING REBUILD PROCESS ---
-
-          // --- ATOMIC REPLACEMENT (B to A) ---
-          logger.info(`cleanupArchives: Moving rebuilt archive (B) to final path (A): ${archivePath}`);
-          await tempArchiveFile.move(archiveFile);
-
-          logger.info(`cleanupArchives: Rebuilt archive for site ${siteId}: kept ${filesInArchive} files, removed ${filesRemoved} files`);
-
-        } catch (siteError) {
-          logger.error(`cleanupArchives: Error processing site ${siteId}. Deleting temporary file if exists:`, siteError);
-          // Clean up temporary file on failure
-          await tempArchiveFile.delete({ ignoreNotFound: true }).catch(e => logger.warn(`Failed to cleanup temp file: ${e.message}`));
-          // Continue with next site
-        }
-      }
-    } catch (appError) {
-      logger.error(`cleanupArchives: Error processing app ${appName}:`, appError);
-      // Continue with next app
-    }
-  }
-
-  logger.info("cleanupArchives: Daily archive cleanup completed");
 });

@@ -16,7 +16,6 @@ export {
   deleteExport,
   exportDetails,
   backupSite,
-  cleanupArchives,
 } from "./backup_functions/backup_functions";
 
 export {
