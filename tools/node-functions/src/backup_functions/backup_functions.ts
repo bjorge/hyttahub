@@ -137,6 +137,7 @@ export const backupSite = onDocumentWritten(
 
     const appName = event.params.appPathSegment;
     const siteId = event.params.siteId;
+    const processArchive = false;
 
 
     const docData = after.data() || {};
@@ -288,7 +289,7 @@ export const backupSite = onDocumentWritten(
 
       logger.info(`Found ${currentFileNames.size} files in storage for site ${siteId}`);
 
-      if (archiveExists && currentFileNames.size > 0) {
+      if (archiveExists && currentFileNames.size > 0 && processArchive) {
         logger.info(`Using incremental archive at ${archivePath}`);
 
         try {
@@ -368,6 +369,7 @@ export const backupSite = onDocumentWritten(
           if (fileName) {
             // Put photos inside a storage/ folder in the zip so imports map them
             // to storage paths and events.txt remains at the archive root.
+            logger.info(`Adding file to archive: ${fileName}`);
             const metadata = file.metadata;
             const size = parseInt(String(metadata.size || 0), 10);
             await new Promise<void>((resolve, reject) => {
