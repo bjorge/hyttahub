@@ -1,8 +1,6 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { admin } from "../shared/firebase";
-import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
-import * as unzipper from "unzipper";
 import * as tar from "tar-stream";
 import { pipeline } from "stream/promises";
 import { Readable } from "stream";
@@ -32,44 +30,72 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 // Helper to extract events.txt and photo buffers from an opened unzipper directory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
 // unexpected file that is neither `events.txt` at the root nor under `storage/`.
-async function extractEventsAndFilesFromZip(directory: any): Promise<{
+async function extractEventsAndFilesFromTar(buffer: Buffer): Promise<{
   eventsContent: string;
   photos: Array<{ relativePath: string; buffer: Buffer }>;
 }> {
+  const extract = tar.extract();
   let eventsContent = "";
   const photos: Array<{ relativePath: string; buffer: Buffer }> = [];
-
-  const storagePrefix = "storage/";
   const rejectedFiles: string[] = [];
+  const storagePrefix = "storage/";
 
-  for (const file of directory.files) {
-    if (file.path === "events.txt") {
-      eventsContent = await file.buffer().then((buffer: Buffer) => buffer.toString());
-      continue;
-    }
+  return new Promise((resolve, reject) => {
+    extract.on("entry", (header, stream, next) => {
+      const chunks: Buffer[] = [];
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => {
+        const content = Buffer.concat(chunks);
 
-    if (file.path.startsWith(storagePrefix)) {
-      const relativePath = file.path.substring(storagePrefix.length);
-      const buffer = await file.buffer();
-      photos.push({ relativePath, buffer });
-      continue;
-    }
+        if (header.name === "events.txt") {
+          eventsContent = content.toString();
+        } else if (header.name.startsWith(storagePrefix)) {
+          if (header.type === "file") {
+            const relativePath = header.name.substring(storagePrefix.length);
+            if (relativePath) {
+              photos.push({ relativePath, buffer: content });
+            }
+          }
+        } else {
+          if (header.type === "file") {
+            rejectedFiles.push(header.name);
+          }
+        }
+        next();
+      });
+      stream.resume();
+    });
 
-    // Collect any unexpected files for logging and then reject.
-    rejectedFiles.push(file.path);
-  }
+    extract.on("finish", () => {
+      if (rejectedFiles.length > 0) {
+        logger.error(
+          "Import rejected due to unexpected files in archive:",
+          JSON.stringify(rejectedFiles, null, 2)
+        );
+        reject(
+          new HttpsError(
+            "invalid-argument",
+            `Unexpected files in archive: ${rejectedFiles.join(", ")}`
+          )
+        );
+        return;
+      }
 
-  if (rejectedFiles.length > 0) {
-    logger.error('Import rejected due to unexpected files in archive:', JSON.stringify(rejectedFiles, null, 2));
-    throw new HttpsError("invalid-argument", `Unexpected files in archive: ${rejectedFiles.join(', ')}`);
-  }
+      if (!eventsContent) {
+        logger.error("Import rejected: events.txt missing from archive");
+        reject(
+          new HttpsError("invalid-argument", "Archive is missing events.txt")
+        );
+        return;
+      }
 
-  if (!eventsContent) {
-    logger.error('Import rejected: events.txt missing from archive');
-    throw new HttpsError('invalid-argument', 'Archive is missing events.txt');
-  }
+      resolve({ eventsContent, photos });
+    });
 
-  return { eventsContent, photos };
+    extract.on("error", (err) => reject(err));
+
+    extract.end(buffer);
+  });
 }
 
 function generateId(): string {
@@ -234,35 +260,20 @@ export const backupSite = onDocumentWritten(
       const lastBase64Record = Buffer.from(lastEncodedRecord).toString("base64");
       events += "\n" + lastBase64Record;
 
-      const archive = archiver("zip", {
-        zlib: { level: 9 }, // Sets the compression level.
-      });
-
-      archive.on("warning", (err) => {
-        if (err.code === "ENOENT") {
-          logger.warn("Archiver warning:", err);
-        } else {
-          throw err;
-        }
-      });
-
-      archive.on("error", (err) => {
-        throw err;
-      });
+      const pack = tar.pack();
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const zipFileName = `export-${siteId}-${timestamp}.zip`;
-      const exportFilePath = firebaseExportsPath(appName, siteId, zipFileName);
+      const tarFileName = `export-${siteId}-${timestamp}.tar`;
+      const exportFilePath = firebaseExportsPath(appName, siteId, tarFileName);
       const exportFile = bucket.file(exportFilePath);
       const stream = exportFile.createWriteStream({
-        gzip: true,
-        contentType: "application/zip",
+        contentType: "application/x-tar",
       });
 
-      archive.pipe(stream);
+      pack.pipe(stream);
 
       if (events.length > 0) {
-        archive.append(events, { name: "events.txt" });
+        pack.entry({ name: "events.txt" }, events);
       }
 
       // Try to use the incremental TAR archive for faster backup
@@ -292,12 +303,15 @@ export const backupSite = onDocumentWritten(
             // Only include files that still exist in storage
             if (currentFileNames.has(fileName)) {
               filesFromArchive.add(fileName);
-              archive.append(stream, { name: `storage/${fileName}` });
-              stream.on('end', () => next());
+              // Pipe the entry from the existing archive to the new pack
+              stream.pipe(pack.entry(header, (err) => {
+                if (err) logger.error(`Error adding entry to pack: ${err}`);
+                next();
+              }));
             } else {
               logger.info(`Skipping deleted file from archive: ${fileName}`);
               stream.resume(); // Drain the stream
-              stream.on('end', () => next());
+              next();
             }
           });
 
@@ -316,7 +330,15 @@ export const backupSite = onDocumentWritten(
             for (const fileName of missingFiles) {
               const file = files.find(f => f.name.endsWith(`/${fileName}`));
               if (file) {
-                archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+                const metadata = file.metadata;
+                const size = parseInt(String(metadata.size || 0), 10);
+                await new Promise<void>((resolve, reject) => {
+                  const entry = pack.entry({ name: `storage/${fileName}`, size }, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                  file.createReadStream().pipe(entry);
+                });
               }
             }
           }
@@ -326,7 +348,15 @@ export const backupSite = onDocumentWritten(
           for (const file of files) {
             const fileName = file.name.split("/").pop();
             if (fileName) {
-              archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+              const metadata = file.metadata;
+              const size = parseInt(String(metadata.size || 0), 10);
+              await new Promise<void>((resolve, reject) => {
+                const entry = pack.entry({ name: `storage/${fileName}`, size }, (err) => {
+                  if (err) reject(err);
+                  else resolve();
+                });
+                file.createReadStream().pipe(entry);
+              });
             }
           }
         }
@@ -338,7 +368,15 @@ export const backupSite = onDocumentWritten(
           if (fileName) {
             // Put photos inside a storage/ folder in the zip so imports map them
             // to storage paths and events.txt remains at the archive root.
-            archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+            const metadata = file.metadata;
+            const size = parseInt(String(metadata.size || 0), 10);
+            await new Promise<void>((resolve, reject) => {
+              const entry = pack.entry({ name: `storage/${fileName}`, size }, (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+              file.createReadStream().pipe(entry);
+            });
           }
         }
       }
@@ -347,13 +385,13 @@ export const backupSite = onDocumentWritten(
         `Finalize site export for site ${siteId} at ${exportFilePath}`
       );
 
-      await archive.finalize();
+      pack.finalize();
 
       // Wait for the GCS write stream to finish before returning.
       await new Promise<void>((resolve, reject) => {
         stream.on('finish', () => resolve());
         stream.on('error', (err) => reject(err));
-        archive.on('error', (err) => reject(err));
+        pack.on('error', (err) => reject(err));
       });
 
       logger.info(
@@ -517,18 +555,34 @@ export const exportDetails = onCall({ cors: true }, async (request) => {
   const file = bucket.file(filePath);
 
   return new Promise((resolve, reject) => {
-    const stream = file.createReadStream();
-    stream.pipe(unzipper.Parse())
-      .on("entry", (entry) => {
-        if (entry.path === "events.txt") {
-          entry.buffer().then((buffer: { toString: () => any; }) => {
-            resolve({ events: buffer.toString() });
-          }).catch(reject);
-        } else {
-          entry.autodrain();
-        }
-      })
-      .on("error", reject);
+    const extract = tar.extract();
+    let eventsContent = "";
+
+    extract.on("entry", (header, stream, next) => {
+      if (header.name === "events.txt") {
+        const chunks: Buffer[] = [];
+        stream.on("data", (chunk) => chunks.push(chunk));
+        stream.on("end", () => {
+          eventsContent = Buffer.concat(chunks).toString();
+          next();
+        });
+      } else {
+        stream.resume();
+        next();
+      }
+    });
+
+    extract.on("finish", () => {
+      if (eventsContent) {
+        resolve({ events: eventsContent });
+      } else {
+        reject(new HttpsError("not-found", "events.txt not found in export"));
+      }
+    });
+
+    extract.on("error", reject);
+
+    file.createReadStream().pipe(extract);
   });
 });
 
@@ -550,28 +604,26 @@ export const importSite = onCall({
   const newSiteId = generateId();
   const bucket = admin.storage().bucket();
 
-  let zipBuffer: Buffer;
+  let tarBuffer: Buffer;
   let fileToDelete: any = null;
 
   try {
     if (storagePath) {
-      logger.info(`Reading zip from storage path: ${storagePath}`);
+      logger.info(`Reading tar from storage path: ${storagePath}`);
       const file = bucket.file(storagePath);
       const [buffer] = await file.download();
-      zipBuffer = buffer;
+      tarBuffer = buffer;
       fileToDelete = file;
     } else if (base64Data) {
-      logger.info("Reading zip from base64 data");
-      zipBuffer = Buffer.from(base64Data, "base64");
+      logger.info("Reading tar from base64 data");
+      tarBuffer = Buffer.from(base64Data, "base64");
     } else {
       throw new HttpsError("invalid-argument", "Either base64Data or storagePath must be provided");
     }
 
-    const directory = await unzipper.Open.buffer(zipBuffer);
-
-    // Extract events and photos from the zip. This will throw an HttpsError
+    // Extract events and photos from the tar. This will throw an HttpsError
     // with code 'invalid-argument' if the archive contains unexpected files.
-    const { eventsContent, photos } = await extractEventsAndFilesFromZip(directory);
+    const { eventsContent, photos } = await extractEventsAndFilesFromTar(tarBuffer);
 
     // Make sure the last event is an export event for the expected app.
     const eventLines = eventsContent.split("\n").filter((line) => line);

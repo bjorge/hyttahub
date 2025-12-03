@@ -25,7 +25,7 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['zip'],
+      allowedExtensions: ['tar'],
     );
 
     if (result != null) {
