@@ -24,6 +24,7 @@ import {
   fbTimeStamp,
   firebaseExportsPath,
   firebaseFilesPath,
+  firebaseArchivePath,
 } from "../shared/constants";
 
 export const executetask = onRequest({}, async (req, res) => {
@@ -343,6 +344,16 @@ async function cleanUp() {
           await bucket.deleteFiles({ prefix });
           logger.info(`cleanUp: Exports for site ${siteId} deleted.`);
         }
+        for (const siteId of orphanedSiteIds) {
+          // Prefix also works for files
+          const prefix = firebaseArchivePath(appPathSegment, siteId);
+          logger.info(
+            `cleanUp: Deleting archive for site ${siteId} with prefix: ${prefix}`
+          );
+          await bucket.deleteFiles({ prefix });
+          logger.info(`cleanUp: Archive for site ${siteId} deleted.`);
+        }
+
       }
     } catch (error) {
       logger.error("cleanUp: Error executing cleanup:", error);
