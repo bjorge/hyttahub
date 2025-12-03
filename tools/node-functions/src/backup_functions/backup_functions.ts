@@ -231,7 +231,7 @@ export const backupSite = onDocumentWritten(
             siteEvent: siteEvent,
           };
 
-          logger.info("Event record to export:", SiteEventRecord.toJSON(record));
+          // logger.info("Event record to export:", SiteEventRecord.toJSON(record));
 
           lastEventVersion = Math.max(lastEventVersion, version || 0);
 
@@ -527,18 +527,19 @@ export const exportDetails = onCall({ cors: true }, async (request) => {
   const siteId = request.data.siteId;
   const appName = request.data.appName;
   const fileName = request.data.fileName;
+
   const email =
     typeof request.auth?.token?.email === "string"
       ? request.auth.token.email
       : undefined;
-  if (!email) {
-    throw new HttpsError(
-      "unauthenticated",
-      "User email is required and must be a string"
-    );
-  }
-  logger.info("exportDetails function called, siteId:", siteId, "email:", email, "appName:", appName, "fileName:", fileName);
 
+  if (!email) {
+    throw new HttpsError("unauthenticated", "User email is required");
+  }
+
+  logger.info("exportDetails", { siteId, email, appName, fileName });
+
+  // --- Permissions ---
   const emailRef = admin
     .firestore()
     .collection(firebaseSiteUsersPath(appName, siteId))
@@ -546,47 +547,70 @@ export const exportDetails = onCall({ cors: true }, async (request) => {
 
   const emailDoc = await emailRef.get();
   if (!emailDoc.exists) {
-    throw new HttpsError(
-      "permission-denied",
-      "User is not a member of this site"
-    );
+    throw new HttpsError("permission-denied", "User is not a member of this site");
   }
 
+  // --- Storage ---
   const bucket = admin.storage().bucket();
   const filePath = firebaseExportsPath(appName, siteId, fileName);
   const file = bucket.file(filePath);
 
-  return new Promise((resolve, reject) => {
+  // --- Extract only events.txt with early stop ---
+  return new Promise<{ events: string }>((resolve, reject) => {
     const extract = tar.extract();
+    const readStream = file.createReadStream();
+
     let eventsContent = "";
+    let extractionFinished = false;
 
     extract.on("entry", (header, stream, next) => {
-      if (header.name === "events.txt") {
-        const chunks: Buffer[] = [];
-        stream.on("data", (chunk) => chunks.push(chunk));
-        stream.on("end", () => {
-          eventsContent = Buffer.concat(chunks).toString();
+      try {
+        const entryName = header.name;
+
+        if (entryName === "events.txt") {
+          const chunks: Buffer[] = [];
+
+          stream.on("data", (chunk) => chunks.push(chunk));
+          stream.on("end", () => {
+            eventsContent = Buffer.concat(chunks).toString();
+
+            // --- EARLY STOP ---
+            extractionFinished = true;
+            extract.destroy();     // Stop tar parsing
+            readStream.destroy();  // Stop downloading rest of file
+
+            resolve({ events: eventsContent });
+          });
+
+        } else {
+          // Skip all other files
+          stream.resume();
           next();
-        });
-      } else {
-        stream.resume();
-        next();
+        }
+
+      } catch (err) {
+        reject(err);
       }
     });
 
     extract.on("finish", () => {
-      if (eventsContent) {
-        resolve({ events: eventsContent });
-      } else {
-        reject(new HttpsError("not-found", "events.txt not found in export"));
+      if (!extractionFinished) {
+        reject(new HttpsError("not-found", "events.txt not found in archive"));
       }
     });
 
-    extract.on("error", reject);
+    extract.on("error", (err) => {
+      if (!extractionFinished) reject(err);
+    });
 
-    file.createReadStream().pipe(extract);
+    readStream.on("error", (err) => {
+      if (!extractionFinished) reject(err);
+    });
+
+    readStream.pipe(extract);
   });
 });
+
 
 export const importSite = onCall({
   cors: true,
