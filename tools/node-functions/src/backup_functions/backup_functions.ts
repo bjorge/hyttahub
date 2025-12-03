@@ -477,6 +477,19 @@ export const backupSite = onDocumentWritten(
       logger.info(
         `Successfully created site export for site ${siteId} at ${exportFilePath}`
       );
+
+      // Copy the export to the archive path to keep it as the latest backup
+      try {
+        const archivePath = firebaseArchivePath(appName, siteId);
+        const archiveFile = bucket.file(archivePath);
+
+        logger.info(`Copying export to archive path: ${archivePath}`);
+        await exportFile.copy(archiveFile);
+        logger.info(`Successfully saved backup as latest archive at ${archivePath}`);
+      } catch (archiveError) {
+        logger.error(`Failed to copy export to archive path:`, archiveError);
+        // Don't fail the export if archive copy fails
+      }
     })();
 
     return exportPromise;
