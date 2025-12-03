@@ -71,6 +71,17 @@ export const firebaseExportsPath = (
   }
 };
 
+export const firebaseArchivePath = (
+  appPathSegment: string,
+  siteId: string
+): string => {
+  if (isRunningInEmulator()) {
+    return `emulator/${appPathSegment}/archives/${siteId}/archive.tar`;
+  } else {
+    return `hyttahub/${appPathSegment}/archives/${siteId}/archive.tar`;
+  }
+};
+
 // Document keys
 export const fbUserId = "u";
 export const fbTimeStamp = "t";

@@ -3,6 +3,9 @@ import { admin } from "../shared/firebase";
 import archiver from "archiver";
 import * as logger from "firebase-functions/logger";
 import * as unzipper from "unzipper";
+import * as tar from "tar-stream";
+import { pipeline } from "stream/promises";
+import { Readable } from "stream";
 import { SiteEvent, SiteEvent_ImportEvent, SiteEventRecord } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
 
@@ -13,15 +16,18 @@ import {
   firebaseExportsPath,
   firebaseSiteEventsPath,
   firebaseSiteUsersPath,
+  firebaseSitesPath,
   isRunningInEmulator,
   fbUserId,
   fbVersion,
   firebaseFilesPath,
+  firebaseArchivePath,
   fbAppId,
 } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 
 // Helper to extract events.txt and photo buffers from an opened unzipper directory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
@@ -259,12 +265,81 @@ export const backupSite = onDocumentWritten(
         archive.append(events, { name: "events.txt" });
       }
 
-      for (const file of files) {
-        const fileName = file.name.split("/").pop();
-        if (fileName) {
-          // Put photos inside a storage/ folder in the zip so imports map them
-          // to storage paths and events.txt remains at the archive root.
-          archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+      // Try to use the incremental TAR archive for faster backup
+      const archivePath = firebaseArchivePath(appName, siteId);
+      const archiveFile = bucket.file(archivePath);
+      const [archiveExists] = await archiveFile.exists();
+
+      // Get list of current files from storage (source of truth)
+      const currentFileNames = new Set(
+        files.map(f => f.name.split('/').pop()).filter((name): name is string => !!name)
+      );
+
+      logger.info(`Found ${currentFileNames.size} files in storage for site ${siteId}`);
+
+      if (archiveExists && currentFileNames.size > 0) {
+        logger.info(`Using incremental archive at ${archivePath}`);
+
+        try {
+          // Download and extract files from TAR archive
+          const [archiveData] = await archiveFile.download();
+          const extract = tar.extract();
+          const filesFromArchive = new Set<string>();
+
+          extract.on("entry", (header: tar.Headers, stream: Readable, next: () => void) => {
+            const fileName = header.name.replace(/^storage\//, '');
+
+            // Only include files that still exist in storage
+            if (currentFileNames.has(fileName)) {
+              filesFromArchive.add(fileName);
+              archive.append(stream, { name: `storage/${fileName}` });
+              stream.on('end', () => next());
+            } else {
+              logger.info(`Skipping deleted file from archive: ${fileName}`);
+              stream.resume(); // Drain the stream
+              stream.on('end', () => next());
+            }
+          });
+
+          await new Promise<void>((resolve, reject) => {
+            extract.on("finish", resolve);
+            extract.on("error", reject);
+            extract.end(archiveData);
+          });
+
+          logger.info(`Extracted ${filesFromArchive.size} files from archive`);
+
+          // Add any files that are in storage but not in archive (fallback)
+          const missingFiles = Array.from(currentFileNames).filter(name => !filesFromArchive.has(name));
+          if (missingFiles.length > 0) {
+            logger.info(`Adding ${missingFiles.length} files from storage (not in archive)`);
+            for (const fileName of missingFiles) {
+              const file = files.find(f => f.name.endsWith(`/${fileName}`));
+              if (file) {
+                archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+              }
+            }
+          }
+        } catch (error) {
+          logger.error(`Error reading archive, falling back to storage: ${error}`);
+          // Fall back to reading all files from storage
+          for (const file of files) {
+            const fileName = file.name.split("/").pop();
+            if (fileName) {
+              archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+            }
+          }
+        }
+      } else {
+        // No archive exists, read all files from storage
+        logger.info(`No archive found, reading ${files.length} files from storage`);
+        for (const file of files) {
+          const fileName = file.name.split("/").pop();
+          if (fileName) {
+            // Put photos inside a storage/ folder in the zip so imports map them
+            // to storage paths and events.txt remains at the archive root.
+            archive.append(file.createReadStream(), { name: `storage/${fileName}` });
+          }
         }
       }
 
@@ -711,4 +786,123 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
   await writeBatch.commit();
 
   return { success: true };
+});
+
+/**
+ * Scheduled function that runs daily to rebuild TAR archives,
+ * removing files that have been deleted from storage.
+ * This keeps the archives lean and accurate.
+ */
+export const cleanupArchives = onSchedule({
+  schedule: "0 2 * * *", // Run at 2 AM every day
+  timeZone: "UTC",
+  memory: "2GiB",
+  timeoutSeconds: 540,
+}, async (event) => {
+  logger.info("cleanupArchives: Starting daily archive cleanup");
+
+  const bucket = admin.storage().bucket();
+  const db = admin.firestore();
+
+  // Dynamically discover all app path segments under the top-level `hyttahub` collection
+  const hyttahubRoot = db.collection('hyttahub');
+  const appDocs = await hyttahubRoot.listDocuments();
+
+  if (appDocs.length === 0) {
+    logger.info('cleanupArchives: No app documents found under hyttahub.');
+    return;
+  }
+
+  for (const appDoc of appDocs) {
+    const appName = appDoc.id;
+    logger.info(`cleanupArchives: Processing app: ${appName}`);
+    try {
+      // Get all sites for this app
+      const sitesCollection = db.collection(firebaseSitesPath(appName));
+      const sitesSnapshot = await sitesCollection.listDocuments();
+
+      logger.info(`cleanupArchives: Found ${sitesSnapshot.length} sites for app ${appName}`);
+
+      for (const siteDoc of sitesSnapshot) {
+        const siteId = siteDoc.id;
+
+        try {
+          const archivePath = firebaseArchivePath(appName, siteId);
+          const archiveFile = bucket.file(archivePath);
+          const [archiveExists] = await archiveFile.exists();
+
+          if (!archiveExists) {
+            logger.info(`cleanupArchives: No archive for site ${siteId}, skipping`);
+            continue;
+          }
+
+          // Get current files from storage (source of truth)
+          const photoPrefix = firebaseFilesPath(appName, siteId, "");
+          const [files] = await bucket.getFiles({ prefix: photoPrefix });
+
+          if (files.length === 0) {
+            logger.info(`cleanupArchives: No files in storage for site ${siteId}, deleting archive`);
+            await archiveFile.delete();
+            continue;
+          }
+
+          const currentFileNames = new Set(
+            files.map(f => f.name.split('/').pop()).filter((name): name is string => !!name)
+          );
+
+          logger.info(`cleanupArchives: Rebuilding archive for site ${siteId} with ${currentFileNames.size} files`);
+
+          // Download existing archive
+          const [archiveData] = await archiveFile.download();
+          const extract = tar.extract();
+          const pack = tar.pack();
+
+          let filesInArchive = 0;
+          let filesRemoved = 0;
+
+          extract.on("entry", (header: tar.Headers, stream: Readable, next: () => void) => {
+            const fileName = header.name.replace(/^storage\//, '');
+
+            // Only keep files that still exist in storage
+            if (currentFileNames.has(fileName)) {
+              filesInArchive++;
+              stream.pipe(pack.entry(header, (err) => {
+                if (err) logger.error(`Error adding entry to pack: ${err}`);
+                next();
+              }));
+            } else {
+              filesRemoved++;
+              logger.info(`cleanupArchives: Removing deleted file from archive: ${fileName}`);
+              stream.resume(); // Drain the stream
+              stream.on('end', () => next());
+            }
+          });
+
+          await new Promise<void>((resolve, reject) => {
+            extract.on("finish", () => {
+              pack.finalize();
+              resolve();
+            });
+            extract.on("error", reject);
+            extract.end(archiveData);
+          });
+
+          // Upload rebuilt archive
+          await pipeline(pack, archiveFile.createWriteStream({
+            contentType: "application/x-tar",
+          }));
+
+          logger.info(`cleanupArchives: Rebuilt archive for site ${siteId}: kept ${filesInArchive} files, removed ${filesRemoved} files`);
+        } catch (siteError) {
+          logger.error(`cleanupArchives: Error processing site ${siteId}:`, siteError);
+          // Continue with next site
+        }
+      }
+    } catch (appError) {
+      logger.error(`cleanupArchives: Error processing app ${appName}:`, appError);
+      // Continue with next app
+    }
+  }
+
+  logger.info("cleanupArchives: Daily archive cleanup completed");
 });
