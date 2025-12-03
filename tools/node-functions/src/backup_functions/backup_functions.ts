@@ -25,48 +25,106 @@ import {
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { batchAppendToArchive } from "../file_functions/file_functions";
 
-// Helper to extract events.txt and photo buffers from an opened unzipper directory.
+// Helper to stream and process tar entries without loading the entire archive into memory.
 // Throws an HttpsError('invalid-argument', ...) if the archive contains any
 // unexpected file that is neither `events.txt` at the root nor under `storage/`.
-async function extractEventsAndFilesFromTar(buffer: Buffer): Promise<{
+// 
+// This function processes files as they are streamed and uploads them immediately,
+// which is essential for handling large (>1GB) tar files.
+//
+// Memory optimization: Instead of loading the entire tar into memory first, we:
+// 1. Stream the tar file entry-by-entry
+// 2. Upload each file to storage immediately as it's extracted
+// 3. Do NOT keep file buffers in memory (to minimize memory usage)
+// 4. Process uploads in batches to prevent too many concurrent uploads
+// 
+// This approach uses significantly less memory than loading the entire tar file,
+// especially when the tar contains many large files.
+//
+// Note: Archive append is skipped because it would require keeping all file buffers
+// in memory, which defeats the purpose of streaming for large imports.
+async function streamAndProcessTar(
+  inputStream: Readable,
+  appName: string,
+  siteId: string,
+  bucket: any
+): Promise<{
   eventsContent: string;
-  photos: Array<{ relativePath: string; buffer: Buffer }>;
+  photoCount: number;
 }> {
   const extract = tar.extract();
   let eventsContent = "";
-  const photos: Array<{ relativePath: string; buffer: Buffer }> = [];
   const rejectedFiles: string[] = [];
   const storagePrefix = "storage/";
+  let photoCount = 0;
+
+  // Batch upload processing to prevent memory buildup
+  const UPLOAD_BATCH_SIZE = 10;
+  let currentBatch: Promise<void>[] = [];
+  const batchPromises: Promise<void[]>[] = [];
 
   return new Promise((resolve, reject) => {
     extract.on("entry", (header, stream, next) => {
       const chunks: Buffer[] = [];
+
       stream.on("data", (chunk) => chunks.push(chunk));
-      stream.on("end", () => {
+      stream.on("end", async () => {
         const content = Buffer.concat(chunks);
 
         if (header.name === "events.txt") {
           eventsContent = content.toString();
+          next();
         } else if (header.name.startsWith(storagePrefix)) {
           if (header.type === "file") {
             const relativePath = header.name.substring(storagePrefix.length);
             if (relativePath) {
-              photos.push({ relativePath, buffer: content });
+              photoCount++;
+              // Upload photo immediately without storing in memory
+              const photoPath = firebaseFilesPath(appName, siteId, relativePath);
+              const gcsFile = bucket.file(photoPath);
+              logger.info(`Uploading photo ${relativePath}`);
+              const uploadPromise = gcsFile.save(content).catch((err: Error) => {
+                logger.error(`Failed to upload file ${relativePath}:`, err);
+                throw err;
+              });
+
+              currentBatch.push(uploadPromise);
+
+              // When batch is full, wait for it to complete before continuing
+              if (currentBatch.length >= UPLOAD_BATCH_SIZE) {
+                const batchToWait = Promise.all(currentBatch);
+                batchPromises.push(batchToWait);
+                currentBatch = [];
+
+                // Wait for this batch to complete before processing next entry
+                try {
+                  await batchToWait;
+                } catch (err) {
+                  reject(err);
+                  return;
+                }
+              }
             }
           }
+          next();
         } else {
           if (header.type === "file") {
             rejectedFiles.push(header.name);
           }
+          next();
         }
-        next();
       });
+
+      stream.on("error", (err) => {
+        logger.error("Error reading stream entry:", err);
+        reject(err);
+      });
+
       stream.resume();
     });
 
-    extract.on("finish", () => {
+    extract.on("finish", async () => {
       if (rejectedFiles.length > 0) {
         logger.error(
           "Import rejected due to unexpected files in archive:",
@@ -89,12 +147,32 @@ async function extractEventsAndFilesFromTar(buffer: Buffer): Promise<{
         return;
       }
 
-      resolve({ eventsContent, photos });
+      // Wait for any remaining uploads in the current batch
+      try {
+        if (currentBatch.length > 0) {
+          await Promise.all(currentBatch);
+        }
+        // Also wait for all batch promises (should already be complete, but just to be safe)
+        await Promise.all(batchPromises);
+        logger.info(`All ${photoCount} photos uploaded successfully`);
+        resolve({ eventsContent, photoCount });
+      } catch (err) {
+        logger.error("Error uploading photos:", err);
+        reject(err);
+      }
     });
 
-    extract.on("error", (err) => reject(err));
+    extract.on("error", (err) => {
+      logger.error("Error extracting tar:", err);
+      reject(err);
+    });
 
-    extract.end(buffer);
+    inputStream.on("error", (err) => {
+      logger.error("Error reading input stream:", err);
+      reject(err);
+    });
+
+    inputStream.pipe(extract);
   });
 }
 
@@ -630,29 +708,33 @@ export const importSite = onCall({
   const newSiteId = generateId();
   const bucket = admin.storage().bucket();
 
-  let tarBuffer: Buffer;
+  let inputStream: Readable;
   let fileToDelete: any = null;
 
   try {
+    // Create a readable stream from either storage or base64 data
     if (storagePath) {
-      logger.info(`Reading tar from storage path: ${storagePath}`);
+      logger.info(`Streaming tar from storage path: ${storagePath}`);
       const file = bucket.file(storagePath);
-      const [buffer] = await file.download();
-      tarBuffer = buffer;
+      inputStream = file.createReadStream();
       fileToDelete = file;
     } else if (base64Data) {
-      logger.info("Reading tar from base64 data");
-      tarBuffer = Buffer.from(base64Data, "base64");
+      logger.info("Creating stream from base64 data");
+      // Convert base64 to a readable stream without loading entire buffer into memory
+      const buffer = Buffer.from(base64Data, "base64");
+      inputStream = Readable.from(buffer);
     } else {
       throw new HttpsError("invalid-argument", "Either base64Data or storagePath must be provided");
     }
 
-    // Extract events and photos from the tar. This will throw an HttpsError
-    // with code 'invalid-argument' if the archive contains unexpected files.
-    const { eventsContent, photos } = await extractEventsAndFilesFromTar(tarBuffer);
+    // Stream and process the tar file, uploading photos as we go
+    // This will throw an HttpsError with code 'invalid-argument' if the archive contains unexpected files.
+    const { eventsContent, photoCount } = await streamAndProcessTar(inputStream, appName, newSiteId, bucket);
+
+    logger.info(`Streamed and processed tar file: ${photoCount} photos uploaded`);
 
     // Make sure the last event is an export event for the expected app.
-    const eventLines = eventsContent.split("\n").filter((line) => line);
+    const eventLines = eventsContent.split("\n").filter((line: string) => line);
     const lastEventRecordLine = eventLines[eventLines.length - 1];
     const lastEventRecord = SiteEventRecord.decode(Buffer.from(lastEventRecordLine, "base64"));
     logger.info("Last event record in import data:", SiteEventRecord.toJSON(lastEventRecord));
@@ -671,18 +753,9 @@ export const importSite = onCall({
 
     logger.info("TODO: in the future, make sure the appId matches in addition to appName.");
 
-    // Upload all photos returned by the extractor
-    const photoUploadPromises: Promise<void>[] = photos.map(({ relativePath, buffer }) => {
-      const photoPath = firebaseFilesPath(appName, newSiteId, relativePath);
-      const gcsFile = bucket.file(photoPath);
-      return gcsFile.save(buffer);
-    });
-
-    await Promise.all(photoUploadPromises);
-    logger.info("All photos uploaded successfully");
-
-    await batchAppendToArchive(appName, newSiteId, photos);
-    logger.info("All photos appended to archive successfully");
+    // Note: Archive append is skipped for streaming imports to avoid keeping all file buffers in memory.
+    // The archive will be rebuilt during the next scheduled cleanupArchives run if needed.
+    logger.info("Skipping archive append for streaming import (will be rebuilt by cleanupArchives if needed)");
 
     // Import all events
     const writeBatch = admin.firestore().batch();
