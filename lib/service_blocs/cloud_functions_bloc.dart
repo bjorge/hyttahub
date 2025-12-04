@@ -20,6 +20,11 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
         'importSite',
+        options: HttpsCallableOptions(
+          timeout: const Duration(
+            seconds: 540,
+          ), // 9 minutes to match server-side timeout
+        ),
       );
       final result = await callable.call(<String, dynamic>{
         if (base64Data != null) 'base64Data': base64Data,

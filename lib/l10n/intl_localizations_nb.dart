@@ -583,7 +583,8 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   }
 
   @override
-  String get processingImport => 'Behandler import...';
+  String get processingImport =>
+      'Behandler import, dette kan ta opptil 10 minutter. Vennligst vent og bli på denne skjermen...';
 
   @override
   String get userMustBeSignedIn =>

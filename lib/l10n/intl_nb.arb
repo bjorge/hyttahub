@@ -242,7 +242,7 @@
       }
     }
   },
-  "processingImport": "Behandler import...",
+  "processingImport": "Behandler import, dette kan ta opptil 10 minutter. Vennligst vent og bli på denne skjermen...",
   "userMustBeSignedIn": "Bruker må være pålogget for å importere sted",
   "errorImportingSite": "Feil ved import av sted: {error}",
   "@errorImportingSite": {

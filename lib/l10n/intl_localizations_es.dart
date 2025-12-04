@@ -595,7 +595,8 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   }
 
   @override
-  String get processingImport => 'Procesando importación...';
+  String get processingImport =>
+      'Procesando importación, esto puede tardar hasta 10 minutos. Por favor espere y permanezca en esta pantalla...';
 
   @override
   String get userMustBeSignedIn =>

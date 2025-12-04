@@ -242,7 +242,7 @@
       }
     }
   },
-  "processingImport": "Elaborazione importazione...",
+  "processingImport": "Elaborazione importazione in corso, può richiedere fino a 10 minuti. Attendere e rimanere su questa schermata...",
   "userMustBeSignedIn": "L'utente deve essere autenticato per importare il sito",
   "errorImportingSite": "Errore durante l'importazione del sito: {error}",
   "@errorImportingSite": {

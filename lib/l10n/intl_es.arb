@@ -242,7 +242,7 @@
       }
     }
   },
-  "processingImport": "Procesando importación...",
+  "processingImport": "Procesando importación, esto puede tardar hasta 10 minutos. Por favor espere y permanezca en esta pantalla...",
   "userMustBeSignedIn": "El usuario debe haber iniciado sesión para importar el sitio",
   "errorImportingSite": "Error al importar sitio: {error}",
   "@errorImportingSite": {

@@ -1164,7 +1164,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @processingImport.
   ///
   /// In en, this message translates to:
-  /// **'Processing import...'**
+  /// **'Processing import, this can take up to 10 minutes. Please wait and remain on this screen...'**
   String get processingImport;
 
   /// No description provided for @userMustBeSignedIn.
