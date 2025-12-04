@@ -3,6 +3,7 @@
 import 'package:formproto/l10n/app_localizations.dart';
 import 'package:formproto/routers/app_routes.dart';
 import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
@@ -90,6 +91,7 @@ class _AppRouterState extends State<AppRouter> {
                 ],
                 localizationsDelegates: [
                   AppLocalizations.delegate,
+                  HyttaHubLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
