@@ -9,6 +9,7 @@ import 'package:formproto/proto/app_events.pb.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
 import 'package:formproto/routers/app_routes.dart';
 import 'package:formproto/utilities/handle_app_bloc_errors.dart';
+import 'package:formproto/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -95,7 +96,7 @@ class UpdateButton extends StatelessWidget {
               '${SiteScreenFormRoute.fullPath(siteId)}?event=$encodedSubmitValue',
             );
           },
-          child: const Text('Update Text'),
+          child: Text(AppLocalizations.of(context)!.app_updateTextButton),
         );
       },
     );
@@ -116,7 +117,9 @@ class TextValue extends StatelessWidget {
 
         final textValue = appState.hasText() ? appState.text : '';
 
-        return Text("Text Value: $textValue ");
+        return Text(
+          AppLocalizations.of(context)!.app_textValueDisplay(textValue),
+        );
       },
     );
   }

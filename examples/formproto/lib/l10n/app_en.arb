@@ -80,5 +80,16 @@
   "app_enterButton": "Enter",
   "app_serviceLoginButton": "Service Login",
   "app_exportSiteTitle": "Export Site",
-  "app_manageExportsTitle": "Manage Exports"
+  "app_manageExportsTitle": "Manage Exports",
+  "app_updateTextButton": "Update Text",
+  "app_textValueDisplay": "Text Value: {value}",
+  "@app_textValueDisplay": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_updateTextValueTitle": "Update Text Value",
+  "app_textValueLabel": "Text Value"
 }

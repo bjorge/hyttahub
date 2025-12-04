@@ -92,6 +92,17 @@
     "app_enterButton": "Entrar",
     "app_serviceLoginButton": "Inicio de Sesión de Servicio",
     "app_exportSiteTitle": "Exportar Sitio",
-    "app_manageExportsTitle": "Gestionar Exportaciones"
+    "app_manageExportsTitle": "Gestionar Exportaciones",
+    "app_updateTextButton": "Actualizar Texto",
+    "app_textValueDisplay": "Valor del Texto: {value}",
+    "@app_textValueDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "app_updateTextValueTitle": "Actualizar Valor del Texto",
+    "app_textValueLabel": "Valor del Texto"
 }
 

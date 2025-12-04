@@ -80,5 +80,16 @@
   "app_enterButton": "Invio",
   "app_serviceLoginButton": "Accesso Servizio",
   "app_exportSiteTitle": "Esporta Sito",
-  "app_manageExportsTitle": "Gestisci Esportazioni"
+  "app_manageExportsTitle": "Gestisci Esportazioni",
+  "app_updateTextButton": "Aggiorna Testo",
+  "app_textValueDisplay": "Valore del Testo: {value}",
+  "@app_textValueDisplay": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_updateTextValueTitle": "Aggiorna Valore del Testo",
+  "app_textValueLabel": "Valore del Testo"
 }

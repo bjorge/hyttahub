@@ -489,6 +489,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Exports'**
   String get app_manageExportsTitle;
+
+  /// No description provided for @app_updateTextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Text'**
+  String get app_updateTextButton;
+
+  /// No description provided for @app_textValueDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Value: {value}'**
+  String app_textValueDisplay(String value);
+
+  /// No description provided for @app_updateTextValueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Text Value'**
+  String get app_updateTextValueTitle;
+
+  /// No description provided for @app_textValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Value'**
+  String get app_textValueLabel;
 }
 
 class _AppLocalizationsDelegate

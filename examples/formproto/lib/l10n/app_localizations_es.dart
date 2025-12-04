@@ -219,4 +219,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get app_manageExportsTitle => 'Gestionar Exportaciones';
+
+  @override
+  String get app_updateTextButton => 'Actualizar Texto';
+
+  @override
+  String app_textValueDisplay(String value) {
+    return 'Valor del Texto: $value';
+  }
+
+  @override
+  String get app_updateTextValueTitle => 'Actualizar Valor del Texto';
+
+  @override
+  String get app_textValueLabel => 'Valor del Texto';
 }

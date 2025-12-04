@@ -1,9 +1,8 @@
-// Copyright (c) 2025 bjorge
-
 import 'dart:convert';
 
 import 'package:formproto/app_blocs/app_submit_bloc.dart';
 import 'package:formproto/app_widgets/app_submit_button.dart';
+import 'package:formproto/l10n/app_localizations.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:formproto/proto/app_events.pb.dart';
@@ -41,7 +40,9 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
-                title: Text("Update Text Value"),
+                title: Text(
+                  AppLocalizations.of(context)!.app_updateTextValueTitle,
+                ),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
               body: _buildBody(context, submitState),
@@ -68,7 +69,10 @@ class _SiteScreenFormState extends State<SiteScreenForm> {
     return CommonSubmitFormLayout<SubmitAppEvent>(
       submitState: submitState,
       children: [
-        TextValueInputWidget(formKey: _formKey, labelText: "Text Value"),
+        TextValueInputWidget(
+          formKey: _formKey,
+          labelText: AppLocalizations.of(context)!.app_textValueLabel,
+        ),
       ],
     );
   }
