@@ -91,5 +91,6 @@
     }
   },
   "app_updateTextValueTitle": "Update Text Value",
-  "app_textValueLabel": "Text Value"
+  "app_textValueLabel": "Text Value",
+  "app_permissionDenied": "You do not have permission to perform this action."
 }

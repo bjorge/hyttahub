@@ -513,6 +513,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Text Value'**
   String get app_textValueLabel;
+
+  /// No description provided for @app_permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to perform this action.'**
+  String get app_permissionDenied;
 }
 
 class _AppLocalizationsDelegate

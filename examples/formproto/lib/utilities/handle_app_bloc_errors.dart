@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:formproto/l10n/app_localizations.dart';
 import 'package:formproto/proto/app_replay_bloc.pb.dart';
-import 'package:hyttahub/l10n/intl_localizations.dart';
 
 Widget? handleAppReplayState(
   BuildContext context,
@@ -9,7 +9,7 @@ Widget? handleAppReplayState(
   Widget? errorWidget;
   final inScaffold = Scaffold.maybeOf(context) != null;
 
-  final l10n = HyttaHubLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context)!;
   if (!appState.hasState()) {
     errorWidget = const Center(child: CircularProgressIndicator());
   }
@@ -21,11 +21,11 @@ Widget? handleAppReplayState(
       errorWidget = const Center(child: CircularProgressIndicator());
     case AppReplayStateEnum.uninitializedListening:
     case AppReplayStateEnum.networkError:
-      errorWidget = Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.app_unexpectedError));
     case AppReplayStateEnum.permissionDenied:
-      errorWidget = Center(child: Text(l10n.permissionDenied));
+      errorWidget = Center(child: Text(l10n.app_permissionDenied));
     default:
-      errorWidget = Center(child: Text(l10n.unexpectedError));
+      errorWidget = Center(child: Text(l10n.app_unexpectedError));
   }
 
   if (errorWidget != null) {

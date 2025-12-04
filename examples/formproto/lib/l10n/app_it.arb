@@ -91,5 +91,6 @@
     }
   },
   "app_updateTextValueTitle": "Aggiorna Valore del Testo",
-  "app_textValueLabel": "Valore del Testo"
+  "app_textValueLabel": "Valore del Testo",
+  "app_permissionDenied": "Non hai il permesso di eseguire questa azione."
 }

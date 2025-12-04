@@ -233,4 +233,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get app_textValueLabel => 'Valor del Texto';
+
+  @override
+  String get app_permissionDenied =>
+      'No tienes permiso para realizar esta acción.';
 }
