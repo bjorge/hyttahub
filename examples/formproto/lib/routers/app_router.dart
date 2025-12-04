@@ -88,6 +88,7 @@ class _AppRouterState extends State<AppRouter> {
                   Locale('en'),
                   Locale('it'),
                   Locale('es'),
+                  Locale('nb'),
                 ],
                 localizationsDelegates: [
                   AppLocalizations.delegate,
