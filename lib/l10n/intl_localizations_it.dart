@@ -50,9 +50,6 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String get loginNotBetaUserError => 'Non sei un utente beta';
 
   @override
-  String get loginPasswordTooShortError => 'La password è troppo corta.';
-
-  @override
   String get loginAgreeToTermsCheckbox => 'Accetto i Termini';
 
   @override

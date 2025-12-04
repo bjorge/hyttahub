@@ -177,12 +177,6 @@ abstract class HyttaHubLocalizations {
   /// **'Not a beta user'**
   String get loginNotBetaUserError;
 
-  /// No description provided for @loginPasswordTooShortError.
-  ///
-  /// In en, this message translates to:
-  /// **'Password is too short.'**
-  String get loginPasswordTooShortError;
-
   /// No description provided for @loginAgreeToTermsCheckbox.
   ///
   /// In en, this message translates to:

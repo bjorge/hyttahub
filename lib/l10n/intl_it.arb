@@ -12,7 +12,6 @@
   "loginEmailTooLongError": "L'email è troppo lunga (max 1500 byte).",
   "loginNotServiceAdminError": "Non sei un amministratore del servizio",
   "loginNotBetaUserError": "Non sei un utente beta",
-  "loginPasswordTooShortError": "La password è troppo corta.",
   "loginAgreeToTermsCheckbox": "Accetto i Termini",
   "loginAgreeToPrivacyPolicyCheckbox": "Accetto l'Informativa sulla Privacy",
   "loginAlreadyHaveAccountButton": "Hai già un account?",

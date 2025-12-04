@@ -48,9 +48,6 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get loginNotBetaUserError => 'Ikke en betabruker';
 
   @override
-  String get loginPasswordTooShortError => 'Passordet er for kort.';
-
-  @override
   String get loginAgreeToTermsCheckbox => 'Jeg godtar vilkårene';
 
   @override

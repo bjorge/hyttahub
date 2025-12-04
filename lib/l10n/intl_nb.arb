@@ -12,7 +12,6 @@
   "loginEmailTooLongError": "E-posten er for lang (maks 1500 byte).",
   "loginNotServiceAdminError": "Ikke en tjenesteadministrator",
   "loginNotBetaUserError": "Ikke en betabruker",
-  "loginPasswordTooShortError": "Passordet er for kort.",
   "loginAgreeToTermsCheckbox": "Jeg godtar vilkårene",
   "loginAgreeToPrivacyPolicyCheckbox": "Jeg godtar personvernreglene",
   "loginAlreadyHaveAccountButton": "Har du allerede en konto?",
