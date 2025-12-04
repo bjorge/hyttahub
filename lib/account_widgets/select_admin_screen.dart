@@ -44,7 +44,13 @@ class _SelectAdminScreenState extends State<SelectAdminScreen> {
           });
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error assigning user: $error')),
+            SnackBar(
+              content: Text(
+                HyttaHubLocalizations.of(
+                  context,
+                )!.errorAssigningUser(error.toString()),
+              ),
+            ),
           );
         });
   }

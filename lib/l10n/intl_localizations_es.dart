@@ -553,6 +553,9 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get failedToLoadExports => 'Error al cargar las exportaciones.';
 
   @override
+  String get noEventsFound => 'No se encontraron eventos.';
+
+  @override
   String get importSiteTitle => 'Importar sitio';
 
   @override
@@ -605,5 +608,10 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   @override
   String errorImportingSite(String error) {
     return 'Error al importar sitio: $error';
+  }
+
+  @override
+  String errorAssigningUser(String error) {
+    return 'Error al asignar usuario: $error';
   }
 }

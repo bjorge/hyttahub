@@ -1095,6 +1095,12 @@ abstract class HyttaHubLocalizations {
   /// **'Failed to load exports.'**
   String get failedToLoadExports;
 
+  /// No description provided for @noEventsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No events found.'**
+  String get noEventsFound;
+
   /// No description provided for @importSiteTitle.
   ///
   /// In en, this message translates to:
@@ -1178,6 +1184,12 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Error importing site: {error}'**
   String errorImportingSite(String error);
+
+  /// No description provided for @errorAssigningUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Error assigning user: {error}'**
+  String errorAssigningUser(String error);
 }
 
 class _HyttaHubLocalizationsDelegate

@@ -541,6 +541,9 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get failedToLoadExports => 'Kunne ikke laste eksportene.';
 
   @override
+  String get noEventsFound => 'Ingen hendelser funnet.';
+
+  @override
   String get importSiteTitle => 'Importer sted';
 
   @override
@@ -593,5 +596,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   @override
   String errorImportingSite(String error) {
     return 'Feil ved import av sted: $error';
+  }
+
+  @override
+  String errorAssigningUser(String error) {
+    return 'Feil ved tildeling av bruker: $error';
   }
 }

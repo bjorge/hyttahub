@@ -203,6 +203,7 @@
   "exportDeletedSuccessfully": "Eksport slettet",
   "noExportsFound": "Ingen eksport funnet.",
   "failedToLoadExports": "Kunne ikke laste eksportene.",
+  "noEventsFound": "Ingen hendelser funnet.",
   "importSiteTitle": "Importer sted",
   "selectFileButton": "Velg fil",
   "importButton": "Importer",
@@ -246,6 +247,14 @@
   "userMustBeSignedIn": "Bruker må være pålogget for å importere sted",
   "errorImportingSite": "Feil ved import av sted: {error}",
   "@errorImportingSite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAssigningUser": "Feil ved tildeling av bruker: {error}",
+  "@errorAssigningUser": {
     "placeholders": {
       "error": {
         "type": "String"

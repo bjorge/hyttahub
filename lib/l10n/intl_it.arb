@@ -203,6 +203,7 @@
   "exportDeletedSuccessfully": "Esportazione eliminata con successo",
   "noExportsFound": "Nessuna esportazione trovata.",
   "failedToLoadExports": "Impossibile caricare le esportazioni.",
+  "noEventsFound": "Nessun evento trovato.",
   "importSiteTitle": "Importa Sito",
   "selectFileButton": "Seleziona File",
   "importButton": "Importa",
@@ -246,6 +247,14 @@
   "userMustBeSignedIn": "L'utente deve essere autenticato per importare il sito",
   "errorImportingSite": "Errore durante l'importazione del sito: {error}",
   "@errorImportingSite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAssigningUser": "Errore durante l'assegnazione dell'utente: {error}",
+  "@errorAssigningUser": {
     "placeholders": {
       "error": {
         "type": "String"

@@ -169,8 +169,7 @@ class _EventsDisplayState<
   Widget _buildEventsListView() {
     if (_records == null || _records!.isEmpty) {
       return Center(
-        // child: Text(HyttaHubLocalizations.of(context)!.noEventsFound),
-        child: Text("noEventsFound - needs localization"),
+        child: Text(HyttaHubLocalizations.of(context)!.noEventsFound),
       );
     }
 
