@@ -272,38 +272,80 @@ void main() {
         ],
       );
 
-      // issues with fake_firestore package and security rules
-      // blocTest<TestReplayBloc, ServiceReplayBlocState>(
-      //   'emits [fetching, permissionDenied] on permission-denied error',
-      //   build: () {
-      //     final erroringFirestore = FakeFirebaseFirestore(
-      //       securityRules: '''
-      //         rules_version = '2';
-      //         service cloud.firestore {
-      //           match /databases/{database}/documents {
-      //             match /{document=**} {
-      //               allow read, write: if false;
-      //             }
-      //           }
-      //         }
-      //       ''',
-      //     );
-      //     return TestReplayBloc(collectionPath, firestore: erroringFirestore);
-      //   },
-      //   act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
-      //   expect: () => [
-      //     isA<ServiceReplayBlocState>().having(
-      //       (s) => s.state,
-      //       'state',
-      //       CommonReplayStateEnum.fetchingConfig,
-      //     ),
-      //     isA<ServiceReplayBlocState>().having(
-      //       (s) => s.state,
-      //       'state',
-      //       CommonReplayStateEnum.permissionDenied,
-      //     ),
-      //   ],
-      // );
+      blocTest<TestReplayBloc, ServiceReplayBlocState>(
+        'stops listening and clears state when listen is set to false',
+        setUp: () async {
+          await fakeFirestore.collection(collectionPath).doc('1').set({
+            fbVersion: 1,
+            fbPayload: 'event1',
+          });
+        },
+        build: buildBloc,
+        act: (bloc) async {
+          // Start listening
+          bloc.add(CommonReplayBlocEvent(listen: true));
+          await Future.delayed(const Duration(milliseconds: 150));
+          // Stop listening
+          bloc.add(CommonReplayBlocEvent(listen: false));
+        },
+        wait: const Duration(milliseconds: 200),
+        // Should emit listening with empty, then with event1, then hydrating with empty
+        expect: () => [
+          isA<ServiceReplayBlocState>()
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
+              .having((s) => s.events, 'events', {}),
+          isA<ServiceReplayBlocState>()
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
+              .having((s) => s.events, 'events', {1: 'event1'}),
+          isA<ServiceReplayBlocState>()
+              .having((s) => s.state, 'state', CommonReplayStateEnum.hydrating)
+              .having((s) => s.events, 'events', {}),
+        ],
+      );
+
+      blocTest<TestReplayBloc, ServiceReplayBlocState>(
+        'ignores events with version <= lastVersion (deduplication)',
+        build: buildBloc,
+        act: (bloc) async {
+          // First, add events 1 and 2 normally to set _lastVersion to 2
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {1: 'event1', 2: 'event2'},
+              ),
+            ),
+          );
+          // Wait for the first batch to be processed and _lastVersion updated
+          await Future.delayed(const Duration(milliseconds: 50));
+
+          // Then try to add events with old versions plus a new one
+          // Events 1 and 2 should be filtered by _lastVersion check
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {
+                  1: 'duplicate_event1', // Should be ignored
+                  2: 'duplicate_event2', // Should be ignored
+                  3: 'new_event3', // Should be added
+                },
+              ),
+            ),
+          );
+        },
+        wait: const Duration(milliseconds: 150),
+        // First emission has events 1 and 2, second adds only event 3
+        expect: () => [
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+            2: 'event2',
+          }),
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+            2: 'event2',
+            3: 'new_event3',
+          }),
+        ],
+      );
 
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'clears local state and refetches when validation fails',
@@ -357,6 +399,54 @@ void main() {
     });
 
     group('Hydration', () {
+      test('full hydration flow: serialize → deserialize → listen', () async {
+        // Create a bloc with some events and serialize it
+        final bloc1 = buildBloc(
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
+
+        // Add some events to Firestore
+        await fakeFirestore.collection(collectionPath).doc('1').set({
+          fbVersion: 1,
+          fbPayload: 'event1',
+        });
+        await fakeFirestore.collection(collectionPath).doc('2').set({
+          fbVersion: 2,
+          fbPayload: 'event2',
+        });
+
+        // Listen and let it load events
+        bloc1.add(CommonReplayBlocEvent(listen: true));
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        // Verify events were loaded
+        expect(bloc1.state.events, {1: 'event1', 2: 'event2'});
+
+        // Serialize the state
+        final json = bloc1.toJson(bloc1.state);
+        expect(json, isNotNull);
+
+        // Close the first bloc
+        await bloc1.close();
+
+        // Create a new bloc and restore from JSON
+        final bloc2 = buildBloc(
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
+        final restoredState = bloc2.fromJson(json!);
+        expect(restoredState?.state, CommonReplayStateEnum.hydrating);
+
+        // Now listen - should restore the hydrated events
+        bloc2.add(CommonReplayBlocEvent(listen: true));
+        await Future.delayed(const Duration(milliseconds: 200));
+
+        // Verify the events were restored from hydration
+        expect(bloc2.state.events, {1: 'event1', 2: 'event2'});
+        expect(bloc2.state.state, CommonReplayStateEnum.listening);
+
+        await bloc2.close();
+      });
+
       test('toJson and fromJson work correctly', () async {
         final bloc = buildBloc(
           hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
