@@ -28,7 +28,7 @@ class AppLocalizationsNb extends AppLocalizations {
       'Uventet feil, sjekk internett, gå tilbake og prøv igjen';
 
   @override
-  String get app_appTitle => 'Hytta Hub Album';
+  String get app_appTitle => 'Hytta Hub Skjemaeksempel';
 
   @override
   String get app_nightMode => 'Nattmodus';

@@ -28,7 +28,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Error inesperado, comprueba tu conexión a internet, vuelve atrás e inténtalo de nuevo';
 
   @override
-  String get app_appTitle => 'Hytta Hub Álbumes';
+  String get app_appTitle => 'Hytta Hub Ejemplo de Formulario';
 
   @override
   String get app_nightMode => 'Modo Nocturno';

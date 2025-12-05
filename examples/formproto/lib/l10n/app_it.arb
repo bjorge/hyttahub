@@ -10,7 +10,7 @@
     }
   },
   "app_unexpectedError": "Errore imprevisto, controlla la connessione internet, torna indietro e riprova",
-  "app_appTitle": "Hytta Hub Album",
+  "app_appTitle": "Hytta Hub Esempio di Modulo",
   "app_nightMode": "Modalità Notte",
   "app_themeSettingsAlwaysOff": "Sempre Spento",
   "app_themeSettingsAlwaysOn": "Sempre Acceso",

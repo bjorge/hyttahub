@@ -129,7 +129,7 @@ abstract class AppLocalizations {
   /// No description provided for @app_appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Hytta Hub Albums'**
+  /// **'Hytta Hub Form Example'**
   String get app_appTitle;
 
   /// No description provided for @app_nightMode.

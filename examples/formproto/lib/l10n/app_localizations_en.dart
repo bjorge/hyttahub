@@ -28,7 +28,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unexpected error, check internet, go back and try again';
 
   @override
-  String get app_appTitle => 'Hytta Hub Albums';
+  String get app_appTitle => 'Hytta Hub Form Example';
 
   @override
   String get app_nightMode => 'Night Mode';

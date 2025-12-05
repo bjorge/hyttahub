@@ -28,7 +28,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Errore imprevisto, controlla la connessione internet, torna indietro e riprova';
 
   @override
-  String get app_appTitle => 'Hytta Hub Album';
+  String get app_appTitle => 'Hytta Hub Esempio di Modulo';
 
   @override
   String get app_nightMode => 'Modalità Notte';
