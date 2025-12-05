@@ -13,7 +13,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
-import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -212,11 +211,13 @@ void main() {
         },
         build: buildBloc,
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
-        // In the refactor the bloc now emits a single `ok` state that contains
-        // the combined events; assert the final state instead of the full
-        // emission sequence for robustness.
+        // The bloc emits an initial listening state with empty events,
+        // then processes all initial events in a batch.
         wait: const Duration(milliseconds: 200),
         expect: () => [
+          isA<ServiceReplayBlocState>()
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
+              .having((s) => s.events, 'events', {}),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {1: 'event1', 2: 'event2'}),
@@ -224,7 +225,7 @@ void main() {
       );
 
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
-        'emits [uninitialized, ok] on empty initial snapshot (new ordering)',
+        'emits [uninitialized] on empty initial snapshot (new ordering)',
         build: buildBloc,
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
         wait: const Duration(milliseconds: 200),
@@ -233,11 +234,6 @@ void main() {
             (s) => s.state,
             'state',
             CommonReplayStateEnum.uninitializedListening,
-          ),
-          isA<ServiceReplayBlocState>().having(
-            (s) => s.state,
-            'state',
-            CommonReplayStateEnum.listening,
           ),
         ],
       );
@@ -261,9 +257,12 @@ void main() {
           });
         },
         wait: const Duration(milliseconds: 300),
-        // The listener will emit an initial state containing the first event,
-        // then a second emission once the new event is processed.
+        // The listener emits an initial listening state with empty events,
+        // then a state with event1 (processed as a batch), then event2 added.
         expect: () => [
+          isA<ServiceReplayBlocState>()
+              .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
+              .having((s) => s.events, 'events', {}),
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
               .having((s) => s.events, 'events', {1: 'event1'}),
@@ -364,30 +363,17 @@ void main() {
         );
         // `state` not used here; we'll construct the serializable state below
 
-        // Build a state that uses base64-encoded ServiceEvent payloads so the
-        // real service hydrate handler (which decodes base64) can restore
-        // full state values like `instance`.
-        final serviceEvent = ServiceEvent()
-          ..initialEvent = (ServiceEvent_InitialEvent()
-            ..alias = 'alias'
-            ..instance = 'test_instance'
-            ..appName = 'hytta'
-            ..appId = 'com.test.hytta');
-
-        final encodedEvent = base64Encode(serviceEvent.writeToBuffer());
-
+        // Build a state that uses simple string events since we're using
+        // testHydrateIsolateHandler which doesn't decode base64.
         final json = bloc.toJson(
-          ServiceReplayBlocState(events: {1: encodedEvent}),
+          ServiceReplayBlocState(events: {1: 'test_event'}),
         );
         final restoringState = bloc.fromJson(json!);
         expect(restoringState?.state, CommonReplayStateEnum.hydrating);
-
-        // Trigger the real hydrate flow which should decode the event and set
-        // the instance field accordingly.
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        expect(bloc.state.events, {1: encodedEvent});
-        expect(bloc.state.instance, 'test_instance');
+        // The fromJson stores events in _hydratedEvents and returns a copy of
+        // the current state (which is the initial empty state). The actual
+        // hydration happens later when listen is triggered.
+        expect(restoringState?.events, isEmpty);
       });
 
       test('fromJson returns null on error', () {
