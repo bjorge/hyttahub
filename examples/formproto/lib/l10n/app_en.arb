@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "app_uploadingPhotosProgress": "Uploading {count} of {total} files...",
   "@app_uploadingPhotosProgress": {
     "placeholders": {
@@ -42,6 +43,7 @@
   "app_italian": "Italian",
   "app_spanish": "Spanish",
   "app_norwegian": "Norwegian",
+  "app_dutch": "Dutch",
   "app_enterButton": "Enter",
   "app_serviceLoginButton": "Service Login",
   "app_updateTextButton": "Update Text",

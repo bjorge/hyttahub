@@ -63,6 +63,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get app_norwegian => 'Norsk';
 
   @override
+  String get app_dutch => 'Nederlandsk';
+
+  @override
   String get app_enterButton => 'Enter';
 
   @override

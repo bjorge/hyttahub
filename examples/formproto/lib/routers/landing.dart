@@ -69,6 +69,7 @@ class LandingPage extends StatelessWidget {
                                 AppLanguage.it => l10n.app_italian,
                                 AppLanguage.es => l10n.app_spanish,
                                 AppLanguage.nb => l10n.app_norwegian,
+                                AppLanguage.nl => l10n.app_dutch,
                               }),
                             );
                           }).toList(),

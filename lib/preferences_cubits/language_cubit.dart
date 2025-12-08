@@ -2,7 +2,7 @@
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-enum AppLanguage { en, it, es, nb }
+enum AppLanguage { en, it, es, nb, nl }
 
 class LanguageCubit extends HydratedCubit<AppLanguage> {
   LanguageCubit(this.storageKey) : super(AppLanguage.en);
@@ -27,6 +27,8 @@ class LanguageCubit extends HydratedCubit<AppLanguage> {
         return AppLanguage.es;
       case 'nb':
         return AppLanguage.nb;
+      case 'nl':
+        return AppLanguage.nl;
       default:
         return AppLanguage.en;
     }

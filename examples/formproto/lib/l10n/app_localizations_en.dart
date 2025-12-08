@@ -63,6 +63,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_norwegian => 'Norwegian';
 
   @override
+  String get app_dutch => 'Dutch';
+
+  @override
   String get app_enterButton => 'Enter';
 
   @override

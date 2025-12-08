@@ -9,6 +9,7 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_it.dart';
 import 'app_localizations_nb.dart';
+import 'app_localizations_nl.dart';
 
 // ignore_for_file: type=lint
 
@@ -100,6 +101,7 @@ abstract class AppLocalizations {
     Locale('es'),
     Locale('it'),
     Locale('nb'),
+    Locale('nl'),
   ];
 
   /// No description provided for @app_uploadingPhotosProgress.
@@ -192,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Norwegian'**
   String get app_norwegian;
 
+  /// No description provided for @app_dutch.
+  ///
+  /// In en, this message translates to:
+  /// **'Dutch'**
+  String get app_dutch;
+
   /// No description provided for @app_enterButton.
   ///
   /// In en, this message translates to:
@@ -246,7 +254,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'it', 'nb'].contains(locale.languageCode);
+      <String>['en', 'es', 'it', 'nb', 'nl'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -263,6 +271,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsIt();
     case 'nb':
       return AppLocalizationsNb();
+    case 'nl':
+      return AppLocalizationsNl();
   }
 
   throw FlutterError(
