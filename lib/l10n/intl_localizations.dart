@@ -9,6 +9,7 @@ import 'intl_localizations_en.dart';
 import 'intl_localizations_es.dart';
 import 'intl_localizations_it.dart';
 import 'intl_localizations_nb.dart';
+import 'intl_localizations_nl.dart';
 
 // ignore_for_file: type=lint
 
@@ -103,6 +104,7 @@ abstract class HyttaHubLocalizations {
     Locale('es'),
     Locale('it'),
     Locale('nb'),
+    Locale('nl'),
   ];
 
   /// No description provided for @loginTitle.
@@ -1199,7 +1201,7 @@ class _HyttaHubLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'it', 'nb'].contains(locale.languageCode);
+      <String>['en', 'es', 'it', 'nb', 'nl'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_HyttaHubLocalizationsDelegate old) => false;
@@ -1216,6 +1218,8 @@ HyttaHubLocalizations lookupHyttaHubLocalizations(Locale locale) {
       return HyttaHubLocalizationsIt();
     case 'nb':
       return HyttaHubLocalizationsNb();
+    case 'nl':
+      return HyttaHubLocalizationsNl();
   }
 
   throw FlutterError(
