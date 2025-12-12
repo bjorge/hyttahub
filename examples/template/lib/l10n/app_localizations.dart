@@ -236,6 +236,12 @@ abstract class AppLocalizations {
   /// **'Text Value'**
   String get app_textValueLabel;
 
+  /// No description provided for @app_pickPhotosButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Photos'**
+  String get app_pickPhotosButton;
+
   /// No description provided for @app_permissionDenied.
   ///
   /// In en, this message translates to:

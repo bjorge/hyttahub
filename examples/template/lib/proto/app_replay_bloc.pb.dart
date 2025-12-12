@@ -27,6 +27,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.bool? checkboxValue,
     $core.String? dropdownValue,
     $core.Iterable<$0.AppEvent_ReorderableItem>? listItems,
+    $core.String? photoName,
+    $core.int? photoVersion,
   }) {
     final $result = create();
     if (events != null) {
@@ -50,6 +52,12 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (listItems != null) {
       $result.listItems.addAll(listItems);
     }
+    if (photoName != null) {
+      $result.photoName = photoName;
+    }
+    if (photoVersion != null) {
+      $result.photoVersion = photoVersion;
+    }
     return $result;
   }
   AppReplayBlocState._() : super();
@@ -64,6 +72,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..aOB(5, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
     ..aOS(6, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
     ..pc<$0.AppEvent_ReorderableItem>(7, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: $0.AppEvent_ReorderableItem.create)
+    ..aOS(8, _omitFieldNames ? '' : 'photoName', protoName: 'photoName')
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'photoVersion', $pb.PbFieldType.O3, protoName: 'photoVersion')
     ..hasRequiredFields = false
   ;
 
@@ -138,6 +148,24 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(7)
   $core.List<$0.AppEvent_ReorderableItem> get listItems => $_getList(6);
+
+  @$pb.TagNumber(8)
+  $core.String get photoName => $_getSZ(7);
+  @$pb.TagNumber(8)
+  set photoName($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasPhotoName() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearPhotoName() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get photoVersion => $_getIZ(8);
+  @$pb.TagNumber(9)
+  set photoVersion($core.int v) { $_setSignedInt32(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasPhotoVersion() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearPhotoVersion() => clearField(9);
 }
 
 

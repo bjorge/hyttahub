@@ -2,6 +2,7 @@
 
 import 'package:template/app_widgets/site_screen.dart';
 import 'package:template/app_widgets/template_form_screen.dart';
+import 'package:template/app_widgets/photo_upload_screen.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -56,6 +57,34 @@ class SiteScreenFormRoute extends GoRoute {
 
 final siteScreenFormRoute = SiteScreenFormRoute(routes: []);
 
+/// A route for the add photo screen.
+class AddPhotoRoute extends GoRoute {
+  /// Creates a [AddPhotoRoute].
+  AddPhotoRoute({required super.routes})
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          final event = state.uri.queryParameters['event'] ?? '';
+
+          return PhotoUploadScreen(
+            key: Key('photoUpload:$siteId'),
+            siteId: siteId,
+            event: event,
+          );
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'add-photo';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
+}
+
+final addPhotoRoute = AddPhotoRoute(routes: []);
+
 final renameSiteRoute = RenameSiteRoute();
 final exportSiteRoute = ExportSiteRoute();
 final exportDetailsRoute = ExportDetailsRoute();
@@ -67,6 +96,7 @@ final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
 final siteScreenRoute = SiteScreenRoute(
   routes: [
     siteScreenFormRoute,
+    addPhotoRoute,
     renameSiteRoute,
     exportSiteRoute,
     manageExportsRoute,

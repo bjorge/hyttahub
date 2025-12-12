@@ -10,6 +10,8 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bloc/bloc.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:protobuf/protobuf.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);
@@ -50,15 +52,77 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
-    await FirebaseFirestore.instance
-        .collection(firebaseSiteEventsPath(siteId))
-        .doc(siteEvent.version.toString())
-        .set({
-          fbPayload: encodedEvent,
-          fbVersion: siteEvent.version,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        })
-        .timeout(firebaseTimeout);
+    // Check if there are images to upload for this event
+    if (submitAppEvent.appEvent.hasTemplateForm() &&
+        submitAppEvent.images.isNotEmpty) {
+      var version = submitAppEvent.siteEvent.version;
+      var uploadedCount = 0;
+      final totalCount = submitAppEvent.images.length;
+
+      for (var image in submitAppEvent.images) {
+        if (!image.hasBase64Data()) {
+          throw Exception("Image data is empty for version $version");
+        }
+
+        final callable = FirebaseFunctions.instance.httpsCallable('uploadFile');
+
+        await callable.call({
+          'appName': HyttaHubOptions.firebaseRootCollection,
+          'siteId': siteId,
+          'fileName': version.toString(),
+          'base64Data': image.base64Data,
+        });
+
+        final newEvent = submitAppEvent.appEvent.deepCopy();
+        // Update the event with the storage reference details
+        newEvent.templateForm.photoVersion = version;
+        newEvent.templateForm.photoName = image.name;
+        newEvent.templateForm.photoSize = image.size;
+
+        final siteEvent = SiteEvent(
+          version: version,
+          appEvent: packAppEventWrapper(newEvent.writeToBuffer()),
+          author: submitAppEvent.siteEvent.author,
+        );
+
+        encodedEvent = base64Encode(siteEvent.writeToBuffer());
+
+        await FirebaseFirestore.instance
+            .collection(firebaseSiteEventsPath(siteId))
+            .doc(version.toString())
+            .set({
+              fbPayload: encodedEvent,
+              fbVersion: version,
+              fbTimeStamp: FieldValue.serverTimestamp(),
+            })
+            .timeout(firebaseTimeout);
+
+        version++;
+        uploadedCount++;
+
+        final progress =
+            CommonSubmitBlocState_SubmitProgress()
+              ..count = uploadedCount
+              ..total = totalCount;
+
+        final progressState =
+            state.submissionState.deepCopy()
+              ..state = CommonSubmitBlocState_State.submitting
+              ..progress = progress;
+
+        emit(state.copyWith(submissionState: progressState..freeze()));
+      }
+    } else {
+      await FirebaseFirestore.instance
+          .collection(firebaseSiteEventsPath(siteId))
+          .doc(siteEvent.version.toString())
+          .set({
+            fbPayload: encodedEvent,
+            fbVersion: siteEvent.version,
+            fbTimeStamp: FieldValue.serverTimestamp(),
+          })
+          .timeout(firebaseTimeout);
+    }
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;

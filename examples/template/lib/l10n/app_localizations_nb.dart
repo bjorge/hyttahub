@@ -86,6 +86,9 @@ class AppLocalizationsNb extends AppLocalizations {
   String get app_textValueLabel => 'Tekstverdi';
 
   @override
+  String get app_pickPhotosButton => 'Pick Photos';
+
+  @override
   String get app_permissionDenied =>
       'Du har ikke tillatelse til å utføre denne handlingen.';
 }

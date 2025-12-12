@@ -43,6 +43,10 @@ AppReplayBlocState appReplay(
         replay.dropdownValue = appEvent.templateForm.dropdownValue;
         replay.listItems.clear();
         replay.listItems.addAll(appEvent.templateForm.listItems);
+        if (appEvent.templateForm.photoVersion > 0) {
+          replay.photoVersion = appEvent.templateForm.photoVersion;
+          replay.photoName = appEvent.templateForm.photoName;
+        }
       }
     }
   }

@@ -21,4 +21,6 @@ message AppReplayBlocState {
   bool checkboxValue = 5;
   string dropdownValue = 6;
   repeated hyttahub.example.template.AppEvent.ReorderableItem listItems = 7;
+  string photoName = 8;
+  int32 photoVersion = 9;
 }

@@ -15,6 +15,9 @@ message AppEvent {
     bool checkboxValue = 3;
     string dropdownValue = 4;
     repeated ReorderableItem listItems = 5;
+    string photoName = 7;
+    int32 photoVersion = 8;
+    int32 photoSize = 9;
   }
 
   oneof event {
@@ -32,9 +35,16 @@ message SubmitAppEvent {
     int32 author = 2;  // filled in by the app submit bloc
   }
 
+  message Image {
+    string base64Data = 1;  // the image data
+    string name = 2; // the name of the image, used for display
+    int32 size = 3;  // the size of the image in bytes
+  }
+
   AppEvent appEvent = 1;   // the event to store in immutable records, required
   SiteEvent siteEvent = 2; // the version of the event, required
   string authorEmail = 3;  // the author's email, required
+  repeated Image images = 4; // for add photo events, the images to upload
 }
 
 // The AppEventRecord is a representation of the actual record stored in the

@@ -86,6 +86,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get app_textValueLabel => 'Tekstwaarde';
 
   @override
+  String get app_pickPhotosButton => 'Pick Photos';
+
+  @override
   String get app_permissionDenied =>
       'U heeft geen toestemming om deze actie uit te voeren.';
 }

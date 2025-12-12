@@ -84,6 +84,9 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     $core.bool? checkboxValue,
     $core.String? dropdownValue,
     $core.Iterable<AppEvent_ReorderableItem>? listItems,
+    $core.String? photoName,
+    $core.int? photoVersion,
+    $core.int? photoSize,
   }) {
     final $result = create();
     if (textValue != null) {
@@ -101,6 +104,15 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     if (listItems != null) {
       $result.listItems.addAll(listItems);
     }
+    if (photoName != null) {
+      $result.photoName = photoName;
+    }
+    if (photoVersion != null) {
+      $result.photoVersion = photoVersion;
+    }
+    if (photoSize != null) {
+      $result.photoSize = photoSize;
+    }
     return $result;
   }
   AppEvent_TemplateForm._() : super();
@@ -113,6 +125,9 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     ..aOB(3, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
     ..aOS(4, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
     ..pc<AppEvent_ReorderableItem>(5, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: AppEvent_ReorderableItem.create)
+    ..aOS(7, _omitFieldNames ? '' : 'photoName', protoName: 'photoName')
+    ..a<$core.int>(8, _omitFieldNames ? '' : 'photoVersion', $pb.PbFieldType.O3, protoName: 'photoVersion')
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'photoSize', $pb.PbFieldType.O3, protoName: 'photoSize')
     ..hasRequiredFields = false
   ;
 
@@ -175,6 +190,33 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(5)
   $core.List<AppEvent_ReorderableItem> get listItems => $_getList(4);
+
+  @$pb.TagNumber(7)
+  $core.String get photoName => $_getSZ(5);
+  @$pb.TagNumber(7)
+  set photoName($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasPhotoName() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearPhotoName() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.int get photoVersion => $_getIZ(6);
+  @$pb.TagNumber(8)
+  set photoVersion($core.int v) { $_setSignedInt32(6, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasPhotoVersion() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearPhotoVersion() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get photoSize => $_getIZ(7);
+  @$pb.TagNumber(9)
+  set photoSize($core.int v) { $_setSignedInt32(7, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasPhotoSize() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearPhotoSize() => clearField(9);
 }
 
 enum AppEvent_Event {
@@ -307,6 +349,84 @@ class SubmitAppEvent_SiteEvent extends $pb.GeneratedMessage {
   void clearAuthor() => clearField(2);
 }
 
+class SubmitAppEvent_Image extends $pb.GeneratedMessage {
+  factory SubmitAppEvent_Image({
+    $core.String? base64Data,
+    $core.String? name,
+    $core.int? size,
+  }) {
+    final $result = create();
+    if (base64Data != null) {
+      $result.base64Data = base64Data;
+    }
+    if (name != null) {
+      $result.name = name;
+    }
+    if (size != null) {
+      $result.size = size;
+    }
+    return $result;
+  }
+  SubmitAppEvent_Image._() : super();
+  factory SubmitAppEvent_Image.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SubmitAppEvent_Image.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SubmitAppEvent.Image', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'base64Data', protoName: 'base64Data')
+    ..aOS(2, _omitFieldNames ? '' : 'name')
+    ..a<$core.int>(3, _omitFieldNames ? '' : 'size', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SubmitAppEvent_Image clone() => SubmitAppEvent_Image()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SubmitAppEvent_Image copyWith(void Function(SubmitAppEvent_Image) updates) => super.copyWith((message) => updates(message as SubmitAppEvent_Image)) as SubmitAppEvent_Image;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SubmitAppEvent_Image create() => SubmitAppEvent_Image._();
+  SubmitAppEvent_Image createEmptyInstance() => create();
+  static $pb.PbList<SubmitAppEvent_Image> createRepeated() => $pb.PbList<SubmitAppEvent_Image>();
+  @$core.pragma('dart2js:noInline')
+  static SubmitAppEvent_Image getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_Image>(create);
+  static SubmitAppEvent_Image? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get base64Data => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set base64Data($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasBase64Data() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearBase64Data() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get name => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set name($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasName() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearName() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get size => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set size($core.int v) { $_setSignedInt32(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasSize() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearSize() => clearField(3);
+}
+
 /// The SubmitAppEvent is passed to the submit bloc handler
 /// PII (ex. email) is allowed in this message since not stored to immutable
 /// records
@@ -315,6 +435,7 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     AppEvent? appEvent,
     SubmitAppEvent_SiteEvent? siteEvent,
     $core.String? authorEmail,
+    $core.Iterable<SubmitAppEvent_Image>? images,
   }) {
     final $result = create();
     if (appEvent != null) {
@@ -326,6 +447,9 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     if (authorEmail != null) {
       $result.authorEmail = authorEmail;
     }
+    if (images != null) {
+      $result.images.addAll(images);
+    }
     return $result;
   }
   SubmitAppEvent._() : super();
@@ -336,6 +460,7 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     ..aOM<AppEvent>(1, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: AppEvent.create)
     ..aOM<SubmitAppEvent_SiteEvent>(2, _omitFieldNames ? '' : 'siteEvent', protoName: 'siteEvent', subBuilder: SubmitAppEvent_SiteEvent.create)
     ..aOS(3, _omitFieldNames ? '' : 'authorEmail', protoName: 'authorEmail')
+    ..pc<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images', $pb.PbFieldType.PM, subBuilder: SubmitAppEvent_Image.create)
     ..hasRequiredFields = false
   ;
 
@@ -390,6 +515,9 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
   $core.bool hasAuthorEmail() => $_has(2);
   @$pb.TagNumber(3)
   void clearAuthorEmail() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.List<SubmitAppEvent_Image> get images => $_getList(3);
 }
 
 /// The AppEventRecord is a representation of the actual record stored in the

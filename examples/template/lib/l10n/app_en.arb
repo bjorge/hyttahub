@@ -57,5 +57,6 @@
   },
   "app_updateTextValueTitle": "Update Text Value",
   "app_textValueLabel": "Text Value",
+  "app_pickPhotosButton": "Pick Photos",
   "app_permissionDenied": "You do not have permission to perform this action."
 }

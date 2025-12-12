@@ -86,6 +86,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get app_textValueLabel => 'Valor del Texto';
 
   @override
+  String get app_pickPhotosButton => 'Pick Photos';
+
+  @override
   String get app_permissionDenied =>
       'No tienes permiso para realizar esta acción.';
 }
