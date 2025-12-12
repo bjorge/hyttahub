@@ -35,16 +35,17 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
       base64Url.decode(widget.event),
     );
 
-    // If existing event is not TemplateForm, initialize it as one?
-    // The previous implementation assumed updateText.
-    // If the proto changed, we should probably ensure the event is of the right type
-    // or initialize an empty one if we are creating new.
-    // However, the `event` param comes from URL, usually passed from `site_screen.dart` on edit.
-    // If it's a new item, we might need a default structure.
-
-    // For this example, let's assume we are always editing or creating a TemplateForm.
     if (!submitEvent.appEvent.hasTemplateForm()) {
       submitEvent.appEvent.templateForm = AppEvent_TemplateForm();
+    }
+
+    // Initialize list items if empty to show something
+    if (submitEvent.appEvent.templateForm.listItems.isEmpty) {
+      submitEvent.appEvent.templateForm.listItems.addAll([
+        AppEvent_ReorderableItem(id: 1, title: 'Item 1'),
+        AppEvent_ReorderableItem(id: 2, title: 'Item 2'),
+        AppEvent_ReorderableItem(id: 3, title: 'Item 3'),
+      ]);
     }
 
     return BlocProvider(
@@ -57,9 +58,7 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
             return Scaffold(
               appBar: AppBar(
                 title: Text(
-                  AppLocalizations.of(
-                    context,
-                  )!.app_updateTextValueTitle, // Update title key later if needed
+                  AppLocalizations.of(context)!.app_updateTextValueTitle,
                 ),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
@@ -87,12 +86,10 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
     return CommonSubmitFormLayout<SubmitAppEvent>(
       submitState: submitState,
       children: [
-        TextFormFieldWidget(
-          formKey: _formKey,
-          labelText: "Text Value", // Hardcoded for now, or add to arb
-        ),
+        TextFormFieldWidget(formKey: _formKey, labelText: "Text Value"),
         CodeFormFieldWidget(formKey: _formKey, labelText: "Code Value"),
         CheckboxFormFieldWidget(formKey: _formKey, labelText: "Checkbox Value"),
+        DateFormFieldWidget(formKey: _formKey, labelText: "Date Value"),
         DropdownFormFieldWidget(
           formKey: _formKey,
           labelText: "Dropdown Value",
@@ -101,7 +98,6 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
             DropdownMenuItem(value: "Option 2", child: Text("Option 2")),
           ],
         ),
-        // ReorderableFormFieldWidget requires special handling in layout usually, but let's try
         ReorderableFormFieldWidget(
           formKey: _formKey,
           labelText: "Reorderable List",
@@ -282,5 +278,36 @@ class ReorderableFormFieldWidget
       newItems.map((e) => AppEvent_ReorderableItem(id: e.id, title: e.title)),
     );
     return updatedPayload;
+  }
+}
+
+class DateFormFieldWidget
+    extends
+        BaseCheckboxFormField<
+          AppSubmitBloc,
+          AppEventSubmission,
+          SubmitAppEvent
+        > {
+  const DateFormFieldWidget({
+    super.key,
+    required super.formKey,
+    required super.labelText,
+  }) : super(eventFactory: appEventSubmissionFactory);
+
+  @override
+  bool getValueFromPayload(SubmitAppEvent payload) {
+    return payload.appEvent.templateForm.dateValue;
+  }
+
+  @override
+  SubmitAppEvent updatePayload(SubmitAppEvent originalPayload, bool newValue) {
+    final updatedPayload = originalPayload.deepCopy();
+    updatedPayload.appEvent.templateForm.dateValue = newValue;
+    return updatedPayload;
+  }
+
+  @override
+  String? validator(BuildContext context, bool value) {
+    return null;
   }
 }
