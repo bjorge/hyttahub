@@ -92,10 +92,6 @@ class UpdateButton extends StatelessWidget {
         if (appState.listItems.isNotEmpty) {
           templateForm.listItems.addAll(appState.listItems);
         }
-        // Date not implemented in replay state for now in previous steps, but it is in proto.
-        if (appState.hasDateValue()) {
-          templateForm.dateValue = appState.dateValue;
-        }
 
         return ElevatedButton(
           onPressed: () {

@@ -43,9 +43,17 @@ AppReplayBlocState appReplay(
         replay.dropdownValue = appEvent.templateForm.dropdownValue;
         replay.listItems.clear();
         replay.listItems.addAll(appEvent.templateForm.listItems);
-        replay.dateValue = appEvent.templateForm.dateValue;
       }
     }
+  }
+
+  // Initialize list items if empty to show something
+  if (replay.listItems.isEmpty) {
+    replay.listItems.addAll([
+      AppEvent_ReorderableItem(id: 1, title: 'Item 1'),
+      AppEvent_ReorderableItem(id: 2, title: 'Item 2'),
+      AppEvent_ReorderableItem(id: 3, title: 'Item 3'),
+    ]);
   }
 
   return replay;

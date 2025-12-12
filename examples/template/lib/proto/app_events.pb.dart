@@ -84,7 +84,6 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     $core.bool? checkboxValue,
     $core.String? dropdownValue,
     $core.Iterable<AppEvent_ReorderableItem>? listItems,
-    $core.bool? dateValue,
   }) {
     final $result = create();
     if (textValue != null) {
@@ -102,9 +101,6 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     if (listItems != null) {
       $result.listItems.addAll(listItems);
     }
-    if (dateValue != null) {
-      $result.dateValue = dateValue;
-    }
     return $result;
   }
   AppEvent_TemplateForm._() : super();
@@ -117,7 +113,6 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
     ..aOB(3, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
     ..aOS(4, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
     ..pc<AppEvent_ReorderableItem>(5, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: AppEvent_ReorderableItem.create)
-    ..aOB(6, _omitFieldNames ? '' : 'dateValue', protoName: 'dateValue')
     ..hasRequiredFields = false
   ;
 
@@ -180,15 +175,6 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(5)
   $core.List<AppEvent_ReorderableItem> get listItems => $_getList(4);
-
-  @$pb.TagNumber(6)
-  $core.bool get dateValue => $_getBF(5);
-  @$pb.TagNumber(6)
-  set dateValue($core.bool v) { $_setBool(5, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasDateValue() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearDateValue() => clearField(6);
 }
 
 enum AppEvent_Event {

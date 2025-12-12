@@ -89,7 +89,6 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
         TextFormFieldWidget(formKey: _formKey, labelText: "Text Value"),
         CodeFormFieldWidget(formKey: _formKey, labelText: "Code Value"),
         CheckboxFormFieldWidget(formKey: _formKey, labelText: "Checkbox Value"),
-        DateFormFieldWidget(formKey: _formKey, labelText: "Date Value"),
         DropdownFormFieldWidget(
           formKey: _formKey,
           labelText: "Dropdown Value",
@@ -278,36 +277,5 @@ class ReorderableFormFieldWidget
       newItems.map((e) => AppEvent_ReorderableItem(id: e.id, title: e.title)),
     );
     return updatedPayload;
-  }
-}
-
-class DateFormFieldWidget
-    extends
-        BaseCheckboxFormField<
-          AppSubmitBloc,
-          AppEventSubmission,
-          SubmitAppEvent
-        > {
-  const DateFormFieldWidget({
-    super.key,
-    required super.formKey,
-    required super.labelText,
-  }) : super(eventFactory: appEventSubmissionFactory);
-
-  @override
-  bool getValueFromPayload(SubmitAppEvent payload) {
-    return payload.appEvent.templateForm.dateValue;
-  }
-
-  @override
-  SubmitAppEvent updatePayload(SubmitAppEvent originalPayload, bool newValue) {
-    final updatedPayload = originalPayload.deepCopy();
-    updatedPayload.appEvent.templateForm.dateValue = newValue;
-    return updatedPayload;
-  }
-
-  @override
-  String? validator(BuildContext context, bool value) {
-    return null;
   }
 }

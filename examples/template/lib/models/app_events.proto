@@ -15,7 +15,6 @@ message AppEvent {
     bool checkboxValue = 3;
     string dropdownValue = 4;
     repeated ReorderableItem listItems = 5;
-    bool dateValue = 6;
   }
 
   oneof event {

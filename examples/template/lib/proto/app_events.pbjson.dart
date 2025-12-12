@@ -43,7 +43,6 @@ const AppEvent_TemplateForm$json = {
     {'1': 'checkboxValue', '3': 3, '4': 1, '5': 8, '10': 'checkboxValue'},
     {'1': 'dropdownValue', '3': 4, '4': 1, '5': 9, '10': 'dropdownValue'},
     {'1': 'listItems', '3': 5, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppEvent.ReorderableItem', '10': 'listItems'},
-    {'1': 'dateValue', '3': 6, '4': 1, '5': 8, '10': 'dateValue'},
   ],
 };
 
@@ -51,12 +50,12 @@ const AppEvent_TemplateForm$json = {
 final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
     'CghBcHBFdmVudBJWCgx0ZW1wbGF0ZUZvcm0YAiABKAsyMC5oeXR0YWh1Yi5leGFtcGxlLnRlbX'
     'BsYXRlLkFwcEV2ZW50LlRlbXBsYXRlRm9ybUgAUgx0ZW1wbGF0ZUZvcm0aNwoPUmVvcmRlcmFi'
-    'bGVJdGVtEg4KAmlkGAEgASgFUgJpZBIUCgV0aXRsZRgCIAEoCVIFdGl0bGUahwIKDFRlbXBsYX'
+    'bGVJdGVtEg4KAmlkGAEgASgFUgJpZBIUCgV0aXRsZRgCIAEoCVIFdGl0bGUa6QEKDFRlbXBsYX'
     'RlRm9ybRIcCgl0ZXh0VmFsdWUYASABKAlSCXRleHRWYWx1ZRIcCgljb2RlVmFsdWUYAiABKAlS'
     'CWNvZGVWYWx1ZRIkCg1jaGVja2JveFZhbHVlGAMgASgIUg1jaGVja2JveFZhbHVlEiQKDWRyb3'
     'Bkb3duVmFsdWUYBCABKAlSDWRyb3Bkb3duVmFsdWUSUQoJbGlzdEl0ZW1zGAUgAygLMjMuaHl0'
     'dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdmVudC5SZW9yZGVyYWJsZUl0ZW1SCWxpc3RJdG'
-    'VtcxIcCglkYXRlVmFsdWUYBiABKAhSCWRhdGVWYWx1ZUIHCgVldmVudA==');
+    'Vtc0IHCgVldmVudA==');
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
 const SubmitAppEvent$json = {

@@ -27,7 +27,6 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.bool? checkboxValue,
     $core.String? dropdownValue,
     $core.Iterable<$0.AppEvent_ReorderableItem>? listItems,
-    $core.bool? dateValue,
   }) {
     final $result = create();
     if (events != null) {
@@ -51,9 +50,6 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (listItems != null) {
       $result.listItems.addAll(listItems);
     }
-    if (dateValue != null) {
-      $result.dateValue = dateValue;
-    }
     return $result;
   }
   AppReplayBlocState._() : super();
@@ -68,7 +64,6 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..aOB(5, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
     ..aOS(6, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
     ..pc<$0.AppEvent_ReorderableItem>(7, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: $0.AppEvent_ReorderableItem.create)
-    ..aOB(8, _omitFieldNames ? '' : 'dateValue', protoName: 'dateValue')
     ..hasRequiredFields = false
   ;
 
@@ -143,15 +138,6 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(7)
   $core.List<$0.AppEvent_ReorderableItem> get listItems => $_getList(6);
-
-  @$pb.TagNumber(8)
-  $core.bool get dateValue => $_getBF(7);
-  @$pb.TagNumber(8)
-  set dateValue($core.bool v) { $_setBool(7, v); }
-  @$pb.TagNumber(8)
-  $core.bool hasDateValue() => $_has(7);
-  @$pb.TagNumber(8)
-  void clearDateValue() => clearField(8);
 }
 
 
