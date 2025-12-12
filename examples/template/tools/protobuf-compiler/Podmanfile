@@ -1,0 +1,52 @@
+# Use Node.js 18 as base (for Firebase Functions)
+FROM node:18-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    protobuf-compiler \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Dart SDK (direct download with explicit directory handling)
+ARG ARCH=x64
+RUN if [ "$ARCH" = "arm64" ]; then \
+      wget https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-arm64-release.zip -O dart-sdk.zip; \
+    else \
+      wget https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip -O dart-sdk.zip; \
+    fi \
+    && unzip dart-sdk.zip -d /usr/lib \
+    && rm dart-sdk.zip \
+    && mv /usr/lib/dart-sdk-* /usr/lib/dart-sdk 2>/dev/null || true \
+    && ln -s /usr/lib/dart-sdk/bin/dart /usr/bin/dart \
+    && ln -s /usr/lib/dart-sdk/bin/pub /usr/bin/pub
+
+# RUN wget https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-x64-release.zip -O dart-sdk.zip \
+#     && unzip dart-sdk.zip -d /usr/lib \
+#     && rm dart-sdk.zip \
+#     && mv /usr/lib/dart-sdk-* /usr/lib/dart-sdk 2>/dev/null || true \
+#     && ln -s /usr/lib/dart-sdk/bin/dart /usr/bin/dart \
+#     && ln -s /usr/lib/dart-sdk/bin/pub /usr/bin/pub
+
+# Set up environment variables
+ENV PATH="${PATH}:/usr/lib/dart-sdk/bin"
+ENV DART_SDK="/usr/lib/dart-sdk"
+
+# Install protoc-gen-dart
+RUN dart pub global activate protoc_plugin ^21.0.0
+ENV PATH="${PATH}:/usr/lib/dart-sdk/bin:/root/.pub-cache/bin"
+
+# Install specific ts-proto version without buf dependencies
+RUN npm install -g ts-proto@1.180.0 --ignore-scripts
+
+# Set up workspace
+RUN mkdir -p /workspace/proto_input \
+    /workspace/flutter_output \
+    /workspace/functions_output
+
+# Copy compilation script
+COPY compile_proto.sh /workspace/
+RUN chmod +x /workspace/compile_proto.sh
+
+WORKDIR /workspace
+CMD ["/bin/bash"]

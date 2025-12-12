@@ -1,0 +1,61 @@
+{
+    "@@locale": "es",
+    "app_uploadingPhotosProgress": "Subiendo {count} de {total} archivos...",
+    "@app_uploadingPhotosProgress": {
+        "placeholders": {
+            "count": {},
+            "total": {}
+        }
+    },
+    "app_submissionError": "Error de Envío: {error}",
+    "@app_submissionError": {
+        "placeholders": {
+            "error": {}
+        }
+    },
+    "app_photoSizeInKB": "{size} KB",
+    "@app_photoSizeInKB": {
+        "placeholders": {
+            "size": {
+                "type": "String"
+            }
+        }
+    },
+    "app_unexpectedError": "Error inesperado, comprueba tu conexión a internet, vuelve atrás e inténtalo de nuevo",
+    "app_appTitle": "Hytta Hub Ejemplo de Formulario",
+    "app_nightMode": "Modo Nocturno",
+    "app_themeSettingsAlwaysOff": "Siempre Apagado",
+    "app_themeSettingsAlwaysOn": "Siempre Encendido",
+    "app_themeSettingsAutomatic": "Automático",
+    "app_versionInfo": "Versión {appVersion}-{appBuildNumber}",
+    "@app_versionInfo": {
+        "placeholders": {
+            "appVersion": {
+                "type": "String"
+            },
+            "appBuildNumber": {
+                "type": "int"
+            }
+        }
+    },
+    "app_selectLanguage": "Seleccionar Idioma",
+    "app_english": "Inglés",
+    "app_italian": "Italiano",
+    "app_spanish": "Español",
+    "app_norwegian": "Noruego",
+    "app_dutch": "Neerlandés",
+    "app_enterButton": "Entrar",
+    "app_serviceLoginButton": "Inicio de Sesión de Servicio",
+    "app_updateTextButton": "Actualizar Texto",
+    "app_textValueDisplay": "Valor del Texto: {value}",
+    "@app_textValueDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "app_updateTextValueTitle": "Actualizar Valor del Texto",
+    "app_textValueLabel": "Valor del Texto",
+    "app_permissionDenied": "No tienes permiso para realizar esta acción."
+}
