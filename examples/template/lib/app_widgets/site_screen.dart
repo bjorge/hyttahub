@@ -1,5 +1,3 @@
-// Copyright (c) 2025 bjorge
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -51,7 +49,7 @@ class SiteScreen extends StatelessWidget {
         ),
         body: CommonListViewLayout(
           spacing: 10.0,
-          children: [TextValue(), UpdateButton(siteId: siteId)],
+          children: [const AppStateDisplay(), UpdateButton(siteId: siteId)],
         ),
       ),
     );
@@ -72,21 +70,38 @@ class UpdateButton extends StatelessWidget {
           return errorWidget;
         }
 
-        final textValue = appState.hasText() ? appState.text : '';
-
         final version =
             appState.events.isEmpty
                 ? 1
                 : appState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
                     1;
 
+        final templateForm = AppEvent_TemplateForm();
+        if (appState.hasTextValue()) {
+          templateForm.textValue = appState.textValue;
+        }
+        if (appState.hasCodeValue()) {
+          templateForm.codeValue = appState.codeValue;
+        }
+        if (appState.hasCheckboxValue()) {
+          templateForm.checkboxValue = appState.checkboxValue;
+        }
+        if (appState.hasDropdownValue()) {
+          templateForm.dropdownValue = appState.dropdownValue;
+        }
+        if (appState.listItems.isNotEmpty) {
+          templateForm.listItems.addAll(appState.listItems);
+        }
+        // Date not implemented in replay state for now in previous steps, but it is in proto.
+        if (appState.hasDateValue()) {
+          templateForm.dateValue = appState.dateValue;
+        }
+
         return ElevatedButton(
           onPressed: () {
             final submmitValue = SubmitAppEvent(
               authorEmail: GetIt.instance<AuthBloc>().state.email,
-              appEvent: AppEvent(
-                updateText: AppEvent_UpdateText(text: textValue),
-              ),
+              appEvent: AppEvent(templateForm: templateForm),
               siteEvent: SubmitAppEvent_SiteEvent(version: version),
             );
             final encodedSubmitValue = base64UrlEncode(
@@ -103,8 +118,8 @@ class UpdateButton extends StatelessWidget {
   }
 }
 
-class TextValue extends StatelessWidget {
-  const TextValue({super.key});
+class AppStateDisplay extends StatelessWidget {
+  const AppStateDisplay({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +130,15 @@ class TextValue extends StatelessWidget {
           return errorWidget;
         }
 
-        final textValue = appState.hasText() ? appState.text : '';
-
-        return Text(
-          AppLocalizations.of(context)!.app_textValueDisplay(textValue),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Text: ${appState.textValue}"),
+            Text("Code: ${appState.codeValue}"),
+            Text("Checkbox: ${appState.checkboxValue}"),
+            Text("Dropdown: ${appState.dropdownValue}"),
+            Text("Items: ${appState.listItems.length}"),
+          ],
         );
       },
     );

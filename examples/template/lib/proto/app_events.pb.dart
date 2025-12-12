@@ -13,56 +13,6 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-class AppEvent_UpdateText extends $pb.GeneratedMessage {
-  factory AppEvent_UpdateText({
-    $core.String? text,
-  }) {
-    final $result = create();
-    if (text != null) {
-      $result.text = text;
-    }
-    return $result;
-  }
-  AppEvent_UpdateText._() : super();
-  factory AppEvent_UpdateText.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent_UpdateText.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateText', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'text')
-    ..hasRequiredFields = false
-  ;
-
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent_UpdateText clone() => AppEvent_UpdateText()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent_UpdateText copyWith(void Function(AppEvent_UpdateText) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateText)) as AppEvent_UpdateText;
-
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static AppEvent_UpdateText create() => AppEvent_UpdateText._();
-  AppEvent_UpdateText createEmptyInstance() => create();
-  static $pb.PbList<AppEvent_UpdateText> createRepeated() => $pb.PbList<AppEvent_UpdateText>();
-  @$core.pragma('dart2js:noInline')
-  static AppEvent_UpdateText getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateText>(create);
-  static AppEvent_UpdateText? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get text => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set text($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasText() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearText() => clearField(1);
-}
-
 class AppEvent_ReorderableItem extends $pb.GeneratedMessage {
   factory AppEvent_ReorderableItem({
     $core.int? id,
@@ -242,20 +192,15 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
 }
 
 enum AppEvent_Event {
-  updateText, 
   templateForm, 
   notSet
 }
 
 class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent({
-    AppEvent_UpdateText? updateText,
     AppEvent_TemplateForm? templateForm,
   }) {
     final $result = create();
-    if (updateText != null) {
-      $result.updateText = updateText;
-    }
     if (templateForm != null) {
       $result.templateForm = templateForm;
     }
@@ -266,13 +211,11 @@ class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static const $core.Map<$core.int, AppEvent_Event> _AppEvent_EventByTag = {
-    1 : AppEvent_Event.updateText,
     2 : AppEvent_Event.templateForm,
     0 : AppEvent_Event.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
-    ..oo(0, [1, 2])
-    ..aOM<AppEvent_UpdateText>(1, _omitFieldNames ? '' : 'updateText', protoName: 'updateText', subBuilder: AppEvent_UpdateText.create)
+    ..oo(0, [2])
     ..aOM<AppEvent_TemplateForm>(2, _omitFieldNames ? '' : 'templateForm', protoName: 'templateForm', subBuilder: AppEvent_TemplateForm.create)
     ..hasRequiredFields = false
   ;
@@ -301,27 +244,16 @@ class AppEvent extends $pb.GeneratedMessage {
   AppEvent_Event whichEvent() => _AppEvent_EventByTag[$_whichOneof(0)]!;
   void clearEvent() => clearField($_whichOneof(0));
 
-  @$pb.TagNumber(1)
-  AppEvent_UpdateText get updateText => $_getN(0);
-  @$pb.TagNumber(1)
-  set updateText(AppEvent_UpdateText v) { setField(1, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasUpdateText() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUpdateText() => clearField(1);
-  @$pb.TagNumber(1)
-  AppEvent_UpdateText ensureUpdateText() => $_ensure(0);
-
   @$pb.TagNumber(2)
-  AppEvent_TemplateForm get templateForm => $_getN(1);
+  AppEvent_TemplateForm get templateForm => $_getN(0);
   @$pb.TagNumber(2)
   set templateForm(AppEvent_TemplateForm v) { setField(2, v); }
   @$pb.TagNumber(2)
-  $core.bool hasTemplateForm() => $_has(1);
+  $core.bool hasTemplateForm() => $_has(0);
   @$pb.TagNumber(2)
   void clearTemplateForm() => clearField(2);
   @$pb.TagNumber(2)
-  AppEvent_TemplateForm ensureTemplateForm() => $_ensure(1);
+  AppEvent_TemplateForm ensureTemplateForm() => $_ensure(0);
 }
 
 /// the final site event will contain this app event

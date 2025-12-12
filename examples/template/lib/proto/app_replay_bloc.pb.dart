@@ -13,6 +13,7 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'app_events.pb.dart' as $0;
 import 'app_replay_bloc.pbenum.dart';
 
 export 'app_replay_bloc.pbenum.dart';
@@ -21,7 +22,12 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   factory AppReplayBlocState({
     $core.Map<$core.int, $core.String>? events,
     AppReplayStateEnum? state,
-    $core.String? text,
+    $core.String? textValue,
+    $core.String? codeValue,
+    $core.bool? checkboxValue,
+    $core.String? dropdownValue,
+    $core.Iterable<$0.AppEvent_ReorderableItem>? listItems,
+    $core.bool? dateValue,
   }) {
     final $result = create();
     if (events != null) {
@@ -30,8 +36,23 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (state != null) {
       $result.state = state;
     }
-    if (text != null) {
-      $result.text = text;
+    if (textValue != null) {
+      $result.textValue = textValue;
+    }
+    if (codeValue != null) {
+      $result.codeValue = codeValue;
+    }
+    if (checkboxValue != null) {
+      $result.checkboxValue = checkboxValue;
+    }
+    if (dropdownValue != null) {
+      $result.dropdownValue = dropdownValue;
+    }
+    if (listItems != null) {
+      $result.listItems.addAll(listItems);
+    }
+    if (dateValue != null) {
+      $result.dateValue = dateValue;
     }
     return $result;
   }
@@ -42,7 +63,12 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppReplayBlocState', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
     ..m<$core.int, $core.String>(1, _omitFieldNames ? '' : 'events', entryClassName: 'AppReplayBlocState.EventsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('hyttahub.example.template'))
     ..e<AppReplayStateEnum>(2, _omitFieldNames ? '' : 'state', $pb.PbFieldType.OE, defaultOrMaker: AppReplayStateEnum.hydrating, valueOf: AppReplayStateEnum.valueOf, enumValues: AppReplayStateEnum.values)
-    ..aOS(3, _omitFieldNames ? '' : 'text')
+    ..aOS(3, _omitFieldNames ? '' : 'textValue', protoName: 'textValue')
+    ..aOS(4, _omitFieldNames ? '' : 'codeValue', protoName: 'codeValue')
+    ..aOB(5, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
+    ..aOS(6, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
+    ..pc<$0.AppEvent_ReorderableItem>(7, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: $0.AppEvent_ReorderableItem.create)
+    ..aOB(8, _omitFieldNames ? '' : 'dateValue', protoName: 'dateValue')
     ..hasRequiredFields = false
   ;
 
@@ -80,13 +106,52 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   void clearState() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get text => $_getSZ(2);
+  $core.String get textValue => $_getSZ(2);
   @$pb.TagNumber(3)
-  set text($core.String v) { $_setString(2, v); }
+  set textValue($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasText() => $_has(2);
+  $core.bool hasTextValue() => $_has(2);
   @$pb.TagNumber(3)
-  void clearText() => clearField(3);
+  void clearTextValue() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get codeValue => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set codeValue($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasCodeValue() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearCodeValue() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.bool get checkboxValue => $_getBF(4);
+  @$pb.TagNumber(5)
+  set checkboxValue($core.bool v) { $_setBool(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasCheckboxValue() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearCheckboxValue() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get dropdownValue => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set dropdownValue($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasDropdownValue() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearDropdownValue() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.List<$0.AppEvent_ReorderableItem> get listItems => $_getList(6);
+
+  @$pb.TagNumber(8)
+  $core.bool get dateValue => $_getBF(7);
+  @$pb.TagNumber(8)
+  set dateValue($core.bool v) { $_setBool(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasDateValue() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearDateValue() => clearField(8);
 }
 
 

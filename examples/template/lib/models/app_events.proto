@@ -4,8 +4,6 @@ package hyttahub.example.template;
 
 message AppEvent {
 
-  message UpdateText { string text = 1; }
-  
   message ReorderableItem {
     int32 id = 1;
     string title = 2;
@@ -17,11 +15,10 @@ message AppEvent {
     bool checkboxValue = 3;
     string dropdownValue = 4;
     repeated ReorderableItem listItems = 5;
-    bool dateValue = 6; // Just a place holder for now.
+    bool dateValue = 6;
   }
 
   oneof event {
-    UpdateText updateText = 1;
     TemplateForm templateForm = 2;
   }
 }

@@ -37,7 +37,12 @@ const AppReplayBlocState$json = {
   '2': [
     {'1': 'events', '3': 1, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppReplayBlocState.EventsEntry', '10': 'events'},
     {'1': 'state', '3': 2, '4': 1, '5': 14, '6': '.hyttahub.example.template.AppReplayStateEnum', '10': 'state'},
-    {'1': 'text', '3': 3, '4': 1, '5': 9, '10': 'text'},
+    {'1': 'textValue', '3': 3, '4': 1, '5': 9, '10': 'textValue'},
+    {'1': 'codeValue', '3': 4, '4': 1, '5': 9, '10': 'codeValue'},
+    {'1': 'checkboxValue', '3': 5, '4': 1, '5': 8, '10': 'checkboxValue'},
+    {'1': 'dropdownValue', '3': 6, '4': 1, '5': 9, '10': 'dropdownValue'},
+    {'1': 'listItems', '3': 7, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppEvent.ReorderableItem', '10': 'listItems'},
+    {'1': 'dateValue', '3': 8, '4': 1, '5': 8, '10': 'dateValue'},
   ],
   '3': [AppReplayBlocState_EventsEntry$json],
 };
@@ -57,6 +62,10 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'ChJBcHBSZXBsYXlCbG9jU3RhdGUSUQoGZXZlbnRzGAEgAygLMjkuaHl0dGFodWIuZXhhbXBsZS'
     '50ZW1wbGF0ZS5BcHBSZXBsYXlCbG9jU3RhdGUuRXZlbnRzRW50cnlSBmV2ZW50cxJDCgVzdGF0'
     'ZRgCIAEoDjItLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwUmVwbGF5U3RhdGVFbnVtUg'
-    'VzdGF0ZRISCgR0ZXh0GAMgASgJUgR0ZXh0GjkKC0V2ZW50c0VudHJ5EhAKA2tleRgBIAEoBVID'
-    'a2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+    'VzdGF0ZRIcCgl0ZXh0VmFsdWUYAyABKAlSCXRleHRWYWx1ZRIcCgljb2RlVmFsdWUYBCABKAlS'
+    'CWNvZGVWYWx1ZRIkCg1jaGVja2JveFZhbHVlGAUgASgIUg1jaGVja2JveFZhbHVlEiQKDWRyb3'
+    'Bkb3duVmFsdWUYBiABKAlSDWRyb3Bkb3duVmFsdWUSUQoJbGlzdEl0ZW1zGAcgAygLMjMuaHl0'
+    'dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdmVudC5SZW9yZGVyYWJsZUl0ZW1SCWxpc3RJdG'
+    'VtcxIcCglkYXRlVmFsdWUYCCABKAhSCWRhdGVWYWx1ZRo5CgtFdmVudHNFbnRyeRIQCgNrZXkY'
+    'ASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');
 

@@ -10,9 +10,16 @@ enum AppReplayStateEnum {
   permissionDenied = 4;       // permission denied at startup
 }
 
+import "app_events.proto";
+
 message AppReplayBlocState {
   map<int32, string> events = 1; // base64 encoded events
   AppReplayStateEnum state = 2;
 
-  string text = 3;
+  string textValue = 3;
+  string codeValue = 4;
+  bool checkboxValue = 5;
+  string dropdownValue = 6;
+  repeated hyttahub.example.template.AppEvent.ReorderableItem listItems = 7;
+  bool dateValue = 8;
 }
