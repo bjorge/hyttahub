@@ -107,7 +107,7 @@ class UpdateButton extends StatelessWidget {
               '${SiteScreenFormRoute.fullPath(siteId)}?event=$encodedSubmitValue',
             );
           },
-          child: Text(AppLocalizations.of(context)!.app_updateTextButton),
+          child: Text("Update Values"),
         );
       },
     );
@@ -133,7 +133,7 @@ class AppStateDisplay extends StatelessWidget {
             Text("Code: ${appState.codeValue}"),
             Text("Checkbox: ${appState.checkboxValue}"),
             Text("Dropdown: ${appState.dropdownValue}"),
-            Text("Items: ${appState.listItems.length}"),
+            Text("Items: ${appState.listItems.map((e) => e.title).join(', ')}"),
           ],
         );
       },

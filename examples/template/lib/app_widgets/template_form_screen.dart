@@ -39,14 +39,14 @@ class _TemplateFormScreenState extends State<TemplateFormScreen> {
       submitEvent.appEvent.templateForm = AppEvent_TemplateForm();
     }
 
-    // Initialize list items if empty to show something
-    if (submitEvent.appEvent.templateForm.listItems.isEmpty) {
-      submitEvent.appEvent.templateForm.listItems.addAll([
-        AppEvent_ReorderableItem(id: 1, title: 'Item 1'),
-        AppEvent_ReorderableItem(id: 2, title: 'Item 2'),
-        AppEvent_ReorderableItem(id: 3, title: 'Item 3'),
-      ]);
-    }
+    // // Initialize list items if empty to show something
+    // if (submitEvent.appEvent.templateForm.listItems.isEmpty) {
+    //   submitEvent.appEvent.templateForm.listItems.addAll([
+    //     AppEvent_ReorderableItem(id: 1, title: 'Item 1'),
+    //     AppEvent_ReorderableItem(id: 2, title: 'Item 2'),
+    //     AppEvent_ReorderableItem(id: 3, title: 'Item 3'),
+    //   ]);
+    // }
 
     return BlocProvider(
       create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
