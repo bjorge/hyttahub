@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package hyttahub.example.tictactoe;
+
+enum AppReplayStateEnum {
+  hydrating = 0;              // startup, not listening yet
+  listening = 1;              // listening to non-empty events collection
+  uninitializedListening = 2; // listening to an empty events collection
+  networkError = 3;           // network error at startup
+  permissionDenied = 4;       // permission denied at startup
+}
+
+import "app_events.proto";
+
+message AppReplayBlocState {
+  map<int32, string> events = 1; // base64 encoded events
+  AppReplayStateEnum state = 2;
+
+  // Board state: 0 = empty, 1 = X, 2 = O
+  // Represented as a list of 9 integers (row-major)
+  repeated int32 board = 3;
+  
+  // Whose turn is it? 1 = X, 2 = O
+  int32 turn = 4;
+
+  // Winner: 0 = none/ongoing, 1 = X, 2 = O, 3 = Draw
+  int32 winner = 5;
+}

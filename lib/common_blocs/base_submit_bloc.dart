@@ -56,12 +56,24 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
   bool payloadChanged;
   bool isFormValid;
 
+  /// Whether to allow payload updates and new submissions after a successful submission.
+  /// Defaults to false to prevent accidental double-submissions or state divergence.
+  bool get allowResubmission => false;
+
   FutureOr<void> _onEvent(
     BaseSubmitEvent<T> event,
     Emitter<BaseSubmitState<T>> emit,
   ) async {
     if (event.updatedPayload != null || event.submission.hasIsFormValid()) {
-      if (state.submissionState.state != CommonSubmitBlocState_State.ready &&
+      // Always block updates if currently submitting
+      if (state.submissionState.state ==
+          CommonSubmitBlocState_State.submitting) {
+        return;
+      }
+
+      // If strict mode (allowResubmission == false), block updates if not in ready/canSubmit state
+      if (!allowResubmission &&
+          state.submissionState.state != CommonSubmitBlocState_State.ready &&
           state.submissionState.state !=
               CommonSubmitBlocState_State.canSubmit) {
         return;
