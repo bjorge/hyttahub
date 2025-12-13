@@ -78,10 +78,6 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
           newEvent.updatePhoto.version = version;
           newEvent.updatePhoto.name = image.name;
           newEvent.updatePhoto.size = image.size;
-        } else if (newEvent.hasTemplateForm()) {
-          newEvent.templateForm.photoVersion = version;
-          newEvent.templateForm.photoName = image.name;
-          newEvent.templateForm.photoSize = image.size;
         }
 
         final siteEvent = SiteEvent(

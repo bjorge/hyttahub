@@ -36,18 +36,7 @@ AppReplayBlocState appReplay(
 
     if (event.hasAppEvent()) {
       final appEvent = unpackAppEventWrapper(event.appEvent, AppEvent.create);
-      if (appEvent.hasTemplateForm()) {
-        replay.textValue = appEvent.templateForm.textValue;
-        replay.codeValue = appEvent.templateForm.codeValue;
-        replay.checkboxValue = appEvent.templateForm.checkboxValue;
-        replay.dropdownValue = appEvent.templateForm.dropdownValue;
-        replay.listItems.clear();
-        replay.listItems.addAll(appEvent.templateForm.listItems);
-        if (appEvent.templateForm.photoVersion > 0) {
-          replay.photoVersion = appEvent.templateForm.photoVersion;
-          replay.photoName = appEvent.templateForm.photoName;
-        }
-      } else if (appEvent.hasUpdateText()) {
+      if (appEvent.hasUpdateText()) {
         replay.textValue = appEvent.updateText.value;
       } else if (appEvent.hasUpdateCode()) {
         replay.codeValue = appEvent.updateCode.value;

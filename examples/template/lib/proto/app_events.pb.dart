@@ -399,153 +399,7 @@ class AppEvent_UpdatePhoto extends $pb.GeneratedMessage {
   void clearSize() => clearField(3);
 }
 
-/// Keeping TemplateForm for now to avoid breaking existing compiled code immediately,
-/// but we will move to using the individual ones.
-/// Actually, we can just add them to the oneof.
-class AppEvent_TemplateForm extends $pb.GeneratedMessage {
-  factory AppEvent_TemplateForm({
-    $core.String? textValue,
-    $core.String? codeValue,
-    $core.bool? checkboxValue,
-    $core.String? dropdownValue,
-    $core.Iterable<AppEvent_ReorderableItem>? listItems,
-    $core.String? photoName,
-    $core.int? photoVersion,
-    $core.int? photoSize,
-  }) {
-    final $result = create();
-    if (textValue != null) {
-      $result.textValue = textValue;
-    }
-    if (codeValue != null) {
-      $result.codeValue = codeValue;
-    }
-    if (checkboxValue != null) {
-      $result.checkboxValue = checkboxValue;
-    }
-    if (dropdownValue != null) {
-      $result.dropdownValue = dropdownValue;
-    }
-    if (listItems != null) {
-      $result.listItems.addAll(listItems);
-    }
-    if (photoName != null) {
-      $result.photoName = photoName;
-    }
-    if (photoVersion != null) {
-      $result.photoVersion = photoVersion;
-    }
-    if (photoSize != null) {
-      $result.photoSize = photoSize;
-    }
-    return $result;
-  }
-  AppEvent_TemplateForm._() : super();
-  factory AppEvent_TemplateForm.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent_TemplateForm.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.TemplateForm', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'textValue', protoName: 'textValue')
-    ..aOS(2, _omitFieldNames ? '' : 'codeValue', protoName: 'codeValue')
-    ..aOB(3, _omitFieldNames ? '' : 'checkboxValue', protoName: 'checkboxValue')
-    ..aOS(4, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
-    ..pc<AppEvent_ReorderableItem>(5, _omitFieldNames ? '' : 'listItems', $pb.PbFieldType.PM, protoName: 'listItems', subBuilder: AppEvent_ReorderableItem.create)
-    ..aOS(7, _omitFieldNames ? '' : 'photoName', protoName: 'photoName')
-    ..a<$core.int>(8, _omitFieldNames ? '' : 'photoVersion', $pb.PbFieldType.O3, protoName: 'photoVersion')
-    ..a<$core.int>(9, _omitFieldNames ? '' : 'photoSize', $pb.PbFieldType.O3, protoName: 'photoSize')
-    ..hasRequiredFields = false
-  ;
-
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent_TemplateForm clone() => AppEvent_TemplateForm()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent_TemplateForm copyWith(void Function(AppEvent_TemplateForm) updates) => super.copyWith((message) => updates(message as AppEvent_TemplateForm)) as AppEvent_TemplateForm;
-
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static AppEvent_TemplateForm create() => AppEvent_TemplateForm._();
-  AppEvent_TemplateForm createEmptyInstance() => create();
-  static $pb.PbList<AppEvent_TemplateForm> createRepeated() => $pb.PbList<AppEvent_TemplateForm>();
-  @$core.pragma('dart2js:noInline')
-  static AppEvent_TemplateForm getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_TemplateForm>(create);
-  static AppEvent_TemplateForm? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get textValue => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set textValue($core.String v) { $_setString(0, v); }
-  @$pb.TagNumber(1)
-  $core.bool hasTextValue() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearTextValue() => clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get codeValue => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set codeValue($core.String v) { $_setString(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasCodeValue() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearCodeValue() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.bool get checkboxValue => $_getBF(2);
-  @$pb.TagNumber(3)
-  set checkboxValue($core.bool v) { $_setBool(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasCheckboxValue() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearCheckboxValue() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.String get dropdownValue => $_getSZ(3);
-  @$pb.TagNumber(4)
-  set dropdownValue($core.String v) { $_setString(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasDropdownValue() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearDropdownValue() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $core.List<AppEvent_ReorderableItem> get listItems => $_getList(4);
-
-  @$pb.TagNumber(7)
-  $core.String get photoName => $_getSZ(5);
-  @$pb.TagNumber(7)
-  set photoName($core.String v) { $_setString(5, v); }
-  @$pb.TagNumber(7)
-  $core.bool hasPhotoName() => $_has(5);
-  @$pb.TagNumber(7)
-  void clearPhotoName() => clearField(7);
-
-  @$pb.TagNumber(8)
-  $core.int get photoVersion => $_getIZ(6);
-  @$pb.TagNumber(8)
-  set photoVersion($core.int v) { $_setSignedInt32(6, v); }
-  @$pb.TagNumber(8)
-  $core.bool hasPhotoVersion() => $_has(6);
-  @$pb.TagNumber(8)
-  void clearPhotoVersion() => clearField(8);
-
-  @$pb.TagNumber(9)
-  $core.int get photoSize => $_getIZ(7);
-  @$pb.TagNumber(9)
-  set photoSize($core.int v) { $_setSignedInt32(7, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasPhotoSize() => $_has(7);
-  @$pb.TagNumber(9)
-  void clearPhotoSize() => clearField(9);
-}
-
 enum AppEvent_Event {
-  templateForm, 
   updateText, 
   updateCode, 
   updateCheckbox, 
@@ -557,7 +411,6 @@ enum AppEvent_Event {
 
 class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent({
-    AppEvent_TemplateForm? templateForm,
     AppEvent_UpdateText? updateText,
     AppEvent_UpdateCode? updateCode,
     AppEvent_UpdateCheckbox? updateCheckbox,
@@ -566,9 +419,6 @@ class AppEvent extends $pb.GeneratedMessage {
     AppEvent_UpdatePhoto? updatePhoto,
   }) {
     final $result = create();
-    if (templateForm != null) {
-      $result.templateForm = templateForm;
-    }
     if (updateText != null) {
       $result.updateText = updateText;
     }
@@ -594,7 +444,6 @@ class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static const $core.Map<$core.int, AppEvent_Event> _AppEvent_EventByTag = {
-    2 : AppEvent_Event.templateForm,
     3 : AppEvent_Event.updateText,
     4 : AppEvent_Event.updateCode,
     5 : AppEvent_Event.updateCheckbox,
@@ -604,8 +453,7 @@ class AppEvent extends $pb.GeneratedMessage {
     0 : AppEvent_Event.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
-    ..oo(0, [2, 3, 4, 5, 6, 7, 8])
-    ..aOM<AppEvent_TemplateForm>(2, _omitFieldNames ? '' : 'templateForm', protoName: 'templateForm', subBuilder: AppEvent_TemplateForm.create)
+    ..oo(0, [3, 4, 5, 6, 7, 8])
     ..aOM<AppEvent_UpdateText>(3, _omitFieldNames ? '' : 'updateText', protoName: 'updateText', subBuilder: AppEvent_UpdateText.create)
     ..aOM<AppEvent_UpdateCode>(4, _omitFieldNames ? '' : 'updateCode', protoName: 'updateCode', subBuilder: AppEvent_UpdateCode.create)
     ..aOM<AppEvent_UpdateCheckbox>(5, _omitFieldNames ? '' : 'updateCheckbox', protoName: 'updateCheckbox', subBuilder: AppEvent_UpdateCheckbox.create)
@@ -639,82 +487,71 @@ class AppEvent extends $pb.GeneratedMessage {
   AppEvent_Event whichEvent() => _AppEvent_EventByTag[$_whichOneof(0)]!;
   void clearEvent() => clearField($_whichOneof(0));
 
-  @$pb.TagNumber(2)
-  AppEvent_TemplateForm get templateForm => $_getN(0);
-  @$pb.TagNumber(2)
-  set templateForm(AppEvent_TemplateForm v) { setField(2, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasTemplateForm() => $_has(0);
-  @$pb.TagNumber(2)
-  void clearTemplateForm() => clearField(2);
-  @$pb.TagNumber(2)
-  AppEvent_TemplateForm ensureTemplateForm() => $_ensure(0);
-
   @$pb.TagNumber(3)
-  AppEvent_UpdateText get updateText => $_getN(1);
+  AppEvent_UpdateText get updateText => $_getN(0);
   @$pb.TagNumber(3)
   set updateText(AppEvent_UpdateText v) { setField(3, v); }
   @$pb.TagNumber(3)
-  $core.bool hasUpdateText() => $_has(1);
+  $core.bool hasUpdateText() => $_has(0);
   @$pb.TagNumber(3)
   void clearUpdateText() => clearField(3);
   @$pb.TagNumber(3)
-  AppEvent_UpdateText ensureUpdateText() => $_ensure(1);
+  AppEvent_UpdateText ensureUpdateText() => $_ensure(0);
 
   @$pb.TagNumber(4)
-  AppEvent_UpdateCode get updateCode => $_getN(2);
+  AppEvent_UpdateCode get updateCode => $_getN(1);
   @$pb.TagNumber(4)
   set updateCode(AppEvent_UpdateCode v) { setField(4, v); }
   @$pb.TagNumber(4)
-  $core.bool hasUpdateCode() => $_has(2);
+  $core.bool hasUpdateCode() => $_has(1);
   @$pb.TagNumber(4)
   void clearUpdateCode() => clearField(4);
   @$pb.TagNumber(4)
-  AppEvent_UpdateCode ensureUpdateCode() => $_ensure(2);
+  AppEvent_UpdateCode ensureUpdateCode() => $_ensure(1);
 
   @$pb.TagNumber(5)
-  AppEvent_UpdateCheckbox get updateCheckbox => $_getN(3);
+  AppEvent_UpdateCheckbox get updateCheckbox => $_getN(2);
   @$pb.TagNumber(5)
   set updateCheckbox(AppEvent_UpdateCheckbox v) { setField(5, v); }
   @$pb.TagNumber(5)
-  $core.bool hasUpdateCheckbox() => $_has(3);
+  $core.bool hasUpdateCheckbox() => $_has(2);
   @$pb.TagNumber(5)
   void clearUpdateCheckbox() => clearField(5);
   @$pb.TagNumber(5)
-  AppEvent_UpdateCheckbox ensureUpdateCheckbox() => $_ensure(3);
+  AppEvent_UpdateCheckbox ensureUpdateCheckbox() => $_ensure(2);
 
   @$pb.TagNumber(6)
-  AppEvent_UpdateDropdown get updateDropdown => $_getN(4);
+  AppEvent_UpdateDropdown get updateDropdown => $_getN(3);
   @$pb.TagNumber(6)
   set updateDropdown(AppEvent_UpdateDropdown v) { setField(6, v); }
   @$pb.TagNumber(6)
-  $core.bool hasUpdateDropdown() => $_has(4);
+  $core.bool hasUpdateDropdown() => $_has(3);
   @$pb.TagNumber(6)
   void clearUpdateDropdown() => clearField(6);
   @$pb.TagNumber(6)
-  AppEvent_UpdateDropdown ensureUpdateDropdown() => $_ensure(4);
+  AppEvent_UpdateDropdown ensureUpdateDropdown() => $_ensure(3);
 
   @$pb.TagNumber(7)
-  AppEvent_UpdateList get updateList => $_getN(5);
+  AppEvent_UpdateList get updateList => $_getN(4);
   @$pb.TagNumber(7)
   set updateList(AppEvent_UpdateList v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasUpdateList() => $_has(5);
+  $core.bool hasUpdateList() => $_has(4);
   @$pb.TagNumber(7)
   void clearUpdateList() => clearField(7);
   @$pb.TagNumber(7)
-  AppEvent_UpdateList ensureUpdateList() => $_ensure(5);
+  AppEvent_UpdateList ensureUpdateList() => $_ensure(4);
 
   @$pb.TagNumber(8)
-  AppEvent_UpdatePhoto get updatePhoto => $_getN(6);
+  AppEvent_UpdatePhoto get updatePhoto => $_getN(5);
   @$pb.TagNumber(8)
   set updatePhoto(AppEvent_UpdatePhoto v) { setField(8, v); }
   @$pb.TagNumber(8)
-  $core.bool hasUpdatePhoto() => $_has(6);
+  $core.bool hasUpdatePhoto() => $_has(5);
   @$pb.TagNumber(8)
   void clearUpdatePhoto() => clearField(8);
   @$pb.TagNumber(8)
-  AppEvent_UpdatePhoto ensureUpdatePhoto() => $_ensure(6);
+  AppEvent_UpdatePhoto ensureUpdatePhoto() => $_ensure(5);
 }
 
 /// the final site event will contain this app event

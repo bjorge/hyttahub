@@ -36,22 +36,7 @@ message AppEvent {
     // We don't need base64 data here as it's separate in SubmitAppEvent.images or Cloud Storage
   }
 
-  // Keeping TemplateForm for now to avoid breaking existing compiled code immediately, 
-  // but we will move to using the individual ones.
-  // Actually, we can just add them to the oneof.
-  message TemplateForm {
-    string textValue = 1;
-    string codeValue = 2;
-    bool checkboxValue = 3;
-    string dropdownValue = 4;
-    repeated ReorderableItem listItems = 5;
-    string photoName = 7;
-    int32 photoVersion = 8;
-    int32 photoSize = 9;
-  }
-
   oneof event {
-    TemplateForm templateForm = 2;
     UpdateText updateText = 3;
     UpdateCode updateCode = 4;
     UpdateCheckbox updateCheckbox = 5;

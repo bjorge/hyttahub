@@ -17,7 +17,6 @@ import 'dart:typed_data' as $typed_data;
 const AppEvent$json = {
   '1': 'AppEvent',
   '2': [
-    {'1': 'templateForm', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.TemplateForm', '9': 0, '10': 'templateForm'},
     {'1': 'updateText', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateText', '9': 0, '10': 'updateText'},
     {'1': 'updateCode', '3': 4, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateCode', '9': 0, '10': 'updateCode'},
     {'1': 'updateCheckbox', '3': 5, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateCheckbox', '9': 0, '10': 'updateCheckbox'},
@@ -25,7 +24,7 @@ const AppEvent$json = {
     {'1': 'updateList', '3': 7, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateList', '9': 0, '10': 'updateList'},
     {'1': 'updatePhoto', '3': 8, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdatePhoto', '9': 0, '10': 'updatePhoto'},
   ],
-  '3': [AppEvent_ReorderableItem$json, AppEvent_UpdateText$json, AppEvent_UpdateCode$json, AppEvent_UpdateCheckbox$json, AppEvent_UpdateDropdown$json, AppEvent_UpdateList$json, AppEvent_UpdatePhoto$json, AppEvent_TemplateForm$json],
+  '3': [AppEvent_ReorderableItem$json, AppEvent_UpdateText$json, AppEvent_UpdateCode$json, AppEvent_UpdateCheckbox$json, AppEvent_UpdateDropdown$json, AppEvent_UpdateList$json, AppEvent_UpdatePhoto$json],
   '8': [
     {'1': 'event'},
   ],
@@ -90,48 +89,25 @@ const AppEvent_UpdatePhoto$json = {
   ],
 };
 
-@$core.Deprecated('Use appEventDescriptor instead')
-const AppEvent_TemplateForm$json = {
-  '1': 'TemplateForm',
-  '2': [
-    {'1': 'textValue', '3': 1, '4': 1, '5': 9, '10': 'textValue'},
-    {'1': 'codeValue', '3': 2, '4': 1, '5': 9, '10': 'codeValue'},
-    {'1': 'checkboxValue', '3': 3, '4': 1, '5': 8, '10': 'checkboxValue'},
-    {'1': 'dropdownValue', '3': 4, '4': 1, '5': 9, '10': 'dropdownValue'},
-    {'1': 'listItems', '3': 5, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppEvent.ReorderableItem', '10': 'listItems'},
-    {'1': 'photoName', '3': 7, '4': 1, '5': 9, '10': 'photoName'},
-    {'1': 'photoVersion', '3': 8, '4': 1, '5': 5, '10': 'photoVersion'},
-    {'1': 'photoSize', '3': 9, '4': 1, '5': 5, '10': 'photoSize'},
-  ],
-};
-
 /// Descriptor for `AppEvent`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
-    'CghBcHBFdmVudBJWCgx0ZW1wbGF0ZUZvcm0YAiABKAsyMC5oeXR0YWh1Yi5leGFtcGxlLnRlbX'
-    'BsYXRlLkFwcEV2ZW50LlRlbXBsYXRlRm9ybUgAUgx0ZW1wbGF0ZUZvcm0SUAoKdXBkYXRlVGV4'
-    'dBgDIAEoCzIuLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlVGV4dE'
-    'gAUgp1cGRhdGVUZXh0ElAKCnVwZGF0ZUNvZGUYBCABKAsyLi5oeXR0YWh1Yi5leGFtcGxlLnRl'
-    'bXBsYXRlLkFwcEV2ZW50LlVwZGF0ZUNvZGVIAFIKdXBkYXRlQ29kZRJcCg51cGRhdGVDaGVja2'
-    'JveBgFIAEoCzIyLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlQ2hl'
-    'Y2tib3hIAFIOdXBkYXRlQ2hlY2tib3gSXAoOdXBkYXRlRHJvcGRvd24YBiABKAsyMi5oeXR0YW'
-    'h1Yi5leGFtcGxlLnRlbXBsYXRlLkFwcEV2ZW50LlVwZGF0ZURyb3Bkb3duSABSDnVwZGF0ZURy'
-    'b3Bkb3duElAKCnVwZGF0ZUxpc3QYByABKAsyLi5oeXR0YWh1Yi5leGFtcGxlLnRlbXBsYXRlLk'
-    'FwcEV2ZW50LlVwZGF0ZUxpc3RIAFIKdXBkYXRlTGlzdBJTCgt1cGRhdGVQaG90bxgIIAEoCzIv'
-    'Lmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlUGhvdG9IAFILdXBkYX'
-    'RlUGhvdG8aNwoPUmVvcmRlcmFibGVJdGVtEg4KAmlkGAEgASgFUgJpZBIUCgV0aXRsZRgCIAEo'
-    'CVIFdGl0bGUaIgoKVXBkYXRlVGV4dBIUCgV2YWx1ZRgBIAEoCVIFdmFsdWUaIgoKVXBkYXRlQ2'
-    '9kZRIUCgV2YWx1ZRgBIAEoCVIFdmFsdWUaJgoOVXBkYXRlQ2hlY2tib3gSFAoFdmFsdWUYASAB'
-    'KAhSBXZhbHVlGiYKDlVwZGF0ZURyb3Bkb3duEhQKBXZhbHVlGAEgASgJUgV2YWx1ZRpXCgpVcG'
-    'RhdGVMaXN0EkkKBWl0ZW1zGAEgAygLMjMuaHl0dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBF'
-    'dmVudC5SZW9yZGVyYWJsZUl0ZW1SBWl0ZW1zGk8KC1VwZGF0ZVBob3RvEhIKBG5hbWUYASABKA'
-    'lSBG5hbWUSGAoHdmVyc2lvbhgCIAEoBVIHdmVyc2lvbhISCgRzaXplGAMgASgFUgRzaXplGskC'
-    'CgxUZW1wbGF0ZUZvcm0SHAoJdGV4dFZhbHVlGAEgASgJUgl0ZXh0VmFsdWUSHAoJY29kZVZhbH'
-    'VlGAIgASgJUgljb2RlVmFsdWUSJAoNY2hlY2tib3hWYWx1ZRgDIAEoCFINY2hlY2tib3hWYWx1'
-    'ZRIkCg1kcm9wZG93blZhbHVlGAQgASgJUg1kcm9wZG93blZhbHVlElEKCWxpc3RJdGVtcxgFIA'
-    'MoCzIzLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuUmVvcmRlcmFibGVJdGVt'
-    'UglsaXN0SXRlbXMSHAoJcGhvdG9OYW1lGAcgASgJUglwaG90b05hbWUSIgoMcGhvdG9WZXJzaW'
-    '9uGAggASgFUgxwaG90b1ZlcnNpb24SHAoJcGhvdG9TaXplGAkgASgFUglwaG90b1NpemVCBwoF'
-    'ZXZlbnQ=');
+    'CghBcHBFdmVudBJQCgp1cGRhdGVUZXh0GAMgASgLMi4uaHl0dGFodWIuZXhhbXBsZS50ZW1wbG'
+    'F0ZS5BcHBFdmVudC5VcGRhdGVUZXh0SABSCnVwZGF0ZVRleHQSUAoKdXBkYXRlQ29kZRgEIAEo'
+    'CzIuLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlQ29kZUgAUgp1cG'
+    'RhdGVDb2RlElwKDnVwZGF0ZUNoZWNrYm94GAUgASgLMjIuaHl0dGFodWIuZXhhbXBsZS50ZW1w'
+    'bGF0ZS5BcHBFdmVudC5VcGRhdGVDaGVja2JveEgAUg51cGRhdGVDaGVja2JveBJcCg51cGRhdG'
+    'VEcm9wZG93bhgGIAEoCzIyLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBk'
+    'YXRlRHJvcGRvd25IAFIOdXBkYXRlRHJvcGRvd24SUAoKdXBkYXRlTGlzdBgHIAEoCzIuLmh5dH'
+    'RhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlTGlzdEgAUgp1cGRhdGVMaXN0'
+    'ElMKC3VwZGF0ZVBob3RvGAggASgLMi8uaHl0dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdm'
+    'VudC5VcGRhdGVQaG90b0gAUgt1cGRhdGVQaG90bxo3Cg9SZW9yZGVyYWJsZUl0ZW0SDgoCaWQY'
+    'ASABKAVSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRoiCgpVcGRhdGVUZXh0EhQKBXZhbHVlGA'
+    'EgASgJUgV2YWx1ZRoiCgpVcGRhdGVDb2RlEhQKBXZhbHVlGAEgASgJUgV2YWx1ZRomCg5VcGRh'
+    'dGVDaGVja2JveBIUCgV2YWx1ZRgBIAEoCFIFdmFsdWUaJgoOVXBkYXRlRHJvcGRvd24SFAoFdm'
+    'FsdWUYASABKAlSBXZhbHVlGlcKClVwZGF0ZUxpc3QSSQoFaXRlbXMYASADKAsyMy5oeXR0YWh1'
+    'Yi5leGFtcGxlLnRlbXBsYXRlLkFwcEV2ZW50LlJlb3JkZXJhYmxlSXRlbVIFaXRlbXMaTwoLVX'
+    'BkYXRlUGhvdG8SEgoEbmFtZRgBIAEoCVIEbmFtZRIYCgd2ZXJzaW9uGAIgASgFUgd2ZXJzaW9u'
+    'EhIKBHNpemUYAyABKAVSBHNpemVCBwoFZXZlbnQ=');
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
 const SubmitAppEvent$json = {
