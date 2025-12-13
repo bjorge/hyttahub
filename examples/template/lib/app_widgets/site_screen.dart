@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:template/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:template/app_blocs/app_replay_bloc.dart';
@@ -10,10 +11,14 @@ import 'package:template/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
+import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
+import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
+import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -82,19 +87,167 @@ class _SiteScreenState extends State<SiteScreen> {
                   AppReplayBloc(widget.siteId)
                     ..add(CommonReplayBlocEvent(listen: true)),
         ),
+        BlocProvider<AllowedEmailsBloc>(
+          create:
+              (_) =>
+                  AllowedEmailsBloc(firebaseSiteUsersPath(widget.siteId))..add(
+                    AllowedEmailsBlocEvent(
+                      fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+                    ),
+                  ),
+        ),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: const ScreenTitle(),
-          actions: [SiteSettingsButton(siteId: widget.siteId)],
-        ),
-        body: CommonListViewLayout(
-          spacing: 10.0,
-          children: [
-            AppStateDisplay(getSignedUrl: _getSignedUrl),
-            UpdateButtons(siteId: widget.siteId),
-          ],
-        ),
+      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+        key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
+        builder: (context, allowedEmailsState) {
+          if (!allowedEmailsState.hasState() ||
+              allowedEmailsState.state ==
+                  AllowedEmailsBlocState_State.fetching) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (allowedEmailsState.state == AllowedEmailsBlocState_State.error) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(AppLocalizations.of(context)!.app_errorTitle),
+              ),
+              body: Center(
+                child: Text(AppLocalizations.of(context)!.app_unexpectedError),
+              ),
+            );
+          }
+
+          if (allowedEmailsState.state ==
+              AllowedEmailsBlocState_State.permissionDenied) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  AppLocalizations.of(context)!.app_accessDeniedTitle,
+                ),
+              ),
+              body: Center(
+                child: Text(
+                  AppLocalizations.of(context)!.app_accessDeniedMessage,
+                ),
+              ),
+            );
+          }
+
+          // ignore: unused_local_variable
+          final userId =
+              allowedEmailsState
+                  .emails[GetIt.instance<AuthBloc>().state.email]
+                  ?.userId;
+
+          return BlocBuilder<SiteEditModeCubit, bool?>(
+            builder: (context, editModeState) {
+              return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
+                builder: (context, siteState) {
+                  final errorWidget = handleSiteReplayState(context, siteState);
+                  if (errorWidget != null) {
+                    return errorWidget;
+                  }
+
+                  final isAdmin = siteState.members[userId]?.admin ?? false;
+
+                  if (isAdmin && editModeState == null) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: Text(
+                          AppLocalizations.of(context)!.app_editModeTitle,
+                        ),
+                      ),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.app_adminPrivileges,
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              AppLocalizations.of(context)!.app_howToProceed,
+                            ),
+                            const SizedBox(height: 30),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed:
+                                      () =>
+                                          context
+                                              .read<SiteEditModeCubit>()
+                                              .editModeOff(),
+                                  icon: const Icon(Icons.visibility),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.app_viewSite,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                ElevatedButton.icon(
+                                  onPressed:
+                                      () =>
+                                          context
+                                              .read<SiteEditModeCubit>()
+                                              .editModeOn(),
+                                  icon: const Icon(Icons.edit),
+                                  label: Text(
+                                    AppLocalizations.of(context)!.app_editSite,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  final isEditModeOn = editModeState ?? false;
+
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: const ScreenTitle(),
+                      actions:
+                          isEditModeOn
+                              ? [
+                                SiteSettingsButton(
+                                  siteId: widget.siteId,
+                                  appOptions: [
+                                    SimpleDialogOption(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        context.push(
+                                          AppEventsDisplayRoute.fullPath(
+                                            siteId: widget.siteId,
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.app_appEventsOption,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ]
+                              : null,
+                    ),
+                    body: CommonListViewLayout(
+                      spacing: 10.0,
+                      children: [
+                        AppStateDisplay(getSignedUrl: _getSignedUrl),
+                        if (isEditModeOn) UpdateButtons(siteId: widget.siteId),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

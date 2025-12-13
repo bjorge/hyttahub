@@ -91,4 +91,32 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get app_permissionDenied =>
       'Du har ikke tillatelse til å utføre denne handlingen.';
+
+  @override
+  String get app_appEventsOption => 'App Events';
+
+  @override
+  String get app_editModeTitle => 'Edit Mode';
+
+  @override
+  String get app_adminPrivileges => 'You have admin privileges for this site.';
+
+  @override
+  String get app_howToProceed => 'How would you like to proceed?';
+
+  @override
+  String get app_viewSite => 'View Site';
+
+  @override
+  String get app_editSite => 'Edit Site';
+
+  @override
+  String get app_errorTitle => 'Error';
+
+  @override
+  String get app_accessDeniedTitle => 'Access Denied';
+
+  @override
+  String get app_accessDeniedMessage =>
+      'You do not have permission to access this site';
 }

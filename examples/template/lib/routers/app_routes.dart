@@ -3,6 +3,7 @@
 import 'package:template/app_widgets/site_screen.dart';
 // import 'package:template/app_widgets/template_form_screen.dart'; // Removing
 import 'package:template/app_widgets/photo_upload_screen.dart';
+import 'package:template/app_widgets/app_events_display.dart';
 import 'package:template/app_widgets/update_text_screen.dart';
 import 'package:template/app_widgets/update_code_screen.dart';
 import 'package:template/app_widgets/update_checkbox_screen.dart';
@@ -32,6 +33,26 @@ class SiteScreenRoute extends GoRoute {
   /// A builder for the full path to this route.
   static String fullPath(String siteId) =>
       '${AccountScreenRoute.fullPath}/site/$siteId';
+}
+
+/// A route for the app events display screen.
+class AppEventsDisplayRoute extends GoRoute {
+  /// Creates an [AppEventsDisplayRoute].
+  AppEventsDisplayRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return AppEventsDisplayScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'app_events_display';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) =>
+      '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
 }
 
 class UpdateTextRoute extends GoRoute {
@@ -161,6 +182,7 @@ final updateCodeRoute = UpdateCodeRoute(routes: []);
 final updateCheckboxRoute = UpdateCheckboxRoute(routes: []);
 final updateDropdownRoute = UpdateDropdownRoute(routes: []);
 final updateListRoute = UpdateListRoute(routes: []);
+final appEventsDisplayRoute = AppEventsDisplayRoute();
 
 final renameSiteRoute = RenameSiteRoute();
 final exportSiteRoute = ExportSiteRoute();
@@ -184,6 +206,7 @@ final siteScreenRoute = SiteScreenRoute(
     siteMembersRoute,
     displaySiteRoute,
     siteEmailsDisplayRoute,
+    appEventsDisplayRoute,
   ],
 );
 

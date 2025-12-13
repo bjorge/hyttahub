@@ -247,6 +247,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to perform this action.'**
   String get app_permissionDenied;
+
+  /// No description provided for @app_appEventsOption.
+  ///
+  /// In en, this message translates to:
+  /// **'App Events'**
+  String get app_appEventsOption;
+
+  /// No description provided for @app_editModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Mode'**
+  String get app_editModeTitle;
+
+  /// No description provided for @app_adminPrivileges.
+  ///
+  /// In en, this message translates to:
+  /// **'You have admin privileges for this site.'**
+  String get app_adminPrivileges;
+
+  /// No description provided for @app_howToProceed.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to proceed?'**
+  String get app_howToProceed;
+
+  /// No description provided for @app_viewSite.
+  ///
+  /// In en, this message translates to:
+  /// **'View Site'**
+  String get app_viewSite;
+
+  /// No description provided for @app_editSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Site'**
+  String get app_editSite;
+
+  /// No description provided for @app_errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get app_errorTitle;
+
+  /// No description provided for @app_accessDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get app_accessDeniedTitle;
+
+  /// No description provided for @app_accessDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this site'**
+  String get app_accessDeniedMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -58,5 +58,14 @@
   "app_updateTextValueTitle": "Update Text Value",
   "app_textValueLabel": "Text Value",
   "app_pickPhotosButton": "Pick Photos",
-  "app_permissionDenied": "You do not have permission to perform this action."
+  "app_permissionDenied": "You do not have permission to perform this action.",
+  "app_appEventsOption": "App Events",
+  "app_editModeTitle": "Edit Mode",
+  "app_adminPrivileges": "You have admin privileges for this site.",
+  "app_howToProceed": "How would you like to proceed?",
+  "app_viewSite": "View Site",
+  "app_editSite": "Edit Site",
+  "app_errorTitle": "Error",
+  "app_accessDeniedTitle": "Access Denied",
+  "app_accessDeniedMessage": "You do not have permission to access this site"
 }
