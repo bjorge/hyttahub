@@ -77,6 +77,331 @@ class AppEvent_ReorderableItem extends $pb.GeneratedMessage {
   void clearTitle() => clearField(2);
 }
 
+class AppEvent_UpdateText extends $pb.GeneratedMessage {
+  factory AppEvent_UpdateText({
+    $core.String? value,
+  }) {
+    final $result = create();
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  AppEvent_UpdateText._() : super();
+  factory AppEvent_UpdateText.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdateText.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateText', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateText clone() => AppEvent_UpdateText()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateText copyWith(void Function(AppEvent_UpdateText) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateText)) as AppEvent_UpdateText;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateText create() => AppEvent_UpdateText._();
+  AppEvent_UpdateText createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdateText> createRepeated() => $pb.PbList<AppEvent_UpdateText>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateText getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateText>(create);
+  static AppEvent_UpdateText? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get value => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set value($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasValue() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearValue() => clearField(1);
+}
+
+class AppEvent_UpdateCode extends $pb.GeneratedMessage {
+  factory AppEvent_UpdateCode({
+    $core.String? value,
+  }) {
+    final $result = create();
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  AppEvent_UpdateCode._() : super();
+  factory AppEvent_UpdateCode.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdateCode.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateCode', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateCode clone() => AppEvent_UpdateCode()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateCode copyWith(void Function(AppEvent_UpdateCode) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateCode)) as AppEvent_UpdateCode;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateCode create() => AppEvent_UpdateCode._();
+  AppEvent_UpdateCode createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdateCode> createRepeated() => $pb.PbList<AppEvent_UpdateCode>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateCode getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateCode>(create);
+  static AppEvent_UpdateCode? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get value => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set value($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasValue() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearValue() => clearField(1);
+}
+
+class AppEvent_UpdateCheckbox extends $pb.GeneratedMessage {
+  factory AppEvent_UpdateCheckbox({
+    $core.bool? value,
+  }) {
+    final $result = create();
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  AppEvent_UpdateCheckbox._() : super();
+  factory AppEvent_UpdateCheckbox.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdateCheckbox.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateCheckbox', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateCheckbox clone() => AppEvent_UpdateCheckbox()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateCheckbox copyWith(void Function(AppEvent_UpdateCheckbox) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateCheckbox)) as AppEvent_UpdateCheckbox;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateCheckbox create() => AppEvent_UpdateCheckbox._();
+  AppEvent_UpdateCheckbox createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdateCheckbox> createRepeated() => $pb.PbList<AppEvent_UpdateCheckbox>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateCheckbox getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateCheckbox>(create);
+  static AppEvent_UpdateCheckbox? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get value => $_getBF(0);
+  @$pb.TagNumber(1)
+  set value($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasValue() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearValue() => clearField(1);
+}
+
+class AppEvent_UpdateDropdown extends $pb.GeneratedMessage {
+  factory AppEvent_UpdateDropdown({
+    $core.String? value,
+  }) {
+    final $result = create();
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  AppEvent_UpdateDropdown._() : super();
+  factory AppEvent_UpdateDropdown.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdateDropdown.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateDropdown', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateDropdown clone() => AppEvent_UpdateDropdown()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateDropdown copyWith(void Function(AppEvent_UpdateDropdown) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateDropdown)) as AppEvent_UpdateDropdown;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateDropdown create() => AppEvent_UpdateDropdown._();
+  AppEvent_UpdateDropdown createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdateDropdown> createRepeated() => $pb.PbList<AppEvent_UpdateDropdown>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateDropdown getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateDropdown>(create);
+  static AppEvent_UpdateDropdown? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get value => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set value($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasValue() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearValue() => clearField(1);
+}
+
+class AppEvent_UpdateList extends $pb.GeneratedMessage {
+  factory AppEvent_UpdateList({
+    $core.Iterable<AppEvent_ReorderableItem>? items,
+  }) {
+    final $result = create();
+    if (items != null) {
+      $result.items.addAll(items);
+    }
+    return $result;
+  }
+  AppEvent_UpdateList._() : super();
+  factory AppEvent_UpdateList.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdateList.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdateList', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..pc<AppEvent_ReorderableItem>(1, _omitFieldNames ? '' : 'items', $pb.PbFieldType.PM, subBuilder: AppEvent_ReorderableItem.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateList clone() => AppEvent_UpdateList()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdateList copyWith(void Function(AppEvent_UpdateList) updates) => super.copyWith((message) => updates(message as AppEvent_UpdateList)) as AppEvent_UpdateList;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateList create() => AppEvent_UpdateList._();
+  AppEvent_UpdateList createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdateList> createRepeated() => $pb.PbList<AppEvent_UpdateList>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdateList getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdateList>(create);
+  static AppEvent_UpdateList? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<AppEvent_ReorderableItem> get items => $_getList(0);
+}
+
+class AppEvent_UpdatePhoto extends $pb.GeneratedMessage {
+  factory AppEvent_UpdatePhoto({
+    $core.String? name,
+    $core.int? version,
+    $core.int? size,
+  }) {
+    final $result = create();
+    if (name != null) {
+      $result.name = name;
+    }
+    if (version != null) {
+      $result.version = version;
+    }
+    if (size != null) {
+      $result.size = size;
+    }
+    return $result;
+  }
+  AppEvent_UpdatePhoto._() : super();
+  factory AppEvent_UpdatePhoto.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_UpdatePhoto.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.UpdatePhoto', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'name')
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'version', $pb.PbFieldType.O3)
+    ..a<$core.int>(3, _omitFieldNames ? '' : 'size', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdatePhoto clone() => AppEvent_UpdatePhoto()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_UpdatePhoto copyWith(void Function(AppEvent_UpdatePhoto) updates) => super.copyWith((message) => updates(message as AppEvent_UpdatePhoto)) as AppEvent_UpdatePhoto;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdatePhoto create() => AppEvent_UpdatePhoto._();
+  AppEvent_UpdatePhoto createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_UpdatePhoto> createRepeated() => $pb.PbList<AppEvent_UpdatePhoto>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_UpdatePhoto getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_UpdatePhoto>(create);
+  static AppEvent_UpdatePhoto? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get version => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set version($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasVersion() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearVersion() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get size => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set size($core.int v) { $_setSignedInt32(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasSize() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearSize() => clearField(3);
+}
+
+/// Keeping TemplateForm for now to avoid breaking existing compiled code immediately,
+/// but we will move to using the individual ones.
+/// Actually, we can just add them to the oneof.
 class AppEvent_TemplateForm extends $pb.GeneratedMessage {
   factory AppEvent_TemplateForm({
     $core.String? textValue,
@@ -221,16 +546,46 @@ class AppEvent_TemplateForm extends $pb.GeneratedMessage {
 
 enum AppEvent_Event {
   templateForm, 
+  updateText, 
+  updateCode, 
+  updateCheckbox, 
+  updateDropdown, 
+  updateList, 
+  updatePhoto, 
   notSet
 }
 
 class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent({
     AppEvent_TemplateForm? templateForm,
+    AppEvent_UpdateText? updateText,
+    AppEvent_UpdateCode? updateCode,
+    AppEvent_UpdateCheckbox? updateCheckbox,
+    AppEvent_UpdateDropdown? updateDropdown,
+    AppEvent_UpdateList? updateList,
+    AppEvent_UpdatePhoto? updatePhoto,
   }) {
     final $result = create();
     if (templateForm != null) {
       $result.templateForm = templateForm;
+    }
+    if (updateText != null) {
+      $result.updateText = updateText;
+    }
+    if (updateCode != null) {
+      $result.updateCode = updateCode;
+    }
+    if (updateCheckbox != null) {
+      $result.updateCheckbox = updateCheckbox;
+    }
+    if (updateDropdown != null) {
+      $result.updateDropdown = updateDropdown;
+    }
+    if (updateList != null) {
+      $result.updateList = updateList;
+    }
+    if (updatePhoto != null) {
+      $result.updatePhoto = updatePhoto;
     }
     return $result;
   }
@@ -240,11 +595,23 @@ class AppEvent extends $pb.GeneratedMessage {
 
   static const $core.Map<$core.int, AppEvent_Event> _AppEvent_EventByTag = {
     2 : AppEvent_Event.templateForm,
+    3 : AppEvent_Event.updateText,
+    4 : AppEvent_Event.updateCode,
+    5 : AppEvent_Event.updateCheckbox,
+    6 : AppEvent_Event.updateDropdown,
+    7 : AppEvent_Event.updateList,
+    8 : AppEvent_Event.updatePhoto,
     0 : AppEvent_Event.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.template'), createEmptyInstance: create)
-    ..oo(0, [2])
+    ..oo(0, [2, 3, 4, 5, 6, 7, 8])
     ..aOM<AppEvent_TemplateForm>(2, _omitFieldNames ? '' : 'templateForm', protoName: 'templateForm', subBuilder: AppEvent_TemplateForm.create)
+    ..aOM<AppEvent_UpdateText>(3, _omitFieldNames ? '' : 'updateText', protoName: 'updateText', subBuilder: AppEvent_UpdateText.create)
+    ..aOM<AppEvent_UpdateCode>(4, _omitFieldNames ? '' : 'updateCode', protoName: 'updateCode', subBuilder: AppEvent_UpdateCode.create)
+    ..aOM<AppEvent_UpdateCheckbox>(5, _omitFieldNames ? '' : 'updateCheckbox', protoName: 'updateCheckbox', subBuilder: AppEvent_UpdateCheckbox.create)
+    ..aOM<AppEvent_UpdateDropdown>(6, _omitFieldNames ? '' : 'updateDropdown', protoName: 'updateDropdown', subBuilder: AppEvent_UpdateDropdown.create)
+    ..aOM<AppEvent_UpdateList>(7, _omitFieldNames ? '' : 'updateList', protoName: 'updateList', subBuilder: AppEvent_UpdateList.create)
+    ..aOM<AppEvent_UpdatePhoto>(8, _omitFieldNames ? '' : 'updatePhoto', protoName: 'updatePhoto', subBuilder: AppEvent_UpdatePhoto.create)
     ..hasRequiredFields = false
   ;
 
@@ -282,6 +649,72 @@ class AppEvent extends $pb.GeneratedMessage {
   void clearTemplateForm() => clearField(2);
   @$pb.TagNumber(2)
   AppEvent_TemplateForm ensureTemplateForm() => $_ensure(0);
+
+  @$pb.TagNumber(3)
+  AppEvent_UpdateText get updateText => $_getN(1);
+  @$pb.TagNumber(3)
+  set updateText(AppEvent_UpdateText v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasUpdateText() => $_has(1);
+  @$pb.TagNumber(3)
+  void clearUpdateText() => clearField(3);
+  @$pb.TagNumber(3)
+  AppEvent_UpdateText ensureUpdateText() => $_ensure(1);
+
+  @$pb.TagNumber(4)
+  AppEvent_UpdateCode get updateCode => $_getN(2);
+  @$pb.TagNumber(4)
+  set updateCode(AppEvent_UpdateCode v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasUpdateCode() => $_has(2);
+  @$pb.TagNumber(4)
+  void clearUpdateCode() => clearField(4);
+  @$pb.TagNumber(4)
+  AppEvent_UpdateCode ensureUpdateCode() => $_ensure(2);
+
+  @$pb.TagNumber(5)
+  AppEvent_UpdateCheckbox get updateCheckbox => $_getN(3);
+  @$pb.TagNumber(5)
+  set updateCheckbox(AppEvent_UpdateCheckbox v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasUpdateCheckbox() => $_has(3);
+  @$pb.TagNumber(5)
+  void clearUpdateCheckbox() => clearField(5);
+  @$pb.TagNumber(5)
+  AppEvent_UpdateCheckbox ensureUpdateCheckbox() => $_ensure(3);
+
+  @$pb.TagNumber(6)
+  AppEvent_UpdateDropdown get updateDropdown => $_getN(4);
+  @$pb.TagNumber(6)
+  set updateDropdown(AppEvent_UpdateDropdown v) { setField(6, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasUpdateDropdown() => $_has(4);
+  @$pb.TagNumber(6)
+  void clearUpdateDropdown() => clearField(6);
+  @$pb.TagNumber(6)
+  AppEvent_UpdateDropdown ensureUpdateDropdown() => $_ensure(4);
+
+  @$pb.TagNumber(7)
+  AppEvent_UpdateList get updateList => $_getN(5);
+  @$pb.TagNumber(7)
+  set updateList(AppEvent_UpdateList v) { setField(7, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasUpdateList() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearUpdateList() => clearField(7);
+  @$pb.TagNumber(7)
+  AppEvent_UpdateList ensureUpdateList() => $_ensure(5);
+
+  @$pb.TagNumber(8)
+  AppEvent_UpdatePhoto get updatePhoto => $_getN(6);
+  @$pb.TagNumber(8)
+  set updatePhoto(AppEvent_UpdatePhoto v) { setField(8, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasUpdatePhoto() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearUpdatePhoto() => clearField(8);
+  @$pb.TagNumber(8)
+  AppEvent_UpdatePhoto ensureUpdatePhoto() => $_ensure(6);
 }
 
 /// the final site event will contain this app event

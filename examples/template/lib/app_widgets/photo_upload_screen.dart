@@ -91,10 +91,9 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     updatedPayload.images.clear();
 
     // For template: Clear previous photo data if a new one is selected
-    // updatedPayload.appEvent.templateForm.photoData = ""; // REMOVED
-    updatedPayload.appEvent.templateForm.photoName = "";
-    updatedPayload.appEvent.templateForm.photoVersion = 0;
-    updatedPayload.appEvent.templateForm.photoSize = 0;
+    updatedPayload.appEvent.updatePhoto.name = "";
+    updatedPayload.appEvent.updatePhoto.version = 0;
+    // updatedPayload.appEvent.updatePhoto.size = 0; // if size exists
 
     for (final file in _selectedFiles) {
       if (file.bytes != null) {
@@ -108,8 +107,9 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
 
         // We do NOT set photoVersion here. AppSubmitBloc handles upload and sets version.
         // We set initial metadata just in case, but version is key.
-        updatedPayload.appEvent.templateForm.photoName = file.name;
-        updatedPayload.appEvent.templateForm.photoSize = file.size;
+        updatedPayload.appEvent.updatePhoto.name = file.name;
+        updatedPayload.appEvent.updatePhoto.size = file.size;
+        // The bloc will update version in the event before submitting
       }
     }
     final isFormValid = updatedPayload.images.isNotEmpty;

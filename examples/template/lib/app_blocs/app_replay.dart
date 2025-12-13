@@ -47,6 +47,20 @@ AppReplayBlocState appReplay(
           replay.photoVersion = appEvent.templateForm.photoVersion;
           replay.photoName = appEvent.templateForm.photoName;
         }
+      } else if (appEvent.hasUpdateText()) {
+        replay.textValue = appEvent.updateText.value;
+      } else if (appEvent.hasUpdateCode()) {
+        replay.codeValue = appEvent.updateCode.value;
+      } else if (appEvent.hasUpdateCheckbox()) {
+        replay.checkboxValue = appEvent.updateCheckbox.value;
+      } else if (appEvent.hasUpdateDropdown()) {
+        replay.dropdownValue = appEvent.updateDropdown.value;
+      } else if (appEvent.hasUpdateList()) {
+        replay.listItems.clear();
+        replay.listItems.addAll(appEvent.updateList.items);
+      } else if (appEvent.hasUpdatePhoto()) {
+        replay.photoName = appEvent.updatePhoto.name;
+        replay.photoVersion = appEvent.updatePhoto.version;
       }
     }
   }

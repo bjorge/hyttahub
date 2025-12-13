@@ -92,8 +92,7 @@ class _SiteScreenState extends State<SiteScreen> {
           spacing: 10.0,
           children: [
             AppStateDisplay(getSignedUrl: _getSignedUrl),
-            UpdateButton(siteId: widget.siteId),
-            UpdatePhotoButton(siteId: widget.siteId),
+            UpdateButtons(siteId: widget.siteId),
           ],
         ),
       ),
@@ -101,10 +100,16 @@ class _SiteScreenState extends State<SiteScreen> {
   }
 }
 
-class UpdateButton extends StatelessWidget {
-  const UpdateButton({super.key, required this.siteId});
+class UpdateButtons extends StatelessWidget {
+  const UpdateButtons({super.key, required this.siteId});
 
   final String siteId;
+
+  int _calculateVersion(Map<int, String> events) {
+    return events.isEmpty
+        ? 1
+        : events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,112 +120,144 @@ class UpdateButton extends StatelessWidget {
           return errorWidget;
         }
 
-        final version =
-            appState.events.isEmpty
-                ? 1
-                : appState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
-                    1;
+        final version = _calculateVersion(appState.events);
+        final email = GetIt.instance<AuthBloc>().state.email;
 
-        final templateForm = AppEvent_TemplateForm();
-        if (appState.hasTextValue()) {
-          templateForm.textValue = appState.textValue;
-        }
-        if (appState.hasCodeValue()) {
-          templateForm.codeValue = appState.codeValue;
-        }
-        if (appState.hasCheckboxValue()) {
-          templateForm.checkboxValue = appState.checkboxValue;
-        }
-        if (appState.hasDropdownValue()) {
-          templateForm.dropdownValue = appState.dropdownValue;
-        }
-        if (appState.listItems.isNotEmpty) {
-          templateForm.listItems.addAll(appState.listItems);
-        }
-        // Preserve photo when updating other fields
-        if (appState.photoVersion > 0) {
-          templateForm.photoVersion = appState.photoVersion;
-          templateForm.photoName = appState.photoName;
-        }
-
-        return ElevatedButton(
-          onPressed: () {
-            final submmitValue = SubmitAppEvent(
-              authorEmail: GetIt.instance<AuthBloc>().state.email,
-              appEvent: AppEvent(templateForm: templateForm),
-              siteEvent: SubmitAppEvent_SiteEvent(version: version),
-            );
-            final encodedSubmitValue = base64UrlEncode(
-              submmitValue.writeToBuffer(),
-            );
-            context.push(
-              '${SiteScreenFormRoute.fullPath(siteId)}?event=$encodedSubmitValue',
-            );
-          },
-          child: Text("Update Values"),
+        return Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                final appEvent = AppEvent(
+                  updateText: AppEvent_UpdateText(value: appState.textValue),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  UpdateTextRoute.fullPath(siteId),
+                );
+              },
+              child: const Text("Update Text"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final appEvent = AppEvent(
+                  updateCode: AppEvent_UpdateCode(value: appState.codeValue),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  UpdateCodeRoute.fullPath(siteId),
+                );
+              },
+              child: const Text("Update Code"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final appEvent = AppEvent(
+                  updateCheckbox: AppEvent_UpdateCheckbox(
+                    value: appState.checkboxValue,
+                  ),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  UpdateCheckboxRoute.fullPath(siteId),
+                );
+              },
+              child: const Text("Update Checkbox"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final appEvent = AppEvent(
+                  updateDropdown: AppEvent_UpdateDropdown(
+                    value: appState.dropdownValue,
+                  ),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  UpdateDropdownRoute.fullPath(siteId),
+                );
+              },
+              child: const Text("Update Dropdown"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final appEvent = AppEvent(
+                  updateList: AppEvent_UpdateList(items: appState.listItems),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  UpdateListRoute.fullPath(siteId),
+                );
+              },
+              child: const Text("Update List"),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () {
+                // For Photo, we can keep using TemplateForm logic IF we haven't migrated logic yet,
+                // BUT better to use UpdatePhoto if we update logic.
+                // Let's assume we update PhotoUploadScreen to handle UpdatePhoto.
+                // Or stick to TemplateForm for Photo for now as user didn't explicitly ask to change Photo structure, just "form item".
+                // But Photo IS a form item.
+                // Let's try to use UpdatePhoto.
+                final appEvent = AppEvent(
+                  updatePhoto: AppEvent_UpdatePhoto(
+                    name: appState.photoName,
+                    version: appState.photoVersion,
+                    // size: appState.photoSize // photoSize not in state yet?
+                    // Wait, we added photoSize to templateForm in proto, but maybe not state?
+                    // Let's check state.
+                  ),
+                );
+                // If photoSize is missing in state, default to 0.
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  AddPhotoRoute.fullPath(siteId: siteId),
+                );
+              },
+              icon: const Icon(Icons.photo_camera),
+              label: const Text("Update Photo"),
+            ),
+          ],
         );
       },
     );
   }
-}
 
-class UpdatePhotoButton extends StatelessWidget {
-  const UpdatePhotoButton({super.key, required this.siteId});
-
-  final String siteId;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
-      builder: (context, appState) {
-        final errorWidget = handleAppReplayState(context, appState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
-        final version =
-            appState.events.isEmpty
-                ? 1
-                : appState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
-                    1;
-
-        final templateForm = AppEvent_TemplateForm();
-        // Preserve all existing fields when updating photo
-        if (appState.hasTextValue()) {
-          templateForm.textValue = appState.textValue;
-        }
-        if (appState.hasCodeValue()) {
-          templateForm.codeValue = appState.codeValue;
-        }
-        if (appState.hasCheckboxValue()) {
-          templateForm.checkboxValue = appState.checkboxValue;
-        }
-        if (appState.hasDropdownValue()) {
-          templateForm.dropdownValue = appState.dropdownValue;
-        }
-        if (appState.listItems.isNotEmpty) {
-          templateForm.listItems.addAll(appState.listItems);
-        }
-
-        return ElevatedButton.icon(
-          onPressed: () {
-            final submmitValue = SubmitAppEvent(
-              authorEmail: GetIt.instance<AuthBloc>().state.email,
-              appEvent: AppEvent(templateForm: templateForm),
-              siteEvent: SubmitAppEvent_SiteEvent(version: version),
-            );
-            final encodedSubmitValue = base64UrlEncode(
-              submmitValue.writeToBuffer(),
-            );
-            context.push(
-              '${AddPhotoRoute.fullPath(siteId: siteId)}?event=$encodedSubmitValue',
-            );
-          },
-          icon: Icon(Icons.photo_camera),
-          label: Text("Update Photo"),
-        );
-      },
+  void _navigateToUpdate(
+    BuildContext context,
+    AppEvent appEvent,
+    int version,
+    String email,
+    String routePath,
+  ) {
+    final submitAppEvent = SubmitAppEvent(
+      authorEmail: email,
+      appEvent: appEvent,
+      siteEvent: SubmitAppEvent_SiteEvent(version: version),
     );
+    final encodedSubmitValue = base64UrlEncode(submitAppEvent.writeToBuffer());
+    context.push('$routePath?event=$encodedSubmitValue');
   }
 }
 
