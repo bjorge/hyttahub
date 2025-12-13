@@ -53,8 +53,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
     // Check if there are images to upload for this event
-    if (submitAppEvent.appEvent.hasTemplateForm() &&
-        submitAppEvent.images.isNotEmpty) {
+    if (submitAppEvent.images.isNotEmpty) {
       var version = submitAppEvent.siteEvent.version;
       var uploadedCount = 0;
       final totalCount = submitAppEvent.images.length;
@@ -75,9 +74,15 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
         final newEvent = submitAppEvent.appEvent.deepCopy();
         // Update the event with the storage reference details
-        newEvent.templateForm.photoVersion = version;
-        newEvent.templateForm.photoName = image.name;
-        newEvent.templateForm.photoSize = image.size;
+        if (newEvent.hasUpdatePhoto()) {
+          newEvent.updatePhoto.version = version;
+          newEvent.updatePhoto.name = image.name;
+          newEvent.updatePhoto.size = image.size;
+        } else if (newEvent.hasTemplateForm()) {
+          newEvent.templateForm.photoVersion = version;
+          newEvent.templateForm.photoName = image.name;
+          newEvent.templateForm.photoSize = image.size;
+        }
 
         final siteEvent = SiteEvent(
           version: version,
