@@ -183,6 +183,7 @@ class _SiteScreenState extends State<SiteScreen> {
                     listeners: [
                       BlocListener<AppReplayBloc, AppReplayBlocState>(
                         listener: (context, appState) {
+                          // Scenario: Replay updates after submit is already free.
                           _checkAndSubmitAIMove(context, appState);
                         },
                       ),
@@ -191,6 +192,7 @@ class _SiteScreenState extends State<SiteScreen> {
                         BaseSubmitState<SubmitAppEvent>
                       >(
                         listener: (context, submitState) {
+                          // Scenario: Submit finishes after replay has already updated.
                           if (submitState.submissionState.state ==
                               CommonSubmitBlocState_State.success) {
                             final appState =
