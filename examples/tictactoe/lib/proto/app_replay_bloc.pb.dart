@@ -13,6 +13,7 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'app_events.pb.dart' as $0;
 import 'app_replay_bloc.pbenum.dart';
 
 export 'app_replay_bloc.pbenum.dart';
@@ -24,6 +25,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? board,
     $core.int? turn,
     $core.int? winner,
+    $0.AppEvent_Move? nextMove,
   }) {
     final $result = create();
     if (events != null) {
@@ -41,6 +43,9 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (winner != null) {
       $result.winner = winner;
     }
+    if (nextMove != null) {
+      $result.nextMove = nextMove;
+    }
     return $result;
   }
   AppReplayBlocState._() : super();
@@ -53,6 +58,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..p<$core.int>(3, _omitFieldNames ? '' : 'board', $pb.PbFieldType.K3)
     ..a<$core.int>(4, _omitFieldNames ? '' : 'turn', $pb.PbFieldType.O3)
     ..a<$core.int>(5, _omitFieldNames ? '' : 'winner', $pb.PbFieldType.O3)
+    ..aOM<$0.AppEvent_Move>(6, _omitFieldNames ? '' : 'nextMove', subBuilder: $0.AppEvent_Move.create)
     ..hasRequiredFields = false
   ;
 
@@ -113,6 +119,17 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   $core.bool hasWinner() => $_has(4);
   @$pb.TagNumber(5)
   void clearWinner() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $0.AppEvent_Move get nextMove => $_getN(5);
+  @$pb.TagNumber(6)
+  set nextMove($0.AppEvent_Move v) { setField(6, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasNextMove() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearNextMove() => clearField(6);
+  @$pb.TagNumber(6)
+  $0.AppEvent_Move ensureNextMove() => $_ensure(5);
 }
 
 

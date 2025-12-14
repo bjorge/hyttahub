@@ -32,8 +32,55 @@ class SiteScreen extends StatefulWidget {
 class _SiteScreenState extends State<SiteScreen> {
   // We don't need image fetching for simple X/O game, but keeping structure valid.
 
+  void _checkAndSubmitAIMove(
+    BuildContext context,
+    AppReplayBlocState appState,
+  ) {
+    if (appState.hasNextMove()) {
+      final nextMove = appState.nextMove;
+      final maxVersion = appState.events.keys.fold(0, (p, e) => e > p ? e : p);
+      final version = maxVersion + 1;
+
+      final appEvent = AppEvent(move: nextMove);
+      final submitEvent =
+          SubmitAppEvent()
+            ..appEvent = appEvent
+            ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
+            ..authorEmail = GetIt.instance<AuthBloc>().state.email
+            ..pauseDelay = 2000; // 2 seconds delay
+
+      final submitBloc = context.read<AppSubmitBloc>();
+      // Only submit if not already submitting
+      if (submitBloc.state.submissionState.state !=
+          CommonSubmitBlocState_State.submitting) {
+        // 1. Update payload and set form to valid
+        submitBloc.add(
+          AppEventSubmission(
+            updatedPayload: submitEvent,
+            submission: CommonSubmitBlocEvent(isFormValid: true),
+          ),
+        );
+
+        // 2. Trigger submission
+        submitBloc.add(
+          AppEventSubmission(
+            submission: CommonSubmitBlocEvent(
+              submit: CommonSubmitBlocEvent_SubmitNow(),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Initial dummy payload for bloc creation
+    final initialEvent =
+        SubmitAppEvent()
+          ..siteEvent = (SubmitAppEvent_SiteEvent()..version = 0)
+          ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<SiteReplayBloc>(
@@ -49,6 +96,9 @@ class _SiteScreenState extends State<SiteScreen> {
               (_) =>
                   AppReplayBloc(widget.siteId)
                     ..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AppSubmitBloc>(
+          create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
         ),
         BlocProvider<AllowedEmailsBloc>(
           create:
@@ -128,7 +178,31 @@ class _SiteScreenState extends State<SiteScreen> {
                     ),
                   ],
                 ),
-                body: Center(child: TicTacToeBoard(siteId: widget.siteId)),
+                body: Center(
+                  child: MultiBlocListener(
+                    listeners: [
+                      BlocListener<AppReplayBloc, AppReplayBlocState>(
+                        listener: (context, appState) {
+                          _checkAndSubmitAIMove(context, appState);
+                        },
+                      ),
+                      BlocListener<
+                        AppSubmitBloc,
+                        BaseSubmitState<SubmitAppEvent>
+                      >(
+                        listener: (context, submitState) {
+                          if (submitState.submissionState.state ==
+                              CommonSubmitBlocState_State.success) {
+                            final appState =
+                                context.read<AppReplayBloc>().state;
+                            _checkAndSubmitAIMove(context, appState);
+                          }
+                        },
+                      ),
+                    ],
+                    child: TicTacToeBoard(siteId: widget.siteId),
+                  ),
+                ),
               );
             },
           );
@@ -154,170 +228,151 @@ class TicTacToeBoard extends StatelessWidget {
     final appEvent = submitState.payload!.appEvent;
     if (!appEvent.hasMove()) return false;
     final move = appEvent.move;
+    // Don't show pending moves for AI (Player 2) to simulate thinking time
+    if (move.player == 2) return false;
     return (move.y * 3 + move.x) == index;
   }
 
   @override
   Widget build(BuildContext context) {
-    // We need the SubmitBloc to show pending moves.
-    // But AppSubmitBloc is usually provided/created when submitting.
-    // Here we need to watch it if it exists in the tree?
-    // or check if we are currently submitting.
-    // Actually, the submit bloc is often created transiently or scoped to a screen.
-    // If we want to show pending state on the main board, we need to know about the pending submission.
-    // The standard pattern in this app seems to be `context.push` to a route that handles submission?
-    // But for a game, we want to stay on screen.
-    // So we should provide the AppSubmitBloc here or wrap the board in it.
-    // Let's wrapping it for now.
+    // We already have AppSubmitBloc provided by SiteScreen.
+    // We just need to consume it.
 
-    // Wait, normally we navigate to a submission screen. But here we want immediate feedback.
-    // We'll create a local bloc provider for submission or use a Global/Page scoped one.
-    // Let's create one here.
+    return BlocBuilder<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
+      builder: (context, submitState) {
+        return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
+          builder: (context, appState) {
+            final errorWidget = handleAppReplayState(context, appState);
+            if (errorWidget != null) return errorWidget;
 
-    // Initial dummy payload for bloc creation
-    final initialEvent =
-        SubmitAppEvent()
-          ..siteEvent = (SubmitAppEvent_SiteEvent()..version = 0)
-          ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+            final board = appState.board;
+            if (board.isEmpty) return const CircularProgressIndicator();
 
-    return BlocProvider<AppSubmitBloc>(
-      create: (context) => AppSubmitBloc(siteId, initialEvent),
-      child: BlocBuilder<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
-        builder: (context, submitState) {
-          return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
-            builder: (context, appState) {
-              final errorWidget = handleAppReplayState(context, appState);
-              if (errorWidget != null) return errorWidget;
-
-              final board = appState.board;
-              if (board.isEmpty) return const CircularProgressIndicator();
-
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (appState.winner != 0)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        appState.winner == 3
-                            ? "Draw!"
-                            : "Player ${appState.winner} Wins!",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (appState.winner != 0)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      appState.winner == 3
+                          ? "Draw!"
+                          : "Player ${appState.winner} Wins!",
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
+                  ),
+                SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                    itemCount: 9,
+                    itemBuilder: (context, index) {
+                      final cellValue = board[index];
+                      final isPending = _isPendingBox(index, submitState);
+
+                      // Pending move override
+                      // If pending, it must be our move (X or O).
+                      // We'll assume user is always moving as 'current turn' player or '1' if we want.
+                      // But wait, the submitState payload has the player.
+                      int displayValue = cellValue;
+                      bool gray = false;
+
+                      if (isPending) {
+                        displayValue =
+                            submitState.payload!.appEvent.move.player;
+                        gray = true;
+                      }
+
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          if (cellValue == 0 &&
+                              appState.winner == 0 &&
+                              !isPending &&
+                              submitState.submissionState.state !=
+                                  CommonSubmitBlocState_State.submitting) {
+                            final maxVersion = appState.events.keys.fold(
+                              0,
+                              (p, e) => e > p ? e : p,
+                            );
+                            final version = maxVersion + 1;
+                            // Submit move
+                            final player =
+                                appState.turn; // Move as the current turn
+                            final x = index % 3;
+                            final y = index ~/ 3;
+
+                            final move = AppEvent_Move(
+                              x: x,
+                              y: y,
+                              player: player,
+                            );
+                            final appEvent = AppEvent(move: move);
+
+                            // We need to trigger submission.
+                            // The BaseSubmitBloc expects a 'Submit' event.
+                            final submitEvent =
+                                SubmitAppEvent()
+                                  ..appEvent = appEvent
+                                  ..siteEvent =
+                                      (SubmitAppEvent_SiteEvent()
+                                        ..version = version)
+                                  ..authorEmail =
+                                      GetIt.instance<AuthBloc>().state.email;
+
+                            // 1. Update payload and set form to valid
+                            context.read<AppSubmitBloc>().add(
+                              AppEventSubmission(
+                                updatedPayload: submitEvent,
+                                submission: CommonSubmitBlocEvent(
+                                  isFormValid: true,
+                                ),
+                              ),
+                            );
+
+                            // 2. Trigger submission
+                            context.read<AppSubmitBloc>().add(
+                              AppEventSubmission(
+                                submission: CommonSubmitBlocEvent(
+                                  submit: CommonSubmitBlocEvent_SubmitNow(),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
                           ),
-                      itemCount: 9,
-                      itemBuilder: (context, index) {
-                        final cellValue = board[index];
-                        final isPending = _isPendingBox(index, submitState);
-
-                        // Pending move override
-                        // If pending, it must be our move (X or O).
-                        // We'll assume user is always moving as 'current turn' player or '1' if we want.
-                        // But wait, the submitState payload has the player.
-                        int displayValue = cellValue;
-                        bool gray = false;
-
-                        if (isPending) {
-                          displayValue =
-                              submitState.payload!.appEvent.move.player;
-                          gray = true;
-                        }
-
-                        return GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            if (cellValue == 0 &&
-                                appState.winner == 0 &&
-                                !isPending &&
-                                submitState.submissionState.state !=
-                                    CommonSubmitBlocState_State.submitting) {
-                              final maxVersion = appState.events.keys.fold(
-                                0,
-                                (p, e) => e > p ? e : p,
-                              );
-                              final version = maxVersion + 1;
-                              // Submit move
-                              final player =
-                                  appState.turn; // Move as the current turn
-                              final x = index % 3;
-                              final y = index ~/ 3;
-
-                              final move = AppEvent_Move(
-                                x: x,
-                                y: y,
-                                player: player,
-                              );
-                              final appEvent = AppEvent(move: move);
-
-                              // We need to trigger submission.
-                              // The BaseSubmitBloc expects a 'Submit' event.
-                              final submitEvent =
-                                  SubmitAppEvent()
-                                    ..appEvent = appEvent
-                                    ..siteEvent =
-                                        (SubmitAppEvent_SiteEvent()
-                                          ..version = version)
-                                    ..authorEmail =
-                                        GetIt.instance<AuthBloc>().state.email;
-
-                              // 1. Update payload and set form to valid
-                              context.read<AppSubmitBloc>().add(
-                                AppEventSubmission(
-                                  updatedPayload: submitEvent,
-                                  submission: CommonSubmitBlocEvent(
-                                    isFormValid: true,
-                                  ),
-                                ),
-                              );
-
-                              // 2. Trigger submission
-                              context.read<AppSubmitBloc>().add(
-                                AppEventSubmission(
-                                  submission: CommonSubmitBlocEvent(
-                                    submit: CommonSubmitBlocEvent_SubmitNow(),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                            ),
-                            child: Center(
-                              child: Text(
-                                displayValue == 1
-                                    ? "X"
-                                    : (displayValue == 2 ? "O" : ""),
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: gray ? Colors.grey : Colors.black,
-                                ),
+                          child: Center(
+                            child: Text(
+                              displayValue == 1
+                                  ? "X"
+                                  : (displayValue == 2 ? "O" : ""),
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: gray ? Colors.grey : Colors.black,
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                ],
-              );
-            },
-          );
-        },
-      ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

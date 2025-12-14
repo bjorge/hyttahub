@@ -40,6 +40,7 @@ const AppReplayBlocState$json = {
     {'1': 'board', '3': 3, '4': 3, '5': 5, '10': 'board'},
     {'1': 'turn', '3': 4, '4': 1, '5': 5, '10': 'turn'},
     {'1': 'winner', '3': 5, '4': 1, '5': 5, '10': 'winner'},
+    {'1': 'next_move', '3': 6, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.Move', '10': 'nextMove'},
   ],
   '3': [AppReplayBlocState_EventsEntry$json],
 };
@@ -60,6 +61,7 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     '50aWN0YWN0b2UuQXBwUmVwbGF5QmxvY1N0YXRlLkV2ZW50c0VudHJ5UgZldmVudHMSRAoFc3Rh'
     'dGUYAiABKA4yLi5oeXR0YWh1Yi5leGFtcGxlLnRpY3RhY3RvZS5BcHBSZXBsYXlTdGF0ZUVudW'
     '1SBXN0YXRlEhQKBWJvYXJkGAMgAygFUgVib2FyZBISCgR0dXJuGAQgASgFUgR0dXJuEhYKBndp'
-    'bm5lchgFIAEoBVIGd2lubmVyGjkKC0V2ZW50c0VudHJ5EhAKA2tleRgBIAEoBVIDa2V5EhQKBX'
-    'ZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+    'bm5lchgFIAEoBVIGd2lubmVyEkYKCW5leHRfbW92ZRgGIAEoCzIpLmh5dHRhaHViLmV4YW1wbG'
+    'UudGljdGFjdG9lLkFwcEV2ZW50Lk1vdmVSCG5leHRNb3ZlGjkKC0V2ZW50c0VudHJ5EhAKA2tl'
+    'eRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
 

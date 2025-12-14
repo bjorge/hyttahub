@@ -308,6 +308,7 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     SubmitAppEvent_SiteEvent? siteEvent,
     $core.String? authorEmail,
     $core.Iterable<SubmitAppEvent_Image>? images,
+    $core.int? pauseDelay,
   }) {
     final $result = create();
     if (appEvent != null) {
@@ -322,6 +323,9 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     if (images != null) {
       $result.images.addAll(images);
     }
+    if (pauseDelay != null) {
+      $result.pauseDelay = pauseDelay;
+    }
     return $result;
   }
   SubmitAppEvent._() : super();
@@ -333,6 +337,7 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     ..aOM<SubmitAppEvent_SiteEvent>(2, _omitFieldNames ? '' : 'siteEvent', protoName: 'siteEvent', subBuilder: SubmitAppEvent_SiteEvent.create)
     ..aOS(3, _omitFieldNames ? '' : 'authorEmail', protoName: 'authorEmail')
     ..pc<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images', $pb.PbFieldType.PM, subBuilder: SubmitAppEvent_Image.create)
+    ..a<$core.int>(5, _omitFieldNames ? '' : 'pauseDelay', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
@@ -390,6 +395,15 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(4)
   $core.List<SubmitAppEvent_Image> get images => $_getList(3);
+
+  @$pb.TagNumber(5)
+  $core.int get pauseDelay => $_getIZ(4);
+  @$pb.TagNumber(5)
+  set pauseDelay($core.int v) { $_setSignedInt32(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasPauseDelay() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearPauseDelay() => clearField(5);
 }
 
 /// The AppEventRecord is a representation of the actual record stored in the

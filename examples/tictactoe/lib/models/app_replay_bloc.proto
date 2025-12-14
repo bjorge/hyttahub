@@ -25,4 +25,6 @@ message AppReplayBlocState {
 
   // Winner: 0 = none/ongoing, 1 = X, 2 = O, 3 = Draw
   int32 winner = 5;
+
+  AppEvent.Move next_move = 6;
 }

@@ -34,6 +34,9 @@ AppReplayBlocState appReplay(
     replay.winner = 0;
   }
 
+  // Clear next move from previous state
+  replay.clearNextMove();
+
   replay.events.addAll(base64Events);
   var lastMoveWasUser = false;
 
@@ -55,7 +58,8 @@ AppReplayBlocState appReplay(
             // Toggle turn
             replay.turn = (move.player == 1) ? 2 : 1;
             _checkWinner(replay);
-            lastMoveWasUser = true;
+            // Player 1 is user, Player 2 is AI
+            lastMoveWasUser = (move.player == 1);
           }
         }
       }
@@ -78,9 +82,9 @@ AppReplayBlocState appReplay(
     if (emptyIndices.isNotEmpty) {
       // Deterministic choice for validation stability
       final choice = emptyIndices.first;
-      replay.board[choice] = 2; // O moves
-      replay.turn = 1; // Back to X
-      _checkWinner(replay);
+
+      // Instead of applying immediately, set next_move
+      replay.nextMove = AppEvent_Move(x: choice % 3, y: choice ~/ 3, player: 2);
     }
   }
 

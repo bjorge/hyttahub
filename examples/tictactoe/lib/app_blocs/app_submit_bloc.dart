@@ -55,6 +55,11 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
     // Check if there are images to upload for this event
     // For TicTacToe, we don't handle images in moves, so we skip the image logic.
+
+    if (submitAppEvent.pauseDelay > 0) {
+      await Future.delayed(Duration(milliseconds: submitAppEvent.pauseDelay));
+    }
+
     await FirebaseFirestore.instance
         .collection(firebaseSiteEventsPath(siteId))
         .doc(siteEvent.version.toString())

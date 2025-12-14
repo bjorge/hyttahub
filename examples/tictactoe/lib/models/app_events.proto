@@ -35,6 +35,7 @@ message SubmitAppEvent {
   SiteEvent siteEvent = 2; // the version of the event, required
   string authorEmail = 3;  // the author's email, required
   repeated Image images = 4; // for add photo events, the images to upload
+  int32 pause_delay = 5; // delay in milliseconds before submitting the event
 }
 
 // The AppEventRecord is a representation of the actual record stored in the

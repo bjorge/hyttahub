@@ -49,6 +49,7 @@ const SubmitAppEvent$json = {
     {'1': 'siteEvent', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.SubmitAppEvent.SiteEvent', '10': 'siteEvent'},
     {'1': 'authorEmail', '3': 3, '4': 1, '5': 9, '10': 'authorEmail'},
     {'1': 'images', '3': 4, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.SubmitAppEvent.Image', '10': 'images'},
+    {'1': 'pause_delay', '3': 5, '4': 1, '5': 5, '10': 'pauseDelay'},
   ],
   '3': [SubmitAppEvent_SiteEvent$json, SubmitAppEvent_Image$json],
 };
@@ -78,10 +79,11 @@ final $typed_data.Uint8List submitAppEventDescriptor = $convert.base64Decode(
     'ljdGFjdG9lLkFwcEV2ZW50UghhcHBFdmVudBJSCglzaXRlRXZlbnQYAiABKAsyNC5oeXR0YWh1'
     'Yi5leGFtcGxlLnRpY3RhY3RvZS5TdWJtaXRBcHBFdmVudC5TaXRlRXZlbnRSCXNpdGVFdmVudB'
     'IgCgthdXRob3JFbWFpbBgDIAEoCVILYXV0aG9yRW1haWwSSAoGaW1hZ2VzGAQgAygLMjAuaHl0'
-    'dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuU3VibWl0QXBwRXZlbnQuSW1hZ2VSBmltYWdlcxo9Cg'
-    'lTaXRlRXZlbnQSGAoHdmVyc2lvbhgBIAEoBVIHdmVyc2lvbhIWCgZhdXRob3IYAiABKAVSBmF1'
-    'dGhvchpPCgVJbWFnZRIeCgpiYXNlNjREYXRhGAEgASgJUgpiYXNlNjREYXRhEhIKBG5hbWUYAi'
-    'ABKAlSBG5hbWUSEgoEc2l6ZRgDIAEoBVIEc2l6ZQ==');
+    'dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuU3VibWl0QXBwRXZlbnQuSW1hZ2VSBmltYWdlcxIfCg'
+    'twYXVzZV9kZWxheRgFIAEoBVIKcGF1c2VEZWxheRo9CglTaXRlRXZlbnQSGAoHdmVyc2lvbhgB'
+    'IAEoBVIHdmVyc2lvbhIWCgZhdXRob3IYAiABKAVSBmF1dGhvchpPCgVJbWFnZRIeCgpiYXNlNj'
+    'REYXRhGAEgASgJUgpiYXNlNjREYXRhEhIKBG5hbWUYAiABKAlSBG5hbWUSEgoEc2l6ZRgDIAEo'
+    'BVIEc2l6ZQ==');
 
 @$core.Deprecated('Use appEventRecordDescriptor instead')
 const AppEventRecord$json = {
