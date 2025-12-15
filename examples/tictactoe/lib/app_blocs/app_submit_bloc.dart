@@ -60,6 +60,10 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
       await Future.delayed(Duration(milliseconds: submitAppEvent.pauseDelay));
     }
 
+    if (isClosed) {
+      return state;
+    }
+
     await FirebaseFirestore.instance
         .collection(firebaseSiteEventsPath(siteId))
         .doc(siteEvent.version.toString())

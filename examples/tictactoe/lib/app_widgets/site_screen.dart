@@ -47,7 +47,7 @@ class _SiteScreenState extends State<SiteScreen> {
             ..appEvent = appEvent
             ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
             ..authorEmail = GetIt.instance<AuthBloc>().state.email
-            ..pauseDelay = 2000; // 2 seconds delay
+            ..pauseDelay = 1000; // 1 second delay
 
       final submitBloc = context.read<AppSubmitBloc>();
       // Only submit if not already submitting
