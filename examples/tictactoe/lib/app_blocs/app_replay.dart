@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:protobuf/protobuf.dart';
 import 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
@@ -25,7 +26,7 @@ AppReplayBlocState appReplay(
   }
 
   // ignore: deprecated_member_use, deprecated_member_use_from_same_package
-  final replay = appBlocState.clone();
+  final replay = appBlocState.deepCopy();
 
   // Initialize board if empty
   if (replay.board.isEmpty) {
