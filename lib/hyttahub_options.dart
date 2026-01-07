@@ -1,6 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:hyttahub/proto/app_wrapper.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
@@ -20,4 +21,6 @@ class HyttaHubOptions {
   static String? firebaseRootCollection; // the appName
 
   static String? appId;
+  // TODO: move the above into HyttaHubImplementation
+  static HyttaHubImplementation? implementation;
 }

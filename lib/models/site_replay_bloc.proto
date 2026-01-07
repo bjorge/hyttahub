@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "common_blocs.proto";
-import "app_wrapper.proto";
 
 
 // message AppReplayBlocStateWrapper { Any payload = 1; }

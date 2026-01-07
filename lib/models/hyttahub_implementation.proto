@@ -1,0 +1,15 @@
+
+syntax = "proto3";
+
+enum StorageEnum {
+  firestore = 0;
+  inMemory = 1;
+  localStorage = 2;
+}
+
+message HyttaHubImplementation {
+  StorageEnum storage = 1;
+  int32 appBuildNumber = 2;
+  string appId = 3;
+  string firebaseRootCollection = 4;
+}
