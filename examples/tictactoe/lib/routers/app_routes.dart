@@ -50,22 +50,10 @@ class AppEventsDisplayRoute extends GoRoute {
 
 final appEventsDisplayRoute = AppEventsDisplayRoute();
 
-final renameSiteRoute = RenameSiteRoute();
-final exportSiteRoute = ExportSiteRoute();
-final exportDetailsRoute = ExportDetailsRoute();
-final manageExportsRoute = ManageExportsRoute(routes: [exportDetailsRoute]);
-final siteMembersRoute = SiteMembersRoute();
-final displaySiteRoute = SiteEventsDisplayRoute();
-final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
 
 final siteScreenRoute = SiteScreenRoute(
   routes: [
-    renameSiteRoute,
-    exportSiteRoute,
-    manageExportsRoute,
-    siteMembersRoute,
-    displaySiteRoute,
-    siteEmailsDisplayRoute,
+    ...standardSiteScreenRoutes,
     appEventsDisplayRoute,
   ],
 );

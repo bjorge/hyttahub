@@ -826,6 +826,9 @@ final superUserOptionsRoute = ServiceOptionsRoute();
 final termsDisplayRoute = TermsDisplayRoute();
 final privacyDisplayRoute = PrivacyDisplayRoute();
 
+final renameSiteRoute = RenameSiteRoute();
+final displaySiteRoute = SiteEventsDisplayRoute();
+final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
 final addMemberRoute = AddMemberRoute();
 final removeMemberRoute = RemoveMemberRoute();
 final updateMemberRoute = UpdateMemberRoute();
@@ -890,3 +893,12 @@ final loginScreenRoute = LoginScreenRoute(
 final serviceLoginScreenRoute = ServiceLoginScreenRoute(
   routes: [serviceAdminScreenRoute],
 );
+
+final standardSiteScreenRoutes = [
+  renameSiteRoute,
+  exportSiteRoute,
+  manageExportsRoute,
+  siteMembersRoute,
+  displaySiteRoute,
+  siteEmailsDisplayRoute,
+];

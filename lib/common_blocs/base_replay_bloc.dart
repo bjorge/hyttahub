@@ -21,11 +21,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     required FutureOr<Uint8List> Function(Map<int, String>)
     hydrateIsolateHandler,
 
-    /// Whether to use Flutter isolates via `compute()` for heavy CPU work.
-    ///
-    /// The site replay function accesses a global function pointer to the
-    /// app replay function, which is not allowed in an isolate. Once a way
-    /// to fix this is figured out we can change this back to true.
+    // Whether to use Flutter isolates via `compute()` for heavy CPU work.
     bool useIsolate = true,
   }) : _initialState = initialState,
        _firestore = firestore ?? FirebaseFirestore.instance,

@@ -19,8 +19,8 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:path_provider/path_provider.dart';
 
-String appVersion = "2.0.4";
-int appBuildNumber = 78;
+String appVersion = "2.0.5";
+int appBuildNumber = 79;
 
 final getIt = GetIt.instance;
 
