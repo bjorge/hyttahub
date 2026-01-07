@@ -599,4 +599,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String errorAssigningUser(String error) {
     return 'Feil ved tildeling av bruker: $error';
   }
+
+  @override
+  String get openSourceLicensesButton => 'Open Source-pakker';
+
+  @override
+  String get openSourceLicensesTitle => 'Open Source-pakker';
 }

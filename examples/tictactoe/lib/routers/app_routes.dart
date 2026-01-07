@@ -49,6 +49,7 @@ class AppEventsDisplayRoute extends GoRoute {
 }
 
 final appEventsDisplayRoute = AppEventsDisplayRoute();
+final openSourceLicensesRoute = OpenSourceLicensesRoute();
 
 
 final siteScreenRoute = SiteScreenRoute(
@@ -84,5 +85,6 @@ final landingScreenRoute = LandingScreenRoute(
     loginScreenRoute,
     serviceLoginScreenRoute,
     landingUnimplementedRoute,
+    openSourceLicensesRoute,
   ],
 );

@@ -259,5 +259,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "openSourceLicensesButton": "Open Source-pakker",
+  "openSourceLicensesTitle": "Open Source-pakker"
 }

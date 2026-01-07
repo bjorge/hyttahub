@@ -606,4 +606,10 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String errorAssigningUser(String error) {
     return 'Errore durante l\'assegnazione dell\'utente: $error';
   }
+
+  @override
+  String get openSourceLicensesButton => 'Pacchetti open source';
+
+  @override
+  String get openSourceLicensesTitle => 'Pacchetti open source';
 }

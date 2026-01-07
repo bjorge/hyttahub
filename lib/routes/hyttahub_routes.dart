@@ -25,6 +25,7 @@ import 'package:hyttahub/service_widgets/service_admins_screen.dart';
 import 'package:hyttahub/service_widgets/service_terms_display.dart';
 
 import 'package:hyttahub/service_widgets/login.dart';
+import 'package:hyttahub/service_widgets/open_source_licenses_screen.dart';
 import 'package:hyttahub/service_widgets/update_admin_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -43,6 +44,24 @@ import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
 import 'package:hyttahub/site_widgets/export_details_screen.dart';
 
 /// A route for the login screen.
+
+class OpenSourceLicensesRoute extends GoRoute {
+  /// Creates an [OpenSourceLicensesRoute].
+  OpenSourceLicensesRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return const OpenSourceLicensesScreen();
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'licenses';
+
+  /// The full path to this route.
+  static const String fullPath = '/$pathSegment';
+}
+
 class LoginScreenRoute extends GoRoute {
   /// Creates a [LoginScreenRoute].
   LoginScreenRoute({required super.routes})
@@ -87,6 +106,7 @@ class ServiceLoginScreenRoute extends GoRoute {
   /// The full path to this route.
   static const String fullPath = '/$pathSegment';
 }
+
 
 /// A route for the account screen.
 class AccountScreenRoute extends GoRoute {

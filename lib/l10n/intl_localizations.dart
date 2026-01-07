@@ -1186,6 +1186,18 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Error assigning user: {error}'**
   String errorAssigningUser(String error);
+
+  /// No description provided for @openSourceLicensesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Source Packages'**
+  String get openSourceLicensesButton;
+
+  /// No description provided for @openSourceLicensesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Source Packages'**
+  String get openSourceLicensesTitle;
 }
 
 class _HyttaHubLocalizationsDelegate

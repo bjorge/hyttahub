@@ -596,4 +596,10 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String errorAssigningUser(String error) {
     return 'Error assigning user: $error';
   }
+
+  @override
+  String get openSourceLicensesButton => 'Open-source pakketten';
+
+  @override
+  String get openSourceLicensesTitle => 'Open-source pakketten';
 }
