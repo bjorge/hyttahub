@@ -5,6 +5,11 @@ import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
+import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+
 void main() {
   group('AllowedEmailsBloc', () {
     late FakeFirebaseFirestore fakeFirestore;
@@ -12,10 +17,17 @@ void main() {
 
     setUp(() {
       fakeFirestore = FakeFirebaseFirestore();
+      HyttaHubOptions.implementation = HyttaHubImplementation(
+        storage: StorageEnum.firestore,
+      );
+      HyttaHubStorageFactory.setStorage(
+        StorageEnum.firestore,
+        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+      );
     });
 
     AllowedEmailsBloc buildBloc() {
-      return AllowedEmailsBloc(collectionPath, firestore: fakeFirestore);
+      return AllowedEmailsBloc(collectionPath);
     }
 
     test('initial state is correct', () {

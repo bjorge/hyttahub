@@ -5,9 +5,10 @@ import 'dart:convert';
 import 'package:formproto/proto/app_events.pb.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bloc/bloc.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:protobuf/protobuf.dart';
@@ -32,6 +33,10 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
   AppSubmitBloc(this.siteId, SubmitAppEvent initialPayload)
     : super(initialPayload: initialPayload);
 
+  @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
   final String siteId;
 
   @override
@@ -50,15 +55,15 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
-    await FirebaseFirestore.instance
-        .collection(firebaseSiteEventsPath(siteId))
-        .doc(siteEvent.version.toString())
-        .set({
-          fbPayload: encodedEvent,
-          fbVersion: siteEvent.version,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        })
-        .timeout(firebaseTimeout);
+    await storage.setDocument(
+      firebaseSiteEventsPath(siteId),
+      siteEvent.version.toString(),
+      {
+        fbPayload: encodedEvent,
+        fbVersion: siteEvent.version,
+        fbTimeStamp: storage.serverTimestamp,
+      },
+    );
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;
@@ -80,15 +85,14 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
     // The author must be an existing site user.
     // We look up their ID from the site's users collection.
-    final userDoc = await FirebaseFirestore.instance
-        .collection(firebaseSiteUsersPath(siteId))
-        .doc(email)
-        .get()
-        .timeout(firebaseTimeout);
+    final userDoc = await storage.getDocument(
+      firebaseSiteUsersPath(siteId),
+      email,
+    );
 
-    if (userDoc.exists && userDoc.data()?.containsKey('u') == true) {
+    if (userDoc != null && userDoc.containsKey('u') == true) {
       // The 'u' field holds the author ID.
-      submitAppEvent.siteEvent.author = userDoc.data()!['u'];
+      submitAppEvent.siteEvent.author = userDoc['u'] as int;
     } else {
       // This is an error case: an action is being performed by a non-site-user.
       throw Exception(

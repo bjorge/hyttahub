@@ -43,7 +43,7 @@ class _SiteScreenState extends State<SiteScreen> {
       'getFile',
     );
     final result = await callable.call(<String, dynamic>{
-      'appName': HyttaHubOptions.firebaseRootCollection,
+      'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
       'siteId': widget.siteId,
       'fileName': fileName,
     });

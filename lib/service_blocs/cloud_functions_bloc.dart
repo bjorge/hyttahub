@@ -29,7 +29,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       final result = await callable.call(<String, dynamic>{
         if (base64Data != null) 'base64Data': base64Data,
         if (storagePath != null) 'storagePath': storagePath,
-        'appName': HyttaHubOptions.firebaseRootCollection,
+        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
       });
       return Map<String, dynamic>.from(result.data);
     } catch (e) {
@@ -45,7 +45,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       await callable.call(<String, dynamic>{
         'siteId': siteId,
         'memberId': memberId,
-        'appName': HyttaHubOptions.firebaseRootCollection,
+        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
       });
     } catch (e) {
       throw Exception('Failed to assign user to imported site: $e');
@@ -74,7 +74,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         await docRef.set({
           fbTimeStamp: FieldValue.serverTimestamp(),
           fbUserId: author,
-          fbAppId: HyttaHubOptions.appId,
+          fbAppId: HyttaHubOptions.implementation?.appId,
         }, SetOptions(merge: true));
       } else {
         // This is an error case: an action is being performed by a non-site-user.
@@ -102,7 +102,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       );
       final result = await callable.call(<String, dynamic>{
         'siteId': siteId,
-        'appName': HyttaHubOptions.firebaseRootCollection,
+        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
       });
       final files = (result.data['files'] as List).map((file) {
         final fileMap = Map<String, dynamic>.from(file);
@@ -130,7 +130,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       );
       await callable.call(<String, dynamic>{
         'siteId': siteId,
-        'appName': HyttaHubOptions.firebaseRootCollection,
+        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
         'fileName': fileName,
       });
       emit(CloudFunctionsState()..exportDeleteSuccess = ExportDeleteSuccess());
@@ -150,7 +150,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       );
       final result = await callable.call(<String, dynamic>{
         'siteId': siteId,
-        'appName': HyttaHubOptions.firebaseRootCollection,
+        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
         'fileName': fileName,
       });
       emit(

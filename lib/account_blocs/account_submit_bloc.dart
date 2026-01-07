@@ -4,11 +4,13 @@ import 'dart:convert';
 
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/site_email.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/utilities/ids.dart';
 import 'package:protobuf/protobuf.dart';
@@ -32,6 +34,11 @@ AccountEventSubmission accountEventSubmissionFactory({
 class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
   AccountSubmitBloc(this.email, SubmitAccountEvent initialPayload)
     : super(initialPayload: initialPayload);
+
+  @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
   final String email;
 
   @override
@@ -39,12 +46,13 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
     BaseSubmitState<SubmitAccountEvent> state,
     Emitter<BaseSubmitState<SubmitAccountEvent>> emitter,
   ) async {
-    return submitSiteEvent(state, email);
+    return submitSiteEvent(state, email, storage);
   }
 
   static Future<BaseSubmitState<SubmitAccountEvent>> submitSiteEvent(
     BaseSubmitState<SubmitAccountEvent> state,
     String email,
+    BaseHyttaHubStorage storage,
   ) async {
     final submitAccountEvent = state.payload!;
 
@@ -52,95 +60,78 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       submitAccountEvent.event.writeToBuffer(),
     );
 
-    final firestore = FirebaseFirestore.instance;
+    await storage.runBatch((batch) async {
+      if (submitAccountEvent.event.hasCreateSite()) {
+        final siteId = submitAccountEvent.event.createSite;
+        final siteName = submitAccountEvent.createSiteName;
+        final siteUserName = submitAccountEvent.createSiteUserName;
 
-    if (submitAccountEvent.event.hasCreateSite()) {
-      // Handle add site event
+        final siteEvent = SiteEvent(
+          version: 1,
+          newSite: SiteEvent_NewSite(
+            siteName: siteName,
+            memberName: siteUserName,
+            instance: generateId(),
+          ),
+        );
+        final encodedSiteEvent = base64Encode(siteEvent.writeToBuffer());
 
-      final siteId = submitAccountEvent.event.createSite;
-      final siteName = submitAccountEvent.createSiteName;
-      final siteUserName = submitAccountEvent.createSiteUserName;
-
-      final siteEvent = SiteEvent(
-        version: 1,
-        newSite: SiteEvent_NewSite(
-          siteName: siteName,
-          memberName: siteUserName,
-          instance: generateId(),
-        ),
-      );
-      final encodedSiteEvent = base64Encode(siteEvent.writeToBuffer());
-
-      // add this user (email) to the site as the first user
-      await firestore
-          .collection(firebaseSiteUsersPath(siteId))
-          .doc(email)
-          .set({
+        batch.setDocument(
+          firebaseSiteUsersPath(siteId),
+          email,
+          {
             'u': siteEvent.version,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          })
-          .timeout(firebaseTimeout);
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
 
-      // now that this use is allowed into the site, add the site first event
-      await firestore
-          .collection(firebaseSiteEventsPath(siteId))
-          .doc(siteEvent.version.toString())
-          .set({
+        batch.setDocument(
+          firebaseSiteEventsPath(siteId),
+          siteEvent.version.toString(),
+          {
             fbPayload: encodedSiteEvent,
             fbVersion: siteEvent.version,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          })
-          .timeout(firebaseTimeout);
-    }
-
-    if (submitAccountEvent.event.hasJoinSite()) {
-      final siteId = submitAccountEvent.event.joinSite;
-
-      // check if the user is allowed to join the site
-      final userDoc = await firestore
-          .collection(firebaseSiteUsersPath(siteId))
-          .doc(email)
-          .get()
-          .timeout(firebaseTimeout);
-
-      if (!userDoc.exists) {
-        throw Exception('Error: Cannot join site, user does not exist.');
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
       }
-    }
 
-    if (submitAccountEvent.event.hasLeaveSite()) {
-      final siteId = submitAccountEvent.event.leaveSite;
-
-      final markForDeletionInfo = base64Encode(
-        MarkForDeletion(
-          deleteReason: MarkForDeletion_DeleteReason.memberLeftSite,
-        ).writeToBuffer(),
-      );
-
-      // Try to remove the user from the site
-      try {
-        await firestore
-            .collection(firebaseSiteUsersPath(siteId))
-            .doc(email)
-            .update({
-              fbMarkedForDeletion: markForDeletionInfo,
-              fbTimeStamp: FieldValue.serverTimestamp(),
-            })
-            .timeout(firebaseTimeout);
-      } catch (e) {
-        // Best effort: ignore errors
+      if (submitAccountEvent.event.hasJoinSite()) {
+        final siteId = submitAccountEvent.event.joinSite;
+        final userDoc = await storage.getDocument(firebaseSiteUsersPath(siteId), email);
+        if (userDoc == null) {
+          throw Exception('Error: Cannot join site, user does not exist.');
+        }
       }
-    }
 
-    await firestore
-        .collection(firebaseAccountEventsPath(email))
-        .doc(submitAccountEvent.event.version.toString())
-        .set({
+      if (submitAccountEvent.event.hasLeaveSite()) {
+        final siteId = submitAccountEvent.event.leaveSite;
+        final markForDeletionInfo = base64Encode(
+          MarkForDeletion(
+            deleteReason: MarkForDeletion_DeleteReason.memberLeftSite,
+          ).writeToBuffer(),
+        );
+
+        batch.updateDocument(
+          firebaseSiteUsersPath(siteId),
+          email,
+          {
+            fbMarkedForDeletion: markForDeletionInfo,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
+
+      batch.setDocument(
+        firebaseAccountEventsPath(email),
+        submitAccountEvent.event.version.toString(),
+        {
           fbPayload: encodedAccountEvent,
           fbVersion: submitAccountEvent.event.version,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        })
-        .timeout(firebaseTimeout);
+          fbTimeStamp: storage.serverTimestamp,
+        },
+      );
+    });
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;

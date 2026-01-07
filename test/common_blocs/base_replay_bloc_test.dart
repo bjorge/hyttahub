@@ -11,8 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:protobuf/protobuf.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -119,6 +121,9 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
              hydrateIsolateHandlerOverride ?? serviceHydrateIsolateHandler,
        );
 
+  @override
+  StorageEnum get storageType => StorageEnum.firestore;
+
   final String collectionPath;
   final bool validationResult;
   final Completer? handleEmptySnapshotCompleter;
@@ -168,6 +173,7 @@ void main() {
     const collectionPath = 'test_collection';
 
     setUp(() {
+      HyttaHubStorageFactory.clear();
       HydratedBloc.storage = MockStorage();
       fakeFirestore = FakeFirebaseFirestore();
     });

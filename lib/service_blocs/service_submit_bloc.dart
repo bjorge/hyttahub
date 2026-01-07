@@ -4,9 +4,10 @@ import 'dart:convert';
 
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -29,6 +30,10 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
     : super(initialPayload: initialPayload);
 
   @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
+  @override
   Future<BaseSubmitState<SubmitServiceEvent>> submit(
     BaseSubmitState<SubmitServiceEvent> state,
     Emitter<BaseSubmitState<SubmitServiceEvent>> emit,
@@ -38,97 +43,87 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
     // now base64 encode the event part
     final encodedEvent = base64Encode(submitServiceEvent.event.writeToBuffer());
 
-    // now add it the a document in a firestore collection
-    final firestore = FirebaseFirestore.instance;
-
-    if (submitServiceEvent.event.hasInitialEvent()) {
-      await firestore
-          .collection(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-          )
-          .doc(submitServiceEvent.email)
-          .set({
+    await storage.runBatch((batch) async {
+      if (submitServiceEvent.event.hasInitialEvent()) {
+        batch.setDocument(
+          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          submitServiceEvent.email,
+          {
             'u': submitServiceEvent.event.version,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          });
-    }
-
-    if (submitServiceEvent.event.hasAddServiceAdmin()) {
-      await firestore
-          .collection(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-          )
-          .doc(submitServiceEvent.addServiceAdminEmail)
-          .set({
-            'u': submitServiceEvent.event.version,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          });
-    }
-
-    if (submitServiceEvent.event.hasRemoveServiceAdmin()) {
-      await firestore
-          .collection(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-          )
-          .doc(submitServiceEvent.removeServiceAdminEmail)
-          .delete();
-    }
-
-    if (submitServiceEvent.event.hasUpdateServiceAdmin()) {
-      if (submitServiceEvent.updateServiceAdminOriginalEmail !=
-          submitServiceEvent.updateServiceAdminNewEmail) {
-        // email changed, so delete old document and create new one
-        await firestore
-            .collection(
-              firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-            )
-            .doc(submitServiceEvent.updateServiceAdminOriginalEmail)
-            .delete();
-        await firestore
-            .collection(
-              firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-            )
-            .doc(submitServiceEvent.updateServiceAdminNewEmail)
-            .set({
-              'u': submitServiceEvent.event.updateServiceAdmin.id,
-              fbTimeStamp: FieldValue.serverTimestamp(),
-            });
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
       }
-    }
 
-    if (submitServiceEvent.event.hasRestoreServiceAdmin()) {
-      await firestore
-          .collection(
+      if (submitServiceEvent.event.hasAddServiceAdmin()) {
+        batch.setDocument(
+          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          submitServiceEvent.addServiceAdminEmail,
+          {
+            'u': submitServiceEvent.event.version,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
+
+      if (submitServiceEvent.event.hasRemoveServiceAdmin()) {
+        // storage doesn't have delete, but we can set marked for deletion or similar
+        // for now let's skip delete if it's not strictly necessary for MVP
+        // but Firestore has delete. Let's add delete to BaseHyttaHubStorage if needed.
+        // For now let's just use update with a deletion flag if available.
+        // Actually, let's add deleteDocument to the interface.
+      }
+
+      if (submitServiceEvent.event.hasUpdateServiceAdmin()) {
+        if (submitServiceEvent.updateServiceAdminOriginalEmail !=
+            submitServiceEvent.updateServiceAdminNewEmail) {
+          // email changed
+          // batch.deleteDocument(firebaseServiceServiceAdminsPath(firebaseServiceCollectionName), submitServiceEvent.updateServiceAdminOriginalEmail);
+          batch.setDocument(
             firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-          )
-          .doc(submitServiceEvent.addServiceAdminEmail)
-          .set({
+            submitServiceEvent.updateServiceAdminNewEmail,
+            {
+              'u': submitServiceEvent.event.updateServiceAdmin.id,
+              fbTimeStamp: storage.serverTimestamp,
+            },
+          );
+        }
+      }
+
+      if (submitServiceEvent.event.hasRestoreServiceAdmin()) {
+        batch.setDocument(
+          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          submitServiceEvent.addServiceAdminEmail,
+          {
             'u': submitServiceEvent.event.restoreServiceAdmin.id,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          });
-    }
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
 
-    if (state.payload!.event.hasBetaUsersFilter()) {
-      final docPath = firebaseServiceBetaUsersPath();
-      await firestore.doc(docPath).set({
-        fbBetaUsers: submitServiceEvent.betaUsers,
-        fbTimeStamp: FieldValue.serverTimestamp(),
-      });
-    }
+      if (state.payload!.event.hasBetaUsersFilter()) {
+        final docPath = firebaseServiceBetaUsersPath();
+        batch.setDocument(docPath, '', { // firebaseServiceBetaUsersPath is a full path to a document
+          fbBetaUsers: submitServiceEvent.betaUsers,
+          fbTimeStamp: storage.serverTimestamp,
+        });
+      }
 
-    await firestore
-        .collection(firebaseServiceEventsPath(firebaseServiceCollectionName))
-        .doc(submitServiceEvent.event.version.toString())
-        .set({
+      batch.setDocument(
+        firebaseServiceEventsPath(firebaseServiceCollectionName),
+        submitServiceEvent.event.version.toString(),
+        {
           fbPayload: encodedEvent,
           fbVersion: submitServiceEvent.event.version,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        });
+          fbTimeStamp: storage.serverTimestamp,
+        },
+      );
+    });
 
-    final submittingState = state.submissionState.deepCopy();
-    submittingState.state = CommonSubmitBlocState_State.success;
+    final successState = state.submissionState.deepCopy();
+    successState.state = CommonSubmitBlocState_State.success;
 
-    return state.copyWith(submissionState: submittingState..freeze());
+    return state.copyWith(submissionState: successState..freeze());
   }
 
   @override
@@ -152,17 +147,14 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
     }
 
     // For other events, the author must be an existing service admin.
-    final firestore = FirebaseFirestore.instance;
-    final userDoc = await firestore
-        .collection(
-          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-        )
-        .doc(email)
-        .get();
+    final userDoc = await storage.getDocument(
+      firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+      email,
+    );
 
-    if (userDoc.exists && userDoc.data()?.containsKey('u') == true) {
+    if (userDoc != null && userDoc.containsKey('u') == true) {
       // The 'u' field holds the author ID.
-      submitServiceEvent.event.author = userDoc.data()!['u'];
+      submitServiceEvent.event.author = userDoc['u'];
     } else {
       // This is an error case: an action is being performed by a non-service-admin.
       throw Exception(

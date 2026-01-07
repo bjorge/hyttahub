@@ -3,6 +3,9 @@
 import 'dart:async';
 
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,9 +38,12 @@ class BaseSubmitState<T extends GeneratedMessage> {
 
 abstract class BaseSubmitBloc<T extends GeneratedMessage>
     extends Bloc<BaseSubmitEvent<T>, BaseSubmitState<T>> {
-  BaseSubmitBloc({required this.initialPayload})
-    : isFormValid = false,
-      payloadChanged = false,
+  BaseSubmitBloc({
+    required this.initialPayload,
+    FirebaseFirestore? firestore,
+    BaseHyttaHubStorage? storage,
+  }) : isFormValid = false,
+       payloadChanged = false,
       super(
         BaseSubmitState<T>(
           submissionState: CommonSubmitBlocState(
@@ -49,8 +55,18 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
           payload: initialPayload,
         ),
       ) {
+    if (storage != null) {
+      this.storage = storage;
+    } else {
+      this.storage = HyttaHubStorageFactory.getStorage(
+        storageType,
+        firestore: firestore,
+      );
+    }
     on<BaseSubmitEvent<T>>(_onEvent);
   }
+
+  late final BaseHyttaHubStorage storage;
 
   T initialPayload;
   bool payloadChanged;
@@ -125,6 +141,9 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
       }
     }
   }
+
+  /// Implement in subclasses
+  StorageEnum get storageType;
 
   /// Implement in subclasses
   Future<BaseSubmitState<T>> getAuthor(BaseSubmitState<T> state);

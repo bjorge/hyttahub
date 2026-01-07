@@ -6,6 +6,9 @@ import 'dart:convert'; // For base64Encode/Decode
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:flutter/foundation.dart'; // For compute()
@@ -16,6 +19,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   BaseReplayBloc(
     super.initialState, {
     FirebaseFirestore? firestore,
+    BaseHyttaHubStorage? storage,
     required FutureOr<Uint8List> Function(Map<String, dynamic> payload)
     replayIsolateHandler,
     required FutureOr<Uint8List> Function(Map<int, String>)
@@ -24,10 +28,19 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     // Whether to use Flutter isolates via `compute()` for heavy CPU work.
     bool useIsolate = true,
   }) : _initialState = initialState,
-       _firestore = firestore ?? FirebaseFirestore.instance,
        _replayIsolateHandler = replayIsolateHandler,
        _hydrateIsolateHandler = hydrateIsolateHandler {
     _useIsolate = useIsolate;
+
+    if (storage != null) {
+      _storage = storage;
+    } else {
+      _storage = HyttaHubStorageFactory.getStorage(
+        storageType,
+        firestore: firestore,
+      );
+    }
+
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
@@ -37,7 +50,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   StreamSubscription? _subscription;
   final S _initialState;
-  final FirebaseFirestore _firestore;
+  late final BaseHyttaHubStorage _storage;
   final FutureOr<Uint8List> Function(Map<String, dynamic> payload)
   _replayIsolateHandler;
 
@@ -45,7 +58,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   // Whether to use compute() to run handlers in isolates. Default true.
   late final bool _useIsolate;
 
-  // --- Abstract methods and getters to be implemented by subclasses ---
+  /// Provides the storage type to use for this BLoC.
+  StorageEnum get storageType;
 
   /// Provides the Firestore collection path.
   Future<String?> getCollectionPath();
@@ -55,7 +69,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   // for hydrated storage
   @override
-  String get id => ':$collectionName:${HyttaHubOptions.firebaseRootCollection}';
+  String get id => ':$collectionName:${HyttaHubOptions.implementation?.firebaseRootCollection}';
 
   /// Field name for the version in Firestore documents (e.g., 'v' or 'fbVersion').
   String get versionField => fbVersion;
@@ -78,13 +92,13 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   /// Serializes the state S to protobuf bytes.
   Uint8List toBuffer(S state);
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getFirstEventDocument(
+  Future<Map<String, dynamic>?> getFirstEventDocument(
     String collectionPath,
   ) {
-    return _firestore
-        .collection(collectionPath)
-        .doc(firstCollectionEventVersion.toString())
-        .get();
+    return _storage.getDocument(
+      collectionPath,
+      firstCollectionEventVersion.toString(),
+    );
   }
 
   // --- Common BLoC Logic ---
@@ -218,7 +232,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
       // check that the cloud event stream exists
       final firstEventDoc = await getFirstEventDocument(path);
-      if (!firstEventDoc.exists) {
+      if (firstEventDoc == null) {
         _hydratedEvents.clear();
         _hydratedState = null;
 
@@ -231,7 +245,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         );
       } else {
         // check that the local and remote event streams are consistent
-        final firstCloudEvent = firstEventDoc.data()?[payloadField] as String?;
+        final firstCloudEvent = firstEventDoc[payloadField] as String?;
         if (_hydratedEvents.isNotEmpty &&
             _hydratedEvents.containsKey(firstCollectionEventVersion)) {
           final firstCachedEvent = _hydratedEvents[firstCollectionEventVersion];
@@ -267,34 +281,21 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
 
       // Setup listener for subsequent changes
-      _subscription = _firestore
-          .collection(path)
-          .where(versionField, isGreaterThan: _lastVersion)
-          .orderBy(versionField, descending: false)
-          .snapshots()
+      _subscription = _storage
+          .listenEvents(
+            path,
+            lastVersion: _lastVersion,
+            versionField: versionField,
+            payloadField: payloadField,
+          )
           .listen(
-            (items) {
-              final newEventsList = items.docs
-                  .map((doc) {
-                    try {
-                      return MapEntry(
-                        doc[versionField] as int,
-                        doc[payloadField] as String,
-                      );
-                    } catch (e) {
-                      return null;
-                    }
-                  })
-                  .where((e) => e != null)
-                  .cast<MapEntry<int, String>>()
-                  .toList();
-
-              if (newEventsList.isNotEmpty) {
+            (eventsData) {
+              if (eventsData.isNotEmpty) {
                 if (!isClosed) {
                   add(
                     CommonReplayBlocEvent(
                       newEvents: CommonReplayBlocEvent_NewEvents(
-                        events: Map<int, String>.fromEntries(newEventsList),
+                        events: eventsData,
                       ),
                     ),
                   );
@@ -357,7 +358,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
 
       final serializedState =
-          json[HyttaHubOptions.appBuildNumber.toString()] as String?;
+          json[HyttaHubOptions.implementation?.appBuildNumber.toString()] as String?;
       if (serializedState != null && serializedState.isNotEmpty) {
         _hydratedState = fromBuffer(base64Decode(serializedState));
       } else {
@@ -386,7 +387,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
       return {
         'events_map': serializedEventsMap,
-        HyttaHubOptions.appBuildNumber.toString(): serializedState,
+        HyttaHubOptions.implementation?.appBuildNumber.toString() ?? '': serializedState,
       };
     } catch (e, _) {
       return null; // Prevents corrupt data from being saved

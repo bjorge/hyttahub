@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -35,11 +36,12 @@ Future<void> main() async {
     return SiteScreenRoute.fullPath(siteId);
   };
 
-  HyttaHubOptions.appBuildNumber = appBuildNumber;
-
-  HyttaHubOptions.firebaseRootCollection =
-      'template'; // the appName, do not change
-  HyttaHubOptions.appId = 'hyttahub.example.template'; // do not change
+  HyttaHubOptions.implementation = HyttaHubImplementation(
+    appBuildNumber: appBuildNumber,
+    firebaseRootCollection: 'template',
+    appId: 'hyttahub.example.template',
+    storage: StorageEnum.firestore,
+  );
 
   setupGetIt();
 

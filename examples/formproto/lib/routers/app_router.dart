@@ -49,12 +49,12 @@ class _AppRouterState extends State<AppRouter> {
       providers: [
         BlocProvider<ThemeCubit>(
           create:
-              (_) => ThemeCubit(HyttaHubOptions.firebaseRootCollection ?? ''),
+              (_) => ThemeCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
         BlocProvider<LanguageCubit>(
           create:
               (_) =>
-                  LanguageCubit(HyttaHubOptions.firebaseRootCollection ?? ''),
+                  LanguageCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
         BlocProvider<CreateAccountCubit>(create: (_) => CreateAccountCubit()),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),

@@ -8,6 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:protobuf/protobuf.dart';
 
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+
 /// Abstract configuration to drive the generic [EventsDisplay] widget.
 ///
 /// Implement this class for each event type (Service, Account, Site) to provide
@@ -74,16 +78,18 @@ class _EventsDisplayState<
 
   Future<void> _fetchEvents() async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final snapshot = await firestore
-          .collection(widget.config.collectionPath)
-          .orderBy(fbVersion, descending: _isDescending)
-          .get();
+      final storage = HyttaHubStorageFactory.getStorage(
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+      );
+      final docs = await storage.getCollection(
+        widget.config.collectionPath,
+        orderBy: fbVersion,
+        descending: _isDescending,
+      );
 
       final records = <R>[];
       final base64Events = <int, String>{};
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
+      for (final data in docs) {
         if (data case {
           fbPayload: String payload,
           fbTimeStamp: Timestamp timestamp,

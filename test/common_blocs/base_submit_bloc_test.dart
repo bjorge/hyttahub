@@ -3,7 +3,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -14,8 +16,11 @@ class TestSubmitEvent extends BaseSubmitEvent<SubmitServiceEvent> {
 
 // Mock Bloc for testing
 class TestSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
-  TestSubmitBloc(SubmitServiceEvent initialPayload, {this.submitError})
+  TestSubmitBloc(SubmitServiceEvent initialPayload, {this.submitError, super.storage})
     : super(initialPayload: initialPayload);
+
+  @override
+  StorageEnum get storageType => StorageEnum.inMemory;
 
   final Exception? submitError;
 
@@ -46,6 +51,7 @@ void main() {
     late SubmitServiceEvent updatedPayload;
 
     setUp(() {
+      HyttaHubStorageFactory.clear();
       initialPayload = SubmitServiceEvent();
       updatedPayload = SubmitServiceEvent()
         ..addServiceAdminEmail = 'test@test.com';

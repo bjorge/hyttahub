@@ -1,22 +1,20 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
-// ignore: unused_import
-import 'package:protobuf/protobuf.dart';
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 class AllowedEmailsBloc
     extends Bloc<AllowedEmailsBlocEvent, AllowedEmailsBlocState> {
-  AllowedEmailsBloc(this.collectionPath, {FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance,
-      super(AllowedEmailsBlocState()) {
+  AllowedEmailsBloc(this.collectionPath)
+    : super(AllowedEmailsBlocState()) {
     on<AllowedEmailsBlocEvent>(_onAllowedEmailsBlocEvent);
   }
 
   final String collectionPath;
-  final FirebaseFirestore _firestore;
 
   FutureOr<void> _onAllowedEmailsBlocEvent(
     AllowedEmailsBlocEvent event,
@@ -28,14 +26,18 @@ class AllowedEmailsBloc
           ..freeze(),
       );
 
-      await emit.onEach<QuerySnapshot>(
-        _firestore.collection(collectionPath).snapshots(),
-        onData: (querySnapshot) {
+      final storage = HyttaHubStorageFactory.getStorage(
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+      );
+
+      await emit.onEach<Map<String, Map<String, dynamic>>>(
+        storage.listenCollection(collectionPath),
+        onData: (collection) {
           final Map<String, AllowedEmailsBlocState_UserInfo> emails = {};
-          for (final doc in querySnapshot.docs) {
-            final data = doc.data() as Map<String, dynamic>?;
-            if (data != null && data.containsKey(fbUserId)) {
-              emails[doc.id] = AllowedEmailsBlocState_UserInfo(
+          for (final entry in collection.entries) {
+            final data = entry.value;
+            if (data.containsKey(fbUserId)) {
+              emails[entry.key] = AllowedEmailsBlocState_UserInfo(
                 userId: data[fbUserId] as int,
               );
             }
@@ -48,17 +50,11 @@ class AllowedEmailsBloc
           );
         },
         onError: (error, stackTrace) {
-          if (error is FirebaseException && error.code == 'permission-denied') {
-            emit(
-              AllowedEmailsBlocState(
-                state: AllowedEmailsBlocState_State.permissionDenied,
-              ),
-            );
-          } else {
-            emit(
-              AllowedEmailsBlocState(state: AllowedEmailsBlocState_State.error),
-            );
-          }
+          // Note: In a real app we might want to check the error type
+          // but our abstraction currently doesn't return FirebaseException.
+          emit(
+            AllowedEmailsBlocState(state: AllowedEmailsBlocState_State.error),
+          );
         },
       );
     }

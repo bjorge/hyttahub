@@ -7,7 +7,9 @@ import 'package:tictactoe/app_blocs/app_replay.dart';
 import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -43,6 +45,10 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
         replayIsolateHandler: appReplayIsolateHandler,
         hydrateIsolateHandler: appHydrateIsolateHandler,
       );
+
+  @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
 
   @override
   final String collectionName;

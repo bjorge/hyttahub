@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!widget.serviceLogin &&
             serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion > HyttaHubOptions.appBuildNumber!) {
+            serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
           // logout and then rebuild the navigation stack
           context.read<AuthBloc>().add(
             AuthBlocEvent(logout: AuthBlocEvent_Logout()),
@@ -97,8 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 instance: generateId(), // a good enough random value
                 alias: '',
                 filter: BloomFilter(),
-                appName: HyttaHubOptions.firebaseRootCollection ?? '',
-                appId: HyttaHubOptions.appId ?? '',
+                appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+                appId: HyttaHubOptions.implementation?.appId ?? '',
               ),
             ),
           );
@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!widget.serviceLogin &&
             serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion > HyttaHubOptions.appBuildNumber!) {
+            serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
           return ServiceNewVersionPage();
         }
 

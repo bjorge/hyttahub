@@ -5,10 +5,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/site_email.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:bloc/bloc.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -32,6 +33,10 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
   SiteSubmitBloc(this.siteId, SubmitSiteEvent initialPayload)
     : super(initialPayload: initialPayload);
 
+  @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
   final String siteId;
 
   @override
@@ -44,107 +49,90 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
     // now base64 encode the event part
     var encodedEvent = base64Encode(submitSiteEvent.event.writeToBuffer());
 
-    if (submitSiteEvent.event.hasRemoveMember()) {
-      if (kDebugMode) {
-        print("Removing member: ${submitSiteEvent.toProto3Json()}");
-      }
-      final markForDeletionInfo = base64Encode(
-        MarkForDeletion(
-          deleteReason: MarkForDeletion_DeleteReason.memberRemovedFromSite,
-        ).writeToBuffer(),
-      );
-      try {
-        await FirebaseFirestore.instance
-            .collection(firebaseSiteUsersPath(siteId))
-            .doc(submitSiteEvent.removeMemberEmail)
-            .update({
-              fbMarkedForDeletion: markForDeletionInfo,
-              fbTimeStamp: FieldValue.serverTimestamp(),
-            })
-            .timeout(firebaseTimeout);
-      } catch (e) {
+    // Batch operations
+    await storage.runBatch((batch) async {
+      if (submitSiteEvent.event.hasRemoveMember()) {
         if (kDebugMode) {
-          print("Removing member error: e: $e");
+          print("Removing member: ${submitSiteEvent.toProto3Json()}");
         }
-
-        // Best effort: ignore errors
-      }
-    }
-
-    if (submitSiteEvent.event.hasAddMember()) {
-      // add this user (email) to the site
-      await FirebaseFirestore.instance
-          .collection(firebaseSiteUsersPath(siteId))
-          .doc(submitSiteEvent.addMemberEmail)
-          .set({
-            'u': submitSiteEvent.event.version,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          })
-          .timeout(firebaseTimeout);
-    }
-
-    if (submitSiteEvent.event.hasUpdateMember()) {
-      if (kDebugMode) {
-        print("Updating member: ${submitSiteEvent.toProto3Json()}");
-      }
-      final originalEmail = submitSiteEvent.updateMemberOriginalEmail;
-      final newEmail = submitSiteEvent.updateMemberNewEmail;
-
-      if (originalEmail != newEmail) {
-        // Emails have changed, so update the allowed_emails collection
-        final batch = FirebaseFirestore.instance.batch();
-
-        // Mark the old email for deletion
-        final oldEmailRef = FirebaseFirestore.instance
-            .collection(firebaseSiteUsersPath(siteId))
-            .doc(originalEmail);
         final markForDeletionInfo = base64Encode(
           MarkForDeletion(
-            deleteReason: MarkForDeletion_DeleteReason.memberEmailUpdated,
+            deleteReason: MarkForDeletion_DeleteReason.memberRemovedFromSite,
           ).writeToBuffer(),
         );
-        batch.update(oldEmailRef, {
-          fbMarkedForDeletion: markForDeletionInfo,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        });
 
-        // Add the new email
-        final newEmailRef = FirebaseFirestore.instance
-            .collection(firebaseSiteUsersPath(siteId))
-            .doc(newEmail);
-        batch.set(newEmailRef, {
-          'u': submitSiteEvent.event.updateMember.memberId,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        });
-
-        await batch.commit().timeout(firebaseTimeout);
+        batch.updateDocument(
+          firebaseSiteUsersPath(siteId),
+          submitSiteEvent.removeMemberEmail,
+          {
+            fbMarkedForDeletion: markForDeletionInfo,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
       }
-    }
 
-    if (submitSiteEvent.event.hasRestoreMember()) {
-      if (kDebugMode) {
-        print("Restoring member: ${submitSiteEvent.toProto3Json()}");
+      if (submitSiteEvent.event.hasAddMember()) {
+        batch.setDocument(
+          firebaseSiteUsersPath(siteId),
+          submitSiteEvent.addMemberEmail,
+          {
+            'u': submitSiteEvent.event.version,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
       }
-      await FirebaseFirestore.instance
-          .collection(firebaseSiteUsersPath(siteId))
-          .doc(submitSiteEvent.addMemberEmail)
-          .set({
+
+      if (submitSiteEvent.event.hasUpdateMember()) {
+        final originalEmail = submitSiteEvent.updateMemberOriginalEmail;
+        final newEmail = submitSiteEvent.updateMemberNewEmail;
+
+        if (originalEmail != newEmail) {
+          final markForDeletionInfo = base64Encode(
+            MarkForDeletion(
+              deleteReason: MarkForDeletion_DeleteReason.memberEmailUpdated,
+            ).writeToBuffer(),
+          );
+          batch.updateDocument(
+            firebaseSiteUsersPath(siteId),
+            originalEmail,
+            {
+              fbMarkedForDeletion: markForDeletionInfo,
+              fbTimeStamp: storage.serverTimestamp,
+            },
+          );
+          batch.setDocument(
+            firebaseSiteUsersPath(siteId),
+            newEmail,
+            {
+              'u': submitSiteEvent.event.updateMember.memberId,
+              fbTimeStamp: storage.serverTimestamp,
+            },
+          );
+        }
+      }
+
+      if (submitSiteEvent.event.hasRestoreMember()) {
+        batch.setDocument(
+          firebaseSiteUsersPath(siteId),
+          submitSiteEvent.addMemberEmail,
+          {
             'u': submitSiteEvent.event.restoreMember.memberId,
-            fbTimeStamp: FieldValue.serverTimestamp(),
-          })
-          .timeout(firebaseTimeout);
-    }
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
 
-    // update the events immutable collection with the event
-    await FirebaseFirestore.instance
-        .collection(firebaseSiteEventsPath(siteId))
-        .doc(submitSiteEvent.event.version.toString())
-        .set({
+      // update the events immutable collection with the event
+      batch.setDocument(
+        firebaseSiteEventsPath(siteId),
+        submitSiteEvent.event.version.toString(),
+        {
           fbPayload: encodedEvent,
           fbVersion: submitSiteEvent.event.version,
-          fbTimeStamp: FieldValue.serverTimestamp(),
-        })
-        .timeout(firebaseTimeout);
+          fbTimeStamp: storage.serverTimestamp,
+        },
+      );
+    });
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;
@@ -166,15 +154,14 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
 
     // The author must be an existing site user.
     // We look up their ID from the site's users collection.
-    final userDoc = await FirebaseFirestore.instance
-        .collection(firebaseSiteUsersPath(siteId))
-        .doc(email)
-        .get()
-        .timeout(firebaseTimeout);
+    final userDoc = await storage.getDocument(
+      firebaseSiteUsersPath(siteId),
+      email,
+    );
 
-    if (userDoc.exists && userDoc.data()?.containsKey('u') == true) {
+    if (userDoc != null && userDoc.containsKey('u') == true) {
       // The 'u' field holds the author ID.
-      submitSiteEvent.event.author = userDoc.data()!['u'];
+      submitSiteEvent.event.author = userDoc['u'];
     } else {
       // This is an error case: an action is being performed by a non-site-user.
       throw Exception(

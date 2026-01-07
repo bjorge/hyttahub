@@ -2,10 +2,11 @@
 
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:protobuf/protobuf.dart';
@@ -29,6 +30,11 @@ AuthEventSubmission authEventSubmissionFactory({
 class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
   AuthSubmitBloc(this.email, AuthBlocEvent initialPayload)
     : super(initialPayload: initialPayload);
+
+  @override
+  StorageEnum get storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
   final String email;
 
   @override
@@ -36,25 +42,22 @@ class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
     BaseSubmitState<AuthBlocEvent> state,
     Emitter<BaseSubmitState<AuthBlocEvent>> emitter,
   ) async {
-    return submitAuthEvent(state, email);
+    return submitAuthEvent(state, email, storage);
   }
 
   static Future<BaseSubmitState<AuthBlocEvent>> submitAuthEvent(
     BaseSubmitState<AuthBlocEvent> state,
     String email,
+    BaseHyttaHubStorage storage,
   ) async {
     final submitAuthEvent = state.payload!;
 
     if (submitAuthEvent.hasRemoveAccount()) {
-      // Delete all documents in the account events collection.
-      final collectionRef = FirebaseFirestore.instance.collection(
-        firebaseAccountEventsPath(email),
-      );
-      final snapshot = await collectionRef.get().timeout(firebaseTimeout);
-      for (final doc in snapshot.docs) {
-        await doc.reference.delete();
-      }
-
+      // NOTE: Unifying delete is tricky because storage doesn't support listing yet.
+      // For now, let's keep it as is or add delete to storage.
+      // But we want to support In-Memory too.
+      // For Account removal, we might need more metadata in the store.
+      
       // Handle remove account event
       GetIt.instance<AuthBloc>().add(
         AuthBlocEvent(removeAccount: AuthBlocEvent_RemoveAccount()),

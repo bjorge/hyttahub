@@ -14,13 +14,7 @@ typedef BaseSiteRoutePath = String Function(String siteId);
 
 /// A class to hold global options for the HyttaHub library.
 class HyttaHubOptions {
-  static int? appBuildNumber;
-
   static BaseSiteRoutePath? siteScreenRoute;
 
-  static String? firebaseRootCollection; // the appName
-
-  static String? appId;
-  // TODO: move the above into HyttaHubImplementation
   static HyttaHubImplementation? implementation;
 }
