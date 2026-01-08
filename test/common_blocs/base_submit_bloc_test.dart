@@ -9,7 +9,6 @@ import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
-import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Mock Event

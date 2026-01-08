@@ -36,8 +36,14 @@ String firebaseSiteExportPath(String siteId) =>
     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/sites/$siteId/site_exports/export_request';
 
 // Storage paths
-// String firebaseFilesPath(String siteId, String fileId) =>
-//     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/$siteId/$fileId';
+String firebaseFilesPath(String siteId, String fileId) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/sites/$siteId/$fileId';
+
+String firebaseExportsPath(String siteId, String fileName) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/exports/$siteId/$fileName';
+
+String firebaseArchivePath(String siteId) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archives/$siteId/archive.tar';
 
 // Document keys
 const fbUserId = 'u';

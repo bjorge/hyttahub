@@ -77,7 +77,12 @@ class ManageExportsScreen extends StatelessWidget {
                           icon: const Icon(Icons.download),
                           onPressed: () async {
                             final url = Uri.parse(file.url);
-                            if (await canLaunchUrl(url)) {
+                            if (url.scheme == 'data') {
+                              await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } else if (await canLaunchUrl(url)) {
                               await launchUrl(url);
                             }
                           },

@@ -12,6 +12,8 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   final StreamController<Map<String, dynamic>> _updateController =
       StreamController<Map<String, dynamic>>.broadcast();
 
+  Stream<Map<String, dynamic>> get updates => _updateController.stream;
+
   @override
   Future<Map<String, dynamic>?> getDocument(String path, String docId) async {
     return _data[path]?[docId];

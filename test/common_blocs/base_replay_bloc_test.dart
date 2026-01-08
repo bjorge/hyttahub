@@ -12,7 +12,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
-import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';

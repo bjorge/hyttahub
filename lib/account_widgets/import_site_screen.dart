@@ -1,14 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/hytta_hub_button.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
+import 'package:hyttahub/storage/hyttahub_file_storage_factory.dart';
 
 class ImportSiteScreen extends StatefulWidget {
   const ImportSiteScreen({super.key});
@@ -61,8 +63,8 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
       return;
     }
 
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) {
+    final email = GetIt.instance<AuthBloc>().state.email;
+    if (email.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -78,33 +80,32 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     });
 
     try {
+      final storageType =
+          HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+      final fileStorage = HyttaHubFileStorageFactory.getFileStorage(storageType);
+
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final storagePath = 'imports/$uid/${timestamp}_$_fileName';
-      final storageRef = FirebaseStorage.instance.ref().child(storagePath);
+      // Use email as a proxy for UID if we don't have UID easily available in the same way,
+      // but AuthBloc should have UID too.
+      // Actually, cloud functions use email for most things.
+      // But storage paths traditionally use UID.
+      final userId = email.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
 
-      // Use putBlob for web (better for large files), putData for other platforms
-      late UploadTask uploadTask;
-
-      if (kIsWeb) {
-        // For web, use putBlob which handles large files better
-        // Note: _selectedFile.bytes is still needed to get the blob reference
-        // but putBlob handles it more efficiently than putData
-        uploadTask = storageRef.putBlob(_selectedFile!.bytes);
-      } else {
-        // For non-web platforms, use putData
-        uploadTask = storageRef.putData(_selectedFile!.bytes!);
-      }
+      final storagePath = 'imports/$userId/${timestamp}_$_fileName';
 
       // Listen to upload progress
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = snapshot.bytesTransferred / snapshot.totalBytes;
+      final progressSubscription =
+          fileStorage.uploadProgress(storagePath).listen((progress) {
         setState(() {
           _uploadProgress = progress;
         });
       });
 
-      // Wait for upload to complete
-      await uploadTask;
+      try {
+        await fileStorage.uploadFile(storagePath, _selectedFile!.bytes!);
+      } finally {
+        progressSubscription.cancel();
+      }
 
       if (!mounted) return;
 
@@ -229,3 +230,4 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     );
   }
 }
+

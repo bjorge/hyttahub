@@ -1,37 +1,39 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/cloud_functions.pb.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 
 class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   CloudFunctionsBloc()
-    : super(CloudFunctionsState()..initial = CloudFunctionsInitial());
+    : super(CloudFunctionsState()..initial = CloudFunctionsInitial()) {
+    // Warm up functions to ensure background simulations are active (especially for in-memory mode)
+    HyttaHubFunctionsFactory.getFunctions(_storageType);
+  }
+
+  StorageEnum get _storageType =>
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+
+  String get _appName =>
+      HyttaHubOptions.implementation?.firebaseRootCollection ?? '';
 
   Future<Map<String, dynamic>> importSite({
     String? base64Data,
     String? storagePath,
   }) async {
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'importSite',
-        options: HttpsCallableOptions(
-          timeout: const Duration(
-            seconds: 540,
-          ), // 9 minutes to match server-side timeout
-        ),
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      return await functions.importSite(
+        base64Data: base64Data,
+        storagePath: storagePath,
+        appName: _appName,
       );
-      final result = await callable.call(<String, dynamic>{
-        if (base64Data != null) 'base64Data': base64Data,
-        if (storagePath != null) 'storagePath': storagePath,
-        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-      });
-      return Map<String, dynamic>.from(result.data);
     } catch (e) {
       throw Exception('Failed to import site: $e');
     }
@@ -39,14 +41,12 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
 
   Future<void> assignUserToImportedSite(String siteId, String memberId) async {
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'assignUserToImportedSite',
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      await functions.assignUserToImportedSite(
+        siteId: siteId,
+        memberId: memberId,
+        appName: _appName,
       );
-      await callable.call(<String, dynamic>{
-        'siteId': siteId,
-        'memberId': memberId,
-        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-      });
     } catch (e) {
       throw Exception('Failed to assign user to imported site: $e');
     }
@@ -55,27 +55,31 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   Future<void> exportSite(String siteId) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
-      final firestore = FirebaseFirestore.instance;
-
+      final storage = HyttaHubStorageFactory.getStorage(_storageType);
       final email = GetIt.instance<AuthBloc>().state.email;
 
       // The author must be an existing site user.
       // We look up their ID from the site's users collection.
-      final userDoc = await FirebaseFirestore.instance
-          .collection(firebaseSiteUsersPath(siteId))
-          .doc(email)
-          .get();
+      final userDoc = await storage.getDocument(
+        firebaseSiteUsersPath(siteId),
+        email,
+      );
 
-      if (userDoc.exists && userDoc.data()?.containsKey('u') == true) {
+      if (userDoc != null && userDoc.containsKey(fbUserId)) {
         // The 'u' field holds the author ID.
-        final author = userDoc.data()!['u'];
-        final docRef = firestore.doc(firebaseSiteExportPath(siteId));
+        final author = userDoc[fbUserId];
+        final docPath = firebaseSiteExportPath(siteId);
+        // Extract collection path and document ID from the path.
+        // firebaseSiteExportPath returns 'hyttahub/{appName}/sites/{siteId}/site_exports/export_request'
+        final segments = docPath.split('/');
+        final docId = segments.removeLast();
+        final path = segments.join('/');
 
-        await docRef.set({
-          fbTimeStamp: FieldValue.serverTimestamp(),
+        await storage.setDocument(path, docId, {
+          fbTimeStamp: storage.serverTimestamp,
           fbUserId: author,
           fbAppId: HyttaHubOptions.implementation?.appId,
-        }, SetOptions(merge: true));
+        });
       } else {
         // This is an error case: an action is being performed by a non-site-user.
         throw Exception(
@@ -97,14 +101,12 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   Future<void> listExports(String siteId) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'listExports',
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      final result = await functions.listExports(
+        siteId: siteId,
+        appName: _appName,
       );
-      final result = await callable.call(<String, dynamic>{
-        'siteId': siteId,
-        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-      });
-      final files = (result.data['files'] as List).map((file) {
+      final files = (result['files'] as List).map((file) {
         final fileMap = Map<String, dynamic>.from(file);
         return ExportFile()
           ..name = fileMap['name']
@@ -125,14 +127,12 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   Future<void> deleteExport(String siteId, String fileName) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'deleteExport',
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      await functions.deleteExport(
+        siteId: siteId,
+        appName: _appName,
+        fileName: fileName,
       );
-      await callable.call(<String, dynamic>{
-        'siteId': siteId,
-        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-        'fileName': fileName,
-      });
       emit(CloudFunctionsState()..exportDeleteSuccess = ExportDeleteSuccess());
     } catch (e) {
       emit(
@@ -145,18 +145,16 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   Future<void> getExportDetails(String siteId, String fileName) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-        'exportDetails',
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      final result = await functions.getExportDetails(
+        siteId: siteId,
+        appName: _appName,
+        fileName: fileName,
       );
-      final result = await callable.call(<String, dynamic>{
-        'siteId': siteId,
-        'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-        'fileName': fileName,
-      });
       emit(
         CloudFunctionsState()
           ..exportDetailsSuccess = ExportDetailsSuccess(
-            events: result.data['events'],
+            events: result['events'],
           ),
       );
     } catch (e) {
