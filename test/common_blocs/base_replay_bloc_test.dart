@@ -5,13 +5,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
@@ -105,16 +106,15 @@ FutureOr<Uint8List> testHydrateIsolateHandler(Map<int, String> eventsMap) {
 class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
   TestReplayBloc(
     this.collectionPath, {
-    required FirebaseFirestore firestore,
     this.validationResult = true,
     FutureOr<Uint8List> Function(Map<String, dynamic>)?
     replayIsolateHandlerOverride,
     FutureOr<Uint8List> Function(Map<int, String>)?
     hydrateIsolateHandlerOverride,
     this.handleEmptySnapshotCompleter,
+    super.storage,
   }) : super(
          ServiceReplayBlocState(),
-         firestore: firestore,
          replayIsolateHandler:
              replayIsolateHandlerOverride ?? serviceReplayIsolateHandler,
          hydrateIsolateHandler:
@@ -176,6 +176,11 @@ void main() {
       HyttaHubStorageFactory.clear();
       HydratedBloc.storage = MockStorage();
       fakeFirestore = FakeFirebaseFirestore();
+      
+      HyttaHubStorageFactory.setStorage(
+        StorageEnum.firestore,
+        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+      );
     });
 
     TestReplayBloc buildBloc({
@@ -188,11 +193,11 @@ void main() {
     }) {
       return TestReplayBloc(
         collectionPath,
-        firestore: fakeFirestore,
-        validationResult: validationResult,
-        handleEmptySnapshotCompleter: emptySnapshotCompleter,
         hydrateIsolateHandlerOverride: hydrateIsolateHandlerOverride,
         replayIsolateHandlerOverride: replayIsolateHandlerOverride,
+        storage: HyttaHubStorageFactory.getStorage(
+          StorageEnum.firestore,
+        ),
       );
     }
 

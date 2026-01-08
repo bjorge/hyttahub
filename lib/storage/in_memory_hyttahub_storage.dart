@@ -111,6 +111,9 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   dynamic get serverTimestamp => Timestamp.now();
 
   @override
+  bool isPermissionDenied(Object error) => false;
+
+  @override
   Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action) async {
     final batch = InMemoryHyttaHubBatch(this);
     await action(batch);

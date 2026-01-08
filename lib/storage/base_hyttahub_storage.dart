@@ -22,6 +22,7 @@ abstract class BaseHyttaHubStorage {
   });
 
   dynamic get serverTimestamp;
+  bool isPermissionDenied(Object error);
 
   Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action);
 }

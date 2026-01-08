@@ -90,9 +90,14 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
   dynamic get serverTimestamp => FieldValue.serverTimestamp();
 
   @override
+  bool isPermissionDenied(Object error) {
+    return error is FirebaseException && error.code == 'permission-denied';
+  }
+
+  @override
   Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action) async {
     final firestoreBatch = _firestore.batch();
-    final hyttaBatch = FirestoreHyttaHubBatch(firestoreBatch);
+    final hyttaBatch = FirestoreHyttaHubBatch(firestoreBatch, _firestore);
     await action(hyttaBatch);
     await firestoreBatch.commit();
   }
@@ -100,17 +105,18 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
 class FirestoreHyttaHubBatch implements HyttaHubBatch {
   final WriteBatch _batch;
+  final FirebaseFirestore _firestore;
 
-  FirestoreHyttaHubBatch(this._batch);
+  FirestoreHyttaHubBatch(this._batch, this._firestore);
 
   @override
   void setDocument(String path, String docId, Map<String, dynamic> data) {
-    _batch.set(FirebaseFirestore.instance.collection(path).doc(docId), data);
+    _batch.set(_firestore.collection(path).doc(docId), data);
   }
 
   @override
   void updateDocument(String path, String docId, Map<String, dynamic> data) {
-    _batch.update(FirebaseFirestore.instance.collection(path).doc(docId), data);
+    _batch.update(_firestore.collection(path).doc(docId), data);
   }
 
   @override

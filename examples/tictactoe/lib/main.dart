@@ -45,14 +45,18 @@ Future<void> main() async {
 
   setupGetIt();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (HyttaHubOptions.implementation?.storage == StorageEnum.firestore) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-  if (kDebugMode) {
-    final host = getEmulatorHost();
-    FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
-    await FirebaseAuth.instance.useAuthEmulator(host, 9099);
-    FirebaseStorage.instance.useStorageEmulator(host, 9199);
-    FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+    if (kDebugMode) {
+      final host = getEmulatorHost();
+      FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+      await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+      FirebaseStorage.instance.useStorageEmulator(host, 9199);
+      FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+    }
   }
 
   HydratedBloc.storage = await HydratedStorage.build(

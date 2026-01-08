@@ -7,6 +7,9 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Mock Event
@@ -55,6 +58,12 @@ void main() {
       initialPayload = SubmitServiceEvent();
       updatedPayload = SubmitServiceEvent()
         ..addServiceAdminEmail = 'test@test.com';
+      
+      final fakeFirestore = FakeFirebaseFirestore();
+      HyttaHubStorageFactory.setStorage(
+        StorageEnum.firestore,
+        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+      );
     });
 
     test('initial state is correct', () {
@@ -156,6 +165,7 @@ void main() {
           plugin: 'firestore',
           code: 'permission-denied',
         ),
+        storage: HyttaHubStorageFactory.getStorage(StorageEnum.firestore),
       ),
       act: (bloc) {
         bloc.isFormValid = true;

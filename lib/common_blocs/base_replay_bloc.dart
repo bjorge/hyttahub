@@ -9,7 +9,6 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:flutter/foundation.dart'; // For compute()
 import 'package:protobuf/protobuf.dart'; // For GeneratedMessage
@@ -18,7 +17,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     extends HydratedBloc<CommonReplayBlocEvent, S> {
   BaseReplayBloc(
     super.initialState, {
-    FirebaseFirestore? firestore,
     BaseHyttaHubStorage? storage,
     required FutureOr<Uint8List> Function(Map<String, dynamic> payload)
     replayIsolateHandler,
@@ -37,7 +35,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     } else {
       _storage = HyttaHubStorageFactory.getStorage(
         storageType,
-        firestore: firestore,
       );
     }
 
@@ -310,7 +307,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           );
     } catch (e, _) {
       CommonReplayStateEnum errorState = CommonReplayStateEnum.networkError;
-      if (e is FirebaseException && e.code == 'permission-denied') {
+      if (_storage.isPermissionDenied(e)) {
         errorState = CommonReplayStateEnum.permissionDenied;
       }
       emit(stateCopyWithStatus(state.deepCopy(), errorState)..freeze());

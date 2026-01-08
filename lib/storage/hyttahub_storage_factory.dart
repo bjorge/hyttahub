@@ -1,6 +1,5 @@
 // Copyright (c) 2025 bjorge
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
@@ -10,9 +9,8 @@ class HyttaHubStorageFactory {
   static final Map<StorageEnum, BaseHyttaHubStorage> _instances = {};
 
   static BaseHyttaHubStorage getStorage(
-    StorageEnum type, {
-    FirebaseFirestore? firestore,
-  }) {
+    StorageEnum type,
+  ) {
     if (_instances.containsKey(type)) {
       return _instances[type]!;
     }
@@ -20,13 +18,13 @@ class HyttaHubStorageFactory {
     BaseHyttaHubStorage storage;
     switch (type) {
       case StorageEnum.firestore:
-        storage = FirestoreHyttaHubStorage(firestore: firestore);
+        storage = FirestoreHyttaHubStorage();
         break;
       case StorageEnum.inMemory:
         storage = InMemoryHyttaHubStorage();
         break;
       default:
-        storage = FirestoreHyttaHubStorage(firestore: firestore);
+        storage = FirestoreHyttaHubStorage();
     }
 
     _instances[type] = storage;

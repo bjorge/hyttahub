@@ -4,13 +4,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Top-level isolate handler for service replay. Runs in a background isolate
@@ -39,10 +39,10 @@ FutureOr<Uint8List> serviceHydrateIsolateHandler(Map<int, String> eventsMap) {
 }
 
 class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
-  ServiceReplayBloc({FirebaseFirestore? firestore})
+  ServiceReplayBloc({BaseHyttaHubStorage? storage})
     : super(
         ServiceReplayBlocState(state: CommonReplayStateEnum.hydrating),
-        firestore: firestore,
+        storage: storage,
         replayIsolateHandler: serviceReplayIsolateHandler,
         hydrateIsolateHandler: serviceHydrateIsolateHandler,
       );

@@ -8,7 +8,6 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:protobuf/protobuf.dart';
 
@@ -40,7 +39,6 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
     extends Bloc<BaseSubmitEvent<T>, BaseSubmitState<T>> {
   BaseSubmitBloc({
     required this.initialPayload,
-    FirebaseFirestore? firestore,
     BaseHyttaHubStorage? storage,
   }) : isFormValid = false,
        payloadChanged = false,
@@ -60,7 +58,6 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
     } else {
       this.storage = HyttaHubStorageFactory.getStorage(
         storageType,
-        firestore: firestore,
       );
     }
     on<BaseSubmitEvent<T>>(_onEvent);
@@ -131,7 +128,7 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
         }
         final errorState = state.submissionState.deepCopy();
         errorState.state = CommonSubmitBlocState_State.error;
-        if (e is FirebaseException && e.code == 'permission-denied') {
+        if (storage.isPermissionDenied(e)) {
           errorState.errorCode =
               CommonSubmitBlocState_ErrorCode.permissionDenied;
         } else {
