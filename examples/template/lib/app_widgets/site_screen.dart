@@ -23,6 +23,8 @@ import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 
@@ -57,6 +59,18 @@ class _SiteScreenState extends State<SiteScreen> {
     }
 
     final future = () async {
+      if (HyttaHubOptions.implementation?.storage == StorageEnum.inMemory) {
+        final storage = HyttaHubStorageFactory.getStorage(StorageEnum.inMemory);
+        final fileDoc = await storage.getDocument(
+          '_files/${widget.siteId}',
+          fileName,
+        );
+        if (fileDoc != null && fileDoc.containsKey('base64Data')) {
+          return base64Decode(fileDoc['base64Data'] as String);
+        }
+        throw Exception('In-memory file not found: $fileName');
+      }
+
       final downloadUrl = await _fetchDownloadUrl(fileName);
       final response = await http.get(Uri.parse(downloadUrl));
       if (response.statusCode == 200) {

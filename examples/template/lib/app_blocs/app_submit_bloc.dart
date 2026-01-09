@@ -67,14 +67,23 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
           throw Exception("Image data is empty for version $version");
         }
 
-        final callable = FirebaseFunctions.instance.httpsCallable('uploadFile');
+        if (storageType == StorageEnum.firestore) {
+          final callable = FirebaseFunctions.instance.httpsCallable('uploadFile');
 
-        await callable.call({
-          'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-          'siteId': siteId,
-          'fileName': version.toString(),
-          'base64Data': image.base64Data,
-        });
+          await callable.call({
+            'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
+            'siteId': siteId,
+            'fileName': version.toString(),
+            'base64Data': image.base64Data,
+          });
+        } else if (storageType == StorageEnum.inMemory) {
+          // Store base64 data in a mock files collection
+          await storage.setDocument(
+            '_files/$siteId',
+            version.toString(),
+            {'base64Data': image.base64Data},
+          );
+        }
 
         final newEvent = submitAppEvent.appEvent.deepCopy();
         // Update the event with the storage reference details
