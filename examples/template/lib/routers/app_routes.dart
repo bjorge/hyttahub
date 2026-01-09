@@ -1,7 +1,6 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:template/app_widgets/site_screen.dart';
-// import 'package:template/app_widgets/template_form_screen.dart'; // Removing
 import 'package:template/app_widgets/photo_upload_screen.dart';
 import 'package:template/app_widgets/app_events_display.dart';
 import 'package:template/app_widgets/update_text_screen.dart';
@@ -184,13 +183,6 @@ final updateDropdownRoute = UpdateDropdownRoute(routes: []);
 final updateListRoute = UpdateListRoute(routes: []);
 final appEventsDisplayRoute = AppEventsDisplayRoute();
 
-final renameSiteRoute = RenameSiteRoute();
-final exportSiteRoute = ExportSiteRoute();
-final exportDetailsRoute = ExportDetailsRoute();
-final manageExportsRoute = ManageExportsRoute(routes: [exportDetailsRoute]);
-final siteMembersRoute = SiteMembersRoute();
-final displaySiteRoute = SiteEventsDisplayRoute();
-final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
 
 final siteScreenRoute = SiteScreenRoute(
   routes: [
@@ -200,13 +192,8 @@ final siteScreenRoute = SiteScreenRoute(
     updateCheckboxRoute,
     updateDropdownRoute,
     updateListRoute,
-    renameSiteRoute,
-    exportSiteRoute,
-    manageExportsRoute,
-    siteMembersRoute,
-    displaySiteRoute,
-    siteEmailsDisplayRoute,
     appEventsDisplayRoute,
+    ...standardSiteScreenRoutes,
   ],
 );
 

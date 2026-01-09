@@ -332,12 +332,14 @@ Please also check that your internet connection is strong.''';
     final loginSuccess = state.deepCopy();
     loginSuccess.authState = AuthState.loginSuccess;
     loginSuccess.email = _user!.email;
+    loginSuccess.uid = _user!.uid;
     emit(loginSuccess..freeze());
     await Future.delayed(const Duration(seconds: 1));
 
     final authenticatedState = state.deepCopy();
     authenticatedState.authState = AuthState.authenticated;
     authenticatedState.email = _user!.email;
+    authenticatedState.uid = _user!.uid;
     emit(authenticatedState..freeze());
 
     return null;

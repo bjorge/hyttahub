@@ -14,13 +14,13 @@ class InMemoryHyttaHubAuth implements BaseHyttaHubAuth {
   @override
   Future<HyttaHubAuthUser?> signInWithEmailAndPassword(String email, String password) async {
     // For in-memory, we assume any password is correct
-    _currentUser = HyttaHubAuthUser(email: email, emailVerified: true);
+    _currentUser = HyttaHubAuthUser(email: email, emailVerified: true, uid: 'in-memory-user');
     return _currentUser;
   }
 
   @override
   Future<HyttaHubAuthUser?> createUserWithEmailAndPassword(String email, String password) async {
-    _currentUser = HyttaHubAuthUser(email: email, emailVerified: true);
+    _currentUser = HyttaHubAuthUser(email: email, emailVerified: true, uid: 'in-memory-user');
     return _currentUser;
   }
 
@@ -45,6 +45,7 @@ class InMemoryHyttaHubAuth implements BaseHyttaHubAuth {
       _currentUser = HyttaHubAuthUser(
         email: _currentUser!.email,
         emailVerified: true,
+        uid: _currentUser!.uid,
       );
     }
   }

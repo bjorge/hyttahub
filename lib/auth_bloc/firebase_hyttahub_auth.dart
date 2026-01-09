@@ -14,6 +14,7 @@ class FirebaseHyttaHubAuth implements BaseHyttaHubAuth {
     return HyttaHubAuthUser(
       email: user.email ?? '',
       emailVerified: user.emailVerified,
+      uid: user.uid,
     );
   }
 

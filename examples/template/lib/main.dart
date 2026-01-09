@@ -40,7 +40,7 @@ Future<void> main() async {
     appBuildNumber: appBuildNumber,
     firebaseRootCollection: 'template',
     appId: 'hyttahub.example.template',
-    storage: StorageEnum.inMemory,
+    storage: StorageEnum.firestore,
   );
 
   setupGetIt();

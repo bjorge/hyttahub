@@ -23,6 +23,7 @@ class AuthBlocState extends $pb.GeneratedMessage {
     $core.String? email,
     $core.String? errorMessage,
     $core.bool? isServiceAdmin,
+    $core.String? uid,
   }) {
     final $result = create();
     if (authState != null) {
@@ -37,6 +38,9 @@ class AuthBlocState extends $pb.GeneratedMessage {
     if (isServiceAdmin != null) {
       $result.isServiceAdmin = isServiceAdmin;
     }
+    if (uid != null) {
+      $result.uid = uid;
+    }
     return $result;
   }
   AuthBlocState._() : super();
@@ -48,6 +52,7 @@ class AuthBlocState extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'email')
     ..aOS(3, _omitFieldNames ? '' : 'errorMessage', protoName: 'errorMessage')
     ..aOB(4, _omitFieldNames ? '' : 'isServiceAdmin', protoName: 'isServiceAdmin')
+    ..aOS(5, _omitFieldNames ? '' : 'uid')
     ..hasRequiredFields = false
   ;
 
@@ -107,6 +112,15 @@ class AuthBlocState extends $pb.GeneratedMessage {
   $core.bool hasIsServiceAdmin() => $_has(3);
   @$pb.TagNumber(4)
   void clearIsServiceAdmin() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get uid => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set uid($core.String v) { $_setString(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasUid() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearUid() => clearField(5);
 }
 
 class AuthBlocEvent_AppStartup extends $pb.GeneratedMessage {

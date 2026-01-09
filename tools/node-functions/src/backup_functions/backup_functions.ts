@@ -773,17 +773,13 @@ export const importSite = onCall({
       .firestore()
       .collection(firebaseSiteEventsPath(appName, newSiteId));
 
-    const adminMembers: { memberId: string; name: string }[] = [];
-
+    const membersMap = new Map<string, { memberId: string, name: string, admin: boolean }>();
     for (const line of eventLines) {
       const eventRecord = SiteEventRecord.decode(Buffer.from(line, "base64"));
       const docRef = siteEventsCollection.doc(eventRecord.version.toString());
       if (!eventRecord.siteEvent) {
         throw new HttpsError("invalid-argument", "Site event is missing in import data.");
       }
-
-
-      // logger.info("Event record to import:", SiteEventRecord.toJSON(eventRecord));
 
       writeBatch.set(docRef, {
         [fbPayload]: Buffer.from(
@@ -793,29 +789,49 @@ export const importSite = onCall({
         [fbVersion]: eventRecord.version,
       });
 
-      if (
-        eventRecord.siteEvent?.addMember ||
-        eventRecord.siteEvent?.updateMember ||
-        eventRecord.siteEvent?.newSite ||
-        eventRecord.siteEvent?.removeMember
-      ) {
-        let memberId;
-        let name;
-        if (eventRecord.siteEvent.addMember) {
-          memberId = eventRecord.siteEvent.version;
-          name = eventRecord.siteEvent.addMember.memberName;
-        } else if (eventRecord.siteEvent.updateMember) {
-          memberId = eventRecord.siteEvent.updateMember.memberId;
-          name = eventRecord.siteEvent.updateMember.memberName;
-        } else if (eventRecord.siteEvent.newSite) {
-          memberId = eventRecord.siteEvent.version;
-          name = eventRecord.siteEvent.newSite.memberName;
+      // Identify active members by replaying site events
+      if (eventRecord.siteEvent.newSite) {
+        membersMap.set(String(eventRecord.version), {
+          memberId: String(eventRecord.version),
+          name: eventRecord.siteEvent.newSite.memberName,
+          admin: true,
+        });
+      } else if (eventRecord.siteEvent.addMember) {
+        membersMap.set(String(eventRecord.version), {
+          memberId: String(eventRecord.version),
+          name: eventRecord.siteEvent.addMember.memberName,
+          admin: eventRecord.siteEvent.addMember.admin,
+        });
+      } else if (eventRecord.siteEvent.updateMember) {
+        const id = String(eventRecord.siteEvent.updateMember.memberId);
+        const member = membersMap.get(id);
+        if (member) {
+          member.name = eventRecord.siteEvent.updateMember.memberName;
+          member.admin = eventRecord.siteEvent.updateMember.admin;
         }
-        if (memberId && name) {
-          adminMembers.push({ memberId: String(memberId), name: name });
+      } else if (eventRecord.siteEvent.removeMember) {
+        membersMap.delete(String(eventRecord.siteEvent.removeMember.memberId));
+      } else if (eventRecord.siteEvent.leaveSite) {
+        membersMap.delete(String(eventRecord.siteEvent.leaveSite.memberId));
+      } else if (eventRecord.siteEvent.restoreMember) {
+        membersMap.set(String(eventRecord.siteEvent.restoreMember.memberId), {
+          memberId: String(eventRecord.siteEvent.restoreMember.memberId),
+          name: eventRecord.siteEvent.restoreMember.memberName,
+          admin: eventRecord.siteEvent.restoreMember.admin,
+        });
+      } else if (eventRecord.siteEvent.importEvent) {
+        const authorId = String(eventRecord.siteEvent.author);
+        for (const [id] of membersMap) {
+          if (id !== authorId) {
+            membersMap.delete(id);
+          }
         }
       }
     }
+
+    const adminMembers = Array.from(membersMap.values())
+      .filter((m) => m.admin)
+      .map((m) => ({ memberId: m.memberId, name: m.name }));
 
     await writeBatch.commit();
     logger.info("All events imported successfully");

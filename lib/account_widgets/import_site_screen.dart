@@ -84,12 +84,9 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
           HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
       final fileStorage = HyttaHubFileStorageFactory.getFileStorage(storageType);
 
+      final authState = GetIt.instance<AuthBloc>().state;
+      final userId = authState.uid;
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      // Use email as a proxy for UID if we don't have UID easily available in the same way,
-      // but AuthBloc should have UID too.
-      // Actually, cloud functions use email for most things.
-      // But storage paths traditionally use UID.
-      final userId = email.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
 
       final storagePath = 'imports/$userId/${timestamp}_$_fileName';
 

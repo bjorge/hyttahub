@@ -25,6 +25,7 @@ message AuthBlocState {
   string email = 2;
   string errorMessage = 3;
   bool isServiceAdmin = 4;
+  string uid = 5;
 }
 
 message AuthBlocEvent {

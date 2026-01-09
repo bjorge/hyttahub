@@ -12,6 +12,7 @@ import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_file_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
@@ -136,6 +137,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     final sitePath = 'hyttahub/$appName/sites/$newSiteId/site_events';
 
     await storage.runBatch((batch) async {
+      final membersMap = <int, SiteReplayBlocState_Member>{};
       for (final line in eventLines) {
         final record = SiteEventRecord.fromBuffer(base64Decode(line));
         final event = record.siteEvent;
@@ -150,27 +152,41 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
           },
         );
 
-        // Identify admin members
-        int? memberId;
-        String? name;
-        if (event.hasAddMember()) {
-          memberId = event.version;
-          name = event.addMember.memberName;
+        // Identify active members by replaying site events
+        if (event.hasNewSite()) {
+          membersMap[record.version] = SiteReplayBlocState_Member(
+            name: event.newSite.memberName,
+            admin: true,
+          );
+        } else if (event.hasAddMember()) {
+          membersMap[record.version] = SiteReplayBlocState_Member(
+            name: event.addMember.memberName,
+            admin: event.addMember.admin,
+          );
         } else if (event.hasUpdateMember()) {
-          memberId = event.updateMember.memberId;
-          name = event.updateMember.memberName;
-        } else if (event.hasNewSite()) {
-          memberId = event.version;
-          name = event.newSite.memberName;
-        }
-
-        if (memberId != null && name != null) {
-          adminMembers.add({
-            'memberId': memberId.toString(),
-            'name': name,
-          });
+          final id = event.updateMember.memberId;
+          if (membersMap.containsKey(id)) {
+            membersMap[id]!.name = event.updateMember.memberName;
+            membersMap[id]!.admin = event.updateMember.admin;
+          }
+        } else if (event.hasRemoveMember()) {
+          membersMap.remove(event.removeMember.memberId);
+        } else if (event.hasLeaveSite()) {
+          membersMap.remove(event.leaveSite.memberId);
+        } else if (event.hasRestoreMember()) {
+          membersMap[event.restoreMember.memberId] = SiteReplayBlocState_Member(
+            name: event.restoreMember.memberName,
+            admin: event.restoreMember.admin,
+          );
+        } else if (event.hasImportEvent()) {
+          final authorId = event.author;
+          membersMap.removeWhere((id, _) => id != authorId);
         }
       }
+      
+      adminMembers.addAll(membersMap.entries
+          .where((e) => e.value.admin)
+          .map((e) => {'memberId': e.key.toString(), 'name': e.value.name}));
     });
 
     return {
@@ -190,58 +206,56 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     
     if (email.isEmpty) throw Exception('User not authenticated');
 
-    await storage.runBatch((batch) async {
-      // 1. Add user to site_users
-      batch.setDocument(
-        'hyttahub/$appName/sites/$siteId/site_users',
-        email,
-        {
-          fbUserId: int.parse(memberId),
-          fbTimeStamp: storage.serverTimestamp,
-        },
-      );
+    // 1. Add user to site_users
+    await storage.setDocument(
+      'hyttahub/$appName/sites/$siteId/site_users',
+      email,
+      {
+        fbUserId: int.parse(memberId),
+        fbTimeStamp: storage.serverTimestamp,
+      },
+    );
 
-      // 2. Add joinSite event to account_events
-      final accountPath = 'hyttahub/$appName/accounts/$email/account_events';
-      final accountEvents = await storage.getCollection(accountPath, orderBy: fbVersion, descending: true);
-      final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[fbVersion] as int) + 1;
-      
-      final joinSiteEvent = AccountEvent(
-        joinSite: siteId,
-        version: nextAccountVersion,
-      );
-      
-      batch.setDocument(
-        accountPath,
-        nextAccountVersion.toString(),
-        {
-          fbPayload: base64Encode(joinSiteEvent.writeToBuffer()),
-          fbTimeStamp: storage.serverTimestamp,
-          fbVersion: nextAccountVersion,
-        },
-      );
+    // 2. Add joinSite event to account_events
+    final accountPath = 'hyttahub/$appName/accounts/$email/account_events';
+    final accountEvents = await storage.getCollection(accountPath, orderBy: fbVersion, descending: true);
+    final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[fbVersion] as int) + 1;
+    
+    final joinSiteEvent = AccountEvent(
+      joinSite: siteId,
+      version: nextAccountVersion,
+    );
+    
+    await storage.setDocument(
+      accountPath,
+      nextAccountVersion.toString(),
+      {
+        fbPayload: base64Encode(joinSiteEvent.writeToBuffer()),
+        fbTimeStamp: storage.serverTimestamp,
+        fbVersion: nextAccountVersion,
+      },
+    );
 
-      // 3. Add importEvent to site_events
-      final sitePath = 'hyttahub/$appName/sites/$siteId/site_events';
-      final siteEvents = await storage.getCollection(sitePath, orderBy: fbVersion, descending: true);
-      final nextSiteVersion = siteEvents.isEmpty ? 1 : (siteEvents.first[fbVersion] as int) + 1;
+    // 3. Add importEvent to site_events
+    final sitePath = 'hyttahub/$appName/sites/$siteId/site_events';
+    final siteEvents = await storage.getCollection(sitePath, orderBy: fbVersion, descending: true);
+    final nextSiteVersion = siteEvents.isEmpty ? 1 : (siteEvents.first[fbVersion] as int) + 1;
 
-      final importSiteEvent = SiteEvent(
-        importEvent: SiteEvent_ImportEvent(),
-        version: nextSiteVersion,
-        author: int.parse(memberId),
-      );
+    final importSiteEvent = SiteEvent(
+      importEvent: SiteEvent_ImportEvent(),
+      version: nextSiteVersion,
+      author: int.parse(memberId),
+    );
 
-      batch.setDocument(
-        sitePath,
-        nextSiteVersion.toString(),
-        {
-          fbPayload: base64Encode(importSiteEvent.writeToBuffer()),
-          fbTimeStamp: storage.serverTimestamp,
-          fbVersion: nextSiteVersion,
-        },
-      );
-    });
+    await storage.setDocument(
+      sitePath,
+      nextSiteVersion.toString(),
+      {
+        fbPayload: base64Encode(importSiteEvent.writeToBuffer()),
+        fbTimeStamp: storage.serverTimestamp,
+        fbVersion: nextSiteVersion,
+      },
+    );
   }
 
   @override

@@ -51,6 +51,7 @@ const AuthBlocState$json = {
     {'1': 'email', '3': 2, '4': 1, '5': 9, '10': 'email'},
     {'1': 'errorMessage', '3': 3, '4': 1, '5': 9, '10': 'errorMessage'},
     {'1': 'isServiceAdmin', '3': 4, '4': 1, '5': 8, '10': 'isServiceAdmin'},
+    {'1': 'uid', '3': 5, '4': 1, '5': 9, '10': 'uid'},
   ],
 };
 
@@ -58,7 +59,8 @@ const AuthBlocState$json = {
 final $typed_data.Uint8List authBlocStateDescriptor = $convert.base64Decode(
     'Cg1BdXRoQmxvY1N0YXRlEigKCWF1dGhTdGF0ZRgBIAEoDjIKLkF1dGhTdGF0ZVIJYXV0aFN0YX'
     'RlEhQKBWVtYWlsGAIgASgJUgVlbWFpbBIiCgxlcnJvck1lc3NhZ2UYAyABKAlSDGVycm9yTWVz'
-    'c2FnZRImCg5pc1NlcnZpY2VBZG1pbhgEIAEoCFIOaXNTZXJ2aWNlQWRtaW4=');
+    'c2FnZRImCg5pc1NlcnZpY2VBZG1pbhgEIAEoCFIOaXNTZXJ2aWNlQWRtaW4SEAoDdWlkGAUgAS'
+    'gJUgN1aWQ=');
 
 @$core.Deprecated('Use authBlocEventDescriptor instead')
 const AuthBlocEvent$json = {
