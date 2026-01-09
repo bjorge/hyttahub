@@ -1,6 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
+import 'dart:typed_data';
 
 abstract class BaseHyttaHubStorage {
   Future<Map<String, dynamic>?> getDocument(String path, String docId);
@@ -25,6 +26,19 @@ abstract class BaseHyttaHubStorage {
   bool isPermissionDenied(Object error);
 
   Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action);
+
+  Future<void> uploadFile({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    required String base64Data,
+  });
+
+  Future<Uint8List> getFileBytes({
+    required String appName,
+    required String siteId,
+    required String fileName,
+  });
 }
 
 abstract class HyttaHubBatch {

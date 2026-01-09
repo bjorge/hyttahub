@@ -22,10 +22,8 @@ import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/hyttahub_options.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 
 class SiteScreen extends StatefulWidget {
@@ -40,18 +38,6 @@ class SiteScreen extends StatefulWidget {
 class _SiteScreenState extends State<SiteScreen> {
   final Map<String, Future<Uint8List>> _imageFetchFutures = {};
 
-  Future<String> _fetchDownloadUrl(String fileName) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'getFile',
-    );
-    final result = await callable.call(<String, dynamic>{
-      'appName': HyttaHubOptions.implementation?.firebaseRootCollection,
-      'siteId': widget.siteId,
-      'fileName': fileName,
-    });
-    final data = result.data as Map<String, dynamic>;
-    return data['downloadUrl'] as String;
-  }
 
   Future<Uint8List> _getSignedUrl(String fileName) {
     if (_imageFetchFutures.containsKey(fileName)) {
@@ -59,24 +45,14 @@ class _SiteScreenState extends State<SiteScreen> {
     }
 
     final future = () async {
-      if (HyttaHubOptions.implementation?.storage == StorageEnum.inMemory) {
-        final storage = HyttaHubStorageFactory.getStorage(StorageEnum.inMemory);
-        final fileDoc = await storage.getDocument(
-          '_files/${widget.siteId}',
-          fileName,
-        );
-        if (fileDoc != null && fileDoc.containsKey('base64Data')) {
-          return base64Decode(fileDoc['base64Data'] as String);
-        }
-        throw Exception('In-memory file not found: $fileName');
-      }
-
-      final downloadUrl = await _fetchDownloadUrl(fileName);
-      final response = await http.get(Uri.parse(downloadUrl));
-      if (response.statusCode == 200) {
-        return response.bodyBytes;
-      }
-      throw Exception('Failed to download bytes: ${response.statusCode}');
+      final storage = HyttaHubStorageFactory.getStorage(
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+      );
+      return storage.getFileBytes(
+        appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+        siteId: widget.siteId,
+        fileName: fileName,
+      );
     }();
 
     _imageFetchFutures[fileName] = future;

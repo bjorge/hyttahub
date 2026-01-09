@@ -1,7 +1,10 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
 class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
@@ -100,6 +103,43 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     final hyttaBatch = FirestoreHyttaHubBatch(firestoreBatch, _firestore);
     await action(hyttaBatch);
     await firestoreBatch.commit();
+  }
+
+  @override
+  Future<void> uploadFile({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    required String base64Data,
+  }) async {
+    final callable = FirebaseFunctions.instance.httpsCallable('uploadFile');
+    await callable.call({
+      'appName': appName,
+      'siteId': siteId,
+      'fileName': fileName,
+      'base64Data': base64Data,
+    });
+  }
+
+  @override
+  Future<Uint8List> getFileBytes({
+    required String appName,
+    required String siteId,
+    required String fileName,
+  }) async {
+    final callable = FirebaseFunctions.instance.httpsCallable('getFile');
+    final result = await callable.call({
+      'appName': appName,
+      'siteId': siteId,
+      'fileName': fileName,
+    });
+    final data = result.data as Map<String, dynamic>;
+    final downloadUrl = data['downloadUrl'] as String;
+    final response = await http.get(Uri.parse(downloadUrl));
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    }
+    throw Exception('Failed to download bytes: ${response.statusCode}');
   }
 }
 

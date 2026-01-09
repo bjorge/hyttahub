@@ -11,7 +11,7 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/to/develop-packages).
 -->
 
-A serverless Flutter framework designed to be a solid starting point for new applications, demonstrated with an example app.
+A serverless Flutter framework designed to be a solid starting point for new casual applications, demonstrated with an example app.
 
 --  **Note:** Under construction, breaking changes may occur.
 
@@ -28,6 +28,7 @@ A serverless Flutter framework designed to be a solid starting point for new app
 -   **Export & Import:** Export a site backup and import a site backup.
 -   **Event Source Framework Replayed in the Client:** The common practice of having separate models for forms in the UI, network marshalling, database and business logic is eliminated, thus reducing boilerplate code and eliminating app logic on the server side. Some cloud functions are included to assist in cleanup upon account deletion. Events are persisted on the client thus reducing significantly service queries.
 -   **Event and Replay Views:** Service, account and site events and replays can be viewed in the UI.
+-   **In Memory Cloud Functions:** Cloud functions can be run in memory, eliminating the need for a server (for development purposes)
 
 ## Usage
 
@@ -35,31 +36,23 @@ The repo includes examples for using the library. Follow the instructions below.
 
 ### Prerequisites
 
--   Install flutter with Chrome support
-    - Run "flutter doctor" and make sure the version is minimum 3.32.1, and Chrome is enabled (or run "flutter --version" and "flutter devices")
-
--   Install either docker or podman
+- Install flutter with Chrome support
+- Run "flutter version" to check the version, and make sure it is minimum 3.32.1
+- Run "flutter devices" to check that Chrome is enabled
 
 ### Installation & Setup
 
-1.  **Clone the repository:**
-    ```sh
-    git clone git@github.com:bjorge/hyttahub.git
-    cd hyttahub
-    ```
-
-2.  **Start the firebase emulator (docker/podman):**
-    ```sh
-    cd tools/firebase_emulator
-    ```
-    Use the [`README`](tools/firebase_emulator/README) in the `tools/firebase_emulator` directory a guide for starting the emulator.
+```sh
+git clone git@github.com:bjorge/hyttahub.git
+cd hyttahub
+flutter pub get
+flutter test
+```
 
 ### Running the Application
 
 ```sh
-# Once the firebase emulator is running, in a separate terminal cd to the examples/formproto folder and run:
-flutter run -d chrome
-irectory, then run:
+cd examples/tictactoe
 flutter run -d chrome
 ```
 
@@ -72,6 +65,16 @@ After updating the `.arb` files, run:
 ```sh
 flutter gen-l10n
 ```
+
+**I want to run the example app using the firebase emulator, how do I do that?**
+
+-   Install either docker or podman
+-   Follow the instructions in the [`README`](tools/firebase_emulator/README) in the `tools/firebase_emulator` directory to setup and start the emulator (it will also start the cloud functions in the emulator)
+-   Edit the `examples/formproto/firebase_options.dart` file to use the emulator
+-   In a separate terminal, cd to the examples/formproto folder and run:
+    ```sh
+    flutter run -d chrome
+    ```
 
 **How do I tag a new release?**
 
@@ -86,7 +89,7 @@ Protocol buffer files can be compiled for both Dart (flutter) and TypeScript (cl
 
 **Is any server-side code required for this project?**
 
-The intent is to use Cloud Functions sparingly—only when necessary to provide access to parts of the system that are inaccessible to the client due to Firebase rules. For example, when a site admin removes a member, a Cloud Function will also add a "remove" event to that member's account stream (which the admin cannot access directly). Cloud Functions are also used for cleanup tasks, such as removing abandoned site data when the last member leaves a site.
+The project requires not long running server-side code. As far as cloud functions go, the intent is to use them sparingly—only when necessary to provide access to parts of the system that are inaccessible to the client due to Firebase rules. For example, when a site admin removes a member, a cloud function will also add a "remove" event to that member's account stream (which the admin cannot access directly). Cloud functions are also used for cleanup tasks, such as removing abandoned site data when the last member leaves a site.
 
 **How is shared member data kept private?**
 

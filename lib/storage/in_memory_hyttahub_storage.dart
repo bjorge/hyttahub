@@ -1,6 +1,8 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
@@ -120,6 +122,29 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     final batch = InMemoryHyttaHubBatch(this);
     await action(batch);
     batch.commit();
+  }
+
+  @override
+  Future<void> uploadFile({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    required String base64Data,
+  }) async {
+    await setDocument('_files/$siteId', fileName, {'base64Data': base64Data});
+  }
+
+  @override
+  Future<Uint8List> getFileBytes({
+    required String appName,
+    required String siteId,
+    required String fileName,
+  }) async {
+    final fileDoc = await getDocument('_files/$siteId', fileName);
+    if (fileDoc != null && fileDoc.containsKey('base64Data')) {
+      return base64Decode(fileDoc['base64Data'] as String);
+    }
+    throw Exception('In-memory file not found: $fileName');
   }
 }
 
