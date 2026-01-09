@@ -70,7 +70,7 @@ flutter gen-l10n
 
 -   Install either docker or podman
 -   Follow the instructions in the [`README`](tools/firebase_emulator/README) in the `tools/firebase_emulator` directory to setup and start the emulator (it will also start the cloud functions in the emulator)
--   Edit the `examples/formproto/firebase_options.dart` file to use the emulator
+-   Edit the `lib/main.dart` file to use firebase instead of inMemory
 -   In a separate terminal, cd to the examples/formproto folder and run:
     ```sh
     flutter run -d chrome

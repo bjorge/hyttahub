@@ -13,6 +13,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/utilities/ids.dart';
+import 'package:flutter/foundation.dart';
 import 'package:protobuf/protobuf.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);
@@ -60,11 +61,19 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       submitAccountEvent.event.writeToBuffer(),
     );
 
+    if (kDebugMode) {
+      print('AccountSubmitBloc: submitSiteEvent email=$email version=${submitAccountEvent.event.version}');
+    }
+
     await storage.runBatch((batch) async {
       if (submitAccountEvent.event.hasCreateSite()) {
         final siteId = submitAccountEvent.event.createSite;
         final siteName = submitAccountEvent.createSiteName;
         final siteUserName = submitAccountEvent.createSiteUserName;
+
+        if (kDebugMode) {
+          print('AccountSubmitBloc: creating siteId=$siteId name=$siteName user=$siteUserName');
+        }
 
         final siteEvent = SiteEvent(
           version: 1,
@@ -76,6 +85,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         );
         final encodedSiteEvent = base64Encode(siteEvent.writeToBuffer());
 
+        if (kDebugMode) {
+          print('AccountSubmitBloc: writing site user doc path=${firebaseSiteUsersPath(siteId)} id=$email');
+        }
         batch.setDocument(
           firebaseSiteUsersPath(siteId),
           email,
@@ -85,6 +97,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           },
         );
 
+        if (kDebugMode) {
+          print('AccountSubmitBloc: writing site event doc path=${firebaseSiteEventsPath(siteId)} id=${siteEvent.version}');
+        }
         batch.setDocument(
           firebaseSiteEventsPath(siteId),
           siteEvent.version.toString(),
@@ -98,6 +113,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
       if (submitAccountEvent.event.hasJoinSite()) {
         final siteId = submitAccountEvent.event.joinSite;
+        if (kDebugMode) {
+          print('AccountSubmitBloc: joining siteId=$siteId');
+        }
         final userDoc = await storage.getDocument(firebaseSiteUsersPath(siteId), email);
         if (userDoc == null) {
           throw Exception('Error: Cannot join site, user does not exist.');
@@ -106,6 +124,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
       if (submitAccountEvent.event.hasLeaveSite()) {
         final siteId = submitAccountEvent.event.leaveSite;
+        if (kDebugMode) {
+          print('AccountSubmitBloc: leaving siteId=$siteId');
+        }
         final markForDeletionInfo = base64Encode(
           MarkForDeletion(
             deleteReason: MarkForDeletion_DeleteReason.memberLeftSite,
@@ -122,6 +143,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         );
       }
 
+      if (kDebugMode) {
+        print('AccountSubmitBloc: writing account event doc path=${firebaseAccountEventsPath(email)} id=${submitAccountEvent.event.version}');
+      }
       batch.setDocument(
         firebaseAccountEventsPath(email),
         submitAccountEvent.event.version.toString(),
