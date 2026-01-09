@@ -45,6 +45,13 @@ abstract class BaseHyttaHubStorage {
     required String siteId,
     required List<String> fileNames,
   });
+
+  Future<String> getFileUrl({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    int? expirationDays,
+  });
 }
 
 abstract class HyttaHubBatch {

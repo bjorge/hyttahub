@@ -1,6 +1,6 @@
 name: hyttahub
 description: "Package for base flutter app functionality."
-version: 0.1.34
+version: 0.1.35
 # homepage:
 
 environment:

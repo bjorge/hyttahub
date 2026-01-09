@@ -246,7 +246,7 @@ class _SiteScreenState extends State<SiteScreen> {
   }
 }
 
-class AppStateAndButtons extends StatelessWidget {
+class AppStateAndButtons extends StatefulWidget {
   const AppStateAndButtons({
     super.key,
     required this.siteId,
@@ -259,6 +259,13 @@ class AppStateAndButtons extends StatelessWidget {
   final int authorId;
   final bool isEditModeOn;
   final Future<Uint8List> Function(String) getSignedUrl;
+
+  @override
+  State<AppStateAndButtons> createState() => _AppStateAndButtonsState();
+}
+
+class _AppStateAndButtonsState extends State<AppStateAndButtons> {
+  String? _generatedUrl;
 
   int _calculateVersion(Map<int, String> events) {
     return events.isEmpty
@@ -293,7 +300,7 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  UpdateTextRoute.fullPath(siteId),
+                  UpdateTextRoute.fullPath(widget.siteId),
                 );
               },
             ),
@@ -310,7 +317,7 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  UpdateCodeRoute.fullPath(siteId),
+                  UpdateCodeRoute.fullPath(widget.siteId),
                 );
               },
             ),
@@ -329,7 +336,7 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  UpdateCheckboxRoute.fullPath(siteId),
+                  UpdateCheckboxRoute.fullPath(widget.siteId),
                 );
               },
             ),
@@ -348,7 +355,7 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  UpdateDropdownRoute.fullPath(siteId),
+                  UpdateDropdownRoute.fullPath(widget.siteId),
                 );
               },
             ),
@@ -366,7 +373,7 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  UpdateListRoute.fullPath(siteId),
+                  UpdateListRoute.fullPath(widget.siteId),
                 );
               },
             ),
@@ -387,10 +394,32 @@ class AppStateAndButtons extends StatelessWidget {
                   appEvent,
                   version,
                   email,
-                  AddPhotoRoute.fullPath(siteId: siteId),
+                  AddPhotoRoute.fullPath(siteId: widget.siteId),
                 );
               },
             ),
+            if (_generatedUrl != null)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Generated URL (exp. 7 days):",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    SelectableText(
+                      _generatedUrl!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         );
       },
@@ -412,7 +441,7 @@ class AppStateAndButtons extends StatelessWidget {
           SizedBox(
             width: 150,
             child:
-                isEditModeOn
+                widget.isEditModeOn
                     ? TextButton(
                       onPressed: onPressed,
                       style: TextButton.styleFrom(
@@ -466,18 +495,94 @@ class AppStateAndButtons extends StatelessWidget {
           value: photoVersion > 0 ? value : "No photo",
           onPressed: onPressed,
         ),
-        if (photoVersion > 0 && isEditModeOn)
+        if (photoVersion > 0)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
               children: [
                 const SizedBox(width: 150),
                 const SizedBox(width: 16),
+                if (widget.isEditModeOn)
+                  TextButton(
+                    onPressed: () async {
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      final appReplayBloc = context.read<AppReplayBloc>();
+
+                      final storage = HyttaHubStorageFactory.getStorage(
+                        HyttaHubOptions.implementation?.storage ??
+                            StorageEnum.firestore,
+                      );
+                      final appName =
+                          HyttaHubOptions.implementation
+                              ?.firebaseRootCollection ??
+                          '';
+
+                      try {
+                        await storage.deleteFiles(
+                          appName: appName,
+                          siteId: widget.siteId,
+                          fileNames: [photoVersion.toString()],
+                        );
+
+                        final appEvent = AppEvent(
+                          updatePhoto:
+                              AppEvent_UpdatePhoto(name: "", version: 0),
+                        );
+
+                        // Now base64 encode the event part
+                        final siteEvent = SiteEvent(
+                          version: _calculateVersion(
+                            appReplayBloc.state.events,
+                          ),
+                          appEvent: packAppEventWrapper(
+                            appEvent.writeToBuffer(),
+                          ),
+                          author: widget.authorId,
+                        );
+
+                        final encodedEvent = base64Encode(
+                          siteEvent.writeToBuffer(),
+                        );
+
+                        await storage.setDocument(
+                          firebaseSiteEventsPath(widget.siteId),
+                          siteEvent.version.toString(),
+                          {
+                            fbPayload: encodedEvent,
+                            fbVersion: siteEvent.version,
+                            fbTimeStamp: storage.serverTimestamp,
+                          },
+                        );
+
+                        setState(() {
+                          _generatedUrl = null;
+                        });
+
+                        scaffoldMessenger.showSnackBar(
+                          const SnackBar(content: Text('Photo deleted')),
+                        );
+                      } catch (e) {
+                        scaffoldMessenger.showSnackBar(
+                          SnackBar(content: Text('Error deleting photo: $e')),
+                        );
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      alignment: Alignment.centerLeft,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      foregroundColor: Colors.red,
+                    ),
+                    child: const Text(
+                      "Delete Photo",
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                  ),
+                if (widget.isEditModeOn) const SizedBox(width: 16),
                 TextButton(
                   onPressed: () async {
                     final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    final appReplayBloc = context.read<AppReplayBloc>();
-
                     final storage = HyttaHubStorageFactory.getStorage(
                       HyttaHubOptions.implementation?.storage ??
                           StorageEnum.firestore,
@@ -488,45 +593,21 @@ class AppStateAndButtons extends StatelessWidget {
                         '';
 
                     try {
-                      await storage.deleteFiles(
+                      final url = await storage.getFileUrl(
                         appName: appName,
-                        siteId: siteId,
-                        fileNames: [photoVersion.toString()],
+                        siteId: widget.siteId,
+                        fileName: photoVersion.toString(),
+                        expirationDays: 7,
                       );
-
-                      final appEvent = AppEvent(
-                        updatePhoto: AppEvent_UpdatePhoto(name: "", version: 0),
-                      );
-
-                      // Now base64 encode the event part
-                      final siteEvent = SiteEvent(
-                        version: _calculateVersion(appReplayBloc.state.events),
-                        appEvent: packAppEventWrapper(
-                          appEvent.writeToBuffer(),
-                        ),
-                        author: authorId,
-                      );
-
-                      final encodedEvent = base64Encode(
-                        siteEvent.writeToBuffer(),
-                      );
-
-                      await storage.setDocument(
-                        firebaseSiteEventsPath(siteId),
-                        siteEvent.version.toString(),
-                        {
-                          fbPayload: encodedEvent,
-                          fbVersion: siteEvent.version,
-                          fbTimeStamp: storage.serverTimestamp,
-                        },
-                      );
-
+                      setState(() {
+                        _generatedUrl = url;
+                      });
                       scaffoldMessenger.showSnackBar(
-                        const SnackBar(content: Text('Photo deleted')),
+                        const SnackBar(content: Text('URL Generated')),
                       );
                     } catch (e) {
                       scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text('Error deleting photo: $e')),
+                        SnackBar(content: Text('Error getting URL: $e')),
                       );
                     }
                   },
@@ -535,10 +616,9 @@ class AppStateAndButtons extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     minimumSize: const Size(0, 0),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    foregroundColor: Colors.red,
                   ),
                   child: const Text(
-                    "Delete Photo",
+                    "Get Shareable URL",
                     style: TextStyle(decoration: TextDecoration.underline),
                   ),
                 ),
@@ -553,7 +633,7 @@ class AppStateAndButtons extends StatelessWidget {
                 SizedBox(
                   width: 150,
                   child: FutureBuilder<Uint8List>(
-                    future: getSignedUrl(photoVersion.toString()),
+                    future: widget.getSignedUrl(photoVersion.toString()),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const SizedBox(

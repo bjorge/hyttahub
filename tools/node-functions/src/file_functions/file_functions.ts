@@ -90,6 +90,7 @@ export const getFile = onCall({ cors: true }, async (request) => {
   const siteId = request.data.siteId;
   const appName = request.data.appName;
   const fileName = request.data.fileName;
+  const expirationDays = request.data.expirationDays as number | undefined;
 
   const bucket = admin.storage().bucket();
 
@@ -105,7 +106,7 @@ export const getFile = onCall({ cors: true }, async (request) => {
     );
   }
 
-  logger.info("uploadFile function called, siteId:", siteId, "email:", email);
+  logger.info("getFile function called, siteId:", siteId, "email:", email);
 
   const emailRef = admin
     .firestore()
@@ -126,9 +127,13 @@ export const getFile = onCall({ cors: true }, async (request) => {
   if (isRunningInEmulator()) {
     return { downloadUrl: file.publicUrl() };
   } else {
+    const expires = expirationDays 
+      ? Date.now() + expirationDays * 24 * 60 * 60 * 1000 
+      : Date.now() + 15 * 60 * 1000; // Default 15 minutes
+
     const [signedUrl] = await file.getSignedUrl({
       action: "read",
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+      expires: expires,
     });
     return { downloadUrl: signedUrl };
   }

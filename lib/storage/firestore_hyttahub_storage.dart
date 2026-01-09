@@ -155,6 +155,24 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
       'fileNames': fileNames,
     });
   }
+
+  @override
+  Future<String> getFileUrl({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    int? expirationDays,
+  }) async {
+    final callable = FirebaseFunctions.instance.httpsCallable('getFile');
+    final result = await callable.call({
+      'appName': appName,
+      'siteId': siteId,
+      'fileName': fileName,
+      if (expirationDays != null) 'expirationDays': expirationDays,
+    });
+    final data = result.data as Map<String, dynamic>;
+    return data['downloadUrl'] as String;
+  }
 }
 
 class FirestoreHyttaHubBatch implements HyttaHubBatch {

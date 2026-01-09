@@ -162,6 +162,22 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
       _updateController.add({'path': path});
     }
   }
+
+  @override
+  Future<String> getFileUrl({
+    required String appName,
+    required String siteId,
+    required String fileName,
+    int? expirationDays,
+  }) async {
+    final fileDoc = await getDocument('_files/$siteId', fileName);
+    if (fileDoc != null && fileDoc.containsKey('base64Data')) {
+      final base64Data = fileDoc['base64Data'] as String;
+      // We don't have mime type info here, but data URI with base64 is standard
+      return 'data:image/png;base64,$base64Data';
+    }
+    throw Exception('In-memory file not found: $fileName');
+  }
 }
 
 class InMemoryHyttaHubBatch implements HyttaHubBatch {
