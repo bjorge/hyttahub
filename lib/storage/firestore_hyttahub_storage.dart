@@ -141,6 +141,20 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     }
     throw Exception('Failed to download bytes: ${response.statusCode}');
   }
+
+  @override
+  Future<void> deleteFiles({
+    required String appName,
+    required String siteId,
+    required List<String> fileNames,
+  }) async {
+    final callable = FirebaseFunctions.instance.httpsCallable('deleteFiles');
+    await callable.call({
+      'appName': appName,
+      'siteId': siteId,
+      'fileNames': fileNames,
+    });
+  }
 }
 
 class FirestoreHyttaHubBatch implements HyttaHubBatch {

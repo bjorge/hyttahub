@@ -146,6 +146,22 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     }
     throw Exception('In-memory file not found: $fileName');
   }
+
+  @override
+  Future<void> deleteFiles({
+    required String appName,
+    required String siteId,
+    required List<String> fileNames,
+  }) async {
+    final path = '_files/$siteId';
+    final docs = _data[path];
+    if (docs != null) {
+      for (final fileName in fileNames) {
+        docs.remove(fileName);
+      }
+      _updateController.add({'path': path});
+    }
+  }
 }
 
 class InMemoryHyttaHubBatch implements HyttaHubBatch {

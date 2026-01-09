@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:template/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,8 @@ import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'dart:typed_data';
+import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
 class SiteScreen extends StatefulWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -37,7 +39,6 @@ class SiteScreen extends StatefulWidget {
 
 class _SiteScreenState extends State<SiteScreen> {
   final Map<String, Future<Uint8List>> _imageFetchFutures = {};
-
 
   Future<Uint8List> _getSignedUrl(String fileName) {
     if (_imageFetchFutures.containsKey(fileName)) {
@@ -111,9 +112,7 @@ class _SiteScreenState extends State<SiteScreen> {
               AllowedEmailsBlocState_State.permissionDenied) {
             return Scaffold(
               appBar: AppBar(
-                title: Text(
-                  AppLocalizations.of(context)!.app_accessDeniedTitle,
-                ),
+                title: Text(AppLocalizations.of(context)!.app_accessDeniedTitle),
               ),
               body: Center(
                 child: Text(
@@ -123,7 +122,6 @@ class _SiteScreenState extends State<SiteScreen> {
             );
           }
 
-          // ignore: unused_local_variable
           final userId =
               allowedEmailsState
                   .emails[GetIt.instance<AuthBloc>().state.email]
@@ -195,6 +193,7 @@ class _SiteScreenState extends State<SiteScreen> {
                   }
 
                   final isEditModeOn = editModeState ?? false;
+                  final authorId = userId ?? 0;
 
                   return Scaffold(
                     appBar: AppBar(
@@ -230,6 +229,7 @@ class _SiteScreenState extends State<SiteScreen> {
                       children: [
                         AppStateAndButtons(
                           siteId: widget.siteId,
+                          authorId: authorId,
                           isEditModeOn: isEditModeOn,
                           getSignedUrl: _getSignedUrl,
                         ),
@@ -250,11 +250,13 @@ class AppStateAndButtons extends StatelessWidget {
   const AppStateAndButtons({
     super.key,
     required this.siteId,
+    required this.authorId,
     required this.isEditModeOn,
     required this.getSignedUrl,
   });
 
   final String siteId;
+  final int authorId;
   final bool isEditModeOn;
   final Future<Uint8List> Function(String) getSignedUrl;
 
@@ -464,6 +466,85 @@ class AppStateAndButtons extends StatelessWidget {
           value: photoVersion > 0 ? value : "No photo",
           onPressed: onPressed,
         ),
+        if (photoVersion > 0 && isEditModeOn)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                const SizedBox(width: 150),
+                const SizedBox(width: 16),
+                TextButton(
+                  onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    final appReplayBloc = context.read<AppReplayBloc>();
+
+                    final storage = HyttaHubStorageFactory.getStorage(
+                      HyttaHubOptions.implementation?.storage ??
+                          StorageEnum.firestore,
+                    );
+                    final appName =
+                        HyttaHubOptions.implementation
+                            ?.firebaseRootCollection ??
+                        '';
+
+                    try {
+                      await storage.deleteFiles(
+                        appName: appName,
+                        siteId: siteId,
+                        fileNames: [photoVersion.toString()],
+                      );
+
+                      final appEvent = AppEvent(
+                        updatePhoto: AppEvent_UpdatePhoto(name: "", version: 0),
+                      );
+
+                      // Now base64 encode the event part
+                      final siteEvent = SiteEvent(
+                        version: _calculateVersion(appReplayBloc.state.events),
+                        appEvent: packAppEventWrapper(
+                          appEvent.writeToBuffer(),
+                        ),
+                        author: authorId,
+                      );
+
+                      final encodedEvent = base64Encode(
+                        siteEvent.writeToBuffer(),
+                      );
+
+                      await storage.setDocument(
+                        firebaseSiteEventsPath(siteId),
+                        siteEvent.version.toString(),
+                        {
+                          fbPayload: encodedEvent,
+                          fbVersion: siteEvent.version,
+                          fbTimeStamp: storage.serverTimestamp,
+                        },
+                      );
+
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(content: Text('Photo deleted')),
+                      );
+                    } catch (e) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(content: Text('Error deleting photo: $e')),
+                      );
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    alignment: Alignment.centerLeft,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text(
+                    "Delete Photo",
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
+          ),
         if (photoVersion > 0)
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),

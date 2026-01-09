@@ -39,6 +39,12 @@ abstract class BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
   });
+
+  Future<void> deleteFiles({
+    required String appName,
+    required String siteId,
+    required List<String> fileNames,
+  });
 }
 
 abstract class HyttaHubBatch {
