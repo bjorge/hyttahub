@@ -228,8 +228,11 @@ class _SiteScreenState extends State<SiteScreen> {
                     body: CommonListViewLayout(
                       spacing: 10.0,
                       children: [
-                        AppStateDisplay(getSignedUrl: _getSignedUrl),
-                        if (isEditModeOn) UpdateButtons(siteId: widget.siteId),
+                        AppStateAndButtons(
+                          siteId: widget.siteId,
+                          isEditModeOn: isEditModeOn,
+                          getSignedUrl: _getSignedUrl,
+                        ),
                       ],
                     ),
                   );
@@ -243,10 +246,17 @@ class _SiteScreenState extends State<SiteScreen> {
   }
 }
 
-class UpdateButtons extends StatelessWidget {
-  const UpdateButtons({super.key, required this.siteId});
+class AppStateAndButtons extends StatelessWidget {
+  const AppStateAndButtons({
+    super.key,
+    required this.siteId,
+    required this.isEditModeOn,
+    required this.getSignedUrl,
+  });
 
   final String siteId;
+  final bool isEditModeOn;
+  final Future<Uint8List> Function(String) getSignedUrl;
 
   int _calculateVersion(Map<int, String> events) {
     return events.isEmpty
@@ -268,7 +278,10 @@ class UpdateButtons extends StatelessWidget {
 
         return Column(
           children: [
-            ElevatedButton(
+            _buildRow(
+              context: context,
+              label: "Text",
+              value: appState.textValue,
               onPressed: () {
                 final appEvent = AppEvent(
                   updateText: AppEvent_UpdateText(value: appState.textValue),
@@ -281,10 +294,11 @@ class UpdateButtons extends StatelessWidget {
                   UpdateTextRoute.fullPath(siteId),
                 );
               },
-              child: const Text("Update Text"),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
+            _buildRow(
+              context: context,
+              label: "Code",
+              value: appState.codeValue,
               onPressed: () {
                 final appEvent = AppEvent(
                   updateCode: AppEvent_UpdateCode(value: appState.codeValue),
@@ -297,10 +311,11 @@ class UpdateButtons extends StatelessWidget {
                   UpdateCodeRoute.fullPath(siteId),
                 );
               },
-              child: const Text("Update Code"),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
+            _buildRow(
+              context: context,
+              label: "Checkbox",
+              value: appState.checkboxValue.toString(),
               onPressed: () {
                 final appEvent = AppEvent(
                   updateCheckbox: AppEvent_UpdateCheckbox(
@@ -315,10 +330,11 @@ class UpdateButtons extends StatelessWidget {
                   UpdateCheckboxRoute.fullPath(siteId),
                 );
               },
-              child: const Text("Update Checkbox"),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
+            _buildRow(
+              context: context,
+              label: "Dropdown",
+              value: appState.dropdownValue,
               onPressed: () {
                 final appEvent = AppEvent(
                   updateDropdown: AppEvent_UpdateDropdown(
@@ -333,10 +349,12 @@ class UpdateButtons extends StatelessWidget {
                   UpdateDropdownRoute.fullPath(siteId),
                 );
               },
-              child: const Text("Update Dropdown"),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
+            _buildRow(
+              context: context,
+              label: "List",
+              buttonText: "Reorder List",
+              value: appState.listItems.map((e) => e.title).join(', '),
               onPressed: () {
                 final appEvent = AppEvent(
                   updateList: AppEvent_UpdateList(items: appState.listItems),
@@ -349,27 +367,19 @@ class UpdateButtons extends StatelessWidget {
                   UpdateListRoute.fullPath(siteId),
                 );
               },
-              child: const Text("Update List"),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
+            _buildPhotoRow(
+              context: context,
+              label: "Photo",
+              value: "${appState.photoName} (v${appState.photoVersion})",
+              photoVersion: appState.photoVersion,
               onPressed: () {
-                // For Photo, we can keep using TemplateForm logic IF we haven't migrated logic yet,
-                // BUT better to use UpdatePhoto if we update logic.
-                // Let's assume we update PhotoUploadScreen to handle UpdatePhoto.
-                // Or stick to TemplateForm for Photo for now as user didn't explicitly ask to change Photo structure, just "form item".
-                // But Photo IS a form item.
-                // Let's try to use UpdatePhoto.
                 final appEvent = AppEvent(
                   updatePhoto: AppEvent_UpdatePhoto(
                     name: appState.photoName,
                     version: appState.photoVersion,
-                    // size: appState.photoSize // photoSize not in state yet?
-                    // Wait, we added photoSize to templateForm in proto, but maybe not state?
-                    // Let's check state.
                   ),
                 );
-                // If photoSize is missing in state, default to 0.
                 _navigateToUpdate(
                   context,
                   appEvent,
@@ -378,12 +388,115 @@ class UpdateButtons extends StatelessWidget {
                   AddPhotoRoute.fullPath(siteId: siteId),
                 );
               },
-              icon: const Icon(Icons.photo_camera),
-              label: const Text("Update Photo"),
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildRow({
+    required BuildContext context,
+    required String label,
+    String? buttonText,
+    required String value,
+    required VoidCallback onPressed,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child:
+                isEditModeOn
+                    ? TextButton(
+                      onPressed: onPressed,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        alignment: Alignment.centerLeft,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        buttonText ?? "Update $label",
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    )
+                    : Row(
+                      children: [
+                        Text(
+                          "$label:",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 16),
+              softWrap: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoRow({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required int photoVersion,
+    required VoidCallback onPressed,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRow(
+          context: context,
+          label: label,
+          value: photoVersion > 0 ? value : "No photo",
+          onPressed: onPressed,
+        ),
+        if (photoVersion > 0)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 150,
+                  child: FutureBuilder<Uint8List>(
+                    future: getSignedUrl(photoVersion.toString()),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return const Icon(Icons.error, size: 50);
+                      }
+
+                      return Image.memory(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Spacer(),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -401,60 +514,6 @@ class UpdateButtons extends StatelessWidget {
     );
     final encodedSubmitValue = base64UrlEncode(submitAppEvent.writeToBuffer());
     context.push('$routePath?event=$encodedSubmitValue');
-  }
-}
-
-class AppStateDisplay extends StatelessWidget {
-  const AppStateDisplay({super.key, required this.getSignedUrl});
-
-  final Future<Uint8List> Function(String) getSignedUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
-      builder: (context, appState) {
-        final errorWidget = handleAppReplayState(context, appState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Text: ${appState.textValue}"),
-            Text("Code: ${appState.codeValue}"),
-            Text("Checkbox: ${appState.checkboxValue}"),
-            Text("Dropdown: ${appState.dropdownValue}"),
-            Text("Items: ${appState.listItems.map((e) => e.title).join(', ')}"),
-            if (appState.photoVersion > 0) ...[
-              const SizedBox(height: 10),
-              Text("Photo: ${appState.photoName} (v${appState.photoVersion})"),
-              FutureBuilder<Uint8List>(
-                future: getSignedUrl(appState.photoVersion.toString()),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return const Icon(Icons.error, size: 100);
-                  }
-
-                  return Image.memory(
-                    snapshot.data!,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  );
-                },
-              ),
-            ],
-          ],
-        );
-      },
-    );
   }
 }
 
