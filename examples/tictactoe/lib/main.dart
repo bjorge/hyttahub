@@ -37,7 +37,7 @@ Future<void> main() async {
   };
 
   HyttaHubOptions.implementation = HyttaHubImplementation(
-    storage: StorageEnum.firestore,
+    storage: StorageEnum.inMemory,
     appBuildNumber: appBuildNumber,
     appId: 'hyttahub.example.tictactoe',
     firebaseRootCollection: 'tictactoe',
