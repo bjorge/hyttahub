@@ -10,7 +10,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
-import 'package:hyttahub/storage/hyttahub_file_storage_factory.dart';
+import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 
 class ImportSiteScreen extends StatefulWidget {
   const ImportSiteScreen({super.key});
@@ -82,7 +82,7 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
     try {
       final storageType =
           HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
-      final fileStorage = HyttaHubFileStorageFactory.getFileStorage(storageType);
+      final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
 
       final authState = GetIt.instance<AuthBloc>().state;
       final userId = authState.uid;

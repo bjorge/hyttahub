@@ -3,9 +3,9 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:hyttahub/storage/base_hyttahub_file_storage.dart';
+import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 
-class FirebaseHyttaHubFileStorage implements BaseHyttaHubFileStorage {
+class FirebaseHyttaHubInternalStorage implements BaseHyttaHubInternalStorage {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final Map<String, StreamController<double>> _progressControllers = {};
 

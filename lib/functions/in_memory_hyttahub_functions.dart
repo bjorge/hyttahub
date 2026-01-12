@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:hyttahub/storage/hyttahub_file_storage_factory.dart';
+import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 
 class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
@@ -49,7 +49,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
   Future<void> _simulateBackupSite(String appName, String siteId) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
-    final fileStorage = HyttaHubFileStorageFactory.getFileStorage(_type);
+    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
 
     // 1. Get all events
     final sitePath = 'hyttahub/$appName/sites/$siteId/site_events';
@@ -71,10 +71,10 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     archive.addFile(ArchiveFile('events.txt', eventsData.length, eventsData));
 
     // 3. Get all files
-    // In our in-memory file storage, the files are in a Map.
-    // We can't easily iterate through all files in a prefix in BaseHyttaHubFileStorage,
-    // but InMemoryHyttaHubFileStorage has them. 
-    // Actually, BaseHyttaHubFileStorage has listFiles!
+    // In our in-memory internal storage, the files are in a Map.
+    // We can't easily iterate through all files in a prefix in BaseHyttaHubInternalStorage,
+    // but InMemoryHyttaHubInternalStorage has them. 
+    // Actually, BaseHyttaHubInternalStorage has listFiles!
     final filesPrefix = firebaseFilesPath(siteId, ''); // Prefix for all site files
     final filePaths = await fileStorage.listFiles(filesPrefix);
 
@@ -102,7 +102,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
   }) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
-    final fileStorage = HyttaHubFileStorageFactory.getFileStorage(_type);
+    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final newSiteId = _generateId();
 
     Uint8List tarBytes;
@@ -263,7 +263,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
   }) async {
-    final fileStorage = HyttaHubFileStorageFactory.getFileStorage(_type);
+    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final prefix = firebaseExportsPath(siteId, '');
     final files = await fileStorage.listFiles(prefix);
     
@@ -285,7 +285,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
     required String fileName,
   }) async {
-    final fileStorage = HyttaHubFileStorageFactory.getFileStorage(_type);
+    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final path = firebaseExportsPath(siteId, fileName);
     await fileStorage.deleteFile(path);
   }
@@ -296,7 +296,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
     required String fileName,
   }) async {
-    final fileStorage = HyttaHubFileStorageFactory.getFileStorage(_type);
+    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final path = firebaseExportsPath(siteId, fileName);
     
     final tarBytes = await fileStorage.downloadFile(path);

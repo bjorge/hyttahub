@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-abstract class BaseHyttaHubFileStorage {
+abstract class BaseHyttaHubInternalStorage {
   Future<void> uploadFile(String path, Uint8List data);
   Future<Uint8List> downloadFile(String path);
   Future<void> deleteFile(String path);

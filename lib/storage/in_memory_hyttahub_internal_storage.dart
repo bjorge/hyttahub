@@ -3,9 +3,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:hyttahub/storage/base_hyttahub_file_storage.dart';
+import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 
-class InMemoryHyttaHubFileStorage implements BaseHyttaHubFileStorage {
+class InMemoryHyttaHubInternalStorage implements BaseHyttaHubInternalStorage {
   // Map of path -> data
   final Map<String, Uint8List> _files = {};
   final Map<String, StreamController<double>> _progressControllers = {};
