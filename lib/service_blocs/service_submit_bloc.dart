@@ -102,8 +102,11 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
       }
 
       if (state.payload!.event.hasBetaUsersFilter()) {
-        final docPath = firebaseServiceBetaUsersPath();
-        batch.setDocument(docPath, '', { // firebaseServiceBetaUsersPath is a full path to a document
+        final path = firebaseServiceBetaUsersPath();
+        final lastSlashIndex = path.lastIndexOf('/');
+        final parentPath = path.substring(0, lastSlashIndex);
+        final docId = path.substring(lastSlashIndex + 1);
+        batch.setDocument(parentPath, docId, {
           fbBetaUsers: submitServiceEvent.betaUsers,
           fbTimeStamp: storage.serverTimestamp,
         });

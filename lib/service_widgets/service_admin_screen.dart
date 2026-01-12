@@ -11,7 +11,8 @@ import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -143,10 +144,16 @@ class ServiceBetaUsersOption extends StatelessWidget {
       onTap: () async {
         String currentBetaUsers = '';
         try {
-          final firestore = FirebaseFirestore.instance;
-          final doc = await firestore.doc(firebaseServiceBetaUsersPath()).get();
-          if (doc.exists && doc.data()?.containsKey(fbBetaUsers) == true) {
-            currentBetaUsers = doc.data()![fbBetaUsers] as String;
+          final storage = HyttaHubStorageFactory.getStorage(
+            HyttaHubOptions.implementation!.storage,
+          );
+          final path = firebaseServiceBetaUsersPath();
+          final lastSlashIndex = path.lastIndexOf('/');
+          final parentPath = path.substring(0, lastSlashIndex);
+          final docId = path.substring(lastSlashIndex + 1);
+          final data = await storage.getDocument(parentPath, docId);
+          if (data != null && data.containsKey(fbBetaUsers) == true) {
+            currentBetaUsers = data[fbBetaUsers] as String;
           }
         } catch (e) {
           if (context.mounted) {
