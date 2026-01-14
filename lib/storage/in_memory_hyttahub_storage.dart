@@ -3,7 +3,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
+import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 
 class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   // Map of path -> (Map of docId -> data)
@@ -130,7 +133,10 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     required String base64Data,
   }) async {
-    await setDocument('_files/$siteId', fileName, {'base64Data': base64Data});
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final path = firebaseFilesPath(siteId, fileName);
+    await internalStorage.uploadFile(path, base64Decode(base64Data));
+    _updateController.add({'path': '_files/$siteId', 'docId': fileName});
   }
 
   @override
@@ -139,11 +145,9 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
   }) async {
-    final fileDoc = await getDocument('_files/$siteId', fileName);
-    if (fileDoc != null && fileDoc.containsKey('base64Data')) {
-      return base64Decode(fileDoc['base64Data'] as String);
-    }
-    throw Exception('In-memory file not found: $fileName');
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final path = firebaseFilesPath(siteId, fileName);
+    return await internalStorage.downloadFile(path);
   }
 
   @override
@@ -152,14 +156,12 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required List<String> fileNames,
   }) async {
-    final path = '_files/$siteId';
-    final docs = _data[path];
-    if (docs != null) {
-      for (final fileName in fileNames) {
-        docs.remove(fileName);
-      }
-      _updateController.add({'path': path});
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    for (final fileName in fileNames) {
+      final path = firebaseFilesPath(siteId, fileName);
+      await internalStorage.deleteFile(path);
     }
+    _updateController.add({'path': '_files/$siteId'});
   }
 
   @override
@@ -169,13 +171,9 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     int? expirationDays,
   }) async {
-    final fileDoc = await getDocument('_files/$siteId', fileName);
-    if (fileDoc != null && fileDoc.containsKey('base64Data')) {
-      final base64Data = fileDoc['base64Data'] as String;
-      // We don't have mime type info here, but data URI with base64 is standard
-      return 'data:image/png;base64,$base64Data';
-    }
-    throw Exception('In-memory file not found: $fileName');
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final path = firebaseFilesPath(siteId, fileName);
+    return await internalStorage.getDownloadUrl(path);
   }
 }
 

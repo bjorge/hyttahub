@@ -58,7 +58,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     final eventsBuffer = StringBuffer();
     for (final event in events) {
       final record = SiteEventRecord(
-        isoDate: DateTime.now().toIso8601String(), // In real app, this would be the actual timestamp
+        isoDate: (event[fbTimeStamp] as DateTime).toIso8601String(),
         version: event[fbVersion] as int,
         siteEvent: SiteEvent.fromBuffer(base64Decode(event[fbPayload] as String)),
       );
