@@ -8,7 +8,6 @@ import 'package:template/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
@@ -41,12 +40,12 @@ class AppEventsConfig
   @override
   AppEventRecord parseRecord(
     Map<String, dynamic> data,
-    Timestamp timestamp,
+    String isoDate,
     String payload,
   ) {
     final siteEvent = SiteEvent.fromBuffer(base64Decode(payload));
     return AppEventRecord()
-      ..isoDate = timestamp.toDate().toIso8601String()
+      ..isoDate = isoDate
       ..version = siteEvent.version
       ..appEvent =
           siteEvent.hasAppEvent()

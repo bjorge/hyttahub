@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
 class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
@@ -112,7 +111,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   }
 
   @override
-  dynamic get serverTimestamp => Timestamp.now();
+  dynamic get serverTimestamp => DateTime.now();
 
   @override
   bool isPermissionDenied(Object error) => false;

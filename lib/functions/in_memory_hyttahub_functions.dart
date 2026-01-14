@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:archive/archive.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -147,7 +146,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
           record.version.toString(),
           {
             fbPayload: base64Encode(event.writeToBuffer()),
-            fbTimeStamp: Timestamp.fromDate(DateTime.parse(record.isoDate)),
+            fbTimeStamp: DateTime.parse(record.isoDate),
             fbVersion: record.version,
           },
         );

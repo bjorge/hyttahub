@@ -40,12 +40,12 @@ class AppEventsConfig
   @override
   AppEventRecord parseRecord(
     Map<String, dynamic> data,
-    dynamic timestamp,
+    String isoDate,
     String payload,
   ) {
     final siteEvent = SiteEvent.fromBuffer(base64Decode(payload));
     return AppEventRecord()
-      ..isoDate = timestamp.toDate().toIso8601String()
+      ..isoDate = isoDate
       ..version = siteEvent.version
       ..appEvent =
           siteEvent.hasAppEvent()

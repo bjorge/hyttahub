@@ -8,7 +8,6 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AccountEventsDisplayScreen extends StatelessWidget {
@@ -44,12 +43,12 @@ class AccountEventsConfig
   @override
   AccountEventRecord parseRecord(
     Map<String, dynamic> data,
-    Timestamp timestamp,
+    String isoDate,
     String payload,
   ) {
     final accountEvent = AccountEvent.fromBuffer(base64Decode(payload));
     return AccountEventRecord()
-      ..isoDate = timestamp.toDate().toIso8601String()
+      ..isoDate = isoDate
       ..version = accountEvent.version
       ..accountEvent = accountEvent
       ..freeze();

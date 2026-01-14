@@ -8,7 +8,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class SiteEventsDisplayScreen extends StatelessWidget {
@@ -44,12 +43,12 @@ class SiteEventsConfig
   @override
   SiteEventRecord parseRecord(
     Map<String, dynamic> data,
-    Timestamp timestamp,
+    String isoDate,
     String payload,
   ) {
     final siteEvent = SiteEvent.fromBuffer(base64Decode(payload));
     return SiteEventRecord()
-      ..isoDate = timestamp.toDate().toIso8601String()
+      ..isoDate = isoDate
       ..version = siteEvent.version
       ..siteEvent = siteEvent
       ..freeze();

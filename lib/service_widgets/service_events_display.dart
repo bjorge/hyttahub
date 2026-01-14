@@ -8,7 +8,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ServiceEventsDisplayScreen extends StatelessWidget {
@@ -39,12 +38,12 @@ class ServiceEventsConfig
   @override
   ServiceEventRecord parseRecord(
     Map<String, dynamic> data,
-    Timestamp timestamp,
+    String isoDate,
     String payload,
   ) {
     final serviceEvent = ServiceEvent.fromBuffer(base64Decode(payload));
     return ServiceEventRecord()
-      ..isoDate = timestamp.toDate().toIso8601String()
+      ..isoDate = isoDate
       ..version = serviceEvent.version
       ..serviceEvent = serviceEvent
       ..freeze();

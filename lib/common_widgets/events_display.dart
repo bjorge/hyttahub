@@ -4,7 +4,6 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
 
 import 'package:hyttahub/firebase_paths.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -24,7 +23,7 @@ abstract class EventsDisplayConfig<
   String get screenTitle;
   String get replayTitle;
 
-  R parseRecord(Map<String, dynamic> data, Timestamp timestamp, String payload);
+  R parseRecord(Map<String, dynamic> data, String isoDate, String payload);
   int getVersion(R record);
   String getIsoDate(R record);
   S replay(Map<int, String> base64Events);
@@ -90,11 +89,25 @@ class _EventsDisplayState<
       final records = <R>[];
       final base64Events = <int, String>{};
       for (final data in docs) {
-        if (data case {
-          fbPayload: String payload,
-          fbTimeStamp: Timestamp timestamp,
-        }) {
-          final record = widget.config.parseRecord(data, timestamp, payload);
+        if (data case {fbPayload: String payload, fbTimeStamp: dynamic timestampValue}) {
+          String isoDate;
+          try {
+            if (timestampValue is String) {
+              isoDate = timestampValue;
+            } else if (timestampValue is DateTime) {
+              isoDate = timestampValue.toIso8601String();
+            } else if (timestampValue != null &&
+                timestampValue.runtimeType.toString() == 'Timestamp') {
+              // Handle cloud_firestore.Timestamp without direct dependency
+              isoDate = (timestampValue as dynamic).toDate().toIso8601String();
+            } else {
+              isoDate = DateTime.now().toIso8601String();
+            }
+          } catch (e) {
+            isoDate = DateTime.now().toIso8601String();
+          }
+
+          final record = widget.config.parseRecord(data, isoDate, payload);
           final eventVersion = widget.config.getVersion(record);
           base64Events[eventVersion] = payload;
           records.add(record);
