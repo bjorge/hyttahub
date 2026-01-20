@@ -54,16 +54,14 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
         ),
       ) {
     if (storage != null) {
-      this.storage = storage;
-    } else {
-      this.storage = HyttaHubStorageFactory.getStorage(
-        storageType,
-      );
+      _storage = storage;
     }
     on<BaseSubmitEvent<T>>(_onEvent);
   }
 
-  late final BaseHyttaHubStorage storage;
+  BaseHyttaHubStorage? _storage;
+  BaseHyttaHubStorage get storage =>
+      _storage ?? HyttaHubStorageFactory.getStorage(storageType);
 
   T initialPayload;
   bool payloadChanged;

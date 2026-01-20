@@ -31,11 +31,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     _useIsolate = useIsolate;
 
     if (storage != null) {
-      _storage = storage;
-    } else {
-      _storage = HyttaHubStorageFactory.getStorage(
-        storageType,
-      );
+      _storageOverride = storage;
     }
 
     on<CommonReplayBlocEvent>(_onEvent);
@@ -47,7 +43,9 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   StreamSubscription? _subscription;
   final S _initialState;
-  late final BaseHyttaHubStorage _storage;
+  BaseHyttaHubStorage? _storageOverride;
+  BaseHyttaHubStorage get _storage =>
+      _storageOverride ?? HyttaHubStorageFactory.getStorage(storageType);
   final FutureOr<Uint8List> Function(Map<String, dynamic> payload)
   _replayIsolateHandler;
 

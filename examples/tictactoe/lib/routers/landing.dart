@@ -8,6 +8,8 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
+import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
@@ -31,6 +33,7 @@ class LandingPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final languageCubit = context.watch<LanguageCubit>();
     final themeCubit = context.watch<ThemeCubit>();
+    final platformCubit = context.watch<PlatformCubit>();
 
     return Scaffold(
       body: Center(
@@ -44,68 +47,79 @@ class LandingPage extends StatelessWidget {
             ),
             const SizedBox(height: 48),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              spacing: 24,
+              runSpacing: 24,
+              alignment: WrapAlignment.center,
               children: [
-                Column(
-                  children: [
-                    Text(
-                      l10n.app_selectLanguage,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButton<AppLanguage>(
-                      value: languageCubit.state,
-                      onChanged: (AppLanguage? newValue) {
-                        if (newValue != null) {
-                          context.read<LanguageCubit>().setLanguage(newValue);
-                        }
-                      },
-                      items:
-                          AppLanguage.values.map((language) {
-                            return DropdownMenuItem<AppLanguage>(
-                              value: language,
-                              child: Text(switch (language) {
-                                AppLanguage.en => l10n.app_english,
-                                AppLanguage.it => l10n.app_italian,
-                                AppLanguage.es => l10n.app_spanish,
-                                AppLanguage.nb => l10n.app_norwegian,
-                                AppLanguage.nl => l10n.app_dutch,
-                              }),
-                            );
-                          }).toList(),
-                    ),
-                  ],
+                DropdownMenu<AppLanguage>(
+                  width: 250,
+                  initialSelection: languageCubit.state,
+                  leadingIcon: const Icon(Icons.language),
+                  label: Text(l10n.app_selectLanguage),
+                  onSelected: (AppLanguage? newValue) {
+                    if (newValue != null) {
+                      context.read<LanguageCubit>().setLanguage(newValue);
+                    }
+                  },
+                  dropdownMenuEntries:
+                      AppLanguage.values.map((language) {
+                        return DropdownMenuEntry<AppLanguage>(
+                          value: language,
+                          label: switch (language) {
+                            AppLanguage.en => l10n.app_english,
+                            AppLanguage.it => l10n.app_italian,
+                            AppLanguage.es => l10n.app_spanish,
+                            AppLanguage.nb => l10n.app_norwegian,
+                            AppLanguage.nl => l10n.app_dutch,
+                          },
+                        );
+                      }).toList(),
                 ),
-                const SizedBox(width: 48),
-                Column(
-                  children: [
-                    Text(
-                      l10n.app_nightMode,
-                      style: Theme.of(context).textTheme.titleMedium,
+                DropdownMenu<ThemeMode>(
+                  width: 250,
+                  initialSelection: themeCubit.state,
+                  leadingIcon: const Icon(Icons.brightness_medium),
+                  label: Text(l10n.app_nightMode),
+                  onSelected: (ThemeMode? newValue) {
+                    if (newValue != null) {
+                      context.read<ThemeCubit>().setTheme(newValue);
+                    }
+                  },
+                  dropdownMenuEntries:
+                      ThemeMode.values.map((theme) {
+                        return DropdownMenuEntry<ThemeMode>(
+                          value: theme,
+                          label: switch (theme) {
+                            ThemeMode.system => l10n.app_themeSettingsAutomatic,
+                            ThemeMode.light => l10n.app_themeSettingsAlwaysOff,
+                            ThemeMode.dark => l10n.app_themeSettingsAlwaysOn,
+                          },
+                        );
+                      }).toList(),
+                ),
+                DropdownMenu<int>(
+                  width: 250,
+                  initialSelection: platformCubit.state.value,
+                  leadingIcon: const Icon(Icons.computer),
+                  label: const Text("Platform"),
+                  onSelected: (int? newValue) {
+                    if (newValue != null) {
+                      final storage =
+                          StorageEnum.valueOf(newValue) ?? StorageEnum.inMemory;
+                      context.read<PlatformCubit>().setPlatform(storage);
+                    }
+                  },
+                  dropdownMenuEntries: [
+                    const DropdownMenuEntry(
+                      value: 0,
+                      label: "Firebase",
+                      leadingIcon: Icon(Icons.cloud),
                     ),
-                    const SizedBox(height: 8),
-                    DropdownButton<ThemeMode>(
-                      value: themeCubit.state,
-                      onChanged: (ThemeMode? newValue) {
-                        if (newValue != null) {
-                          context.read<ThemeCubit>().setTheme(newValue);
-                        }
-                      },
-                      items:
-                          ThemeMode.values.map((theme) {
-                            return DropdownMenuItem<ThemeMode>(
-                              value: theme,
-                              child: Text(switch (theme) {
-                                ThemeMode.system =>
-                                  l10n.app_themeSettingsAutomatic,
-                                ThemeMode.light =>
-                                  l10n.app_themeSettingsAlwaysOff,
-                                ThemeMode.dark =>
-                                  l10n.app_themeSettingsAlwaysOn,
-                              }),
-                            );
-                          }).toList(),
+                    const DropdownMenuEntry(
+                      value: 1,
+                      label: "In Memory",
+                      leadingIcon: Icon(Icons.memory),
                     ),
                   ],
                 ),

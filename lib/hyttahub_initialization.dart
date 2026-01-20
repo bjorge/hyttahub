@@ -25,11 +25,11 @@ Future<void> initializeHyttaHub({
     HyttaHubOptions.siteScreenRoute = siteScreenRoute;
   }
 
-  if (implementation.storage == StorageEnum.firestore) {
-    if (firebaseOptions == null) {
-      throw ArgumentError('FirebaseOptions must be provided when using StorageEnum.firestore');
-    }
+  if (implementation.storage == StorageEnum.firestore && firebaseOptions == null) {
+    throw ArgumentError('FirebaseOptions must be provided when using StorageEnum.firestore');
+  }
 
+  if (firebaseOptions != null) {
     await Firebase.initializeApp(options: firebaseOptions);
 
     if (kDebugMode) {

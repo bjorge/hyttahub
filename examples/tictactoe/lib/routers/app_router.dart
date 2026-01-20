@@ -7,6 +7,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
+import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
@@ -55,6 +56,11 @@ class _AppRouterState extends State<AppRouter> {
           create:
               (_) =>
                   LanguageCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
+        ),
+        BlocProvider<PlatformCubit>(
+          create:
+              (_) =>
+                  PlatformCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
         BlocProvider<CreateAccountCubit>(create: (_) => CreateAccountCubit()),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),

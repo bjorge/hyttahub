@@ -26,25 +26,31 @@ void setupGetIt() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initializeHyttaHub(
-    implementation: HyttaHubImplementation(
-      storage: StorageEnum.inMemory,
-      appBuildNumber: appBuildNumber,
-      appId: 'hyttahub.example.tictactoe',
-      firebaseRootCollection: 'tictactoe',
-    ),
-    firebaseOptions: DefaultFirebaseOptions.currentPlatform,
-    siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
-  );
-
-  setupGetIt();
-
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory:
         kIsWeb
             ? HydratedStorageDirectory.web
             : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
+
+  const firebaseRootCollection = 'tictactoe';
+  final savedPlatform = HydratedBloc.storage.read('PlatformCubit:platform:$firebaseRootCollection');
+  final storage = savedPlatform != null 
+    ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.inMemory 
+    : StorageEnum.inMemory;
+
+  await initializeHyttaHub(
+    implementation: HyttaHubImplementation(
+      storage: storage,
+      appBuildNumber: appBuildNumber,
+      appId: 'hyttahub.example.tictactoe',
+      firebaseRootCollection: firebaseRootCollection,
+    ),
+    firebaseOptions: DefaultFirebaseOptions.currentPlatform,
+    siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
+  );
+
+  setupGetIt();
 
   runApp(const AppRouter());
 }
