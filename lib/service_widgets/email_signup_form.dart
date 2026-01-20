@@ -1,3 +1,5 @@
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
@@ -38,11 +40,15 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
   Widget build(BuildContext context) {
     final localizations = HyttaHubLocalizations.of(context)!;
     final createAccountCubit = context.read<CreateAccountCubit>();
+    final isInMemory =
+        HyttaHubOptions.implementation?.storage == StorageEnum.inMemory;
     final initialEvent = AuthBlocEvent(
       emailSignup: AuthBlocEvent_EmailSignup(
         serviceAdmin: widget.serviceLogin,
-        termsVersion: 0, // to be confirmed by user
-        privacyVersion: 0, // to be confirmed by user
+        email: '',
+        password: isInMemory ? '1111111111111111' : '',
+        termsVersion: isInMemory ? widget.serviceState.termsVersion : 0,
+        privacyVersion: isInMemory ? widget.serviceState.privacyVersion : 0,
       ),
     );
 
@@ -71,11 +77,12 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
                     emailValidator: widget.emailValidator,
                     serviceState: widget.serviceState,
                   ),
-                  PasswordFormFieldWrapper(
-                    formKey: _formKey,
-                    labelText: localizations.loginPasswordLabel,
-                    helperText: localizations.loginPasswordHelperText,
-                  ),
+                  if (!isInMemory)
+                    PasswordFormFieldWrapper(
+                      formKey: _formKey,
+                      labelText: localizations.loginPasswordLabel,
+                      helperText: localizations.loginPasswordHelperText,
+                    ),
 
                   _TermsCheckbox(
                     formKey: _formKey,

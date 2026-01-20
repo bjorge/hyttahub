@@ -1,3 +1,5 @@
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
@@ -40,8 +42,14 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
   Widget build(BuildContext context) {
     final localizations = HyttaHubLocalizations.of(context)!;
     final createAccountCubit = context.read<CreateAccountCubit>();
+    final isInMemory =
+        HyttaHubOptions.implementation?.storage == StorageEnum.inMemory;
     final initialEvent = AuthBlocEvent(
-      emailLogin: AuthBlocEvent_EmailLogin(serviceAdmin: widget.serviceLogin),
+      emailLogin: AuthBlocEvent_EmailLogin(
+        serviceAdmin: widget.serviceLogin,
+        email: '',
+        password: isInMemory ? '1111111111111111' : '',
+      ),
     );
 
     return BlocProvider<AuthSubmitBloc>(
@@ -69,11 +77,12 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
                     emailValidator: widget.emailValidator,
                     serviceState: widget.serviceState,
                   ),
-                  PasswordFormFieldWrapper(
-                    formKey: _formKey,
-                    labelText: localizations.loginPasswordLabel,
-                    helperText: localizations.loginPasswordHelperText,
-                  ),
+                  if (!isInMemory)
+                    PasswordFormFieldWrapper(
+                      formKey: _formKey,
+                      labelText: localizations.loginPasswordLabel,
+                      helperText: localizations.loginPasswordHelperText,
+                    ),
                   if (!widget.serviceLogin)
                     TextButton(
                       child: Text(localizations.loginNeedToCreateAccountButton),
