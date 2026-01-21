@@ -11,7 +11,7 @@
   "loginEmailReservedError": "El formato de correo electrónico (coincide con __.*__) no está permitido.",
   "loginEmailTooLongError": "El correo electrónico es demasiado largo (máx. 1500 bytes).",
   "loginNotServiceAdminError": "No eres administrador del servicio",
-  "loginNotBetaUserError": "No eres usuario beta",
+  "loginNotBetaUserError": "Correo electrónico no autorizado",
   "loginAgreeToTermsCheckbox": "Acepto los Términos",
   "loginAgreeToPrivacyPolicyCheckbox": "Acepto la Política de Privacidad",
   "loginAlreadyHaveAccountButton": "¿Ya tienes una cuenta?",

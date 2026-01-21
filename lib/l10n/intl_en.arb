@@ -11,7 +11,7 @@
   "loginEmailReservedError": "Email format (matches __.*__) is not allowed.",
   "loginEmailTooLongError": "Email is too long (max 1500 bytes).",
   "loginNotServiceAdminError": "Not a service admin",
-  "loginNotBetaUserError": "Not a beta user",
+  "loginNotBetaUserError": "Not an authorized email",
   "loginAgreeToTermsCheckbox": "I agree to the Terms",
   "loginAgreeToPrivacyPolicyCheckbox": "I agree to the Privacy Policy",
   "loginAlreadyHaveAccountButton": "Already have an account?",

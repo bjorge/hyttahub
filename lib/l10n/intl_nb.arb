@@ -11,7 +11,7 @@
   "loginEmailReservedError": "E-postformatet (matcher __.*__) er ikke tillatt.",
   "loginEmailTooLongError": "E-posten er for lang (maks 1500 byte).",
   "loginNotServiceAdminError": "Ikke en tjenesteadministrator",
-  "loginNotBetaUserError": "Ikke en betabruker",
+  "loginNotBetaUserError": "Ikke en autorisert e-post",
   "loginAgreeToTermsCheckbox": "Jeg godtar vilkårene",
   "loginAgreeToPrivacyPolicyCheckbox": "Jeg godtar personvernreglene",
   "loginAlreadyHaveAccountButton": "Har du allerede en konto?",
