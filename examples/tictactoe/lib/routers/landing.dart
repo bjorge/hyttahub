@@ -112,14 +112,14 @@ class LandingPage extends StatelessWidget {
                   },
                   dropdownMenuEntries: [
                     const DropdownMenuEntry(
-                      value: 0,
-                      label: "Firebase",
-                      leadingIcon: Icon(Icons.cloud),
-                    ),
-                    const DropdownMenuEntry(
-                      value: 1,
+                      value: 1, // inMemory
                       label: "In Memory",
                       leadingIcon: Icon(Icons.memory),
+                    ),
+                    const DropdownMenuEntry(
+                      value: 0, // firestore
+                      label: "Firebase",
+                      leadingIcon: Icon(Icons.cloud),
                     ),
                   ],
                 ),

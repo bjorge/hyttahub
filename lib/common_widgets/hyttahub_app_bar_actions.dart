@@ -8,7 +8,14 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 
 class HyttaHubAppBarActions extends StatelessWidget {
-  const HyttaHubAppBarActions({super.key});
+  final List<AppLanguage>? supportedLanguages;
+  final List<StorageEnum>? supportedPlatforms;
+
+  const HyttaHubAppBarActions({
+    super.key,
+    this.supportedLanguages,
+    this.supportedPlatforms,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +30,9 @@ class HyttaHubAppBarActions extends StatelessWidget {
             HyttaHubRoutes.landingInfoPageRoute.go(context);
           },
         ),
-        _LanguagePicker(l10n: l10n),
+        _LanguagePicker(l10n: l10n, supportedLanguages: supportedLanguages),
         _ThemePicker(l10n: l10n),
-        _PlatformPicker(l10n: l10n),
+        _PlatformPicker(l10n: l10n, supportedPlatforms: supportedPlatforms),
       ],
     );
   }
@@ -33,10 +40,13 @@ class HyttaHubAppBarActions extends StatelessWidget {
 
 class _LanguagePicker extends StatelessWidget {
   final HyttaHubLocalizations l10n;
-  const _LanguagePicker({required this.l10n});
+  final List<AppLanguage>? supportedLanguages;
+  const _LanguagePicker({required this.l10n, this.supportedLanguages});
 
   @override
   Widget build(BuildContext context) {
+    final languagesToShow = supportedLanguages ?? AppLanguage.values;
+
     return BlocBuilder<LanguageCubit, AppLanguage>(
       builder: (context, language) {
         return PopupMenuButton<AppLanguage>(
@@ -45,68 +55,40 @@ class _LanguagePicker extends StatelessWidget {
           onSelected: (AppLanguage newLanguage) {
             context.read<LanguageCubit>().setLanguage(newLanguage);
           },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<AppLanguage>>[
-            PopupMenuItem<AppLanguage>(
-              value: AppLanguage.en,
-              child: Row(
-                children: [
-                  Text(l10n.english),
-                  if (language == AppLanguage.en) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 16),
+          itemBuilder: (BuildContext context) {
+            return AppLanguage.values.where((l) => languagesToShow.contains(l)).map((l) {
+              String name;
+              switch (l) {
+                case AppLanguage.en:
+                  name = l10n.english;
+                  break;
+                case AppLanguage.it:
+                  name = l10n.italian;
+                  break;
+                case AppLanguage.es:
+                  name = l10n.spanish;
+                  break;
+                case AppLanguage.nb:
+                  name = l10n.norwegian;
+                  break;
+                case AppLanguage.nl:
+                  name = l10n.dutch;
+                  break;
+              }
+              return PopupMenuItem<AppLanguage>(
+                value: l,
+                child: Row(
+                  children: [
+                    Text(name),
+                    if (language == l) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.check, size: 16),
+                    ],
                   ],
-                ],
-              ),
-            ),
-            PopupMenuItem<AppLanguage>(
-              value: AppLanguage.it,
-              child: Row(
-                children: [
-                  Text(l10n.italian),
-                  if (language == AppLanguage.it) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 16),
-                  ],
-                ],
-              ),
-            ),
-            PopupMenuItem<AppLanguage>(
-              value: AppLanguage.es,
-              child: Row(
-                children: [
-                  Text(l10n.spanish),
-                  if (language == AppLanguage.es) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 16),
-                  ],
-                ],
-              ),
-            ),
-            PopupMenuItem<AppLanguage>(
-              value: AppLanguage.nb,
-              child: Row(
-                children: [
-                  Text(l10n.norwegian),
-                  if (language == AppLanguage.nb) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 16),
-                  ],
-                ],
-              ),
-            ),
-            PopupMenuItem<AppLanguage>(
-              value: AppLanguage.nl,
-              child: Row(
-                children: [
-                  Text(l10n.dutch),
-                  if (language == AppLanguage.nl) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 16),
-                  ],
-                ],
-              ),
-            ),
-          ],
+                ),
+              );
+            }).toList();
+          },
         );
       },
     );
@@ -173,34 +155,39 @@ class _ThemePicker extends StatelessWidget {
 
 class _PlatformPicker extends StatelessWidget {
   final HyttaHubLocalizations l10n;
-  const _PlatformPicker({required this.l10n});
+  final List<StorageEnum>? supportedPlatforms;
+  const _PlatformPicker({required this.l10n, this.supportedPlatforms});
 
   @override
   Widget build(BuildContext context) {
+    final platformsToShow = supportedPlatforms ?? StorageEnum.values;
     return BlocBuilder<PlatformCubit, StorageEnum>(
       builder: (context, platform) {
         return PopupMenuButton<StorageEnum>(
           tooltip: l10n.platform,
-          icon: const Icon(Icons.settings_suggest),
+          icon: const Icon(Icons.computer),
           onSelected: (StorageEnum newPlatform) {
             context.read<PlatformCubit>().setPlatform(newPlatform);
           },
-          itemBuilder: (BuildContext context) => StorageEnum.values
-              .map(
-                (e) => PopupMenuItem<StorageEnum>(
-                  value: e,
-                  child: Row(
-                    children: [
-                      Text(e.name),
-                      if (platform == e) ...[
-                        const SizedBox(width: 8),
-                        const Icon(Icons.check, size: 16),
-                      ],
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
+          itemBuilder:
+              (BuildContext context) =>
+                  StorageEnum.values
+                      .where((e) => platformsToShow.contains(e))
+                      .map(
+                        (e) => PopupMenuItem<StorageEnum>(
+                          value: e,
+                          child: Row(
+                            children: [
+                              Text(e.name),
+                              if (platform == e) ...[
+                                const SizedBox(width: 8),
+                                const Icon(Icons.check, size: 16),
+                              ],
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
         );
       },
     );
