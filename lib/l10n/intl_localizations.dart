@@ -569,11 +569,11 @@ abstract class HyttaHubLocalizations {
   /// **'No terms available.'**
   String get noTermsAvailable;
 
-  /// No description provided for @uninitializedErrorTitle.
+  /// No description provided for @initializeDataStoreTitle.
   ///
   /// In en, this message translates to:
-  /// **'Uninitialized Error'**
-  String get uninitializedErrorTitle;
+  /// **'Initialize the Data Store'**
+  String get initializeDataStoreTitle;
 
   /// No description provided for @errorTodo.
   ///
@@ -581,11 +581,11 @@ abstract class HyttaHubLocalizations {
   /// **'Error: todo'**
   String get errorTodo;
 
-  /// No description provided for @initializeFirebaseEmulator.
+  /// No description provided for @initializeDataStoreBody.
   ///
   /// In en, this message translates to:
-  /// **'Initialize the firebase emulator.'**
-  String get initializeFirebaseEmulator;
+  /// **'The data store is empty. Create the first service admin in order to initialize the system.'**
+  String get initializeDataStoreBody;
 
   /// No description provided for @successfullySubmittedTodo.
   ///

@@ -47,7 +47,7 @@ class _ServiceUninitializedPageState1 extends State<ServiceUninitializedPage> {
                 final localizations = HyttaHubLocalizations.of(context)!;
                 return Scaffold(
                   appBar: AppBar(
-                    title: Text(localizations.uninitializedErrorTitle),
+                    title: Text(localizations.initializeDataStoreTitle),
                     actions: [ServiceSubmitIconButton(formKey: _formKey)],
                   ),
                   body: _buildBody(context, submitState),
@@ -85,7 +85,7 @@ class _ServiceUninitializedPageState1 extends State<ServiceUninitializedPage> {
     return CommonListViewLayout(
       spacing: 10.0,
       children: [
-        Text(HyttaHubLocalizations.of(context)!.initializeFirebaseEmulator),
+        Text(HyttaHubLocalizations.of(context)!.initializeDataStoreBody),
         if (submitState.submissionState.state ==
             CommonSubmitBlocState_State.success)
           Text(HyttaHubLocalizations.of(context)!.successfullySubmittedTodo),

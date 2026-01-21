@@ -253,13 +253,14 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get noTermsAvailable => 'Ingen vilkår tilgjengelig.';
 
   @override
-  String get uninitializedErrorTitle => 'Initialiseringsfeil';
+  String get initializeDataStoreTitle => 'Initialize the Data Store';
 
   @override
   String get errorTodo => 'Feil: todo';
 
   @override
-  String get initializeFirebaseEmulator => 'Initialiser Firebase-emulatoren.';
+  String get initializeDataStoreBody =>
+      'The data store is empty. Create the first service admin in order to initialize the system.';
 
   @override
   String get successfullySubmittedTodo =>
