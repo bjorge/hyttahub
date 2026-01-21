@@ -41,7 +41,8 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
     final localizations = HyttaHubLocalizations.of(context)!;
     final createAccountCubit = context.read<CreateAccountCubit>();
     final isInMemory =
-        HyttaHubOptions.implementation?.storage == StorageEnum.inMemory;
+        HyttaHubOptions.implementation?.storage == StorageEnum.inMemory ||
+        HyttaHubOptions.implementation?.storage == StorageEnum.localStorage;
     final initialEvent = AuthBlocEvent(
       emailSignup: AuthBlocEvent_EmailSignup(
         serviceAdmin: widget.serviceLogin,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hyttahub/auth_bloc/base_hyttahub_auth.dart';
 import 'package:hyttahub/auth_bloc/firebase_hyttahub_auth.dart';
 import 'package:hyttahub/auth_bloc/in_memory_hyttahub_auth.dart';
+import 'package:hyttahub/auth_bloc/local_storage_hyttahub_auth.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 class HyttaHubAuthFactory {
@@ -23,6 +24,9 @@ class HyttaHubAuthFactory {
         break;
       case StorageEnum.inMemory:
         _instance = InMemoryHyttaHubAuth();
+        break;
+      case StorageEnum.localStorage:
+        _instance = LocalStorageHyttaHubAuth();
         break;
       default:
         _instance = FirebaseHyttaHubAuth(auth: firebaseAuth);

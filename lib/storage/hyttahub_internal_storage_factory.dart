@@ -4,6 +4,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/firebase_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_internal_storage.dart';
+import 'package:hyttahub/storage/local_storage_hyttahub_internal_storage.dart';
 
 class HyttaHubInternalStorageFactory {
   static final Map<StorageEnum, BaseHyttaHubInternalStorage> _instances = {};
@@ -20,6 +21,9 @@ class HyttaHubInternalStorageFactory {
         break;
       case StorageEnum.inMemory:
         storage = InMemoryHyttaHubInternalStorage();
+        break;
+      case StorageEnum.localStorage:
+        storage = LocalStorageHyttaHubInternalStorage();
         break;
       default:
         storage = FirebaseHyttaHubInternalStorage();

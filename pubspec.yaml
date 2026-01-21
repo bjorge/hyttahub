@@ -33,6 +33,10 @@ dependencies:
   crypto: ^3.0.3
   file_picker: ^10.2.0
   archive: ^3.6.1
+  sembast: ^3.8.5+1
+  path: ^1.9.1
+  rxdart: ^0.28.0
+  sembast_web: ^2.4.2
 
 dev_dependencies:
   flutter_test:

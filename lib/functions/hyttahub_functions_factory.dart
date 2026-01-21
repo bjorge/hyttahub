@@ -19,6 +19,7 @@ class HyttaHubFunctionsFactory {
         functions = FirebaseHyttaHubFunctions();
         break;
       case StorageEnum.inMemory:
+      case StorageEnum.localStorage:
         functions = InMemoryHyttaHubFunctions(type);
         break;
       default:

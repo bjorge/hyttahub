@@ -15,6 +15,7 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
+import 'package:hyttahub/storage/sembast_hyttahub_storage.dart';
 
 class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   final StorageEnum _type;
@@ -27,22 +28,26 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   void _init() {
     final storage = HyttaHubStorageFactory.getStorage(_type);
     if (storage is InMemoryHyttaHubStorage) {
-      _storageSubscription = storage.updates.listen((update) {
-        final path = update['path'] as String;
-        final docId = update['docId'] as String;
-        
-        // Pattern: hyttahub/{appName}/sites/{siteId}/site_exports
-        final segments = path.split('/');
-        if (segments.length == 5 &&
-            segments[0] == 'hyttahub' &&
-            segments[2] == 'sites' &&
-            segments[4] == 'site_exports' &&
-            docId == 'export_request') {
-          final appName = segments[1];
-          final siteId = segments[3];
-          _simulateBackupSite(appName, siteId);
-        }
-      });
+      _storageSubscription = storage.updates.listen(_handleUpdate);
+    } else if (storage is SembastHyttaHubStorage) {
+      _storageSubscription = storage.updates.listen(_handleUpdate);
+    }
+  }
+
+  void _handleUpdate(Map<String, dynamic> update) {
+    final path = update['path'] as String;
+    final docId = update['docId'] as String;
+    
+    // Pattern: hyttahub/{appName}/sites/{siteId}/site_exports
+    final segments = path.split('/');
+    if (segments.length == 5 &&
+        segments[0] == 'hyttahub' &&
+        segments[2] == 'sites' &&
+        segments[4] == 'site_exports' &&
+        docId == 'export_request') {
+      final appName = segments[1];
+      final siteId = segments[3];
+      _simulateBackupSite(appName, siteId);
     }
   }
 

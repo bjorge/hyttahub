@@ -121,6 +121,11 @@ class LandingPage extends StatelessWidget {
                       label: "Firebase",
                       leadingIcon: Icon(Icons.cloud),
                     ),
+                    const DropdownMenuEntry(
+                      value: 2, // localStorage
+                      label: "Local Storage",
+                      leadingIcon: Icon(Icons.storage),
+                    ),
                   ],
                 ),
               ],
