@@ -17,4 +17,8 @@ class HyttaHubOptions {
   static BaseSiteRoutePath? siteScreenRoute;
 
   static HyttaHubImplementation? implementation;
+
+  static String appTitle = '';
+  static String appVersion = '';
+  static int appBuildNumber = 0;
 }

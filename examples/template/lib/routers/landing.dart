@@ -1,19 +1,15 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:template/l10n/app_localizations.dart';
-import 'package:template/routers/app_routes.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
-import 'package:hyttahub/preferences_cubits/language_cubit.dart';
-import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
-import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/common_widgets/hyttahub_app_bar_actions.dart';
+import 'package:hyttahub/routes/hyttahub_routes.dart';
 
 /// The initial page of the application.
 ///
@@ -32,91 +28,8 @@ class LandingPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Info',
-            onPressed: () {
-              context.push(InfoPageRoute.fullPath);
-            },
-          ),
-          PopupMenuButton<AppLanguage>(
-            icon: const Icon(Icons.language),
-            tooltip: l10n.app_selectLanguage,
-            onSelected: (AppLanguage newValue) {
-              context.read<LanguageCubit>().setLanguage(newValue);
-            },
-            itemBuilder: (BuildContext context) {
-              return AppLanguage.values.map((language) {
-                return PopupMenuItem<AppLanguage>(
-                  value: language,
-                  child: Text(
-                    switch (language) {
-                      AppLanguage.en => l10n.app_english,
-                      AppLanguage.it => l10n.app_italian,
-                      AppLanguage.es => l10n.app_spanish,
-                      AppLanguage.nb => l10n.app_norwegian,
-                      AppLanguage.nl => l10n.app_dutch,
-                    },
-                  ),
-                );
-              }).toList();
-            },
-          ),
-          PopupMenuButton<ThemeMode>(
-            icon: const Icon(Icons.brightness_medium),
-            tooltip: l10n.app_nightMode,
-            onSelected: (ThemeMode newValue) {
-              context.read<ThemeCubit>().setTheme(newValue);
-            },
-            itemBuilder: (BuildContext context) {
-              return ThemeMode.values.map((theme) {
-                return PopupMenuItem<ThemeMode>(
-                  value: theme,
-                  child: Text(
-                    switch (theme) {
-                      ThemeMode.system => l10n.app_themeSettingsAutomatic,
-                      ThemeMode.light => l10n.app_themeSettingsAlwaysOff,
-                      ThemeMode.dark => l10n.app_themeSettingsAlwaysOn,
-                    },
-                  ),
-                );
-              }).toList();
-            },
-          ),
-          PopupMenuButton<int>(
-            icon: const Icon(Icons.computer),
-            tooltip: "Platform",
-            onSelected: (int newValue) {
-              final storage =
-                  StorageEnum.valueOf(newValue) ?? StorageEnum.inMemory;
-              context.read<PlatformCubit>().setPlatform(storage);
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  value: 0,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.cloud),
-                      const SizedBox(width: 8),
-                      const Text("Firebase"),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 1,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.memory),
-                      const SizedBox(width: 8),
-                      const Text("In Memory"),
-                    ],
-                  ),
-                ),
-              ];
-            },
-          ),
+        actions: const [
+          HyttaHubAppBarActions(),
         ],
       ),
       body: Center(

@@ -39,6 +39,10 @@ Future<void> main() async {
     ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.inMemory 
     : StorageEnum.inMemory;
 
+  HyttaHubOptions.appTitle = "Tic-Tac-Toe";
+  HyttaHubOptions.appVersion = appVersion;
+  HyttaHubOptions.appBuildNumber = appBuildNumber;
+
   await initializeHyttaHub(
     implementation: HyttaHubImplementation(
       storage: storage,

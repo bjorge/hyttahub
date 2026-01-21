@@ -19,6 +19,7 @@
   "loginForgotPasswordButton": "Glemt passord?",
   "loginGoToEmailResetPasswordMessage": "Gå til e-postinnboksen din, åpne e-posten og klikk på lenken for å opprette et nytt passord. Gå deretter tilbake hit og logg inn.",
   "loginGoToEmailVerifyEmailMessage": "Gå til e-postinnboksen din, åpne e-posten og klikk på lenken for å bekrefte e-postadressen din. Gå deretter tilbake hit og logg inn.",
+  "app_versionInfo": "Versjon {appVersion} ({appBuildNumber})",
   "@app_versionInfo": {
     "placeholders": {
       "appVersion": {
@@ -260,6 +261,19 @@
       }
     }
   },
+  "selectLanguage": "Velg språk",
+  "nightMode": "Nattmodus",
+  "platform": "Plattform",
+  "info": "Info",
+  "serviceLoginButton": "Tjenestepålogging",
+  "english": "Engelsk",
+  "italian": "Italiensk",
+  "spanish": "Spansk",
+  "norwegian": "Norsk",
+  "dutch": "Nederlandsk",
+  "themeSettingsAutomatic": "Automatisk",
+  "themeSettingsAlwaysOff": "Alltid av",
+  "themeSettingsAlwaysOn": "Alltid på",
   "openSourceLicensesButton": "Open Source-pakker",
   "openSourceLicensesTitle": "Open Source-pakker"
 }

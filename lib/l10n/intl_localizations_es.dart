@@ -74,6 +74,11 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
       'Ve a tu correo electrónico, abre el correo y haz clic en el enlace para verificar tu dirección de correo. Luego vuelve aquí e inicia sesión.';
 
   @override
+  String app_versionInfo(String appVersion, num appBuildNumber) {
+    return 'Versión $appVersion ($appBuildNumber)';
+  }
+
+  @override
   String get sites => 'Sitios';
 
   @override
@@ -611,6 +616,45 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String errorAssigningUser(String error) {
     return 'Error al asignar usuario: $error';
   }
+
+  @override
+  String get selectLanguage => 'Seleccionar idioma';
+
+  @override
+  String get nightMode => 'Modo nocturno';
+
+  @override
+  String get platform => 'Plataforma';
+
+  @override
+  String get info => 'Información';
+
+  @override
+  String get serviceLoginButton => 'Inicio de sesión de servicio';
+
+  @override
+  String get english => 'Inglés';
+
+  @override
+  String get italian => 'Italiano';
+
+  @override
+  String get spanish => 'Español';
+
+  @override
+  String get norwegian => 'Noruego';
+
+  @override
+  String get dutch => 'Holandés';
+
+  @override
+  String get themeSettingsAutomatic => 'Automático';
+
+  @override
+  String get themeSettingsAlwaysOff => 'Siempre desactivado';
+
+  @override
+  String get themeSettingsAlwaysOn => 'Siempre activado';
 
   @override
   String get openSourceLicensesButton => 'Paquetes de código abierto';

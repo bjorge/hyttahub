@@ -19,6 +19,7 @@
   "loginForgotPasswordButton": "Forgot Password?",
   "loginGoToEmailResetPasswordMessage": "Go to your email inbox, open the email, and click the link to create a new password. Then return here and login.",
   "loginGoToEmailVerifyEmailMessage": "Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.",
+  "app_versionInfo": "Version {appVersion} ({appBuildNumber})",
   "@app_versionInfo": {
     "placeholders": {
       "appVersion": {
@@ -260,6 +261,19 @@
       }
     }
   },
+  "selectLanguage": "Select Language",
+  "nightMode": "Night Mode",
+  "platform": "Platform",
+  "info": "Info",
+  "serviceLoginButton": "Service Login",
+  "english": "English",
+  "italian": "Italian",
+  "spanish": "Spanish",
+  "norwegian": "Norwegian",
+  "dutch": "Dutch",
+  "themeSettingsAutomatic": "Automatic",
+  "themeSettingsAlwaysOff": "Always Off",
+  "themeSettingsAlwaysOn": "Always On",
   "openSourceLicensesButton": "Open Source Packages",
   "openSourceLicensesTitle": "Open Source Packages"
 }

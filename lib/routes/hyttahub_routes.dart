@@ -23,6 +23,7 @@ import 'package:hyttahub/service_widgets/restore_admin_screen.dart';
 import 'package:hyttahub/service_widgets/service_admin_screen.dart';
 import 'package:hyttahub/service_widgets/service_admins_screen.dart';
 import 'package:hyttahub/service_widgets/service_terms_display.dart';
+import 'package:hyttahub/common_widgets/hyttahub_info_page.dart';
 
 import 'package:hyttahub/service_widgets/login.dart';
 import 'package:hyttahub/service_widgets/open_source_licenses_screen.dart';
@@ -60,6 +61,27 @@ class OpenSourceLicensesRoute extends GoRoute {
 
   /// The full path to this route.
   static const String fullPath = '/$pathSegment';
+
+  void go(BuildContext context) => context.go(fullPath);
+}
+
+class LandingInfoPageRoute extends GoRoute {
+  /// Creates a [LandingInfoPageRoute].
+  LandingInfoPageRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return const HyttaHubInfoPage();
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'info';
+
+  /// The full path to this route.
+  static const String fullPath = '/$pathSegment';
+
+  void go(BuildContext context) => context.go(fullPath);
 }
 
 class LoginScreenRoute extends GoRoute {
@@ -922,3 +944,10 @@ final standardSiteScreenRoutes = [
   displaySiteRoute,
   siteEmailsDisplayRoute,
 ];
+
+class HyttaHubRoutes {
+  static final openSourceLicensesRoute = OpenSourceLicensesRoute();
+  static final landingInfoPageRoute = LandingInfoPageRoute();
+}
+
+final landingInfoPageRoute = HyttaHubRoutes.landingInfoPageRoute;

@@ -221,6 +221,12 @@ abstract class HyttaHubLocalizations {
   /// **'Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.'**
   String get loginGoToEmailVerifyEmailMessage;
 
+  /// No description provided for @app_versionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {appVersion} ({appBuildNumber})'**
+  String app_versionInfo(String appVersion, num appBuildNumber);
+
   /// No description provided for @sites.
   ///
   /// In en, this message translates to:
@@ -1186,6 +1192,84 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Error assigning user: {error}'**
   String errorAssigningUser(String error);
+
+  /// No description provided for @selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// No description provided for @nightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Night Mode'**
+  String get nightMode;
+
+  /// No description provided for @platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get platform;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @serviceLoginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Login'**
+  String get serviceLoginButton;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @italian.
+  ///
+  /// In en, this message translates to:
+  /// **'Italian'**
+  String get italian;
+
+  /// No description provided for @spanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get spanish;
+
+  /// No description provided for @norwegian.
+  ///
+  /// In en, this message translates to:
+  /// **'Norwegian'**
+  String get norwegian;
+
+  /// No description provided for @dutch.
+  ///
+  /// In en, this message translates to:
+  /// **'Dutch'**
+  String get dutch;
+
+  /// No description provided for @themeSettingsAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get themeSettingsAutomatic;
+
+  /// No description provided for @themeSettingsAlwaysOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Always Off'**
+  String get themeSettingsAlwaysOff;
+
+  /// No description provided for @themeSettingsAlwaysOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Always On'**
+  String get themeSettingsAlwaysOn;
 
   /// No description provided for @openSourceLicensesButton.
   ///

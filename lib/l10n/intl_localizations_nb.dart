@@ -73,6 +73,11 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
       'Gå til e-postinnboksen din, åpne e-posten og klikk på lenken for å bekrefte e-postadressen din. Gå deretter tilbake hit og logg inn.';
 
   @override
+  String app_versionInfo(String appVersion, num appBuildNumber) {
+    return 'Versjon $appVersion ($appBuildNumber)';
+  }
+
+  @override
   String get sites => 'Nettsteder';
 
   @override
@@ -599,6 +604,45 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String errorAssigningUser(String error) {
     return 'Feil ved tildeling av bruker: $error';
   }
+
+  @override
+  String get selectLanguage => 'Velg språk';
+
+  @override
+  String get nightMode => 'Nattmodus';
+
+  @override
+  String get platform => 'Plattform';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get serviceLoginButton => 'Tjenestepålogging';
+
+  @override
+  String get english => 'Engelsk';
+
+  @override
+  String get italian => 'Italiensk';
+
+  @override
+  String get spanish => 'Spansk';
+
+  @override
+  String get norwegian => 'Norsk';
+
+  @override
+  String get dutch => 'Nederlandsk';
+
+  @override
+  String get themeSettingsAutomatic => 'Automatisk';
+
+  @override
+  String get themeSettingsAlwaysOff => 'Alltid av';
+
+  @override
+  String get themeSettingsAlwaysOn => 'Alltid på';
 
   @override
   String get openSourceLicensesButton => 'Open Source-pakker';
