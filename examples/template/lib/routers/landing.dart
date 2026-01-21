@@ -30,11 +30,89 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final languageCubit = context.watch<LanguageCubit>();
-    final themeCubit = context.watch<ThemeCubit>();
-    final platformCubit = context.watch<PlatformCubit>();
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          PopupMenuButton<AppLanguage>(
+            icon: const Icon(Icons.language),
+            tooltip: l10n.app_selectLanguage,
+            onSelected: (AppLanguage newValue) {
+              context.read<LanguageCubit>().setLanguage(newValue);
+            },
+            itemBuilder: (BuildContext context) {
+              return AppLanguage.values.map((language) {
+                return PopupMenuItem<AppLanguage>(
+                  value: language,
+                  child: Text(
+                    switch (language) {
+                      AppLanguage.en => l10n.app_english,
+                      AppLanguage.it => l10n.app_italian,
+                      AppLanguage.es => l10n.app_spanish,
+                      AppLanguage.nb => l10n.app_norwegian,
+                      AppLanguage.nl => l10n.app_dutch,
+                    },
+                  ),
+                );
+              }).toList();
+            },
+          ),
+          PopupMenuButton<ThemeMode>(
+            icon: const Icon(Icons.brightness_medium),
+            tooltip: l10n.app_nightMode,
+            onSelected: (ThemeMode newValue) {
+              context.read<ThemeCubit>().setTheme(newValue);
+            },
+            itemBuilder: (BuildContext context) {
+              return ThemeMode.values.map((theme) {
+                return PopupMenuItem<ThemeMode>(
+                  value: theme,
+                  child: Text(
+                    switch (theme) {
+                      ThemeMode.system => l10n.app_themeSettingsAutomatic,
+                      ThemeMode.light => l10n.app_themeSettingsAlwaysOff,
+                      ThemeMode.dark => l10n.app_themeSettingsAlwaysOn,
+                    },
+                  ),
+                );
+              }).toList();
+            },
+          ),
+          PopupMenuButton<int>(
+            icon: const Icon(Icons.computer),
+            tooltip: "Platform",
+            onSelected: (int newValue) {
+              final storage =
+                  StorageEnum.valueOf(newValue) ?? StorageEnum.inMemory;
+              context.read<PlatformCubit>().setPlatform(storage);
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  value: 0,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.cloud),
+                      const SizedBox(width: 8),
+                      const Text("Firebase"),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.memory),
+                      const SizedBox(width: 8),
+                      const Text("In Memory"),
+                    ],
+                  ),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -45,87 +123,6 @@ class LandingPage extends StatelessWidget {
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: 48),
-
-            Wrap(
-              spacing: 24,
-              runSpacing: 24,
-              alignment: WrapAlignment.center,
-              children: [
-                DropdownMenu<AppLanguage>(
-                  width: 250,
-                  initialSelection: languageCubit.state,
-                  leadingIcon: const Icon(Icons.language),
-                  label: Text(l10n.app_selectLanguage),
-                  onSelected: (AppLanguage? newValue) {
-                    if (newValue != null) {
-                      context.read<LanguageCubit>().setLanguage(newValue);
-                    }
-                  },
-                  dropdownMenuEntries:
-                      AppLanguage.values.map((language) {
-                        return DropdownMenuEntry<AppLanguage>(
-                          value: language,
-                          label: switch (language) {
-                            AppLanguage.en => l10n.app_english,
-                            AppLanguage.it => l10n.app_italian,
-                            AppLanguage.es => l10n.app_spanish,
-                            AppLanguage.nb => l10n.app_norwegian,
-                            AppLanguage.nl => l10n.app_dutch,
-                          },
-                        );
-                      }).toList(),
-                ),
-                DropdownMenu<ThemeMode>(
-                  width: 250,
-                  initialSelection: themeCubit.state,
-                  leadingIcon: const Icon(Icons.brightness_medium),
-                  label: Text(l10n.app_nightMode),
-                  onSelected: (ThemeMode? newValue) {
-                    if (newValue != null) {
-                      context.read<ThemeCubit>().setTheme(newValue);
-                    }
-                  },
-                  dropdownMenuEntries:
-                      ThemeMode.values.map((theme) {
-                        return DropdownMenuEntry<ThemeMode>(
-                          value: theme,
-                          label: switch (theme) {
-                            ThemeMode.system => l10n.app_themeSettingsAutomatic,
-                            ThemeMode.light => l10n.app_themeSettingsAlwaysOff,
-                            ThemeMode.dark => l10n.app_themeSettingsAlwaysOn,
-                          },
-                        );
-                      }).toList(),
-                ),
-                DropdownMenu<int>(
-                  width: 250,
-                  initialSelection: platformCubit.state.value,
-                  leadingIcon: const Icon(Icons.computer),
-                  label: const Text("Platform"),
-                  onSelected: (int? newValue) {
-                    if (newValue != null) {
-                      final storage =
-                          StorageEnum.valueOf(newValue) ?? StorageEnum.inMemory;
-                      context.read<PlatformCubit>().setPlatform(storage);
-                    }
-                  },
-                  dropdownMenuEntries: [
-                    const DropdownMenuEntry(
-                      value: 0,
-                      label: "Firebase",
-                      leadingIcon: Icon(Icons.cloud),
-                    ),
-                    const DropdownMenuEntry(
-                      value: 1,
-                      label: "In Memory",
-                      leadingIcon: Icon(Icons.memory),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 48),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
@@ -147,7 +144,6 @@ class LandingPage extends StatelessWidget {
               },
               child: Text(l10n.app_enterButton),
             ),
-
             const Spacer(flex: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -158,10 +154,6 @@ class LandingPage extends StatelessWidget {
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
-                    // padding: const EdgeInsets.symmetric(
-                    //   horizontal: 40,
-                    //   vertical: 20,
-                    // ),
                     textStyle: Theme.of(context).textTheme.bodySmall,
                   ),
                   onPressed: () {
@@ -170,7 +162,6 @@ class LandingPage extends StatelessWidget {
                     );
                     context.read<AuthBloc>().add(
                       AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-                      // AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
                     );
 
                     context.read<CreateAccountCubit>().setCreateAccount(false);
