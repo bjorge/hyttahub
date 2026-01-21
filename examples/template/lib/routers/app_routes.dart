@@ -12,6 +12,7 @@ import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:template/routers/landing.dart';
+import 'package:template/routers/info_page.dart';
 
 /// A route for the site screen.
 class SiteScreenRoute extends GoRoute {
@@ -218,10 +219,30 @@ class LandingScreenRoute extends GoRoute {
   static const String fullPath = pathSegment;
 }
 
+/// A route for the info page.
+class InfoPageRoute extends GoRoute {
+  /// Creates an [InfoPageRoute].
+  InfoPageRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return const InfoPage();
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'info';
+
+  /// The full path to this route.
+  static const String fullPath = '/$pathSegment';
+}
+
 final landingScreenRoute = LandingScreenRoute(
   routes: [
     loginScreenRoute,
     serviceLoginScreenRoute,
     landingUnimplementedRoute,
+    InfoPageRoute(),
+    OpenSourceLicensesRoute(),
   ],
 );

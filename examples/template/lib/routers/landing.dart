@@ -1,8 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:template/l10n/app_localizations.dart';
-import 'package:template/main.dart';
-import 'package:hyttahub/preferences_cubits/login_cubit.dart';
+import 'package:template/routers/app_routes.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -34,6 +33,13 @@ class LandingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Info',
+            onPressed: () {
+              context.push(InfoPageRoute.fullPath);
+            },
+          ),
           PopupMenuButton<AppLanguage>(
             icon: const Icon(Icons.language),
             tooltip: l10n.app_selectLanguage,
@@ -145,34 +151,6 @@ class LandingPage extends StatelessWidget {
               child: Text(l10n.app_enterButton),
             ),
             const Spacer(flex: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.app_versionInfo(appVersion, appBuildNumber),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    textStyle: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  onPressed: () {
-                    context.read<ServiceReplayBloc>().add(
-                      CommonReplayBlocEvent(listen: true),
-                    );
-                    context.read<AuthBloc>().add(
-                      AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-                    );
-
-                    context.read<CreateAccountCubit>().setCreateAccount(false);
-
-                    // This navigates to the login screen.
-                    context.push(ServiceLoginScreenRoute.fullPath);
-                  },
-                  child: Text(l10n.app_serviceLoginButton),
-                ),
-              ],
-            ),
             const SizedBox(height: 24),
           ],
         ),
