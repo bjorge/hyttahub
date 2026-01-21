@@ -26,6 +26,8 @@ import 'package:hyttahub/service_widgets/service_terms_display.dart';
 
 import 'package:hyttahub/service_widgets/login.dart';
 import 'package:hyttahub/service_widgets/open_source_licenses_screen.dart';
+import 'package:hyttahub/service_widgets/service_down_page.dart';
+import 'package:hyttahub/service_widgets/service_new_version_page.dart';
 import 'package:hyttahub/service_widgets/update_admin_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -102,6 +104,96 @@ class ServiceLoginScreenRoute extends GoRoute {
 
   /// The path segment for this route.
   static const String pathSegment = 'servicelogin';
+
+  /// The full path to this route.
+  static const String fullPath = '/$pathSegment';
+}
+
+/// A route for the new version block screen.
+class ServiceNewVersionRoute extends GoRoute {
+  /// Creates an [ServiceNewVersionRoute].
+  ServiceNewVersionRoute()
+    : super(
+        path: pathSegment,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          final localizations = HyttaHubLocalizations.of(context)!;
+          return MaterialPage(
+            key: const ValueKey('serviceNewVersionScreen'),
+            child: ServiceNewVersionPage(
+              onAdminLogin: () => context.push(ServiceLoginScreenRoute.fullPath),
+              adminLoginButtonLabel: localizations.serviceLoginTitle,
+            ),
+          );
+        },
+        onExit: (context, state) async {
+          final authState = context.read<AuthBloc>().state.authState;
+          if (authState == AuthState.unauthenticated ||
+              authState == AuthState.submittingSignOutRequest ||
+              authState == AuthState.submittingRemoveAccountRequest) {
+            return true;
+          }
+
+          // Trigger logout
+          context.read<AuthBloc>().add(
+            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
+          );
+          // Navigate to home after logout
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.go('/');
+            }
+          });
+          return false;
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'version-block';
+
+  /// The full path to this route.
+  static const String fullPath = '/$pathSegment';
+}
+
+/// A route for the service down block screen.
+class ServiceDownRoute extends GoRoute {
+  /// Creates an [ServiceDownRoute].
+  ServiceDownRoute()
+    : super(
+        path: pathSegment,
+        pageBuilder: (BuildContext context, GoRouterState state) {
+          final localizations = HyttaHubLocalizations.of(context)!;
+          return MaterialPage(
+            key: const ValueKey('serviceDownScreen'),
+            child: ServiceDownPage(
+              onAdminLogin: () => context.push(ServiceLoginScreenRoute.fullPath),
+              adminLoginButtonLabel: localizations.serviceLoginTitle,
+            ),
+          );
+        },
+        onExit: (context, state) async {
+          final authState = context.read<AuthBloc>().state.authState;
+          if (authState == AuthState.unauthenticated ||
+              authState == AuthState.submittingSignOutRequest ||
+              authState == AuthState.submittingRemoveAccountRequest) {
+            return true;
+          }
+
+          // Trigger logout
+          context.read<AuthBloc>().add(
+            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
+          );
+          // Navigate to home after logout
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.go('/');
+            }
+          });
+          return false;
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'service-down';
 
   /// The full path to this route.
   static const String fullPath = '/$pathSegment';
@@ -934,6 +1026,7 @@ final loginScreenRoute = LoginScreenRoute(
     loginPrivacyDisplayRoute,
   ],
 );
+
 
 final serviceLoginScreenRoute = ServiceLoginScreenRoute(
   routes: [serviceAdminScreenRoute],

@@ -11,6 +11,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/utilities/ids.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
@@ -48,6 +49,31 @@ class AccountScreen extends StatelessWidget {
           }
 
           return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
+            listener: (context, serviceState) {
+              if (serviceState.state == CommonReplayStateEnum.listening) {
+                final authState = context.read<AuthBloc>().state;
+
+                // 1. Proactive version/service block for non-admins
+                if (!authState.isServiceAdmin) {
+                  final versionMismatch =
+                      serviceState.minVersion >
+                      (HyttaHubOptions.implementation?.appBuildNumber ?? 0);
+                  if (versionMismatch) {
+                    context.go(ServiceNewVersionRoute.fullPath);
+                    return;
+                  } else if (serviceState.serviceUnavailable == true) {
+                    context.go(ServiceDownRoute.fullPath);
+                    return;
+                  }
+                }
+
+                // 2. Proactive terms/privacy update redirection
+                if (accountState.termsVersion < serviceState.termsVersion ||
+                    accountState.privacyVersion < serviceState.privacyVersion) {
+                  context.goNamed(AccountScreenRoute.routeName);
+                }
+              }
+            },
             builder: (context, serviceState) {
               // todo: error widget for service state
               final errorWidget = handleServiceReplayState(
@@ -102,14 +128,6 @@ class AccountScreen extends StatelessWidget {
                 ),
               );
             },
-            listener:
-                (BuildContext context, ServiceReplayBlocState serviceState) {
-                  if (accountState.termsVersion < serviceState.termsVersion ||
-                      accountState.privacyVersion <
-                          serviceState.privacyVersion) {
-                    context.goNamed(AccountScreenRoute.routeName);
-                  }
-                },
           );
         },
         listener:

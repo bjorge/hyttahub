@@ -222,6 +222,8 @@ final landingScreenRoute = LandingScreenRoute(
   routes: [
     loginScreenRoute,
     serviceLoginScreenRoute,
+    ServiceNewVersionRoute(),
+    ServiceDownRoute(),
     landingUnimplementedRoute,
   ],
 );

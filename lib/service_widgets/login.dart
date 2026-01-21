@@ -19,8 +19,6 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/service_widgets/service_down_page.dart';
-import 'package:hyttahub/service_widgets/service_new_version_page.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/service_widgets/service_network_error_page.dart';
 import 'package:flutter/foundation.dart';
@@ -118,27 +116,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? authState.email
                   : _blockedEmail;
 
+          bool isBlocked = authState.authState == AuthState.authenticated || _blockedEmail != null;
           if (emailToCheck != null) {
             final reconstructed = BloomFilterProcessor(
               size: serviceState.filter.size,
               hashCount: serviceState.filter.hashCount,
               bitArray: Uint8List.fromList(serviceState.filter.bitArray),
             );
-            final mightBeAdmin = reconstructed.mightContain(emailToCheck);
+            if (reconstructed.mightContain(emailToCheck)) {
+              isBlocked = false;
+            }
+          }
 
-            final onAdminLogin = mightBeAdmin
-                ? () => context.push(ServiceLoginScreenRoute.fullPath)
-                : null;
-
-            return serviceUnavailable
-                ? ServiceDownPage(
-                  onAdminLogin: onAdminLogin,
-                  adminLoginButtonLabel: localizations.serviceLoginTitle,
-                )
-                : ServiceNewVersionPage(
-                  onAdminLogin: onAdminLogin,
-                  adminLoginButtonLabel: localizations.serviceLoginTitle,
-                );
+          if (isBlocked) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                if (versionMismatch) {
+                  context.go(ServiceNewVersionRoute.fullPath);
+                } else {
+                  context.go(ServiceDownRoute.fullPath);
+                }
+              }
+            });
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
         }
 
@@ -445,9 +447,15 @@ class _LoginScreenState extends State<LoginScreen> {
         }
 
         if (mounted) {
-          // In the new flow, we don't need to block navigation here if auth succeeded,
-          // because the builder will catch it and show the block page.
-          await router.push(AccountScreenRoute.fullPath);
+          if (isBlocked && !authState.isServiceAdmin) {
+            if (versionMismatch) {
+              router.go(ServiceNewVersionRoute.fullPath);
+            } else {
+              router.go(ServiceDownRoute.fullPath);
+            }
+          } else {
+            await router.push(AccountScreenRoute.fullPath);
+          }
         }
       } finally {
         _isNavigating = false;
