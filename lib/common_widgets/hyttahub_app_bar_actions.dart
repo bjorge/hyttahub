@@ -48,23 +48,63 @@ class _LanguagePicker extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuEntry<AppLanguage>>[
             PopupMenuItem<AppLanguage>(
               value: AppLanguage.en,
-              child: Text(l10n.english),
+              child: Row(
+                children: [
+                  Text(l10n.english),
+                  if (language == AppLanguage.en) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<AppLanguage>(
               value: AppLanguage.it,
-              child: Text(l10n.italian),
+              child: Row(
+                children: [
+                  Text(l10n.italian),
+                  if (language == AppLanguage.it) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<AppLanguage>(
               value: AppLanguage.es,
-              child: Text(l10n.spanish),
+              child: Row(
+                children: [
+                  Text(l10n.spanish),
+                  if (language == AppLanguage.es) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<AppLanguage>(
               value: AppLanguage.nb,
-              child: Text(l10n.norwegian),
+              child: Row(
+                children: [
+                  Text(l10n.norwegian),
+                  if (language == AppLanguage.nb) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<AppLanguage>(
               value: AppLanguage.nl,
-              child: Text(l10n.dutch),
+              child: Row(
+                children: [
+                  Text(l10n.dutch),
+                  if (language == AppLanguage.nl) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
           ],
         );
@@ -90,15 +130,39 @@ class _ThemePicker extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
             PopupMenuItem<ThemeMode>(
               value: ThemeMode.system,
-              child: Text(l10n.themeSettingsAutomatic),
+              child: Row(
+                children: [
+                  Text(l10n.themeSettingsAutomatic),
+                  if (mode == ThemeMode.system) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<ThemeMode>(
               value: ThemeMode.light,
-              child: Text(l10n.themeSettingsAlwaysOff),
+              child: Row(
+                children: [
+                  Text(l10n.themeSettingsAlwaysOff),
+                  if (mode == ThemeMode.light) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
             PopupMenuItem<ThemeMode>(
               value: ThemeMode.dark,
-              child: Text(l10n.themeSettingsAlwaysOn),
+              child: Row(
+                children: [
+                  Text(l10n.themeSettingsAlwaysOn),
+                  if (mode == ThemeMode.dark) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
             ),
           ],
         );
@@ -122,10 +186,20 @@ class _PlatformPicker extends StatelessWidget {
             context.read<PlatformCubit>().setPlatform(newPlatform);
           },
           itemBuilder: (BuildContext context) => StorageEnum.values
-              .map((e) => PopupMenuItem<StorageEnum>(
-                    value: e,
-                    child: Text(e.name),
-                  ))
+              .map(
+                (e) => PopupMenuItem<StorageEnum>(
+                  value: e,
+                  child: Row(
+                    children: [
+                      Text(e.name),
+                      if (platform == e) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.check, size: 16),
+                      ],
+                    ],
+                  ),
+                ),
+              )
               .toList(),
         );
       },
