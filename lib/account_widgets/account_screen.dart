@@ -295,13 +295,14 @@ class AccountSettingsButton extends StatelessWidget {
                   onPressed: () {
                     // pop the dialog
                     Navigator.pop(context);
-                    // pop the account screen
-                    Navigator.pop(context);
 
                     // logout
                     context.read<AuthBloc>().add(
                       AuthBlocEvent(logout: AuthBlocEvent_Logout()),
                     );
+
+                    // navigate to home
+                    context.go('/');
                   },
                   child: Text(HyttaHubLocalizations.of(context)!.logout),
                 ),

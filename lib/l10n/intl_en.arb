@@ -267,5 +267,16 @@
   "serviceAdminDetectionMessage": "Looks like you are a service administrator. Where would you like to go?",
   "goServiceSettingsButton": "Service Settings",
   "goUserAccountButton": "User Account",
-  "goToAccountPage": "Go to Account Page"
+  "goToAccountPage": "Go to Account Page",
+  "serviceAdminVersionWarning": "Note: Your app version ({appVersion}) is below the required version ({minVersion}). You can still access Service Settings to fix this.",
+  "@serviceAdminVersionWarning": {
+    "placeholders": {
+      "appVersion": {
+        "type": "num"
+      },
+      "minVersion": {
+        "type": "num"
+      }
+    }
+  }
 }

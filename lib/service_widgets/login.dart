@@ -1,5 +1,6 @@
 // Copyright (c) 2025 bjorge
 
+import 'dart:async';
 import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -39,6 +40,31 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isNavigating = false;
+  String? _blockedEmail;
+
+  FutureOr<bool> _onPreSubmit(
+    AuthBlocEvent event,
+    ServiceReplayBlocState serviceState,
+  ) {
+    final versionMismatch = !widget.serviceLogin &&
+        serviceState.state == CommonReplayStateEnum.listening &&
+        serviceState.minVersion >
+            (HyttaHubOptions.implementation?.appBuildNumber ?? 0);
+    final serviceUnavailable = !widget.serviceLogin &&
+        serviceState.state == CommonReplayStateEnum.listening &&
+        serviceState.serviceUnavailable == true;
+
+    if (versionMismatch || serviceUnavailable) {
+      final email = event.hasEmailLogin()
+          ? event.emailLogin.email
+          : event.emailSignup.email;
+      setState(() {
+        _blockedEmail = email;
+      });
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,33 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
               context,
               authState,
               serviceState,
-              localizations,
             );
           }
-        }
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.serviceUnavailable == true) {
-          // logout and then rebuild the navigation stack
-          context.read<AuthBloc>().add(
-            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-          );
-
-          context.goNamed(LoginScreenRoute.routeName);
-          return;
-        }
-
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion >
-                (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
-          // logout and then rebuild the navigation stack
-          context.read<AuthBloc>().add(
-            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-          );
-
-          context.goNamed(LoginScreenRoute.routeName);
-          return;
         }
       },
       builder: (context, serviceState) {
@@ -101,19 +102,46 @@ class _LoginScreenState extends State<LoginScreen> {
           return ServiceNetworkErrorPage();
         }
 
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.serviceUnavailable == true) {
-          return ServiceDownPage();
-        }
-
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
-          return ServiceNewVersionPage();
-        }
-
         final authState = context.watch<AuthBloc>().state;
+
+        final versionMismatch = !widget.serviceLogin &&
+            serviceState.state == CommonReplayStateEnum.listening &&
+            serviceState.minVersion >
+                (HyttaHubOptions.implementation?.appBuildNumber ?? 0);
+        final serviceUnavailable = !widget.serviceLogin &&
+            serviceState.state == CommonReplayStateEnum.listening &&
+            serviceState.serviceUnavailable == true;
+
+        if (versionMismatch || serviceUnavailable) {
+          final emailToCheck =
+              authState.authState == AuthState.authenticated
+                  ? authState.email
+                  : _blockedEmail;
+
+          if (emailToCheck != null) {
+            final reconstructed = BloomFilterProcessor(
+              size: serviceState.filter.size,
+              hashCount: serviceState.filter.hashCount,
+              bitArray: Uint8List.fromList(serviceState.filter.bitArray),
+            );
+            final mightBeAdmin = reconstructed.mightContain(emailToCheck);
+
+            final onAdminLogin = mightBeAdmin
+                ? () => context.push(ServiceLoginScreenRoute.fullPath)
+                : null;
+
+            return serviceUnavailable
+                ? ServiceDownPage(
+                  onAdminLogin: onAdminLogin,
+                  adminLoginButtonLabel: localizations.serviceLoginTitle,
+                )
+                : ServiceNewVersionPage(
+                  onAdminLogin: onAdminLogin,
+                  adminLoginButtonLabel: localizations.serviceLoginTitle,
+                );
+          }
+        }
+
         final isUninitialized =
             serviceState.state == CommonReplayStateEnum.uninitializedListening;
 
@@ -174,7 +202,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       context,
                       authState,
                       serviceState,
-                      localizations,
                     );
                   } else if (authState.authState ==
                       AuthState.forgottenPasswordEmailSent) {
@@ -252,16 +279,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   }
 
-                  return createAccount
+                  final showSignup = createAccount && !widget.serviceLogin;
+
+                  return showSignup
                       ? EmailSignupForm(
                         serviceLogin: widget.serviceLogin,
                         serviceState: serviceState,
                         emailValidator: emailError,
+                        onPreSubmit: (event) => _onPreSubmit(event, serviceState),
                       )
                       : EmailLoginForm(
                         serviceLogin: widget.serviceLogin,
                         serviceState: serviceState,
                         emailValidator: emailError,
+                        onPreSubmit: (event) => _onPreSubmit(event, serviceState),
                       );
                 },
               );
@@ -292,26 +323,101 @@ class _LoginScreenState extends State<LoginScreen> {
     BuildContext context,
     AuthBlocState authState,
     ServiceReplayBlocState serviceState,
-    HyttaHubLocalizations localizations,
   ) {
     if (serviceState.state != CommonReplayStateEnum.listening || _isNavigating) {
       return;
     }
+    final router = GoRouter.of(context);
+    final localizations = HyttaHubLocalizations.of(context)!;
+
     _isNavigating = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       try {
-        if (authState.isServiceAdmin) {
-          await context.push(ServiceAdminScreenRoute.fullPath);
-        } else {
-          final reconstructed = BloomFilterProcessor(
-            size: serviceState.filter.size,
-            hashCount: serviceState.filter.hashCount,
-            bitArray: Uint8List.fromList(serviceState.filter.bitArray),
-          );
+        final versionMismatch = !widget.serviceLogin &&
+            serviceState.minVersion >
+                (HyttaHubOptions.implementation?.appBuildNumber ?? 0);
+        final serviceDown =
+            !widget.serviceLogin && serviceState.serviceUnavailable == true;
+        final isBlocked = versionMismatch || serviceDown;
 
-          final router = GoRouter.of(context);
-          if (reconstructed.mightContain(authState.email)) {
+        if (authState.isServiceAdmin) {
+          if (isBlocked) {
+            final result = await showDialog<bool>(
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: Text(localizations.serviceAdminDetectionTitle),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (versionMismatch)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              localizations.serviceAdminVersionWarning(
+                                HyttaHubOptions.implementation?.appBuildNumber ??
+                                    0,
+                                serviceState.minVersion,
+                              ),
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        if (serviceDown)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              localizations.serviceDownMessage,
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        Text(localizations.serviceAdminDetectionMessage),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text(localizations.goUserAccountButton),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text(localizations.goServiceSettingsButton),
+                      ),
+                    ],
+                  ),
+            );
+
+            if (mounted && result == true) {
+              await router.push(ServiceAdminScreenRoute.fullPath);
+              return;
+            }
+            // If they chose User Account but it's blocked, they will see the block page after this
+          } else {
+            await router.push(ServiceAdminScreenRoute.fullPath);
+            return;
+          }
+        }
+
+        final reconstructed = BloomFilterProcessor(
+          size: serviceState.filter.size,
+          hashCount: serviceState.filter.hashCount,
+          bitArray: Uint8List.fromList(serviceState.filter.bitArray),
+        );
+
+        final mightBeAdmin = reconstructed.mightContain(authState.email);
+
+        if (mightBeAdmin) {
+          // In the new flow, the builder handles showing the block page with a "Service Login" button
+          // so we don't need to show a dialog here if we are blocked.
+          if (!isBlocked) {
+            if (!context.mounted) return;
             final result = await showDialog<bool>(
               context: context,
               builder:
@@ -336,9 +442,12 @@ class _LoginScreenState extends State<LoginScreen> {
               return;
             }
           }
-          if (mounted) {
-            await router.push(AccountScreenRoute.fullPath);
-          }
+        }
+
+        if (mounted) {
+          // In the new flow, we don't need to block navigation here if auth succeeded,
+          // because the builder will catch it and show the block page.
+          await router.push(AccountScreenRoute.fullPath);
         }
       } finally {
         _isNavigating = false;

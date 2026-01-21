@@ -1234,6 +1234,12 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Go to Account Page'**
   String get goToAccountPage;
+
+  /// No description provided for @serviceAdminVersionWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Your app version ({appVersion}) is below the required version ({minVersion}). You can still access Service Settings to fix this.'**
+  String serviceAdminVersionWarning(num appVersion, num minVersion);
 }
 
 class _HyttaHubLocalizationsDelegate

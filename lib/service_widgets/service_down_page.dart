@@ -4,7 +4,13 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:flutter/material.dart';
 
 class ServiceDownPage extends StatelessWidget {
-  const ServiceDownPage({super.key});
+  final VoidCallback? onAdminLogin;
+  final String? adminLoginButtonLabel;
+  const ServiceDownPage({
+    super.key,
+    this.onAdminLogin,
+    this.adminLoginButtonLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +18,24 @@ class ServiceDownPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.serviceDownTitle)),
       body: Center(
-        child: Text(
-          localizations.serviceDownMessage,
-          textAlign: TextAlign.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              localizations.serviceDownMessage,
+              textAlign: TextAlign.center,
+            ),
+            if (onAdminLogin != null) ...[
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: onAdminLogin,
+                child: Text(
+                  adminLoginButtonLabel ??
+                      localizations.serviceAdminDetectionTitle,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

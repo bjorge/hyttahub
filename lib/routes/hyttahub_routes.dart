@@ -119,18 +119,26 @@ class AccountScreenRoute extends GoRoute {
         builder: (BuildContext context, GoRouterState state) {
           return const AccountScreen();
         },
+        onExit: (context, state) async {
+          final authState = context.read<AuthBloc>().state.authState;
+          if (authState == AuthState.unauthenticated ||
+              authState == AuthState.submittingSignOutRequest ||
+              authState == AuthState.submittingRemoveAccountRequest) {
+            return true;
+          }
 
-        // onExit: (context, state) {
-        //   // logout when exiting account screen
-        //   if (kDebugMode) {
-        //     print("AccountScreenRoute: onExit called");
-        //   }
-
-        //   // context.read<AuthBloc>().add(
-        //   //   AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-        //   // );
-        //   return true;
-        // },
+          final result = await showLogoutDialog(context);
+          if (result == true) {
+            if (!context.mounted) return true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.go('/');
+              }
+            });
+            return false;
+          }
+          return false;
+        },
       );
 
   /// The path segment for this route.
@@ -153,7 +161,24 @@ class ServiceAdminScreenRoute extends GoRoute {
           return const ServiceAdminScreen();
         },
         onExit: (context, state) async {
-          return await showLogoutDialog(context);
+          final authState = context.read<AuthBloc>().state.authState;
+          if (authState == AuthState.unauthenticated ||
+              authState == AuthState.submittingSignOutRequest ||
+              authState == AuthState.submittingRemoveAccountRequest) {
+            return true;
+          }
+
+          final result = await showLogoutDialog(context);
+          if (result == true) {
+            if (!context.mounted) return true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.go('/');
+              }
+            });
+            return false;
+          }
+          return false;
         },
       );
 

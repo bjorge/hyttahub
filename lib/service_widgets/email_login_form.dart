@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
@@ -19,12 +20,14 @@ class EmailLoginForm extends StatefulWidget {
     required this.serviceLogin,
     required this.serviceState,
     required this.emailValidator,
+    this.onPreSubmit,
   });
 
   final bool serviceLogin;
   final ServiceReplayBlocState serviceState;
   final String? Function(String, BuildContext, ServiceReplayBlocState)
   emailValidator;
+  final FutureOr<bool>? Function(AuthBlocEvent)? onPreSubmit;
 
   @override
   State<EmailLoginForm> createState() => _EmailLoginFormState();
@@ -63,7 +66,12 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
                     ? localizations.serviceLoginTitle
                     : localizations.loginTitle,
               ),
-              actions: [AuthSubmitIconButton(formKey: _formKey)],
+              actions: [
+                AuthSubmitIconButton(
+                  formKey: _formKey,
+                  onPreSubmit: widget.onPreSubmit,
+                ),
+              ],
             ),
             body: Form(
               key: _formKey,

@@ -1,5 +1,6 @@
 // Copyright (c) 2025 bjorge
 
+import 'dart:async';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
@@ -8,8 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthSubmitIconButton extends StatelessWidget {
-  const AuthSubmitIconButton({super.key, required this.formKey});
+  const AuthSubmitIconButton({
+    super.key,
+    required this.formKey,
+    this.onPreSubmit,
+  });
   final GlobalKey<FormState> formKey;
+  final FutureOr<bool>? Function(AuthBlocEvent)? onPreSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +28,17 @@ class AuthSubmitIconButton extends StatelessWidget {
               (submitState.submissionState.state !=
                   CommonSubmitBlocState_State.canSubmit)
               ? null
-              : () {
+              : () async {
                   if (formKey.currentState!.validate()) {
                     formKey.currentState!.save();
+                    final payload = context.read<AuthSubmitBloc>().state.payload!;
+                    if (onPreSubmit != null) {
+                      final shouldProceed = await onPreSubmit!(payload);
+                      if (shouldProceed == false) {
+                        return;
+                      }
+                    }
+                    if (!context.mounted) return;
                     context.read<AuthSubmitBloc>().add(
                       AuthEventSubmission(
                         submission: CommonSubmitBlocEvent(

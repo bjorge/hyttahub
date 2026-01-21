@@ -622,4 +622,9 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
 
   @override
   String get goToAccountPage => 'Go to Account Page';
+
+  @override
+  String serviceAdminVersionWarning(num appVersion, num minVersion) {
+    return 'Note: Your app version ($appVersion) is below the required version ($minVersion). You can still access Service Settings to fix this.';
+  }
 }
