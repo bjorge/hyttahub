@@ -4,7 +4,7 @@ import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/service_widgets/login.dart';
+import 'package:hyttahub/service_widgets/auth_form_fields.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';

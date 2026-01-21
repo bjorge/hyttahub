@@ -48,6 +48,12 @@ class ServiceAdminScreen extends StatelessWidget {
                   context.push(ServiceEventsDisplayRoute.fullPath);
                 },
               ),
+              ListTile(
+                title: Text(localizations.goToAccountPage),
+                onTap: () {
+                  context.push(AccountScreenRoute.fullPath);
+                },
+              ),
             ],
           ),
         );

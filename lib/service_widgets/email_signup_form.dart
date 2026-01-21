@@ -4,9 +4,10 @@ import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
-import 'package:hyttahub/service_widgets/login.dart';
+import 'package:hyttahub/service_widgets/auth_form_fields.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
+import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/account_widgets/auth_submit_button.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
@@ -42,9 +43,12 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
     final createAccountCubit = context.read<CreateAccountCubit>();
     final isInMemory =
         HyttaHubOptions.implementation?.storage == StorageEnum.inMemory;
+    final isUninitialized =
+        widget.serviceState.state ==
+        CommonReplayStateEnum.uninitializedListening;
     final initialEvent = AuthBlocEvent(
       emailSignup: AuthBlocEvent_EmailSignup(
-        serviceAdmin: widget.serviceLogin,
+        serviceAdmin: widget.serviceLogin || isUninitialized,
         email: '',
         password: isInMemory ? '1111111111111111' : '',
         termsVersion: isInMemory ? widget.serviceState.termsVersion : 0,
@@ -71,6 +75,17 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
                 // spacing: 10.0,
                 submitState: state,
                 children: [
+                  if (isUninitialized)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        localizations.firstAdminMessage,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   EmailFormField(
                     formKey: _formKey,
                     labelText: localizations.loginEmailLabel,

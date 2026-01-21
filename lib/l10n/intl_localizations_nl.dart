@@ -602,4 +602,24 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
 
   @override
   String get openSourceLicensesTitle => 'Open-source pakketten';
+
+  @override
+  String get firstAdminMessage =>
+      'This first account will be the service administrator.';
+
+  @override
+  String get serviceAdminDetectionTitle => 'Service Administrator Detected';
+
+  @override
+  String get serviceAdminDetectionMessage =>
+      'Looks like you are a service administrator. Where would you like to go?';
+
+  @override
+  String get goServiceSettingsButton => 'Service Settings';
+
+  @override
+  String get goUserAccountButton => 'User Account';
+
+  @override
+  String get goToAccountPage => 'Go to Account Page';
 }

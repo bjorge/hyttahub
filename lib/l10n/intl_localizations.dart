@@ -1198,6 +1198,42 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Open Source Packages'**
   String get openSourceLicensesTitle;
+
+  /// No description provided for @firstAdminMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This first account will be the service administrator.'**
+  String get firstAdminMessage;
+
+  /// No description provided for @serviceAdminDetectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Administrator Detected'**
+  String get serviceAdminDetectionTitle;
+
+  /// No description provided for @serviceAdminDetectionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like you are a service administrator. Where would you like to go?'**
+  String get serviceAdminDetectionMessage;
+
+  /// No description provided for @goServiceSettingsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Settings'**
+  String get goServiceSettingsButton;
+
+  /// No description provided for @goUserAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'User Account'**
+  String get goUserAccountButton;
+
+  /// No description provided for @goToAccountPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Account Page'**
+  String get goToAccountPage;
 }
 
 class _HyttaHubLocalizationsDelegate

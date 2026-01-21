@@ -2,7 +2,6 @@
 
 import 'package:template/l10n/app_localizations.dart';
 import 'package:template/main.dart';
-import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -149,38 +148,9 @@ class LandingPage extends StatelessWidget {
             ),
 
             const Spacer(flex: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.app_versionInfo(appVersion, appBuildNumber),
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    // padding: const EdgeInsets.symmetric(
-                    //   horizontal: 40,
-                    //   vertical: 20,
-                    // ),
-                    textStyle: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  onPressed: () {
-                    context.read<ServiceReplayBloc>().add(
-                      CommonReplayBlocEvent(listen: true),
-                    );
-                    context.read<AuthBloc>().add(
-                      AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-                      // AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
-                    );
-
-                    context.read<CreateAccountCubit>().setCreateAccount(false);
-
-                    // This navigates to the login screen.
-                    context.push(ServiceLoginScreenRoute.fullPath);
-                  },
-                  child: Text(l10n.app_serviceLoginButton),
-                ),
-              ],
+            Text(
+              l10n.app_versionInfo(appVersion, appBuildNumber),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 24),
           ],

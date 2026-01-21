@@ -261,5 +261,11 @@
     }
   },
   "openSourceLicensesButton": "Open Source Packages",
-  "openSourceLicensesTitle": "Open Source Packages"
+  "openSourceLicensesTitle": "Open Source Packages",
+  "firstAdminMessage": "This first account will be the service administrator.",
+  "serviceAdminDetectionTitle": "Service Administrator Detected",
+  "serviceAdminDetectionMessage": "Looks like you are a service administrator. Where would you like to go?",
+  "goServiceSettingsButton": "Service Settings",
+  "goUserAccountButton": "User Account",
+  "goToAccountPage": "Go to Account Page"
 }
