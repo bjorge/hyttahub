@@ -62,7 +62,12 @@ class _AppRouterState extends State<AppRouter> {
               (_) =>
                   PlatformCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
-        BlocProvider<CreateAccountCubit>(create: (_) => CreateAccountCubit()),
+        BlocProvider<CreateAccountCubit>(
+          create:
+              (_) => CreateAccountCubit(
+                '${HyttaHubOptions.implementation?.firebaseRootCollection ?? ''}:${HyttaHubOptions.implementation?.storage.value ?? 0}',
+              ),
+        ),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
         BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
         BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),

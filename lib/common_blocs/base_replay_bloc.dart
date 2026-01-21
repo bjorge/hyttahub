@@ -64,7 +64,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   // for hydrated storage
   @override
-  String get id => ':$collectionName:${HyttaHubOptions.implementation?.firebaseRootCollection}';
+  String get id => ':$storageType:$collectionName:${HyttaHubOptions.implementation?.firebaseRootCollection}';
 
   /// Field name for the version in Firestore documents (e.g., 'v' or 'fbVersion').
   String get versionField => fbVersion;

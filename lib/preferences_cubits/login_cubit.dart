@@ -3,7 +3,12 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class CreateAccountCubit extends HydratedCubit<bool> {
-  CreateAccountCubit() : super(true);
+  CreateAccountCubit(this.storageKey) : super(true);
+
+  final String storageKey;
+
+  @override
+  String get id => ':login:$storageKey';
 
   void setCreateAccount(bool mode) => emit(mode);
 
