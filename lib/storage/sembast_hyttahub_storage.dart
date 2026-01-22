@@ -173,17 +173,10 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     required String base64Data,
   }) async {
-    if (kIsWeb) {
-       // Web: Store file as blob (base64 string) in specific store
-       final db = await _readyDb;
-       final store = stringMapStoreFactory.store('web_files');
-       final path = firebaseFilesPath(siteId, fileName);
-       await store.record(path).put(db, {'content': base64Data});
-    } else {
-       final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
-       final path = firebaseFilesPath(siteId, fileName);
-       await internalStorage.uploadFile(path, base64Decode(base64Data));
-    }
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
+    final path = firebaseFilesPath(siteId, fileName);
+    await internalStorage.uploadFile(path, base64Decode(base64Data));
+    _updateController.add({'path': siteId, 'docId': fileName});
   }
 
   @override
@@ -192,20 +185,9 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
   }) async {
-    if (kIsWeb) {
-      final db = await _readyDb;
-      final store = stringMapStoreFactory.store('web_files');
-      final path = firebaseFilesPath(siteId, fileName);
-      final record = await store.record(path).get(db);
-      if (record != null && record['content'] is String) {
-        return base64Decode(record['content'] as String);
-      }
-      throw Exception('File not found: $path');
-    } else {
-      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
-      final path = firebaseFilesPath(siteId, fileName);
-      return await internalStorage.downloadFile(path);
-    }
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
+    final path = firebaseFilesPath(siteId, fileName);
+    return await internalStorage.downloadFile(path);
   }
 
   @override
@@ -214,22 +196,12 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required List<String> fileNames,
   }) async {
-    if (kIsWeb) {
-       final db = await _readyDb;
-       final store = stringMapStoreFactory.store('web_files');
-       await db.transaction((txn) async {
-         for (final fileName in fileNames) {
-           final path = firebaseFilesPath(siteId, fileName);
-           await store.record(path).delete(txn);
-         }
-       });
-    } else {
-      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
-      for (final fileName in fileNames) {
-        final path = firebaseFilesPath(siteId, fileName);
-        await internalStorage.deleteFile(path);
-      }
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
+    for (final fileName in fileNames) {
+      final path = firebaseFilesPath(siteId, fileName);
+      await internalStorage.deleteFile(path);
     }
+    _updateController.add({'path': siteId});
   }
 
   @override
@@ -239,25 +211,15 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     int? expirationDays,
   }) async {
-    if (kIsWeb) {
-      // For web, we can return a data URI since we have the base64 content
-      try {
-        final bytes = await getFileBytes(appName: appName, siteId: siteId, fileName: fileName);
-        final base64 = base64Encode(bytes);
-        // Guess mime type roughly or general binary
-        // Ideally we'd store mime type. For now, assume generic or image if extension matches.
-        String mime = 'application/octet-stream';
-        if (fileName.endsWith('.png')) mime = 'image/png';
-        if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) mime = 'image/jpeg';
-        return 'data:$mime;base64,$base64'; 
-      } catch (e) {
-        return '';
-      }
-    } else {
-      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
-      final path = firebaseFilesPath(siteId, fileName);
-      return await internalStorage.getDownloadUrl(path);
-    }
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
+    final path = firebaseFilesPath(siteId, fileName);
+    return await internalStorage.getDownloadUrl(path);
+  }
+
+  @override
+  Future<List<String>> listFiles(String prefix) async {
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.localStorage);
+    return await internalStorage.listFiles(prefix);
   }
 }
 

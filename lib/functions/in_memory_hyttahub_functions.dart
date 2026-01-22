@@ -53,7 +53,6 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
   Future<void> _simulateBackupSite(String appName, String siteId) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
-    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
 
     // 1. Get all events
     final sitePath = 'hyttahub/$appName/sites/$siteId/site_events';
@@ -77,15 +76,15 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     archive.addFile(ArchiveFile('events.txt', eventsData.length, eventsData));
 
     // 3. Get all files
-    // In our in-memory internal storage, the files are in a Map.
-    // We can't easily iterate through all files in a prefix in BaseHyttaHubInternalStorage,
-    // but InMemoryHyttaHubInternalStorage has them. 
-    // Actually, BaseHyttaHubInternalStorage has listFiles!
     final filesPrefix = firebaseFilesPath(siteId, ''); // Prefix for all site files
-    final filePaths = await fileStorage.listFiles(filesPrefix);
+    final filePaths = await storage.listFiles(filesPrefix);
 
     for (final path in filePaths) {
-      final data = await fileStorage.downloadFile(path);
+      final data = await storage.getFileBytes(
+        appName: appName,
+        siteId: siteId,
+        fileName: path.split('/').last,
+      );
       final fileName = path.split('/').last;
       archive.addFile(ArchiveFile('storage/$fileName', data.length, data));
     }
@@ -94,11 +93,12 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     final tarData = TarEncoder().encode(archive);
     
     // 5. Upload to exports
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final exportFileName = 'export_$timestamp.tar';
     final exportPath = firebaseExportsPath(siteId, exportFileName);
     
-    await fileStorage.uploadFile(exportPath, Uint8List.fromList(tarData));
+    await internalStorage.uploadFile(exportPath, Uint8List.fromList(tarData));
   }
 
   @override
@@ -108,13 +108,13 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
   }) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
-    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final newSiteId = _generateId();
 
     Uint8List tarBytes;
     if (storagePath != null) {
-      tarBytes = await fileStorage.downloadFile(storagePath);
-      await fileStorage.deleteFile(storagePath);
+      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
+      tarBytes = await internalStorage.downloadFile(storagePath);
+      await internalStorage.deleteFile(storagePath);
     } else if (base64Data != null) {
       tarBytes = base64Decode(base64Data);
     } else {
@@ -130,8 +130,12 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
         eventsContent = utf8.decode(file.content as List<int>);
       } else if (file.name.startsWith('storage/') && file.isFile) {
         final fileName = file.name.substring('storage/'.length);
-        final photoPath = firebaseFilesPath(newSiteId, fileName);
-        await fileStorage.uploadFile(photoPath, Uint8List.fromList(file.content as List<int>));
+        await storage.uploadFile(
+          appName: appName,
+          siteId: newSiteId,
+          fileName: fileName,
+          base64Data: base64Encode(Uint8List.fromList(file.content as List<int>)),
+        );
       }
     }
 
@@ -269,13 +273,13 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
   }) async {
-    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final prefix = firebaseExportsPath(siteId, '');
-    final files = await fileStorage.listFiles(prefix);
+    final files = await internalStorage.listFiles(prefix);
     
     final result = <Map<String, dynamic>>[];
     for (final filePath in files) {
-      final url = await fileStorage.getDownloadUrl(filePath);
+      final url = await internalStorage.getDownloadUrl(filePath);
       result.add({
         'name': filePath.split('/').last,
         'url': url,
@@ -291,9 +295,9 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
     required String fileName,
   }) async {
-    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final path = firebaseExportsPath(siteId, fileName);
-    await fileStorage.deleteFile(path);
+    await internalStorage.deleteFile(path);
   }
 
   @override
@@ -302,10 +306,10 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
     required String fileName,
   }) async {
-    final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
     final path = firebaseExportsPath(siteId, fileName);
     
-    final tarBytes = await fileStorage.downloadFile(path);
+    final tarBytes = await internalStorage.downloadFile(path);
     final archive = TarDecoder().decodeBytes(tarBytes);
     
     for (final file in archive) {

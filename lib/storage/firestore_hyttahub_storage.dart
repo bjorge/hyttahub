@@ -173,6 +173,14 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     final data = result.data as Map<String, dynamic>;
     return data['downloadUrl'] as String;
   }
+
+  @override
+  Future<List<String>> listFiles(String prefix) async {
+    // Firestore implementation usually relies on Cloud Functions for file management.
+    // For now, this is not implemented as it's not needed for the current use cases
+    // of site import/export in Firebase mode (which uses Cloud Functions directly).
+    throw UnsupportedError('listFiles is not implemented for FirestoreHyttaHubStorage');
+  }
 }
 
 class FirestoreHyttaHubBatch implements HyttaHubBatch {

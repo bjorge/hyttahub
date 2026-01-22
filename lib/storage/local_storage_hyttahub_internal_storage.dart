@@ -1,14 +1,16 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:io';
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LocalStorageHyttaHubInternalStorage implements BaseHyttaHubInternalStorage {
   Future<Directory> get _filesDir async {
+    if (kIsWeb) {
+      throw UnsupportedError('Local storage file system is not supported on Web. Use Sembast Base64 storage instead.');
+    }
     final appDocDir = await getApplicationDocumentsDirectory();
     final dir = Directory(join(appDocDir.path, 'hyttahub_files'));
     if (!await dir.exists()) {

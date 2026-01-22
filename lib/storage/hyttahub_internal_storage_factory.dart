@@ -1,10 +1,12 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:flutter/foundation.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/firebase_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/local_storage_hyttahub_internal_storage.dart';
+import 'package:hyttahub/storage/sembast_hyttahub_internal_storage.dart';
 
 class HyttaHubInternalStorageFactory {
   static final Map<StorageEnum, BaseHyttaHubInternalStorage> _instances = {};
@@ -23,7 +25,11 @@ class HyttaHubInternalStorageFactory {
         storage = InMemoryHyttaHubInternalStorage();
         break;
       case StorageEnum.localStorage:
-        storage = LocalStorageHyttaHubInternalStorage();
+        if (kIsWeb) {
+          storage = SembastHyttaHubInternalStorage();
+        } else {
+          storage = LocalStorageHyttaHubInternalStorage();
+        }
         break;
       default:
         storage = FirebaseHyttaHubInternalStorage();

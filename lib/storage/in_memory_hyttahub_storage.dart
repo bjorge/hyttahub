@@ -175,6 +175,12 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     final path = firebaseFilesPath(siteId, fileName);
     return await internalStorage.getDownloadUrl(path);
   }
+
+  @override
+  Future<List<String>> listFiles(String prefix) async {
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    return await internalStorage.listFiles(prefix);
+  }
 }
 
 class InMemoryHyttaHubBatch implements HyttaHubBatch {

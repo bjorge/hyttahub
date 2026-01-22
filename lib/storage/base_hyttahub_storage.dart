@@ -52,6 +52,7 @@ abstract class BaseHyttaHubStorage {
     required String fileName,
     int? expirationDays,
   });
+  Future<List<String>> listFiles(String prefix);
 }
 
 abstract class HyttaHubBatch {
