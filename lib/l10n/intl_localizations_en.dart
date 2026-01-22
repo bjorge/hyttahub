@@ -45,7 +45,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get loginNotServiceAdminError => 'Not a service admin';
 
   @override
-  String get loginNotBetaUserError => 'Not a beta user';
+  String get loginNotBetaUserError => 'Not an authorized email';
 
   @override
   String get loginAgreeToTermsCheckbox => 'I agree to the Terms';

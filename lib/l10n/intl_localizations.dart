@@ -176,7 +176,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @loginNotBetaUserError.
   ///
   /// In en, this message translates to:
-  /// **'Not a beta user'**
+  /// **'Not an authorized email'**
   String get loginNotBetaUserError;
 
   /// No description provided for @loginAgreeToTermsCheckbox.

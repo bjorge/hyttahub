@@ -45,7 +45,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get loginNotServiceAdminError => 'Ikke en tjenesteadministrator';
 
   @override
-  String get loginNotBetaUserError => 'Ikke en betabruker';
+  String get loginNotBetaUserError => 'Ikke en autorisert e-post';
 
   @override
   String get loginAgreeToTermsCheckbox => 'Jeg godtar vilkårene';

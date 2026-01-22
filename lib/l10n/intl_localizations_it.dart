@@ -47,7 +47,7 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
       'Non sei un amministratore del servizio';
 
   @override
-  String get loginNotBetaUserError => 'Non sei un utente beta';
+  String get loginNotBetaUserError => 'Email non autorizzata';
 
   @override
   String get loginAgreeToTermsCheckbox => 'Accetto i Termini';
