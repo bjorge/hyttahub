@@ -114,7 +114,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   }
 
   @override
-  dynamic get serverTimestamp => DateTime.now();
+  dynamic get serverTimestamp => DateTime.now().toIso8601String();
 
   @override
   bool isPermissionDenied(Object error) => false;
