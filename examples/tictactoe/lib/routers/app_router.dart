@@ -13,6 +13,7 @@ import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:tictactoe/main.dart';
@@ -62,56 +63,65 @@ class _AppRouterState extends State<AppRouter> {
               (_) =>
                   PlatformCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
-        BlocProvider<CreateAccountCubit>(
-          create:
-              (_) => CreateAccountCubit(
-                '${HyttaHubOptions.implementation?.firebaseRootCollection ?? ''}:${HyttaHubOptions.implementation?.storage.value ?? 0}',
-              ),
-        ),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
-        BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
-        BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
-        BlocProvider<AuthBloc>(create: (_) => getIt<AuthBloc>()),
       ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, mode) {
-          return BlocBuilder<LanguageCubit, AppLanguage>(
-            builder: (context, language) {
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                themeMode: mode, // Automatically switch based on system setting
-                theme: ThemeData(
-                  colorScheme: ColorScheme.fromSeed(
-                    seedColor: Colors.blueAccent,
-                    brightness: Brightness.light,
-                  ),
-                  useMaterial3: true,
-                ),
-                darkTheme: ThemeData(
-                  colorScheme: ColorScheme.fromSeed(
-                    seedColor: Colors.lightBlueAccent,
-                    brightness: Brightness.dark,
-                  ),
-                  useMaterial3: true,
-                ),
-                locale: Locale(language.name),
-                supportedLocales: const [
-                  Locale('en'),
-                  Locale('it'),
-                  Locale('es'),
-                  Locale('nb'),
-                  Locale('nl'),
-                ],
-                localizationsDelegates: [
-                  AppLocalizations.delegate,
-                  HyttaHubLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                routerConfig: _router,
-              );
-            },
+      child: BlocBuilder<PlatformCubit, StorageEnum>(
+        builder: (context, platform) {
+          return MultiBlocProvider(
+            key: ValueKey(platform),
+            providers: [
+              BlocProvider<CreateAccountCubit>(
+                create:
+                    (_) => CreateAccountCubit(
+                      '${HyttaHubOptions.implementation?.firebaseRootCollection ?? ''}:${platform.value}',
+                    ),
+              ),
+              BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
+              BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
+              BlocProvider<AuthBloc>.value(value: getIt<AuthBloc>()),
+            ],
+            child: BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, mode) {
+                return BlocBuilder<LanguageCubit, AppLanguage>(
+                  builder: (context, language) {
+                    return MaterialApp.router(
+                      debugShowCheckedModeBanner: false,
+                      themeMode: mode, // Automatically switch based on system setting
+                      theme: ThemeData(
+                        colorScheme: ColorScheme.fromSeed(
+                          seedColor: Colors.blueAccent,
+                          brightness: Brightness.light,
+                        ),
+                        useMaterial3: true,
+                      ),
+                      darkTheme: ThemeData(
+                        colorScheme: ColorScheme.fromSeed(
+                          seedColor: Colors.lightBlueAccent,
+                          brightness: Brightness.dark,
+                        ),
+                        useMaterial3: true,
+                      ),
+                      locale: Locale(language.name),
+                      supportedLocales: const [
+                        Locale('en'),
+                        Locale('it'),
+                        Locale('es'),
+                        Locale('nb'),
+                        Locale('nl'),
+                      ],
+                      localizationsDelegates: [
+                        AppLocalizations.delegate,
+                        HyttaHubLocalizations.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      routerConfig: _router,
+                    );
+                  },
+                );
+              },
+            ),
           );
         },
       ),

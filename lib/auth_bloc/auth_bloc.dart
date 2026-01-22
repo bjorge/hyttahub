@@ -14,18 +14,18 @@ const debugAwaitDelayMilliseconds = 500;
 
 class AuthBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
   AuthBloc({BaseHyttaHubAuth? auth})
-    : super(AuthBlocState(authState: AuthState.initializing)) {
-    if (auth != null) {
-      _auth = auth;
-    } else {
-      _auth = HyttaHubAuthFactory.getAuth(
-        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
-      );
-    }
+    : _authOverride = auth,
+      super(AuthBlocState(authState: AuthState.initializing)) {
     on<AuthBlocEvent>(_onAuthBlockEvent);
   }
 
-  late final BaseHyttaHubAuth _auth;
+  BaseHyttaHubAuth get _auth =>
+      _authOverride ??
+      HyttaHubAuthFactory.getAuth(
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+      );
+
+  final BaseHyttaHubAuth? _authOverride;
   HyttaHubAuthUser? _user;
   var _onErrorMessage = "";
 

@@ -8,39 +8,41 @@ import 'package:hyttahub/auth_bloc/local_storage_hyttahub_auth.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 class HyttaHubAuthFactory {
-  static BaseHyttaHubAuth? _instance;
+  static final Map<StorageEnum, BaseHyttaHubAuth> _instances = {};
 
   static BaseHyttaHubAuth getAuth(
     StorageEnum type, {
     FirebaseAuth? firebaseAuth,
   }) {
-    if (_instance != null) {
-      return _instance!;
+    if (_instances.containsKey(type)) {
+      return _instances[type]!;
     }
 
+    BaseHyttaHubAuth auth;
     switch (type) {
       case StorageEnum.firestore:
-        _instance = FirebaseHyttaHubAuth(auth: firebaseAuth);
+        auth = FirebaseHyttaHubAuth(auth: firebaseAuth);
         break;
       case StorageEnum.inMemory:
-        _instance = InMemoryHyttaHubAuth();
+        auth = InMemoryHyttaHubAuth();
         break;
       case StorageEnum.localStorage:
-        _instance = LocalStorageHyttaHubAuth();
+        auth = LocalStorageHyttaHubAuth();
         break;
       default:
-        _instance = FirebaseHyttaHubAuth(auth: firebaseAuth);
+        auth = FirebaseHyttaHubAuth(auth: firebaseAuth);
     }
 
-    return _instance!;
+    _instances[type] = auth;
+    return auth;
   }
 
   // For testing purposes
-  static void setAuth(BaseHyttaHubAuth auth) {
-    _instance = auth;
+  static void setAuth(StorageEnum type, BaseHyttaHubAuth auth) {
+    _instances[type] = auth;
   }
 
   static void clear() {
-    _instance = null;
+    _instances.clear();
   }
 }
