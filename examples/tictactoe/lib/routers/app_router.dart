@@ -64,6 +64,7 @@ class _AppRouterState extends State<AppRouter> {
                   PlatformCubit(HyttaHubOptions.implementation?.firebaseRootCollection ?? ''),
         ),
         BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
+        BlocProvider<AuthBloc>.value(value: getIt<AuthBloc>()),
       ],
       child: BlocBuilder<PlatformCubit, StorageEnum>(
         builder: (context, platform) {
@@ -78,7 +79,6 @@ class _AppRouterState extends State<AppRouter> {
               ),
               BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
               BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
-              BlocProvider<AuthBloc>.value(value: getIt<AuthBloc>()),
             ],
             child: BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, mode) {

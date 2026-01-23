@@ -9,6 +9,7 @@ import 'package:hyttahub/auth_bloc/hyttahub_auth_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
+import 'package:hyttahub/proto/auth_bloc.pb.dart';
 
 class PlatformCubit extends HydratedCubit<StorageEnum> {
   PlatformCubit(this.storageKey)
@@ -25,10 +26,9 @@ class PlatformCubit extends HydratedCubit<StorageEnum> {
     HyttaHubInternalStorageFactory.clear();
     HyttaHubFunctionsFactory.clear();
 
-    // Reset AuthBloc in GetIt to ensure a fresh instance for the new platform.
+    // Refresh AuthBloc in GetIt to ensure it connects to the new platform.
     if (GetIt.instance.isRegistered<AuthBloc>()) {
-      GetIt.instance<AuthBloc>().close();
-      GetIt.instance.resetLazySingleton<AuthBloc>();
+      GetIt.instance<AuthBloc>().add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup()));
     }
 
     emit(storage);

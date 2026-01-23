@@ -58,6 +58,8 @@ class AuthBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
         final startingState = state.deepCopy();
         startingState.authState = AuthState.initializing;
         startingState.clearEmail();
+        startingState.clearUid();
+        startingState.clearIsServiceAdmin();
         _user = null;
 
         startingState.clearErrorMessage();
