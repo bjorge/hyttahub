@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
               author: 1,
               initialEvent: ServiceEvent_InitialEvent(
                 instance: generateId(), // a good enough random value
-                alias: '',
+                alias: 'Admin',
                 filter: BloomFilter(),
                 appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
                 appId: HyttaHubOptions.implementation?.appId ?? '',

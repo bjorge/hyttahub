@@ -57,7 +57,7 @@ class _ServiceUninitializedPageState1 extends State<ServiceUninitializedPage> {
                   (
                     BuildContext context,
                     BaseSubmitState<SubmitServiceEvent> state,
-                  ) {},
+                    ) {},
             ),
       ),
     );
@@ -92,10 +92,6 @@ class _ServiceUninitializedPageState1 extends State<ServiceUninitializedPage> {
         _EmailField(
           formKey: _formKey,
           labelText: HyttaHubLocalizations.of(context)!.loginEmailLabel,
-        ),
-        AliasFormField(
-          formKey: _formKey,
-          labelText: HyttaHubLocalizations.of(context)!.aliasLabel,
         ),
       ],
     );
@@ -150,43 +146,6 @@ class _EmailField
       return generalEmailError;
     }
 
-    return null;
-  }
-}
-
-class AliasFormField
-    extends
-        BaseTextFormField<
-          ServiceSubmitBloc,
-          ServiceEventSubmission,
-          SubmitServiceEvent
-        > {
-  const AliasFormField({
-    super.key,
-    required super.formKey,
-    required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new);
-
-  @override
-  String getValueFromPayload(SubmitServiceEvent payload) {
-    return payload.event.initialEvent.alias;
-  }
-
-  @override
-  SubmitServiceEvent updatePayload(
-    SubmitServiceEvent originalPayload,
-    String newValue,
-  ) {
-    final updatedPayload = originalPayload.deepCopy();
-    updatedPayload.event.initialEvent.alias = newValue;
-    return updatedPayload;
-  }
-
-  @override
-  String? validator(BuildContext context, String value) {
-    if (value.isEmpty) {
-      return HyttaHubLocalizations.of(context)!.nicknameEmptyError;
-    }
     return null;
   }
 }
