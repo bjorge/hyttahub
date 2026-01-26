@@ -662,4 +662,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
 
   @override
   String get openSourceLicensesTitle => 'Paquetes de código abierto';
+
+  @override
+  String get siteInfoTitle => 'Información del sitio';
 }

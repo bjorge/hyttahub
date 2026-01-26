@@ -275,5 +275,6 @@
   "themeSettingsAlwaysOff": "Siempre desactivado",
   "themeSettingsAlwaysOn": "Siempre activado",
   "openSourceLicensesButton": "Paquetes de código abierto",
-  "openSourceLicensesTitle": "Paquetes de código abierto"
+  "openSourceLicensesTitle": "Paquetes de código abierto",
+  "siteInfoTitle": "Información del sitio"
 }

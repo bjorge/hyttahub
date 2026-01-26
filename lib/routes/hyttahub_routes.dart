@@ -43,6 +43,7 @@ import 'package:hyttahub/site_widgets/site_members_screen.dart';
 import 'package:hyttahub/site_widgets/export_site_screen.dart';
 import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
 import 'package:hyttahub/site_widgets/export_details_screen.dart';
+import 'package:hyttahub/site_widgets/site_info_screen.dart';
 
 /// A route for the login screen.
 
@@ -333,6 +334,24 @@ class SiteEmailsDisplayRoute extends GoRoute {
 
   /// The path segment for this route.
   static const String pathSegment = 'emails_display';
+
+  static String fullPath({required String siteId}) =>
+      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
+}
+
+class SiteInfoRoute extends GoRoute {
+  /// Creates an [SiteInfoRoute].
+  SiteInfoRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return SiteInfoScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'info';
 
   /// A builder for the full path to this route.
   static String fullPath({required String siteId}) =>
@@ -871,6 +890,7 @@ final privacyDisplayRoute = PrivacyDisplayRoute();
 final renameSiteRoute = RenameSiteRoute();
 final displaySiteRoute = SiteEventsDisplayRoute();
 final siteEmailsDisplayRoute = SiteEmailsDisplayRoute();
+final siteInfoRoute = SiteInfoRoute();
 final addMemberRoute = AddMemberRoute();
 final removeMemberRoute = RemoveMemberRoute();
 final updateMemberRoute = UpdateMemberRoute();
@@ -943,6 +963,7 @@ final standardSiteScreenRoutes = [
   siteMembersRoute,
   displaySiteRoute,
   siteEmailsDisplayRoute,
+  siteInfoRoute,
 ];
 
 class HyttaHubRoutes {

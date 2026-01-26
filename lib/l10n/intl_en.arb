@@ -275,5 +275,6 @@
   "themeSettingsAlwaysOff": "Always Off",
   "themeSettingsAlwaysOn": "Always On",
   "openSourceLicensesButton": "Open Source Packages",
-  "openSourceLicensesTitle": "Open Source Packages"
+  "openSourceLicensesTitle": "Open Source Packages",
+  "siteInfoTitle": "Site Info"
 }

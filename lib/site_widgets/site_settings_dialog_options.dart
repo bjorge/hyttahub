@@ -87,5 +87,12 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
       },
       child: Text(HyttaHubLocalizations.of(context)!.showSiteAllowedEmails),
     ),
+    SimpleDialogOption(
+      onPressed: () {
+        Navigator.pop(context);
+        context.push(SiteInfoRoute.fullPath(siteId: widgetSiteId));
+      },
+      child: Text(HyttaHubLocalizations.of(context)!.siteInfoTitle),
+    ),
   ];
 }

@@ -275,5 +275,6 @@
   "themeSettingsAlwaysOff": "Alltid av",
   "themeSettingsAlwaysOn": "Alltid på",
   "openSourceLicensesButton": "Open Source-pakker",
-  "openSourceLicensesTitle": "Open Source-pakker"
+  "openSourceLicensesTitle": "Open Source-pakker",
+  "siteInfoTitle": "Sideinformasjon"
 }

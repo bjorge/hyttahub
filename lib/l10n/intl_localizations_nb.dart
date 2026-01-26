@@ -650,4 +650,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get openSourceLicensesTitle => 'Open Source-pakker';
+
+  @override
+  String get siteInfoTitle => 'Sideinformasjon';
 }

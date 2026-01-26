@@ -1282,6 +1282,12 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Open Source Packages'**
   String get openSourceLicensesTitle;
+
+  /// No description provided for @siteInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Info'**
+  String get siteInfoTitle;
 }
 
 class _HyttaHubLocalizationsDelegate
