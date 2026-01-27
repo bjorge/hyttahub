@@ -90,7 +90,7 @@ class SiteInfoScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          loc.bytesLabel(siteTotalSize),
+                          _formatSize(siteTotalSize, loc),
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 24),
@@ -149,7 +149,7 @@ class SiteInfoScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  loc.bytesLabel(totalSize),
+                                  _formatSize(totalSize, loc),
                                   style:
                                       Theme.of(context).textTheme.headlineSmall,
                                 ),
@@ -167,6 +167,18 @@ class SiteInfoScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _formatSize(int bytes, HyttaHubLocalizations loc) {
+    if (bytes < 1024) {
+      return loc.bytesLabel(bytes);
+    } else if (bytes < 1024 * 1024) {
+      return loc.kilobytesLabel(bytes / 1024.0);
+    } else if (bytes < 1024 * 1024 * 1024) {
+      return loc.megabytesLabel(bytes / (1024.0 * 1024.0));
+    } else {
+      return loc.gigabytesLabel(bytes / (1024.0 * 1024.0 * 1024.0));
+    }
   }
 }
 

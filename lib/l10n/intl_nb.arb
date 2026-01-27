@@ -287,6 +287,33 @@
       }
     }
   },
+  "kilobytesLabel": "{size} KB",
+  "@kilobytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "megabytesLabel": "{size} MB",
+  "@megabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "gigabytesLabel": "{size} GB",
+  "@gigabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
   "siteFileCount": "Antall filer",
   "siteTotalFileSize": "Total filstørrelse",
   "errorFetchingFiles": "Feil ved henting av filer"

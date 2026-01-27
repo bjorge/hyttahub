@@ -666,6 +666,36 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   }
 
   @override
+  String kilobytesLabel(double size) {
+    final intl.NumberFormat sizeNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String sizeString = sizeNumberFormat.format(size);
+
+    return '$sizeString KB';
+  }
+
+  @override
+  String megabytesLabel(double size) {
+    final intl.NumberFormat sizeNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String sizeString = sizeNumberFormat.format(size);
+
+    return '$sizeString MB';
+  }
+
+  @override
+  String gigabytesLabel(double size) {
+    final intl.NumberFormat sizeNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String sizeString = sizeNumberFormat.format(size);
+
+    return '$sizeString GB';
+  }
+
+  @override
   String get siteFileCount => 'Antall filer';
 
   @override

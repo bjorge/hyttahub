@@ -1307,6 +1307,24 @@ abstract class HyttaHubLocalizations {
   /// **'{size} bytes'**
   String bytesLabel(int size);
 
+  /// No description provided for @kilobytesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String kilobytesLabel(double size);
+
+  /// No description provided for @megabytesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String megabytesLabel(double size);
+
+  /// No description provided for @gigabytesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} GB'**
+  String gigabytesLabel(double size);
+
   /// No description provided for @siteFileCount.
   ///
   /// In en, this message translates to:
