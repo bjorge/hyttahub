@@ -1306,6 +1306,24 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'{size} bytes'**
   String bytesLabel(int size);
+
+  /// No description provided for @siteFileCount.
+  ///
+  /// In en, this message translates to:
+  /// **'File Count'**
+  String get siteFileCount;
+
+  /// No description provided for @siteTotalFileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Total File Size'**
+  String get siteTotalFileSize;
+
+  /// No description provided for @errorFetchingFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching files'**
+  String get errorFetchingFiles;
 }
 
 class _HyttaHubLocalizationsDelegate

@@ -205,3 +205,53 @@ export const deleteFiles = onCall({ cors: true }, async (request) => {
   }
 });
 
+export const listSiteFiles = onCall({ cors: true }, async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const siteId = request.data.siteId;
+  const appName = request.data.appName;
+
+  const email =
+    typeof request.auth?.token?.email === "string"
+      ? request.auth.token.email
+      : undefined;
+  if (!email) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User email is required and must be a string"
+    );
+  }
+
+  const emailRef = admin
+    .firestore()
+    .collection(firebaseSiteUsersPath(appName, siteId))
+    .doc(email);
+
+  const emailDoc = await emailRef.get();
+  if (!emailDoc.exists) {
+    throw new HttpsError(
+      "permission-denied",
+      "User is not a member of this site"
+    );
+  }
+
+  const bucket = admin.storage().bucket();
+  const prefix = firebaseFilesPath(appName, siteId, "");
+  
+  try {
+    const [files] = await bucket.getFiles({ prefix });
+    const fileList = files.map(file => ({
+      name: file.name.split("/").pop(),
+      size: parseInt(String(file.metadata.size || "0"), 10),
+    }));
+
+    return { files: fileList };
+  } catch (error) {
+    logger.error(`Failed to list files for site ${siteId}`, error);
+    throw new HttpsError("internal", "Failed to list files");
+  }
+});
+

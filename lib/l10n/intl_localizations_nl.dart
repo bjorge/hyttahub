@@ -661,4 +661,13 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String bytesLabel(int size) {
     return '$size bytes';
   }
+
+  @override
+  String get siteFileCount => 'File Count';
+
+  @override
+  String get siteTotalFileSize => 'Total File Size';
+
+  @override
+  String get errorFetchingFiles => 'Error fetching files';
 }

@@ -7,6 +7,9 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
+import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
+import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 class SiteInfoScreen extends StatelessWidget {
   const SiteInfoScreen({super.key, required this.siteId});
@@ -89,6 +92,70 @@ class SiteInfoScreen extends StatelessWidget {
                         Text(
                           loc.bytesLabel(siteTotalSize),
                           style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 24),
+                        FutureBuilder<Map<String, dynamic>>(
+                          future: HyttaHubFunctionsFactory.getFunctions(
+                            HyttaHubOptions.implementation?.storage ??
+                                StorageEnum.firestore,
+                          ).listSiteFiles(
+                            siteId: siteId,
+                            appName: HyttaHubOptions
+                                    .implementation?.firebaseRootCollection ??
+                                '',
+                          ),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            if (snapshot.hasError) {
+                              return Text(
+                                loc.errorFetchingFiles,
+                                style: const TextStyle(color: Colors.red),
+                              );
+                            }
+
+                            final data = snapshot.data;
+                            if (data == null || data['files'] == null) {
+                              return Container();
+                            }
+
+                            final files =
+                                List<Map<String, dynamic>>.from(data['files']);
+                            final fileCount = files.length;
+                            final totalSize = files.fold<int>(
+                              0,
+                              (prev, file) => prev + (file['size'] as int),
+                            );
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  loc.siteFileCount,
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  fileCount.toString(),
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: 24),
+                                Text(
+                                  loc.siteTotalFileSize,
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  loc.bytesLabel(totalSize),
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),

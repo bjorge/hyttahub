@@ -286,5 +286,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "siteFileCount": "File Count",
+  "siteTotalFileSize": "Total File Size",
+  "errorFetchingFiles": "Error fetching files"
 }

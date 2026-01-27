@@ -321,6 +321,31 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     return {'events': ''};
   }
 
+  @override
+  Future<Map<String, dynamic>> listSiteFiles({
+    required String siteId,
+    required String appName,
+  }) async {
+    final storage = HyttaHubStorageFactory.getStorage(_type);
+    final prefix = firebaseFilesPath(siteId, '');
+    final files = await storage.listFiles(prefix);
+    
+    final result = <Map<String, dynamic>>[];
+    for (final filePath in files) {
+      final bytes = await storage.getFileBytes(
+        appName: appName,
+        siteId: siteId,
+        fileName: filePath.split('/').last,
+      );
+      result.add({
+        'name': filePath.split('/').last,
+        'size': bytes.length,
+      });
+    }
+    
+    return {'files': result};
+  }
+
   String _generateId() {
     return DateTime.now().millisecondsSinceEpoch.toString().substring(5);
   }

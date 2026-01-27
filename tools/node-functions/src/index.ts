@@ -7,6 +7,7 @@ export {
   uploadFile,
   deleteFiles,
   getFile,
+  listSiteFiles,
 } from "./file_functions/file_functions";
 
 export {
