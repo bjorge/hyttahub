@@ -276,5 +276,15 @@
   "themeSettingsAlwaysOn": "Siempre activado",
   "openSourceLicensesButton": "Paquetes de código abierto",
   "openSourceLicensesTitle": "Paquetes de código abierto",
-  "siteInfoTitle": "Información del sitio"
+  "siteInfoTitle": "Información del sitio",
+  "siteEventCount": "Cantidad de eventos",
+  "siteTotalSize": "Tamaño total",
+  "bytesLabel": "{size} bytes",
+  "@bytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  }
 }

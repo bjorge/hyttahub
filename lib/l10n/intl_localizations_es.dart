@@ -665,4 +665,15 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
 
   @override
   String get siteInfoTitle => 'Información del sitio';
+
+  @override
+  String get siteEventCount => 'Cantidad de eventos';
+
+  @override
+  String get siteTotalSize => 'Tamaño total';
+
+  @override
+  String bytesLabel(int size) {
+    return '$size bytes';
+  }
 }

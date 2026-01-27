@@ -1288,6 +1288,24 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Site Info'**
   String get siteInfoTitle;
+
+  /// No description provided for @siteEventCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Event Count'**
+  String get siteEventCount;
+
+  /// No description provided for @siteTotalSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Size'**
+  String get siteTotalSize;
+
+  /// No description provided for @bytesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} bytes'**
+  String bytesLabel(int size);
 }
 
 class _HyttaHubLocalizationsDelegate

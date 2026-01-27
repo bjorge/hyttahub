@@ -653,4 +653,15 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get siteInfoTitle => 'Sideinformasjon';
+
+  @override
+  String get siteEventCount => 'Antall hendelser';
+
+  @override
+  String get siteTotalSize => 'Total størrelse';
+
+  @override
+  String bytesLabel(int size) {
+    return '$size byte';
+  }
 }

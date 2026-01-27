@@ -276,5 +276,15 @@
     "themeSettingsAlwaysOn": "Altijd aan",
     "openSourceLicensesButton": "Open-source pakketten",
     "openSourceLicensesTitle": "Open-source pakketten",
-    "siteInfoTitle": "Site-informatie"
+    "siteInfoTitle": "Site-informatie",
+    "siteEventCount": "Aantal gebeurtenissen",
+    "siteTotalSize": "Totale grootte",
+    "bytesLabel": "{size} bytes",
+    "@bytesLabel": {
+        "placeholders": {
+            "size": {
+                "type": "int"
+            }
+        }
+    }
 }

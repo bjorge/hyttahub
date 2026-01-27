@@ -276,5 +276,15 @@
   "themeSettingsAlwaysOn": "Alltid på",
   "openSourceLicensesButton": "Open Source-pakker",
   "openSourceLicensesTitle": "Open Source-pakker",
-  "siteInfoTitle": "Sideinformasjon"
+  "siteInfoTitle": "Sideinformasjon",
+  "siteEventCount": "Antall hendelser",
+  "siteTotalSize": "Total størrelse",
+  "bytesLabel": "{size} byte",
+  "@bytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  }
 }
