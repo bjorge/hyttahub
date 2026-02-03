@@ -1,6 +1,6 @@
 {
-    "name": "formproto",
-    "short_name": "formproto",
+    "name": "tictactoe",
+    "short_name": "tictactoe",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
