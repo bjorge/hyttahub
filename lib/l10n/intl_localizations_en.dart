@@ -703,4 +703,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String get errorFetchingFiles => 'Error fetching files';
+
+  @override
+  String get refresh => 'Refresh';
 }

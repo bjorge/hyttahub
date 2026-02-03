@@ -287,5 +287,6 @@
                 "type": "int"
             }
         }
-    }
+    },
+    "refresh": "Vernieuwen"
 }

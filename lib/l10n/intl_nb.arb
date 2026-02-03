@@ -317,5 +317,6 @@
   },
   "siteFileCount": "Antall filer",
   "siteTotalFileSize": "Total filstørrelse",
-  "errorFetchingFiles": "Feil ved henting av filer"
+  "errorFetchingFiles": "Feil ved henting av filer",
+  "refresh": "Oppdater"
 }

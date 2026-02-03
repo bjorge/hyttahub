@@ -1348,6 +1348,12 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Error fetching files'**
   String get errorFetchingFiles;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
 }
 
 class _HyttaHubLocalizationsDelegate

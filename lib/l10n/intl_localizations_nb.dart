@@ -706,4 +706,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get errorFetchingFiles => 'Feil ved henting av filer';
+
+  @override
+  String get refresh => 'Oppdater';
 }
