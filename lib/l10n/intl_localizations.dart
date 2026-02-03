@@ -269,6 +269,12 @@ abstract class HyttaHubLocalizations {
   /// **'Leave Site'**
   String get manageSitesTitle;
 
+  /// No description provided for @reorderSitesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder Sites'**
+  String get reorderSitesTitle;
+
   /// No description provided for @removeAccountTitle.
   ///
   /// In en, this message translates to:

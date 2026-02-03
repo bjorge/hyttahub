@@ -37,6 +37,7 @@
     "serviceLoginTitle": "Service Login",
     "accountSettingsTitle": "Account Settings",
     "manageSitesTitle": "Leave Site",
+    "reorderSitesTitle": "Reorder Sites",
     "removeAccountTitle": "Remove Account",
     "logout": "Logout",
     "logoutDialogTitle": "Logout?",

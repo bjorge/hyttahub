@@ -152,6 +152,7 @@ enum AccountEvent_EventType {
   removeSite, 
   joinSite, 
   leaveSite, 
+  reorderSites, 
   notSet
 }
 
@@ -165,6 +166,7 @@ class AccountEvent extends $pb.GeneratedMessage {
     $core.String? removeSite,
     $core.String? joinSite,
     $core.String? leaveSite,
+    ReorderSites? reorderSites,
   }) {
     final $result = create();
     if (version != null) {
@@ -191,6 +193,9 @@ class AccountEvent extends $pb.GeneratedMessage {
     if (leaveSite != null) {
       $result.leaveSite = leaveSite;
     }
+    if (reorderSites != null) {
+      $result.reorderSites = reorderSites;
+    }
     return $result;
   }
   AccountEvent._() : super();
@@ -205,10 +210,11 @@ class AccountEvent extends $pb.GeneratedMessage {
     6 : AccountEvent_EventType.removeSite,
     7 : AccountEvent_EventType.joinSite,
     8 : AccountEvent_EventType.leaveSite,
+    9 : AccountEvent_EventType.reorderSites,
     0 : AccountEvent_EventType.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AccountEvent', createEmptyInstance: create)
-    ..oo(0, [2, 3, 4, 5, 6, 7, 8])
+    ..oo(0, [2, 3, 4, 5, 6, 7, 8, 9])
     ..a<$core.int>(1, _omitFieldNames ? '' : 'version', $pb.PbFieldType.O3)
     ..aOM<AccountEvent_InitialEvent>(2, _omitFieldNames ? '' : 'initialEvent', protoName: 'initialEvent', subBuilder: AccountEvent_InitialEvent.create)
     ..aOM<AccountEvent_Terms>(3, _omitFieldNames ? '' : 'terms', subBuilder: AccountEvent_Terms.create)
@@ -217,6 +223,7 @@ class AccountEvent extends $pb.GeneratedMessage {
     ..aOS(6, _omitFieldNames ? '' : 'removeSite', protoName: 'removeSite')
     ..aOS(7, _omitFieldNames ? '' : 'joinSite', protoName: 'joinSite')
     ..aOS(8, _omitFieldNames ? '' : 'leaveSite', protoName: 'leaveSite')
+    ..aOM<ReorderSites>(9, _omitFieldNames ? '' : 'reorderSites', protoName: 'reorderSites', subBuilder: ReorderSites.create)
     ..hasRequiredFields = false
   ;
 
@@ -319,6 +326,61 @@ class AccountEvent extends $pb.GeneratedMessage {
   $core.bool hasLeaveSite() => $_has(7);
   @$pb.TagNumber(8)
   void clearLeaveSite() => clearField(8);
+
+  @$pb.TagNumber(9)
+  ReorderSites get reorderSites => $_getN(8);
+  @$pb.TagNumber(9)
+  set reorderSites(ReorderSites v) { setField(9, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasReorderSites() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearReorderSites() => clearField(9);
+  @$pb.TagNumber(9)
+  ReorderSites ensureReorderSites() => $_ensure(8);
+}
+
+class ReorderSites extends $pb.GeneratedMessage {
+  factory ReorderSites({
+    $core.Iterable<$core.String>? siteIds,
+  }) {
+    final $result = create();
+    if (siteIds != null) {
+      $result.siteIds.addAll(siteIds);
+    }
+    return $result;
+  }
+  ReorderSites._() : super();
+  factory ReorderSites.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ReorderSites.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ReorderSites', createEmptyInstance: create)
+    ..pPS(1, _omitFieldNames ? '' : 'siteIds', protoName: 'siteIds')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ReorderSites clone() => ReorderSites()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ReorderSites copyWith(void Function(ReorderSites) updates) => super.copyWith((message) => updates(message as ReorderSites)) as ReorderSites;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ReorderSites create() => ReorderSites._();
+  ReorderSites createEmptyInstance() => create();
+  static $pb.PbList<ReorderSites> createRepeated() => $pb.PbList<ReorderSites>();
+  @$core.pragma('dart2js:noInline')
+  static ReorderSites getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ReorderSites>(create);
+  static ReorderSites? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.String> get siteIds => $_getList(0);
 }
 
 /// The SubmitAccountEvent is passed to the submit bloc handler

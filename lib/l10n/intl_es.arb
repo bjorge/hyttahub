@@ -37,6 +37,7 @@
   "serviceLoginTitle": "Inicio de sesión de servicio",
   "accountSettingsTitle": "Configuración de la cuenta",
   "manageSitesTitle": "Abandonar sitio",
+  "reorderSitesTitle": "Reordenar sitios",
   "removeAccountTitle": "Eliminar cuenta",
   "logout": "Cerrar sesión",
   "logoutDialogTitle": "¿Cerrar sesión?",

@@ -95,6 +95,11 @@ AccountReplayBlocState accountReplay(
     if (event.hasLeaveSite()) {
       replay.sitesIds.remove(event.leaveSite);
     }
+
+    if (event.hasReorderSites()) {
+      replay.sitesIds.clear();
+      replay.sitesIds.addAll(event.reorderSites.siteIds);
+    }
   }
 
   return replay;

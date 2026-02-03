@@ -8,6 +8,7 @@ import 'package:hyttahub/account_widgets/import_site_screen.dart';
 import 'package:hyttahub/account_widgets/select_admin_screen.dart';
 import 'package:hyttahub/account_widgets/join_site_screen.dart';
 import 'package:hyttahub/account_widgets/manage_sites_screen.dart';
+import 'package:hyttahub/account_widgets/reorder_sites_screen.dart';
 import 'package:hyttahub/account_widgets/leave_site_screen.dart';
 import 'package:hyttahub/common_widgets/unimplemented_screen.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -523,6 +524,24 @@ class RemoveSiteRoute extends GoRoute {
   static final String fullPath = '${ManageSitesRoute.fullPath}/$pathSegment';
 }
 
+class ReorderSitesRoute extends GoRoute {
+  /// Creates an [ReorderSitesRoute].
+  ReorderSitesRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final event = state.uri.queryParameters['event'] ?? '';
+          return ReorderSitesScreen(event: event);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'reordersites';
+
+  /// The full path to this route.
+  static final String fullPath = '${AccountScreenRoute.fullPath}/$pathSegment';
+}
+
 /// A route for adding a new site.
 class JoinSiteRoute extends GoRoute {
   /// Creates an [JoinSiteRoute].
@@ -880,6 +899,7 @@ final selectAdminRoute = SelectAdminRoute();
 final importSiteRoute = ImportSiteRoute(routes: [selectAdminRoute]);
 
 final manageSitesRoute = ManageSitesRoute(routes: [removeSiteRoute]);
+final reorderSitesRoute = ReorderSitesRoute();
 final accountOptionUnimplementedRoute = AccountOptionUnimplementedRoute();
 final removeAccountRoute = RemoveAccountRoute();
 final serviceEventsDisplayRoute = ServiceEventsDisplayRoute();
@@ -933,6 +953,7 @@ final accountScreenRoute = AccountScreenRoute(
     importSiteRoute,
     joinSiteRoute,
     manageSitesRoute,
+    reorderSitesRoute,
     termsDisplayRoute,
     privacyDisplayRoute,
     accountOptionUnimplementedRoute,

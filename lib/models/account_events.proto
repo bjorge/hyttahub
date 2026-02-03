@@ -22,7 +22,12 @@ message AccountEvent {
     string removeSite = 6;            // the user was removed from this site
     string joinSite = 7;              // site id
     string leaveSite = 8;             // the user left this site
+    ReorderSites reorderSites = 9;    // the user reordered their sites
   }
+}
+
+message ReorderSites {
+  repeated string siteIds = 1;
 }
 
 // The SubmitAccountEvent is passed to the submit bloc handler

@@ -99,6 +99,9 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get manageSitesTitle => 'Forlat sted';
 
   @override
+  String get reorderSitesTitle => 'Endre rekkefølge';
+
+  @override
   String get removeAccountTitle => 'Fjern konto';
 
   @override

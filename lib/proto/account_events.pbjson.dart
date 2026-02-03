@@ -25,6 +25,7 @@ const AccountEvent$json = {
     {'1': 'removeSite', '3': 6, '4': 1, '5': 9, '9': 0, '10': 'removeSite'},
     {'1': 'joinSite', '3': 7, '4': 1, '5': 9, '9': 0, '10': 'joinSite'},
     {'1': 'leaveSite', '3': 8, '4': 1, '5': 9, '9': 0, '10': 'leaveSite'},
+    {'1': 'reorderSites', '3': 9, '4': 1, '5': 11, '6': '.ReorderSites', '9': 0, '10': 'reorderSites'},
   ],
   '3': [AccountEvent_Terms$json, AccountEvent_InitialEvent$json],
   '8': [
@@ -58,10 +59,23 @@ final $typed_data.Uint8List accountEventDescriptor = $convert.base64Decode(
     '90aWZpY2F0aW9ucxgEIAEoCEgAUhdhbGxvd0VtYWlsTm90aWZpY2F0aW9ucxIgCgpjcmVhdGVT'
     'aXRlGAUgASgJSABSCmNyZWF0ZVNpdGUSIAoKcmVtb3ZlU2l0ZRgGIAEoCUgAUgpyZW1vdmVTaX'
     'RlEhwKCGpvaW5TaXRlGAcgASgJSABSCGpvaW5TaXRlEh4KCWxlYXZlU2l0ZRgIIAEoCUgAUgls'
-    'ZWF2ZVNpdGUaUQoFVGVybXMSIgoMdGVybXNWZXJzaW9uGAEgASgFUgx0ZXJtc1ZlcnNpb24SJA'
-    'oNcG9saWN5VmVyc2lvbhgCIAEoBVINcG9saWN5VmVyc2lvbhpVCgxJbml0aWFsRXZlbnQSKQoF'
-    'dGVybXMYASABKAsyEy5BY2NvdW50RXZlbnQuVGVybXNSBXRlcm1zEhoKCGluc3RhbmNlGAIgAS'
-    'gJUghpbnN0YW5jZUIMCgpldmVudF90eXBl');
+    'ZWF2ZVNpdGUSMwoMcmVvcmRlclNpdGVzGAkgASgLMg0uUmVvcmRlclNpdGVzSABSDHJlb3JkZX'
+    'JTaXRlcxpRCgVUZXJtcxIiCgx0ZXJtc1ZlcnNpb24YASABKAVSDHRlcm1zVmVyc2lvbhIkCg1w'
+    'b2xpY3lWZXJzaW9uGAIgASgFUg1wb2xpY3lWZXJzaW9uGlUKDEluaXRpYWxFdmVudBIpCgV0ZX'
+    'JtcxgBIAEoCzITLkFjY291bnRFdmVudC5UZXJtc1IFdGVybXMSGgoIaW5zdGFuY2UYAiABKAlS'
+    'CGluc3RhbmNlQgwKCmV2ZW50X3R5cGU=');
+
+@$core.Deprecated('Use reorderSitesDescriptor instead')
+const ReorderSites$json = {
+  '1': 'ReorderSites',
+  '2': [
+    {'1': 'siteIds', '3': 1, '4': 3, '5': 9, '10': 'siteIds'},
+  ],
+};
+
+/// Descriptor for `ReorderSites`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List reorderSitesDescriptor = $convert.base64Decode(
+    'CgxSZW9yZGVyU2l0ZXMSGAoHc2l0ZUlkcxgBIAMoCVIHc2l0ZUlkcw==');
 
 @$core.Deprecated('Use submitAccountEventDescriptor instead')
 const SubmitAccountEvent$json = {

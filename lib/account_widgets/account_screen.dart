@@ -229,6 +229,35 @@ class AccountSettingsButton extends StatelessWidget {
                     HyttaHubLocalizations.of(context)!.manageSitesTitle,
                   ),
                 ),
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    final submmitValue = SubmitAccountEvent(
+                      event: AccountEvent(
+                        version:
+                            accountState.events.keys.fold<int>(
+                              1,
+                              (p, e) => e > p ? e : p,
+                            ) +
+                            1,
+                        reorderSites: ReorderSites(
+                          siteIds: accountState.sitesIds,
+                        ),
+                      ),
+                    );
+
+                    final encodedSubmitValue = base64UrlEncode(
+                      submmitValue.writeToBuffer(),
+                    );
+
+                    context.push(
+                      '${ReorderSitesRoute.fullPath}?event=$encodedSubmitValue',
+                    );
+                  },
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.reorderSitesTitle,
+                  ),
+                ),
                 Divider(),
                 SimpleDialogOption(
                   onPressed: () {

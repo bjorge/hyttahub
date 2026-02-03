@@ -37,6 +37,7 @@
   "serviceLoginTitle": "Tjenestepålogging",
   "accountSettingsTitle": "Kontoinnstillinger",
   "manageSitesTitle": "Forlat sted",
+  "reorderSitesTitle": "Endre rekkefølge",
   "removeAccountTitle": "Fjern konto",
   "logout": "Logg ut",
   "logoutDialogTitle": "Logg ut?",

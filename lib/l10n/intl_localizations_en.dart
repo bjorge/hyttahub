@@ -98,6 +98,9 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get manageSitesTitle => 'Leave Site';
 
   @override
+  String get reorderSitesTitle => 'Reorder Sites';
+
+  @override
   String get removeAccountTitle => 'Remove Account';
 
   @override
