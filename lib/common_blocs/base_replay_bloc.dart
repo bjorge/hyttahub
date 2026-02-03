@@ -25,6 +25,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
     // Whether to use Flutter isolates via `compute()` for heavy CPU work.
     bool useIsolate = true,
+    this.gapTimeout = const Duration(seconds: 5),
   }) : _initialState = initialState,
        _replayIsolateHandler = replayIsolateHandler,
        _hydrateIsolateHandler = hydrateIsolateHandler {
@@ -37,6 +38,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     on<CommonReplayBlocEvent>(_onEvent);
   }
 
+  final Map<int, String> _eventBuffer = {};
+  Timer? _gapTimer;
   Map<int, String> _hydratedEvents = {};
   S? _hydratedState;
   int _lastVersion = 0;
@@ -52,6 +55,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   final FutureOr<Uint8List> Function(Map<int, String>) _hydrateIsolateHandler;
   // Whether to use compute() to run handlers in isolates. Default true.
   late final bool _useIsolate;
+
+  final Duration gapTimeout;
 
   /// Provides the storage type to use for this BLoC.
   StorageEnum get storageType;
@@ -110,9 +115,17 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     Map<int, String> eventsData,
     Emitter<S> emit,
   ) async {
+    if (eventsData.remove(0) != null) {
+      await _handleGapTimeout(emit);
+    }
+
     // remove all events before the last version
     // do this because firebase fires off many events from its cache at times
     eventsData.removeWhere((key, value) => key <= _lastVersion);
+
+    if (eventsData.isEmpty) {
+      return;
+    }
 
     if (kDebugMode) {
       print(
@@ -120,28 +133,75 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       );
     }
 
-    final S newState = eventsData.isEmpty
-        ? state
-        : await _runReplay(state, eventsData);
+    _eventBuffer.addAll(eventsData);
+    await _processBuffer(emit);
+  }
 
-    // set last version to the largest key of eventsData
-    if (eventsData.isNotEmpty) {
-      _lastVersion = eventsData.keys.fold<int>(0, (p, e) => e > p ? e : p);
+  Future<void> _processBuffer(Emitter<S> emit) async {
+    final Map<int, String> contiguousEvents = {};
+    int nextVersion = _lastVersion + 1;
+
+    while (_eventBuffer.containsKey(nextVersion)) {
+      contiguousEvents[nextVersion] = _eventBuffer.remove(nextVersion)!;
+      nextVersion++;
     }
 
-    if (kDebugMode) {
-      print("BaseReplayBloc: new _lastVersion: $_lastVersion");
+    if (contiguousEvents.isNotEmpty) {
+      final S newState = await _runReplay(state, contiguousEvents);
+      _lastVersion = nextVersion - 1;
+
+      if (isClosed) {
+        return;
+      }
+
+      // still listening if we got a new event
+      emit(
+        stateCopyWithStatus(newState.deepCopy(), CommonReplayStateEnum.listening)
+          ..freeze(),
+      );
     }
 
-    if (isClosed) {
+    // Handle gaps
+    if (_eventBuffer.isNotEmpty) {
+      final int minInBuffer =
+          _eventBuffer.keys.fold(_eventBuffer.keys.first, (p, e) => e < p ? e : p);
+
+      if (minInBuffer > _lastVersion + 1) {
+        if (kDebugMode) {
+          print(
+            "BaseReplayBloc: Starting gap timer for $gapTimeout",
+          );
+        }
+        _gapTimer ??= Timer(gapTimeout, () {
+          if (!isClosed) {
+            add(
+              CommonReplayBlocEvent(
+                newEvents: CommonReplayBlocEvent_NewEvents(events: {0: ''}),
+              ),
+            );
+          }
+        });
+      }
+    } else {
+      _gapTimer?.cancel();
+      _gapTimer = null;
+    }
+  }
+
+  Future<void> _handleGapTimeout(Emitter<S> emit) async {
+    if (isClosed || _eventBuffer.isEmpty) {
+      _gapTimer = null;
       return;
     }
 
-    // still listening if we got a new event
-    emit(
-      stateCopyWithStatus(newState.deepCopy(), CommonReplayStateEnum.listening)
-        ..freeze(),
-    );
+    final int minInBuffer =
+        _eventBuffer.keys.fold(_eventBuffer.keys.first, (p, e) => e < p ? e : p);
+
+
+    // Force progress by skipping the gap
+    _lastVersion = minInBuffer - 1;
+    _gapTimer = null;
+    await _processBuffer(emit);
   }
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {
@@ -154,6 +214,10 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         // listening is turned on again
         _hydratedEvents = stateGetEventsMap(state);
         _hydratedState = state;
+        _eventBuffer.clear();
+        _gapTimer?.cancel();
+        _gapTimer = null;
+        _lastVersion = 0;
 
         emit(
           stateCopyWithStatus(
@@ -230,6 +294,10 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       if (firstEventDoc == null) {
         _hydratedEvents.clear();
         _hydratedState = null;
+        _eventBuffer.clear();
+        _gapTimer?.cancel();
+        _gapTimer = null;
+        _lastVersion = 0;
 
         emit(
           stateCopyWithStatus(
@@ -250,6 +318,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             // in a different app instance
             _hydratedEvents.clear();
             _hydratedState = null;
+            _eventBuffer.clear();
+            _gapTimer?.cancel();
+            _gapTimer = null;
+            _lastVersion = 0;
+
             emit(
               stateCopyWithStatus(
                 _initialState.deepCopy(),
@@ -270,10 +343,6 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
       // find the last cached version
       _lastVersion = _hydratedEvents.keys.fold<int>(0, (p, e) => e > p ? e : p);
-
-      if (kDebugMode) {
-        print('BaseReplayBloc: listen after event version: $_lastVersion');
-      }
 
       // Setup listener for subsequent changes
       _subscription = _storage
@@ -336,6 +405,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   @override
   Future<void> close() async {
     await _subscription?.cancel();
+    _gapTimer?.cancel();
     return await super.close();
   }
 

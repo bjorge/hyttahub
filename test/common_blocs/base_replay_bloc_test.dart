@@ -112,8 +112,10 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
     hydrateIsolateHandlerOverride,
     this.handleEmptySnapshotCompleter,
     super.storage,
+    Duration gapTimeout = const Duration(milliseconds: 100),
   }) : super(
          ServiceReplayBlocState(),
+         gapTimeout: gapTimeout,
          replayIsolateHandler:
              replayIsolateHandlerOverride ?? serviceReplayIsolateHandler,
          hydrateIsolateHandler:
@@ -189,11 +191,13 @@ void main() {
       hydrateIsolateHandlerOverride,
       FutureOr<Uint8List> Function(Map<String, dynamic>)?
       replayIsolateHandlerOverride,
+      Duration gapTimeout = const Duration(milliseconds: 100),
     }) {
       return TestReplayBloc(
         collectionPath,
         hydrateIsolateHandlerOverride: hydrateIsolateHandlerOverride,
         replayIsolateHandlerOverride: replayIsolateHandlerOverride,
+        gapTimeout: gapTimeout,
         storage: HyttaHubStorageFactory.getStorage(
           StorageEnum.firestore,
         ),
@@ -223,7 +227,7 @@ void main() {
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
         // The bloc emits an initial listening state with empty events,
         // then processes all initial events in a batch.
-        wait: const Duration(milliseconds: 200),
+        wait: const Duration(milliseconds: 500),
         expect: () => [
           isA<ServiceReplayBlocState>()
               .having((s) => s.state, 'state', CommonReplayStateEnum.listening)
@@ -238,7 +242,7 @@ void main() {
         'emits [uninitialized] on empty initial snapshot (new ordering)',
         build: buildBloc,
         act: (bloc) => bloc.add(CommonReplayBlocEvent(listen: true)),
-        wait: const Duration(milliseconds: 200),
+        wait: const Duration(milliseconds: 500),
         expect: () => [
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
@@ -266,7 +270,7 @@ void main() {
             fbPayload: 'event2',
           });
         },
-        wait: const Duration(milliseconds: 300),
+        wait: const Duration(milliseconds: 500),
         // The listener emits an initial listening state with empty events,
         // then a state with event1 (processed as a batch), then event2 added.
         expect: () => [
@@ -298,7 +302,7 @@ void main() {
           // Stop listening
           bloc.add(CommonReplayBlocEvent(listen: false));
         },
-        wait: const Duration(milliseconds: 200),
+        wait: const Duration(milliseconds: 500),
         // Should emit listening with empty, then with event1, then hydrating with empty
         expect: () => [
           isA<ServiceReplayBlocState>()
@@ -358,6 +362,69 @@ void main() {
       );
 
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
+        'buffers out-of-order events and replays sequentially when gap is filled',
+        build: buildBloc,
+        act: (bloc) async {
+          // Send version 1 and 3 (gap at 2)
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {1: 'event1', 3: 'event3'},
+              ),
+            ),
+          );
+          await Future.delayed(const Duration(milliseconds: 100));
+
+          // Now fill the gap with version 2
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(events: {2: 'event2'}),
+            ),
+          );
+        },
+        wait: const Duration(milliseconds: 200),
+        // 1. Initial process of version 1.
+        // 2. Processing of version 2 and 3 after gap is filled.
+        expect: () => [
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+          }),
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+            2: 'event2',
+            3: 'event3',
+          }),
+        ],
+      );
+
+      blocTest<TestReplayBloc, ServiceReplayBlocState>(
+        'skips missing events after gap timeout',
+        build: () => buildBloc(gapTimeout: const Duration(milliseconds: 10)),
+        act: (bloc) async {
+          // Send version 1 and 3 (gap at 2)
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {1: 'event1', 3: 'event3'},
+              ),
+            ),
+          );
+        },
+        // Gap timeout is configured to 10ms above. Wait for it.
+        wait: const Duration(seconds: 1),
+        expect: () => [
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+          }),
+          // After timeout, version 3 should be replayed (skipping 2)
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+            3: 'event3',
+          }),
+        ],
+      );
+
+      blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'clears local state and refetches when validation fails',
         build: () => buildBloc(validationResult: false),
         seed: () => ServiceReplayBlocState(events: {1: 'stale_event'}),
@@ -369,9 +436,7 @@ void main() {
           });
           bloc.add(CommonReplayBlocEvent(listen: true));
         },
-        wait: const Duration(milliseconds: 300),
-        // The validation failure path should first emit an uninitialized
-        // state, and then the refreshed OK state with the fresh event.
+        wait: const Duration(seconds: 1),
         expect: () => [
           isA<ServiceReplayBlocState>().having(
             (s) => s.state,
@@ -389,16 +454,28 @@ void main() {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'correctly replays new events onto the current state',
         build: buildBloc,
-        seed: () => ServiceReplayBlocState(events: {1: 'event1'}),
-        act: (bloc) => bloc.add(
-          CommonReplayBlocEvent(
-            newEvents: CommonReplayBlocEvent_NewEvents(
-              events: {2: 'event2', 3: 'event3'},
+        act: (bloc) async {
+          // Manually initialize by adding event 1
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(events: {1: 'event1'}),
             ),
-          ),
-        ),
-        wait: const Duration(milliseconds: 100),
+          );
+          await Future.delayed(const Duration(milliseconds: 50));
+
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {2: 'event2', 3: 'event3'},
+              ),
+            ),
+          );
+        },
+        wait: const Duration(milliseconds: 500),
         expect: () => [
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+          }),
           isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
             1: 'event1',
             2: 'event2',
