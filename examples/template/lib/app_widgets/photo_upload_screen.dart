@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:protobuf/protobuf.dart';
-import 'package:template/app_blocs/app_submit_bloc.dart';
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:template/l10n/app_localizations.dart';
-import 'package:template/proto/app_events.pb.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:template/app_blocs/app_replay_bloc.dart';
+
 
 class PhotoUploadScreen extends StatefulWidget {
   const PhotoUploadScreen({
@@ -36,8 +36,15 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       base64Url.decode(widget.event),
     );
 
-    return BlocProvider(
-      create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppReplayBloc>(
+          create: (_) => AppReplayBloc(widget.siteId)..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AppSubmitBloc>(
+          create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
+        ),
+      ],
       child: Form(
         key: _formKey,
         child: BlocConsumer<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(

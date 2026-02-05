@@ -88,35 +88,10 @@ class _SiteScreenState extends State<SiteScreen> {
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
         key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
         builder: (context, allowedEmailsState) {
-          if (!allowedEmailsState.hasState() ||
-              allowedEmailsState.state ==
-                  AllowedEmailsBlocState_State.fetching) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (allowedEmailsState.state == AllowedEmailsBlocState_State.error) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(AppLocalizations.of(context)!.app_errorTitle),
-              ),
-              body: Center(
-                child: Text(AppLocalizations.of(context)!.app_unexpectedError),
-              ),
-            );
-          }
-
-          if (allowedEmailsState.state ==
-              AllowedEmailsBlocState_State.permissionDenied) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(AppLocalizations.of(context)!.app_accessDeniedTitle),
-              ),
-              body: Center(
-                child: Text(
-                  AppLocalizations.of(context)!.app_accessDeniedMessage,
-                ),
-              ),
-            );
+          final allowedEmailsErrorWidget =
+              handleAllowedEmailsState(context, allowedEmailsState);
+          if (allowedEmailsErrorWidget != null) {
+            return allowedEmailsErrorWidget;
           }
 
           final userId =

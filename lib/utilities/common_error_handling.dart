@@ -4,6 +4,7 @@ import 'package:hyttahub/account_widgets/account_screen.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
+import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
@@ -114,6 +115,37 @@ Widget? handleServiceReplayState(
   if (errorWidget != null) {
     if (!inScaffold) {
       return Scaffold(body: Center(child: errorWidget));
+    } else {
+      return errorWidget;
+    }
+  }
+  return null;
+}
+
+Widget? handleAllowedEmailsState(
+  BuildContext context,
+  AllowedEmailsBlocState allowedEmailsState,
+) {
+  Widget? errorWidget;
+  final inScaffold = Scaffold.maybeOf(context) != null;
+
+  final l10n = HyttaHubLocalizations.of(context)!;
+  if (!allowedEmailsState.hasState() ||
+      allowedEmailsState.state == AllowedEmailsBlocState_State.fetching) {
+    errorWidget = const Center(child: CircularProgressIndicator());
+  } else if (allowedEmailsState.state == AllowedEmailsBlocState_State.error) {
+    errorWidget = Center(child: Text(l10n.unexpectedError));
+  } else if (allowedEmailsState.state ==
+      AllowedEmailsBlocState_State.permissionDenied) {
+    errorWidget = Center(child: Text(l10n.permissionDenied));
+  }
+
+  if (errorWidget != null) {
+    if (!inScaffold) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.errorTitle)),
+        body: Center(child: errorWidget),
+      );
     } else {
       return errorWidget;
     }

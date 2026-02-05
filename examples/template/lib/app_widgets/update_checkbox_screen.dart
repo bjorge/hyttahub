@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:protobuf/protobuf.dart';
-import 'package:template/app_blocs/app_submit_bloc.dart';
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:template/proto/app_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
+import 'package:template/app_blocs/app_replay_bloc.dart';
+
 
 class UpdateCheckboxScreen extends StatefulWidget {
   const UpdateCheckboxScreen({
@@ -37,8 +37,15 @@ class _UpdateCheckboxScreenState extends State<UpdateCheckboxScreen> {
       submitEvent.appEvent.updateCheckbox = AppEvent_UpdateCheckbox();
     }
 
-    return BlocProvider(
-      create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppReplayBloc>(
+          create: (_) => AppReplayBloc(widget.siteId)..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AppSubmitBloc>(
+          create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
+        ),
+      ],
       child: Form(
         key: _formKey,
         child: BlocConsumer<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(

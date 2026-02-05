@@ -45,32 +45,10 @@ class SiteMembersScreen extends StatelessWidget {
       ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
-          if (!allowedEmailsState.hasState() ||
-              allowedEmailsState.state ==
-                  AllowedEmailsBlocState_State.fetching) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (allowedEmailsState.state == AllowedEmailsBlocState_State.error) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(HyttaHubLocalizations.of(context)!.errorTitle),
-              ),
-              body: Text(HyttaHubLocalizations.of(context)!.unexpectedError),
-            );
-          }
-          if (allowedEmailsState.state ==
-              AllowedEmailsBlocState_State.permissionDenied) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(HyttaHubLocalizations.of(context)!.errorTitle),
-              ),
-              body: Center(
-                child: Text(
-                  HyttaHubLocalizations.of(context)!.permissionDenied,
-                ),
-              ),
-            );
+          final allowedEmailsErrorWidget =
+              handleAllowedEmailsState(context, allowedEmailsState);
+          if (allowedEmailsErrorWidget != null) {
+            return allowedEmailsErrorWidget;
           }
 
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
