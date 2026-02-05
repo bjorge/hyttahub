@@ -24,7 +24,7 @@ class ManageExportsScreen extends StatelessWidget {
         create: (_) => CloudFunctionsBloc()..listExports(siteId),
         child: BlocConsumer<CloudFunctionsBloc, CloudFunctionsState>(
           listener: (context, state) {
-            if (state is ExportDeleteSuccess) {
+            if (state.hasExportDeleteSuccess()) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -101,6 +101,9 @@ class ManageExportsScreen extends StatelessWidget {
                   );
                 },
               );
+            }
+            if (state.hasExportDeleteSuccess()) {
+              return const Center(child: CircularProgressIndicator());
             }
             return Center(
               child: Text(
