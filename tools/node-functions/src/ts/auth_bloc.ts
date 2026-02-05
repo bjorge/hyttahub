@@ -121,6 +121,7 @@ export interface AuthBlocState {
   email: string;
   errorMessage: string;
   isServiceAdmin: boolean;
+  uid: string;
 }
 
 export interface AuthBlocEvent {
@@ -165,7 +166,7 @@ export interface AuthBlocEvent_RemoveAccount {
 }
 
 function createBaseAuthBlocState(): AuthBlocState {
-  return { authState: 0, email: "", errorMessage: "", isServiceAdmin: false };
+  return { authState: 0, email: "", errorMessage: "", isServiceAdmin: false, uid: "" };
 }
 
 export const AuthBlocState = {
@@ -181,6 +182,9 @@ export const AuthBlocState = {
     }
     if (message.isServiceAdmin !== false) {
       writer.uint32(32).bool(message.isServiceAdmin);
+    }
+    if (message.uid !== "") {
+      writer.uint32(42).string(message.uid);
     }
     return writer;
   },
@@ -220,6 +224,13 @@ export const AuthBlocState = {
 
           message.isServiceAdmin = reader.bool();
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.uid = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -235,6 +246,7 @@ export const AuthBlocState = {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       errorMessage: isSet(object.errorMessage) ? globalThis.String(object.errorMessage) : "",
       isServiceAdmin: isSet(object.isServiceAdmin) ? globalThis.Boolean(object.isServiceAdmin) : false,
+      uid: isSet(object.uid) ? globalThis.String(object.uid) : "",
     };
   },
 
@@ -252,6 +264,9 @@ export const AuthBlocState = {
     if (message.isServiceAdmin !== false) {
       obj.isServiceAdmin = message.isServiceAdmin;
     }
+    if (message.uid !== "") {
+      obj.uid = message.uid;
+    }
     return obj;
   },
 
@@ -264,6 +279,7 @@ export const AuthBlocState = {
     message.email = object.email ?? "";
     message.errorMessage = object.errorMessage ?? "";
     message.isServiceAdmin = object.isServiceAdmin ?? false;
+    message.uid = object.uid ?? "";
     return message;
   },
 };

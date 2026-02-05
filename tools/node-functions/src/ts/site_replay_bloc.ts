@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
-import { AppReplayWrapper } from "./app_wrapper";
 import { CommonReplayStateEnum, commonReplayStateEnumFromJSON, commonReplayStateEnumToJSON } from "./common_blocs";
 
 export const protobufPackage = "";
@@ -21,7 +20,6 @@ export interface SiteReplayBlocState {
   members: { [key: number]: SiteReplayBlocState_Member };
   /** members that have been removed */
   removedMembers: { [key: number]: SiteReplayBlocState_Member };
-  appBlocState?: AppReplayWrapper | undefined;
 }
 
 export interface SiteReplayBlocState_Member {
@@ -45,7 +43,7 @@ export interface SiteReplayBlocState_RemovedMembersEntry {
 }
 
 function createBaseSiteReplayBlocState(): SiteReplayBlocState {
-  return { state: 0, events: {}, name: "", members: {}, removedMembers: {}, appBlocState: undefined };
+  return { state: 0, events: {}, name: "", members: {}, removedMembers: {} };
 }
 
 export const SiteReplayBlocState = {
@@ -65,9 +63,6 @@ export const SiteReplayBlocState = {
     Object.entries(message.removedMembers).forEach(([key, value]) => {
       SiteReplayBlocState_RemovedMembersEntry.encode({ key: key as any, value }, writer.uint32(42).fork()).ldelim();
     });
-    if (message.appBlocState !== undefined) {
-      AppReplayWrapper.encode(message.appBlocState, writer.uint32(162).fork()).ldelim();
-    }
     return writer;
   },
 
@@ -122,13 +117,6 @@ export const SiteReplayBlocState = {
             message.removedMembers[entry5.key] = entry5.value;
           }
           continue;
-        case 20:
-          if (tag !== 162) {
-            break;
-          }
-
-          message.appBlocState = AppReplayWrapper.decode(reader, reader.uint32());
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -163,7 +151,6 @@ export const SiteReplayBlocState = {
           {},
         )
         : {},
-      appBlocState: isSet(object.appBlocState) ? AppReplayWrapper.fromJSON(object.appBlocState) : undefined,
     };
   },
 
@@ -202,9 +189,6 @@ export const SiteReplayBlocState = {
         });
       }
     }
-    if (message.appBlocState !== undefined) {
-      obj.appBlocState = AppReplayWrapper.toJSON(message.appBlocState);
-    }
     return obj;
   },
 
@@ -238,9 +222,6 @@ export const SiteReplayBlocState = {
       }
       return acc;
     }, {});
-    message.appBlocState = (object.appBlocState !== undefined && object.appBlocState !== null)
-      ? AppReplayWrapper.fromPartial(object.appBlocState)
-      : undefined;
     return message;
   },
 };

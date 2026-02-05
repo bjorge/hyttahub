@@ -10,10 +10,15 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "";
 
 export enum CommonReplayStateEnum {
-  ok = 0,
-  fetchingConfig = 1,
-  uninitialized = 2,
+  /** hydrating - startup, not listening yet */
+  hydrating = 0,
+  /** listening - listening to non-empty events collection */
+  listening = 1,
+  /** uninitializedListening - listening to an empty events collection */
+  uninitializedListening = 2,
+  /** networkError - network error at startup */
   networkError = 3,
+  /** permissionDenied - permission denied at startup */
   permissionDenied = 4,
   UNRECOGNIZED = -1,
 }
@@ -21,14 +26,14 @@ export enum CommonReplayStateEnum {
 export function commonReplayStateEnumFromJSON(object: any): CommonReplayStateEnum {
   switch (object) {
     case 0:
-    case "ok":
-      return CommonReplayStateEnum.ok;
+    case "hydrating":
+      return CommonReplayStateEnum.hydrating;
     case 1:
-    case "fetchingConfig":
-      return CommonReplayStateEnum.fetchingConfig;
+    case "listening":
+      return CommonReplayStateEnum.listening;
     case 2:
-    case "uninitialized":
-      return CommonReplayStateEnum.uninitialized;
+    case "uninitializedListening":
+      return CommonReplayStateEnum.uninitializedListening;
     case 3:
     case "networkError":
       return CommonReplayStateEnum.networkError;
@@ -44,12 +49,12 @@ export function commonReplayStateEnumFromJSON(object: any): CommonReplayStateEnu
 
 export function commonReplayStateEnumToJSON(object: CommonReplayStateEnum): string {
   switch (object) {
-    case CommonReplayStateEnum.ok:
-      return "ok";
-    case CommonReplayStateEnum.fetchingConfig:
-      return "fetchingConfig";
-    case CommonReplayStateEnum.uninitialized:
-      return "uninitialized";
+    case CommonReplayStateEnum.hydrating:
+      return "hydrating";
+    case CommonReplayStateEnum.listening:
+      return "listening";
+    case CommonReplayStateEnum.uninitializedListening:
+      return "uninitializedListening";
     case CommonReplayStateEnum.networkError:
       return "networkError";
     case CommonReplayStateEnum.permissionDenied:
@@ -61,9 +66,12 @@ export function commonReplayStateEnumToJSON(object: CommonReplayStateEnum): stri
 }
 
 export interface CommonReplayBlocEvent {
-  listen?: boolean | undefined;
+  /** true or false */
+  listen?:
+    | boolean
+    | undefined;
+  /** internal to bloc */
   newEvents?: CommonReplayBlocEvent_NewEvents | undefined;
-  errorOccurred?: string | undefined;
 }
 
 export interface CommonReplayBlocEvent_NewEvents {
@@ -195,7 +203,7 @@ export interface CommonSubmitBlocState_SubmitProgress {
 }
 
 function createBaseCommonReplayBlocEvent(): CommonReplayBlocEvent {
-  return { listen: undefined, newEvents: undefined, errorOccurred: undefined };
+  return { listen: undefined, newEvents: undefined };
 }
 
 export const CommonReplayBlocEvent = {
@@ -205,9 +213,6 @@ export const CommonReplayBlocEvent = {
     }
     if (message.newEvents !== undefined) {
       CommonReplayBlocEvent_NewEvents.encode(message.newEvents, writer.uint32(18).fork()).ldelim();
-    }
-    if (message.errorOccurred !== undefined) {
-      writer.uint32(26).string(message.errorOccurred);
     }
     return writer;
   },
@@ -233,13 +238,6 @@ export const CommonReplayBlocEvent = {
 
           message.newEvents = CommonReplayBlocEvent_NewEvents.decode(reader, reader.uint32());
           continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.errorOccurred = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -253,7 +251,6 @@ export const CommonReplayBlocEvent = {
     return {
       listen: isSet(object.listen) ? globalThis.Boolean(object.listen) : undefined,
       newEvents: isSet(object.newEvents) ? CommonReplayBlocEvent_NewEvents.fromJSON(object.newEvents) : undefined,
-      errorOccurred: isSet(object.errorOccurred) ? globalThis.String(object.errorOccurred) : undefined,
     };
   },
 
@@ -264,9 +261,6 @@ export const CommonReplayBlocEvent = {
     }
     if (message.newEvents !== undefined) {
       obj.newEvents = CommonReplayBlocEvent_NewEvents.toJSON(message.newEvents);
-    }
-    if (message.errorOccurred !== undefined) {
-      obj.errorOccurred = message.errorOccurred;
     }
     return obj;
   },
@@ -280,7 +274,6 @@ export const CommonReplayBlocEvent = {
     message.newEvents = (object.newEvents !== undefined && object.newEvents !== null)
       ? CommonReplayBlocEvent_NewEvents.fromPartial(object.newEvents)
       : undefined;
-    message.errorOccurred = object.errorOccurred ?? undefined;
     return message;
   },
 };

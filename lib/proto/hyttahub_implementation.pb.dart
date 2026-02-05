@@ -23,6 +23,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     $core.int? appBuildNumber,
     $core.String? appId,
     $core.String? firebaseRootCollection,
+    $core.bool? disableFirestoreCache,
   }) {
     final $result = create();
     if (storage != null) {
@@ -37,6 +38,9 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     if (firebaseRootCollection != null) {
       $result.firebaseRootCollection = firebaseRootCollection;
     }
+    if (disableFirestoreCache != null) {
+      $result.disableFirestoreCache = disableFirestoreCache;
+    }
     return $result;
   }
   HyttaHubImplementation._() : super();
@@ -48,6 +52,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     ..a<$core.int>(2, _omitFieldNames ? '' : 'appBuildNumber', $pb.PbFieldType.O3, protoName: 'appBuildNumber')
     ..aOS(3, _omitFieldNames ? '' : 'appId', protoName: 'appId')
     ..aOS(4, _omitFieldNames ? '' : 'firebaseRootCollection', protoName: 'firebaseRootCollection')
+    ..aOB(5, _omitFieldNames ? '' : 'disableFirestoreCache')
     ..hasRequiredFields = false
   ;
 
@@ -107,6 +112,15 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
   $core.bool hasFirebaseRootCollection() => $_has(3);
   @$pb.TagNumber(4)
   void clearFirebaseRootCollection() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.bool get disableFirestoreCache => $_getBF(4);
+  @$pb.TagNumber(5)
+  set disableFirestoreCache($core.bool v) { $_setBool(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasDisableFirestoreCache() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearDisableFirestoreCache() => clearField(5);
 }
 
 

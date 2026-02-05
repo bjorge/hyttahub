@@ -49,6 +49,7 @@ Future<void> main() async {
       appBuildNumber: appBuildNumber,
       appId: 'hyttahub.example.tictactoe',
       firebaseRootCollection: firebaseRootCollection,
+      disableFirestoreCache: true,
     ),
     firebaseOptions: DefaultFirebaseOptions.currentPlatform,
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),

@@ -12,4 +12,5 @@ message HyttaHubImplementation {
   int32 appBuildNumber = 2;
   string appId = 3;
   string firebaseRootCollection = 4;
+  bool disable_firestore_cache = 5;
 }

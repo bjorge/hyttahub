@@ -49,6 +49,7 @@ Future<void> main() async {
       firebaseRootCollection: firebaseRootCollection,
       appId: 'hyttahub.example.template',
       storage: storage,
+      disableFirestoreCache: true,
     ),
     firebaseOptions: DefaultFirebaseOptions.currentPlatform,
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),

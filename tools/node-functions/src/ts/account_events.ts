@@ -32,7 +32,11 @@ export interface AccountEvent {
     | string
     | undefined;
   /** the user left this site */
-  leaveSite?: string | undefined;
+  leaveSite?:
+    | string
+    | undefined;
+  /** the user reordered their sites */
+  reorderSites?: ReorderSites | undefined;
 }
 
 /** these are the terms and policies that the user has accepted */
@@ -44,6 +48,10 @@ export interface AccountEvent_Terms {
 export interface AccountEvent_InitialEvent {
   terms?: AccountEvent_Terms | undefined;
   instance: string;
+}
+
+export interface ReorderSites {
+  siteIds: string[];
 }
 
 /** The SubmitAccountEvent is passed to the submit bloc handler */
@@ -77,6 +85,7 @@ function createBaseAccountEvent(): AccountEvent {
     removeSite: undefined,
     joinSite: undefined,
     leaveSite: undefined,
+    reorderSites: undefined,
   };
 }
 
@@ -105,6 +114,9 @@ export const AccountEvent = {
     }
     if (message.leaveSite !== undefined) {
       writer.uint32(66).string(message.leaveSite);
+    }
+    if (message.reorderSites !== undefined) {
+      ReorderSites.encode(message.reorderSites, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -172,6 +184,13 @@ export const AccountEvent = {
 
           message.leaveSite = reader.string();
           continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.reorderSites = ReorderSites.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -193,6 +212,7 @@ export const AccountEvent = {
       removeSite: isSet(object.removeSite) ? globalThis.String(object.removeSite) : undefined,
       joinSite: isSet(object.joinSite) ? globalThis.String(object.joinSite) : undefined,
       leaveSite: isSet(object.leaveSite) ? globalThis.String(object.leaveSite) : undefined,
+      reorderSites: isSet(object.reorderSites) ? ReorderSites.fromJSON(object.reorderSites) : undefined,
     };
   },
 
@@ -222,6 +242,9 @@ export const AccountEvent = {
     if (message.leaveSite !== undefined) {
       obj.leaveSite = message.leaveSite;
     }
+    if (message.reorderSites !== undefined) {
+      obj.reorderSites = ReorderSites.toJSON(message.reorderSites);
+    }
     return obj;
   },
 
@@ -242,6 +265,9 @@ export const AccountEvent = {
     message.removeSite = object.removeSite ?? undefined;
     message.joinSite = object.joinSite ?? undefined;
     message.leaveSite = object.leaveSite ?? undefined;
+    message.reorderSites = (object.reorderSites !== undefined && object.reorderSites !== null)
+      ? ReorderSites.fromPartial(object.reorderSites)
+      : undefined;
     return message;
   },
 };
@@ -392,6 +418,65 @@ export const AccountEvent_InitialEvent = {
       ? AccountEvent_Terms.fromPartial(object.terms)
       : undefined;
     message.instance = object.instance ?? "";
+    return message;
+  },
+};
+
+function createBaseReorderSites(): ReorderSites {
+  return { siteIds: [] };
+}
+
+export const ReorderSites = {
+  encode(message: ReorderSites, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.siteIds) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ReorderSites {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseReorderSites();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.siteIds.push(reader.string());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ReorderSites {
+    return {
+      siteIds: globalThis.Array.isArray(object?.siteIds) ? object.siteIds.map((e: any) => globalThis.String(e)) : [],
+    };
+  },
+
+  toJSON(message: ReorderSites): unknown {
+    const obj: any = {};
+    if (message.siteIds?.length) {
+      obj.siteIds = message.siteIds;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ReorderSites>, I>>(base?: I): ReorderSites {
+    return ReorderSites.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ReorderSites>, I>>(object: I): ReorderSites {
+    const message = createBaseReorderSites();
+    message.siteIds = object.siteIds?.map((e) => e) || [];
     return message;
   },
 };
