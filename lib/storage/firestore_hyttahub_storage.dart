@@ -15,7 +15,10 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Future<Map<String, dynamic>?> getDocument(String path, String docId) async {
-    final doc = await _firestore.collection(path).doc(docId).get();
+    final doc = await _firestore
+        .collection(path)
+        .doc(docId)
+        .get(const GetOptions(source: Source.server));
     return doc.data();
   }
 
@@ -29,7 +32,7 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     if (orderBy != null) {
       query = query.orderBy(orderBy, descending: descending);
     }
-    final snapshot = await query.get();
+    final snapshot = await query.get(const GetOptions(source: Source.server));
     return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
 
@@ -63,6 +66,7 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
         .where(versionField, isGreaterThan: lastVersion)
         .orderBy(versionField, descending: false)
         .snapshots(includeMetadataChanges: true)
+        .where((snapshot) => !snapshot.metadata.isFromCache)
         .map((snapshot) {
           final events = <int, String>{};
           for (var doc in snapshot.docs) {
@@ -83,7 +87,11 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
-    return _firestore.collection(path).snapshots(includeMetadataChanges: true).map((snapshot) {
+    return _firestore
+        .collection(path)
+        .snapshots(includeMetadataChanges: true)
+        .where((snapshot) => !snapshot.metadata.isFromCache)
+        .map((snapshot) {
       final collection = <String, Map<String, dynamic>>{};
       for (var doc in snapshot.docs) {
         if (doc.metadata.hasPendingWrites) {
