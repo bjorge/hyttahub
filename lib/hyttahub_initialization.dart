@@ -30,13 +30,13 @@ Future<void> initializeHyttaHub({
   }
 
   if (firebaseOptions != null) {
+    await Firebase.initializeApp(options: firebaseOptions);
+
     if (implementation.storage == StorageEnum.firestore && implementation.disableFirestoreCache) {
       FirebaseFirestore.instance.settings = const Settings(
         persistenceEnabled: false,
       );
     }
-
-    await Firebase.initializeApp(options: firebaseOptions);
 
     if (kDebugMode) {
       final host = getEmulatorHost();

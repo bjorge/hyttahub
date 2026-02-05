@@ -62,10 +62,13 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
         .collection(path)
         .where(versionField, isGreaterThan: lastVersion)
         .orderBy(versionField, descending: false)
-        .snapshots()
+        .snapshots(includeMetadataChanges: true)
         .map((snapshot) {
           final events = <int, String>{};
           for (var doc in snapshot.docs) {
+            if (doc.metadata.hasPendingWrites) {
+              continue;
+            }
             try {
               final version = doc[versionField] as int;
               final payload = doc[payloadField] as String;
@@ -80,9 +83,12 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
-    return _firestore.collection(path).snapshots().map((snapshot) {
+    return _firestore.collection(path).snapshots(includeMetadataChanges: true).map((snapshot) {
       final collection = <String, Map<String, dynamic>>{};
       for (var doc in snapshot.docs) {
+        if (doc.metadata.hasPendingWrites) {
+          continue;
+        }
         collection[doc.id] = doc.data();
       }
       return collection;
