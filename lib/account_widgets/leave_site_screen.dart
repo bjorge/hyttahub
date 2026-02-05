@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/account_blocs/account_submit_bloc.dart';
 import 'package:hyttahub/account_widgets/account_submit_button.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -34,10 +35,23 @@ class _LeaveSiteScreenState extends State<LeaveSiteScreen> {
       base64Url.decode(widget.event),
     );
 
-    return BlocProvider(
-      create: (_) => AccountSubmitBloc(userEmail, submitEvent)
-        ..isFormValid = false
-        ..payloadChanged = true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AccountReplayBloc>(
+          create:
+              (_) =>
+                  AccountReplayBloc(
+                    userEmail,
+                  )..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider(
+          create:
+              (_) =>
+                  AccountSubmitBloc(userEmail, submitEvent)
+                    ..isFormValid = false
+                    ..payloadChanged = true,
+        ),
+      ],
       child: Form(
         key: _formKey,
         child:

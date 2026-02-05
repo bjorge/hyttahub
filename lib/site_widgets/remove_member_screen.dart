@@ -8,6 +8,7 @@ import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RemoveMemberScreen extends StatefulWidget {
   const RemoveMemberScreen({
-    super.key,
-    required this.event,
-    required this.siteId,
+    super.key, required this.event, required this.siteId,
   });
 
   final String event;
@@ -36,10 +35,23 @@ class _RemoveMemberScreenState extends State<RemoveMemberScreen> {
       base64Url.decode(widget.event),
     );
 
-    return BlocProvider(
-      create: (_) => SiteSubmitBloc(widget.siteId, submitEvent)
-        ..isFormValid = false
-        ..payloadChanged = true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SiteReplayBloc>(
+          create:
+              (_) =>
+                  SiteReplayBloc(
+                    widget.siteId,
+                  )..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider(
+          create:
+              (_) =>
+                  SiteSubmitBloc(widget.siteId, submitEvent)
+                    ..isFormValid = false
+                    ..payloadChanged = true,
+        ),
+      ],
       child: Form(
         key: _formKey,
         child: BlocConsumer<SiteSubmitBloc, BaseSubmitState<SubmitSiteEvent>>(
