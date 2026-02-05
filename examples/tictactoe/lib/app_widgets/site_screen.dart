@@ -2,9 +2,6 @@ import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
-import 'package:tictactoe/app_blocs/app_submit_bloc.dart';
-import 'package:tictactoe/proto/app_events.pb.dart';
-import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:tictactoe/routers/app_routes.dart';
 import 'package:tictactoe/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
@@ -15,7 +12,6 @@ import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
@@ -38,8 +34,7 @@ class _SiteScreenState extends State<SiteScreen> {
   ) {
     if (appState.hasNextMove()) {
       final nextMove = appState.nextMove;
-      final maxVersion = appState.events.keys.fold(0, (p, e) => e > p ? e : p);
-      final version = maxVersion + 1;
+      final version = appState.nextVersion;
 
       final appEvent = AppEvent(move: nextMove);
       final submitEvent =
@@ -300,11 +295,7 @@ class TicTacToeBoard extends StatelessWidget {
                               !isPending &&
                               submitState.submissionState.state !=
                                   CommonSubmitBlocState_State.submitting) {
-                            final maxVersion = appState.events.keys.fold(
-                              0,
-                              (p, e) => e > p ? e : p,
-                            );
-                            final version = maxVersion + 1;
+                            final version = appState.nextVersion;
                             // Submit move
                             final player =
                                 appState.turn; // Move as the current turn

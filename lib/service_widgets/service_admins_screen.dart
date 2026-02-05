@@ -10,7 +10,6 @@ import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';

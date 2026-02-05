@@ -7,7 +7,6 @@ import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
-import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
@@ -69,12 +68,7 @@ class _ManageSitesScreenState extends State<ManageSitesScreen> {
                                 final submmitValue = SubmitAccountEvent(
                                   event: AccountEvent(
                                     leaveSite: siteId,
-                                    version:
-                                        accountState.events.keys.fold<int>(
-                                          1,
-                                          (p, e) => e > p ? e : p,
-                                        ) +
-                                        1,
+                                    version: accountState.nextVersion,
                                   ),
                                 );
 

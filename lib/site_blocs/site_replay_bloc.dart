@@ -8,9 +8,11 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
+export 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
+export 'package:hyttahub/site_blocs/site_replay.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Top-level isolate handler for service replay. Runs in a background isolate

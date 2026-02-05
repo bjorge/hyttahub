@@ -11,7 +11,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';

@@ -5,17 +5,22 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
+extension SiteReplayBlocStateX on SiteReplayBlocState {
+  int get lastVersion => events.keys.fold(
+        0,
+        (previousValue, element) =>
+            element > previousValue ? element : previousValue,
+      );
+  int get nextVersion => lastVersion + 1;
+}
+
 // update the passed in replay state with the new events
 // note: after the replay, set the approprate state
 SiteReplayBlocState siteReplay(
   SiteReplayBlocState siteReplay,
   Map<int, String> base64Events,
 ) {
-  final lastVersion = siteReplay.events.keys.fold(
-    0,
-    (previousValue, element) =>
-        element > previousValue ? element : previousValue,
-  );
+  final lastVersion = siteReplay.lastVersion;
 
   final eventKeys = base64Events.keys.where((key) => key > lastVersion).toList()
     ..sort();

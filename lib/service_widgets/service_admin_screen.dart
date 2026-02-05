@@ -8,7 +8,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -72,13 +71,7 @@ class ServiceAvailableOption extends StatelessWidget {
             serviceStatus: ServiceEvent_ServiceStatus(
               unavailable: serviceState.serviceUnavailable,
             ),
-            version: serviceState.events.isEmpty
-                ? 1
-                : serviceState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: serviceState.nextVersion,
           ),
         );
 
@@ -110,13 +103,7 @@ class ServiceMinVersionOption extends StatelessWidget {
             minVersion: ServiceEvent_MinimumVersionRequired(
               value: serviceState.minVersion,
             ),
-            version: serviceState.events.isEmpty
-                ? 1
-                : serviceState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: serviceState.nextVersion,
           ),
         );
 
@@ -173,13 +160,7 @@ class ServiceBetaUsersOption extends StatelessWidget {
             betaUsersFilter: serviceState.hasBetaUsersFilter()
                 ? serviceState.betaUsersFilter
                 : BloomFilter(),
-            version: serviceState.events.isEmpty
-                ? 1
-                : serviceState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: serviceState.nextVersion,
           ),
         );
 
@@ -210,13 +191,7 @@ class ServiceTermsOption extends StatelessWidget {
           email: GetIt.instance<AuthBloc>().state.email,
           event: ServiceEvent(
             terms: ServiceEvent_TermsOfService(content: serviceState.terms),
-            version: serviceState.events.isEmpty
-                ? 1
-                : serviceState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: serviceState.nextVersion,
           ),
         );
 
@@ -246,13 +221,7 @@ class ServicePrivacyOption extends StatelessWidget {
           email: GetIt.instance<AuthBloc>().state.email,
           event: ServiceEvent(
             privacy: ServiceEvent_PrivacyPolicy(content: serviceState.privacy),
-            version: serviceState.events.isEmpty
-                ? 1
-                : serviceState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: serviceState.nextVersion,
           ),
         );
 

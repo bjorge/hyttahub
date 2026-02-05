@@ -2,8 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:template/proto/app_events.pb.dart';
-import 'package:template/proto/app_replay_bloc.pb.dart';
+import 'package:template/app_blocs/app_replay_bloc.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:protobuf/protobuf.dart';
@@ -12,11 +11,7 @@ AppReplayBlocState appReplay(
   AppReplayBlocState appBlocState,
   Map<int, String> base64Events,
 ) {
-  final lastVersion = appBlocState.events.keys.fold(
-    0,
-    (previousValue, element) =>
-        element > previousValue ? element : previousValue,
-  );
+  final lastVersion = appBlocState.lastVersion;
 
   final eventKeys =
       base64Events.keys.where((key) => key > lastVersion).toList()..sort();

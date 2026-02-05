@@ -5,8 +5,6 @@ import 'package:template/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:template/app_blocs/app_replay_bloc.dart';
-import 'package:template/proto/app_events.pb.dart';
-import 'package:template/proto/app_replay_bloc.pb.dart';
 import 'package:template/routers/app_routes.dart';
 import 'package:template/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
@@ -17,7 +15,6 @@ import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
@@ -267,12 +264,6 @@ class AppStateAndButtons extends StatefulWidget {
 class _AppStateAndButtonsState extends State<AppStateAndButtons> {
   String? _generatedUrl;
 
-  int _calculateVersion(Map<int, String> events) {
-    return events.isEmpty
-        ? 1
-        : events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
@@ -282,7 +273,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
           return errorWidget;
         }
 
-        final version = _calculateVersion(appState.events);
+        final version = appState.nextVersion;
         final email = GetIt.instance<AuthBloc>().state.email;
 
         return Column(
@@ -531,9 +522,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
 
                         // Now base64 encode the event part
                         final siteEvent = SiteEvent(
-                          version: _calculateVersion(
-                            appReplayBloc.state.events,
-                          ),
+                          version: appReplayBloc.state.nextVersion,
                           appEvent: packAppEventWrapper(
                             appEvent.writeToBuffer(),
                           ),

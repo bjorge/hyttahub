@@ -10,7 +10,9 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
+export 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
+export 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Top-level isolate handler for service replay. Runs in a background isolate

@@ -12,10 +12,8 @@ import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/utilities/ids.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
-import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
@@ -234,12 +232,7 @@ class AccountSettingsButton extends StatelessWidget {
                     Navigator.pop(context);
                     final submmitValue = SubmitAccountEvent(
                       event: AccountEvent(
-                        version:
-                            accountState.events.keys.fold<int>(
-                              1,
-                              (p, e) => e > p ? e : p,
-                            ) +
-                            1,
+                        version: accountState.nextVersion,
                         reorderSites: ReorderSites(
                           siteIds: accountState.sitesIds,
                         ),
@@ -359,13 +352,7 @@ class CreateSiteDialogOption extends StatelessWidget {
           createSiteUserName: '',
           event: AccountEvent(
             createSite: generateId(),
-            version: accountState.events.isEmpty
-                ? 1
-                : accountState.events.keys.fold<int>(
-                        1,
-                        (p, e) => e > p ? e : p,
-                      ) +
-                      1,
+            version: accountState.nextVersion,
           ),
         );
 
@@ -396,8 +383,7 @@ class JoinSiteDialogOption extends StatelessWidget {
           event: AccountEvent(
             joinSite: '',
             version:
-                accountState.events.keys.fold<int>(1, (p, e) => e > p ? e : p) +
-                1,
+                accountState.nextVersion,
           ),
         );
 

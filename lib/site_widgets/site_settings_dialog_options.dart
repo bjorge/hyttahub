@@ -3,7 +3,7 @@
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
+import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -25,10 +25,7 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
           authorEmail: GetIt.instance<AuthBloc>().state.email,
           event: SiteEvent(
             updateSiteName: SiteEvent_UpdateSiteName(name: siteState.name),
-            version: siteState.events.isEmpty
-                ? 1
-                : siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) +
-                      1,
+            version: siteState.nextVersion,
           ),
         );
         final encodedSubmitValue = base64UrlEncode(

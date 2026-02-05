@@ -6,6 +6,15 @@ import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
+extension AccountReplayBlocStateX on AccountReplayBlocState {
+  int get lastVersion => events.keys.fold(
+        0,
+        (previousValue, element) =>
+            element > previousValue ? element : previousValue,
+      );
+  int get nextVersion => lastVersion + 1;
+}
+
 // update the passed in replay state with the new events
 // note: after the replay, set the approprate state
 AccountReplayBlocState accountReplay(
@@ -21,11 +30,7 @@ AccountReplayBlocState accountReplay(
   //   print("AccountReplay: accountReplay called with events: $base64Events");
   // }
 
-  final lastVersion = accountReplay.events.keys.fold(
-    0,
-    (previousValue, element) =>
-        element > previousValue ? element : previousValue,
-  );
+  final lastVersion = accountReplay.lastVersion;
 
   final eventKeys = base64Events.keys.where((key) => key > lastVersion).toList()
     ..sort();

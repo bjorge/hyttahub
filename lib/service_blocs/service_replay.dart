@@ -6,6 +6,15 @@ import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
+extension ServiceReplayBlocStateX on ServiceReplayBlocState {
+  int get lastVersion => events.keys.fold(
+        0,
+        (previousValue, element) =>
+            element > previousValue ? element : previousValue,
+      );
+  int get nextVersion => lastVersion + 1;
+}
+
 // update the passed in replay state with the new events
 // note: after the replay, set the approprate state
 ServiceReplayBlocState serviceReplay(
@@ -21,11 +30,7 @@ ServiceReplayBlocState serviceReplay(
   //   print("ServiceReplay: serviceReplay called with events: $base64Events");
   // }
 
-  final lastVersion = serviceReplay.events.keys.fold(
-    0,
-    (previousValue, element) =>
-        element > previousValue ? element : previousValue,
-  );
+  final lastVersion = serviceReplay.lastVersion;
 
   final eventKeys = base64Events.keys.where((key) => key > lastVersion).toList()
     ..sort();

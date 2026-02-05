@@ -4,7 +4,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:tictactoe/app_blocs/app_replay.dart';
+export 'package:tictactoe/app_blocs/app_submit_bloc.dart';
+export 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
+export 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/firebase_paths.dart';
@@ -102,4 +105,10 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
   Uint8List toBuffer(AppReplayBlocState state) {
     return state.writeToBuffer();
   }
+}
+
+extension AppReplayBlocStateX on AppReplayBlocState {
+  int get lastVersion =>
+      events.isEmpty ? 0 : events.keys.fold<int>(0, (p, e) => e > p ? e : p);
+  int get nextVersion => lastVersion + 1;
 }

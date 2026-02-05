@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
-import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';

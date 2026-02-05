@@ -10,7 +10,6 @@ import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +33,7 @@ class _UpdateTermsWidget extends State<UpdateTermsWidget> {
     final accountState = context.read<AccountReplayBloc>().state;
     final accountEvent = SubmitAccountEvent(
       event: AccountEvent(
-        version: accountState.events.isEmpty
-            ? 1
-            : accountState.events.keys.fold<int>(1, (p, e) => e > p ? e : p) +
-                  1,
+        version: accountState.nextVersion,
         terms: AccountEvent_Terms(termsVersion: 0, policyVersion: 0),
       ),
     );
