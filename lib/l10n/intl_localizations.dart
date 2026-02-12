@@ -788,7 +788,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @betaUserEmailsLabel.
   ///
   /// In en, this message translates to:
-  /// **'Beta User Emails (comma-separated)'**
+  /// **'Beta User Emails'**
   String get betaUserEmailsLabel;
 
   /// No description provided for @aliasLabel.

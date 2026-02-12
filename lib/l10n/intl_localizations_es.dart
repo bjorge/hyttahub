@@ -380,8 +380,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
       'Introduce un número positivo válido.';
 
   @override
-  String get betaUserEmailsLabel =>
-      'Correos electrónicos de usuarios beta (separados por coma)';
+  String get betaUserEmailsLabel => 'Correos electrónicos de usuarios beta';
 
   @override
   String get aliasLabel => 'Alias';

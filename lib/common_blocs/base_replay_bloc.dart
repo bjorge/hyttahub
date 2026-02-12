@@ -129,7 +129,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
     if (kDebugMode) {
       print(
-        "BaseReplayBloc: _onNewEvents $eventsData _lastVersion: $_lastVersion",
+        "BaseReplayBloc: _onNewEvents $S $eventsData _lastVersion: $_lastVersion",
       );
     }
 

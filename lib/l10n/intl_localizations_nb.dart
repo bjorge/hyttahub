@@ -370,8 +370,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
       'Vennligst skriv inn et gyldig positivt tall.';
 
   @override
-  String get betaUserEmailsLabel =>
-      'E-postadresser for betabrukere (kommadelt)';
+  String get betaUserEmailsLabel => 'E-postadresser for betabrukere';
 
   @override
   String get aliasLabel => 'Alias';

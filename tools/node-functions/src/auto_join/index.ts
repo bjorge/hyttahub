@@ -41,10 +41,20 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
 
       logger.info(`Fetched ${snapshot.size} account events for ${email}`);
 
+      // NEW: Check if this is the only user in the site.
+      // If it is, this user created the site and we should skip the auto-join as it's redundant.
+      const siteUsersRef = db.collection(`hyttahub/${appPathSegment}/sites/${siteId}/site_users`);
+      const siteUsersSnapshot = await siteUsersRef.count().get();
+      const siteUsersCount = siteUsersSnapshot.data().count;
+
+      logger.info(`Site ${siteId} has ${siteUsersCount} user(s).`);
+
       // NEW: Check if account exists (specifically if version 1 exists)
       const accountExists = snapshot.docs.some(doc => doc.id === "1");
       
-      if (!accountExists) {
+      if (siteUsersCount <= 1) {
+        logger.info(`Only one user in site ${siteId} (the creator). Skipping join event creation to avoid redundancy.`);
+      } else if (!accountExists) {
         logger.info(`Account for ${email} has not been initialized yet (version 1 missing). Skipping join event creation. It will be handled by onAccountCreated later.`);
       } else {
         snapshot.docs.forEach((doc) => {

@@ -122,7 +122,7 @@ abstract class BaseSubmitBloc<T extends GeneratedMessage>
         emit(submitResult);
       } catch (e) {
         if (kDebugMode) {
-          print("submit error: ${e.toString()}");
+          print("submit error: $T ${e.toString()}");
         }
         final errorState = state.submissionState.deepCopy();
         errorState.state = CommonSubmitBlocState_State.error;

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
@@ -76,6 +77,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       final encodedSiteEvent = base64Encode(siteEvent.writeToBuffer());
 
       // Write site user first (sequential)
+      if (kDebugMode) {
+        print("write site user has version: ${siteEvent.version}");
+      }
       await storage.setDocument(
         firebaseSiteUsersPath(siteId),
         email,
@@ -86,6 +90,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       );
 
       // Then write site event (sequential)
+      if (kDebugMode) {
+        print("write site event has version: ${siteEvent.version}");
+      }
       await storage.setDocument(
         firebaseSiteEventsPath(siteId),
         siteEvent.version.toString(),
@@ -97,6 +104,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       );
 
       // Finally write account event (sequential)
+      if (kDebugMode) {
+        print("write account event version: ${submitAccountEvent.event.version}");
+      }
       await storage.setDocument(
         firebaseAccountEventsPath(email),
         submitAccountEvent.event.version.toString(),
@@ -107,6 +117,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         },
       );
     } else {
+      if (kDebugMode) {
+        print("non-create site event: ${submitAccountEvent.event.version}");
+      }
       await storage.runBatch((batch) async {
         if (submitAccountEvent.event.hasJoinSite()) {
           final siteId = submitAccountEvent.event.joinSite;
@@ -157,6 +170,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
     BaseSubmitState<SubmitAccountEvent> state,
   ) async {
     // There is no author in account events, so just return the same state
+    if (kDebugMode) {
+      print("account submit bloc getAuthor has verison: ${state.payload?.event.version}");
+    }
     return state;
   }
 }
