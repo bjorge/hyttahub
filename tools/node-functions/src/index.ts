@@ -27,6 +27,7 @@ export {
 
 export {
   autoJoinOnMemberAdded,
+  onAccountCreated,
 } from "./auto_join/index";
 
 // Export helper functions for app cloud functions.
