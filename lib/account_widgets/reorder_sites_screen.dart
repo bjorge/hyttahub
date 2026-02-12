@@ -107,10 +107,8 @@ class ReorderSitesFormField extends BaseReorderableFormField<
         return ReorderableItem(
           id: siteId.hashCode,
           title: siteId,
-          leading: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 200),
-            child: SiteNameDisplay(collectionName: siteId),
-          ),
+          titleWidget: SiteNameDisplay(collectionName: siteId),
+          leading: const SizedBox.shrink(),
         );
       },
     );

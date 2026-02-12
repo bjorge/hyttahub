@@ -576,11 +576,13 @@ abstract class BaseConfirmationCheckbox<
 class ReorderableItem {
   final int id;
   final String title;
+  final Widget? titleWidget;
   final Widget leading;
 
   const ReorderableItem({
     required this.id,
     required this.title,
+    this.titleWidget,
     required this.leading,
   });
 
@@ -681,7 +683,7 @@ class _BaseReorderableFormFieldState<
               return ListTile(
                 key: Key('${item.id}'),
                 leading: item.leading,
-                title: Text(item.title),
+                title: item.titleWidget ?? Text(item.title),
                 trailing: readOnly
                     ? null
                     : ReorderableDragStartListener(
