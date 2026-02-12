@@ -123,7 +123,7 @@
   "minVersionLabel": "Min versjon",
   "versionNumberEmptyError": "Vennligst skriv inn et versjonsnummer.",
   "versionNumberInvalidError": "Vennligst skriv inn et gyldig positivt tall.",
-  "betaUserEmailsLabel": "E-postadresser for betabrukere (kommadelt)",
+  "betaUserEmailsLabel": "E-postadresser for betabrukere",
   "aliasLabel": "Alias",
   "nicknameEmptyError": "Kallenavn kan ikke være tomt",
   "adminAliasExistsError": "Administratoralias finnes allerede",

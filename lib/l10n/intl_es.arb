@@ -123,7 +123,7 @@
   "minVersionLabel": "Versión mínima",
   "versionNumberEmptyError": "Introduce un número de versión.",
   "versionNumberInvalidError": "Introduce un número positivo válido.",
-  "betaUserEmailsLabel": "Correos electrónicos de usuarios beta (separados por coma)",
+  "betaUserEmailsLabel": "Correos electrónicos de usuarios beta",
   "aliasLabel": "Alias",
   "nicknameEmptyError": "El apodo no puede estar vacío",
   "adminAliasExistsError": "El alias de administrador ya existe",

@@ -24,12 +24,13 @@ import { ServiceEvent } from "../ts/service_events";
 export const autoJoinOnMemberAdded = onDocumentCreated(
   "hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}",
   async (event) => {
-    const { appPathSegment, siteId, email } = event.params;
+      const { appPathSegment, siteId } = event.params;
+      const email = event.params.email.toLowerCase();
 
-    logger.info(`Auto-join triggered for ${email} on site ${siteId} (app: ${appPathSegment})`);
+      logger.info(`Auto-join triggered for ${email} on site ${siteId} (app: ${appPathSegment})`);
 
-    try {
-      const db = admin.firestore();
+      try {
+        const db = admin.firestore();
       const accountEventsRef = db.collection(firebaseAccountEventsPath(appPathSegment, email));
 
       // Fetch all account events to determine current state
@@ -100,7 +101,8 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
       if (betaUsersDoc.exists) {
         const data = betaUsersDoc.data();
         const betaUsersStr = data?.[fbBetaUsers] || "";
-        const betaUsersList = betaUsersStr.split(",").map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+        const rawList = betaUsersStr.split(/[,\n]/).map((s: string) => s.trim().toLowerCase()).filter((s: string) => s.length > 0);
+        const betaUsersList: string[] = Array.from(new Set<string>(rawList));
 
         if (!betaUsersList.includes(email)) {
           logger.info(`Adding ${email} to authorized emails list`);
@@ -156,7 +158,8 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
 export const onAccountCreated = onDocumentCreated(
   "hyttahub/{appPathSegment}/accounts/{email}/account_events/1",
   async (event) => {
-    const { appPathSegment, email } = event.params;
+    const { appPathSegment } = event.params;
+    const email = event.params.email.toLowerCase();
     logger.info(`Account creation trigger started for ${email} in app segment: ${appPathSegment}`);
 
     try {
@@ -170,7 +173,7 @@ export const onAccountCreated = onDocumentCreated(
 
       const sitesToJoin: string[] = [];
       sitesSnapshot.docs.forEach(doc => {
-        if (doc.id === email) {
+        if (doc.id.toLowerCase() === email) {
           // doc path: hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}
           const siteId = doc.ref.parent.parent?.id;
           if (siteId) {

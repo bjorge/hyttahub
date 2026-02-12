@@ -277,11 +277,11 @@ class BetaUsersFormField
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new);
+  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {
-    return payload.betaUsers;
+    return payload.betaUsers.replaceAll(',', '\n');
   }
 
   @override
@@ -292,16 +292,23 @@ class BetaUsersFormField
     final updatedPayload = originalPayload.deepCopy();
     updatedPayload.event = originalPayload.event.deepCopy();
 
-    if (newValue.isEmpty) {
-      updatedPayload.betaUsers = '';
+    final rawItems = newValue.split(RegExp(r'[,\n]')).map((e) => e.trim().toLowerCase()).toList();
+
+    final seen = <String>{};
+    final deduplicatedItems = <String>[];
+    for (var item in rawItems) {
+      if (item.isEmpty) {
+        deduplicatedItems.add('');
+      } else if (seen.add(item)) {
+        deduplicatedItems.add(item);
+      }
+    }
+    updatedPayload.betaUsers = deduplicatedItems.join(',');
+
+    if (newValue.trim().isEmpty) {
       updatedPayload.event.betaUsersFilter.clear();
     } else {
-      final emails = newValue
-          .toLowerCase()
-          .split(',')
-          .map((e) => e.trim())
-          .toList();
-      updatedPayload.betaUsers = emails.join(',');
+      final emails = seen.toList();
 
       final bloom = BloomFilterProcessor(
         size: defaultBloomFilterSize,

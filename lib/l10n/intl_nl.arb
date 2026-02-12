@@ -123,7 +123,7 @@
     "minVersionLabel": "Min Version",
     "versionNumberEmptyError": "Please enter a version number.",
     "versionNumberInvalidError": "Please enter a valid positive number.",
-    "betaUserEmailsLabel": "Beta User Emails (comma-separated)",
+    "betaUserEmailsLabel": "E-mailadressen van bètagebruikers",
     "aliasLabel": "Alias",
     "nicknameEmptyError": "Nickname cannot be empty",
     "adminAliasExistsError": "Admin alias already exists",
