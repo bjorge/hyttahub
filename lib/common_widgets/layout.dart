@@ -30,10 +30,16 @@ Widget commonAlertDialog(BuildContext context, String title, Widget content) {
 }
 
 class CommonListViewLayout extends StatelessWidget {
-  const CommonListViewLayout({super.key, required this.children, this.spacing});
+  const CommonListViewLayout({
+    super.key,
+    required this.children,
+    this.spacing,
+    this.isScrollable = true,
+  });
 
   final List<Widget> children;
   final double? spacing;
+  final bool isScrollable;
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +48,18 @@ class CommonListViewLayout extends StatelessWidget {
         final maxWidth = constraints.maxWidth;
         final leftRightPadding = maxWidth <= 500 ? 8.0 : (maxWidth - 500) / 4;
 
+        final content = Column(
+          spacing: spacing ?? 0.0,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        );
+
         return Padding(
           padding: EdgeInsets.only(
             left: leftRightPadding,
             right: leftRightPadding,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              spacing: spacing ?? 0.0,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: children,
-            ),
-          ),
+          child: isScrollable ? SingleChildScrollView(child: content) : content,
         );
       },
     );

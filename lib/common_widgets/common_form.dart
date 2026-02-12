@@ -611,12 +611,14 @@ abstract class BaseReorderableFormField<
     required CommonSubmitBlocEvent submission,
   })
   eventFactory;
+  final bool expand;
 
   const BaseReorderableFormField({
     super.key,
     required this.labelText,
     required this.formKey,
     required this.eventFactory,
+    this.expand = false,
   });
 
   @override
@@ -671,53 +673,57 @@ class _BaseReorderableFormFieldState<
                 state.submissionState.state ==
                     CommonSubmitBlocState_State.canSubmit);
 
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ReorderableListView.builder(
-            buildDefaultDragHandles: false,
-            shrinkWrap: true,
-            // physics: const NeverScrollableScrollPhysics(),
-            itemCount: _items.length,
-            itemBuilder: (context, index) {
-              final item = _items[index];
-              return ListTile(
-                key: Key('${item.id}'),
-                leading: item.leading,
-                title: item.titleWidget ?? Text(item.title),
-                trailing: readOnly
-                    ? null
-                    : ReorderableDragStartListener(
-                        index: index,
-                        child: const Icon(Icons.drag_handle),
-                      ),
-              );
-            },
-            onReorder: (int oldIndex, int newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) {
-                  newIndex -= 1;
-                }
-                final item = _items.removeAt(oldIndex);
-                _items.insert(newIndex, item);
-
-                final bloc = context.read<B>();
-                final updatedPayload = widget.updatePayload(
-                  bloc.state.payload!,
-                  _items,
-                );
-                bloc.add(
-                  widget.eventFactory(
-                    updatedPayload: updatedPayload,
-                    submission: CommonSubmitBlocEvent(
-                      isFormValid:
-                          widget.formKey.currentState?.validate() ?? false,
+        final list = ReorderableListView.builder(
+          buildDefaultDragHandles: false,
+          shrinkWrap: !widget.expand,
+          // physics: const NeverScrollableScrollPhysics(),
+          itemCount: _items.length,
+          itemBuilder: (context, index) {
+            final item = _items[index];
+            return ListTile(
+              key: Key('${item.id}'),
+              leading: item.leading,
+              title: item.titleWidget ?? Text(item.title),
+              trailing: readOnly
+                  ? null
+                  : ReorderableDragStartListener(
+                      index: index,
+                      child: const Icon(Icons.drag_handle),
                     ),
+            );
+          },
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (newIndex > oldIndex) {
+                newIndex -= 1;
+              }
+              final item = _items.removeAt(oldIndex);
+              _items.insert(newIndex, item);
+
+              final bloc = context.read<B>();
+              final updatedPayload = widget.updatePayload(
+                bloc.state.payload!,
+                _items,
+              );
+              bloc.add(
+                widget.eventFactory(
+                  updatedPayload: updatedPayload,
+                  submission: CommonSubmitBlocEvent(
+                    isFormValid:
+                        widget.formKey.currentState?.validate() ?? false,
                   ),
-                );
-              });
-            },
-          ),
+                ),
+              );
+            });
+          },
         );
+
+        final listContent = Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: list,
+        );
+
+        return widget.expand ? Expanded(child: listContent) : listContent;
       },
     );
   }

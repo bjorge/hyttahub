@@ -63,10 +63,12 @@ class _ReorderSitesScreenState extends State<ReorderSitesScreen> {
               ),
               body: CommonSubmitFormLayout<SubmitAccountEvent>(
                 submitState: submitState,
+                isScrollable: false,
                 children: [
                   ReorderSitesFormField(
                     formKey: _formKey,
                     labelText: HyttaHubLocalizations.of(context)!.reorderSitesTitle,
+                    expand: true,
                   ),
                 ],
               ),
@@ -92,6 +94,7 @@ class ReorderSitesFormField extends BaseReorderableFormField<
     super.key,
     required super.formKey,
     required super.labelText,
+    super.expand,
   }) : super(eventFactory: accountEventSubmissionFactory);
 
   @override

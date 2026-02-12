@@ -16,6 +16,7 @@ class CommonSubmitFormLayout<T extends GeneratedMessage>
     this.progressWidget,
     this.errorWidget,
     this.singleChildScrollView = false,
+    this.isScrollable = true,
   });
 
   final BaseSubmitState<T> submitState;
@@ -23,6 +24,7 @@ class CommonSubmitFormLayout<T extends GeneratedMessage>
   final Widget? progressWidget;
   final Widget? errorWidget;
   final bool singleChildScrollView;
+  final bool isScrollable;
 
   Widget _buildProgressWidget(BuildContext context) {
     return progressWidget ?? const Center(child: CircularProgressIndicator());
@@ -60,17 +62,8 @@ class CommonSubmitFormLayout<T extends GeneratedMessage>
         ? children[0]
         : CommonListViewLayout(
             spacing: 10.0,
+            isScrollable: isScrollable,
             children: children,
-
-            // [
-            //   if (submitState.submissionState.state ==
-            //       CommonSubmitBlocState_State.error)
-            //     _buildErrorWidget(context),
-            //   ...children,
-            //   if (submitState.submissionState.state ==
-            //       CommonSubmitBlocState_State.submitting)
-            //     _buildProgressWidget(context),
-            // ],
           );
   }
 }
