@@ -25,6 +25,10 @@ export {
   processMarkForDeleteRecords,
 } from "./hyttahub_functions/hyttahub_functions";
 
+export {
+  autoJoinOnMemberAdded,
+} from "./auto_join/index";
+
 // Export helper functions for app cloud functions.
 export {
   createSiteEventPayload,
