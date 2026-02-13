@@ -1,5 +1,7 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
+import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/account_widgets/account_events_display.dart';
 import 'package:hyttahub/account_widgets/account_screen.dart';
 import 'package:hyttahub/account_widgets/remove_account_screen.dart';
@@ -962,12 +964,25 @@ final accountScreenRoute = AccountScreenRoute(
   ],
 );
 
+final accountShellRoute = ShellRoute(
+  builder: (context, state, child) {
+    return BlocProvider<AccountReplayBloc>(
+      key: const Key('AccountShellBlocProvider'),
+      create: (context) => AccountReplayBloc(
+        context.read<AuthBloc>().state.email,
+      )..add(CommonReplayBlocEvent(listen: true)),
+      child: child,
+    );
+  },
+  routes: [accountScreenRoute],
+);
+
 final loginTermsDisplayRoute = CreateAccountTermsDisplayRoute();
 final loginPrivacyDisplayRoute = CreateAccountPrivacyDisplayRoute();
 
 final loginScreenRoute = LoginScreenRoute(
   routes: [
-    accountScreenRoute,
+    accountShellRoute,
     loginTermsDisplayRoute,
     loginPrivacyDisplayRoute,
   ],

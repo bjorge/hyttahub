@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/account_blocs/account_submit_bloc.dart';
 import 'package:hyttahub/account_widgets/account_submit_button.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -37,19 +36,8 @@ class _ReorderSitesScreenState extends State<ReorderSitesScreen> {
       base64Url.decode(widget.event),
     );
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AccountReplayBloc>(
-          create:
-              (_) =>
-                  AccountReplayBloc(
-                    userEmail,
-                  )..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<AccountSubmitBloc>(
-          create: (_) => AccountSubmitBloc(userEmail, submitEvent),
-        ),
-      ],
+    return BlocProvider<AccountSubmitBloc>(
+      create: (_) => AccountSubmitBloc(userEmail, submitEvent),
       child: Form(
         key: _formKey,
         child: BlocConsumer<AccountSubmitBloc, BaseSubmitState<SubmitAccountEvent>>(

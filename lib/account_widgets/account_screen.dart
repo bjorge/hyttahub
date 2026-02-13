@@ -20,7 +20,6 @@ import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -28,103 +27,94 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AccountReplayBloc>(
-          key: Key('AccountScreenBlocProvider'),
-          create: (_) =>
-              AccountReplayBloc(GetIt.instance<AuthBloc>().state.email)
-                ..add(CommonReplayBlocEvent(listen: true)),
-        ),
-      ],
-      child: BlocConsumer<AccountReplayBloc, AccountReplayBlocState>(
-        builder: (context, accountState) {
-          // first check if the account state is initialized
-          final errorWidget = handleAccountReplayState(context, accountState);
-          if (errorWidget != null) {
-            return errorWidget;
-          }
+    return BlocConsumer<AccountReplayBloc, AccountReplayBlocState>(
+      builder: (context, accountState) {
+        // first check if the account state is initialized
+        final errorWidget = handleAccountReplayState(context, accountState);
+        if (errorWidget != null) {
+          return errorWidget;
+        }
 
-          return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
-            builder: (context, serviceState) {
-              // todo: error widget for service state
-              final errorWidget = handleServiceReplayState(
-                context,
-                serviceState,
-              );
-              if (errorWidget != null) {
-                return errorWidget;
-              }
+        return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
+          builder: (context, serviceState) {
+            // todo: error widget for service state
+            final errorWidget = handleServiceReplayState(
+              context,
+              serviceState,
+            );
+            if (errorWidget != null) {
+              return errorWidget;
+            }
 
-              // next check if terms or privacy policy need to be accepted
+            // next check if terms or privacy policy need to be accepted
 
-              if (accountState.termsVersion < serviceState.termsVersion ||
-                  accountState.privacyVersion < serviceState.privacyVersion) {
-                return UpdateTermsWidget();
-              }
+            if (accountState.termsVersion < serviceState.termsVersion ||
+                accountState.privacyVersion < serviceState.privacyVersion) {
+              return UpdateTermsWidget();
+            }
 
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text(HyttaHubLocalizations.of(context)!.sites),
-                  automaticallyImplyLeading:
-                      false, // Hides the back button, use the logout option instead
-                  actions: [AccountSettingsButton()],
-                ),
-                body: CommonListViewLayout(
-                  children: accountState.sitesIds.isEmpty
-                      ? [
-                          Center(
-                            child: Text(
-                              HyttaHubLocalizations.of(context)!.noSites,
-                            ),
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(HyttaHubLocalizations.of(context)!.sites),
+                automaticallyImplyLeading:
+                    false, // Hides the back button, use the logout option instead
+                actions: [AccountSettingsButton()],
+              ),
+              body: CommonListViewLayout(
+                children: accountState.sitesIds.isEmpty
+                    ? [
+                        Center(
+                          child: Text(
+                            HyttaHubLocalizations.of(context)!.noSites,
                           ),
-                        ]
-                      : accountState.sitesIds
-                            .map(
-                              (siteId) => TextButton(
-                                key: Key(siteId),
-                                onPressed: () {
-                                  // turn off edit mode by default before entering site screen
-                                  context
-                                      .read<SiteEditModeCubit>()
-                                      .editModeClear();
+                        ),
+                      ]
+                    : accountState.sitesIds
+                          .map(
+                            (siteId) => TextButton(
+                              key: Key(siteId),
+                              onPressed: () {
+                                // turn off edit mode by default before entering site screen
+                                context
+                                    .read<SiteEditModeCubit>()
+                                    .editModeClear();
 
-                                  context.push(
-                                    '${AccountScreenRoute.fullPath}/site/$siteId',
-                                  );
-                                },
-                                child: SiteNameDisplay(collectionName: siteId),
-                              ),
-                            )
-                            .toList(),
-                ),
-              );
-            },
-            listener:
-                (BuildContext context, ServiceReplayBlocState serviceState) {
-                  if (accountState.termsVersion < serviceState.termsVersion ||
-                      accountState.privacyVersion <
-                          serviceState.privacyVersion) {
-                    context.goNamed(AccountScreenRoute.routeName);
-                  }
-                },
-          );
-        },
-        listener:
-            (BuildContext context, AccountReplayBlocState accountState) {},
-      ),
+                                context.push(
+                                  '${AccountScreenRoute.fullPath}/site/$siteId',
+                                );
+                              },
+                              child: SiteNameDisplay(collectionName: siteId),
+                            ),
+                          )
+                          .toList(),
+              ),
+            );
+          },
+          listener:
+              (BuildContext context, ServiceReplayBlocState serviceState) {
+                if (accountState.termsVersion < serviceState.termsVersion ||
+                    accountState.privacyVersion <
+                        serviceState.privacyVersion) {
+                  context.goNamed(AccountScreenRoute.routeName);
+                }
+              },
+        );
+      },
+      listener: (BuildContext context, AccountReplayBlocState accountState) {},
     );
   }
 }
 
 class ImportSiteDialogOption extends StatelessWidget {
-  const ImportSiteDialogOption({super.key});
+  const ImportSiteDialogOption({super.key, required this.dialogContext});
+
+  final BuildContext dialogContext;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(ImportSiteRoute.fullPath);
       },
       child: Text(HyttaHubLocalizations.of(context)!.importSiteTitle),
@@ -215,12 +205,18 @@ class AccountSettingsButton extends StatelessWidget {
                 HyttaHubLocalizations.of(context)!.accountSettingsTitle,
               ),
               children: <Widget>[
-                CreateSiteDialogOption(accountState: accountState),
-                ImportSiteDialogOption(),
-                JoinSiteDialogOption(accountState: accountState),
+                CreateSiteDialogOption(
+                  accountState: accountState,
+                  dialogContext: dialogContext,
+                ),
+                ImportSiteDialogOption(dialogContext: dialogContext),
+                JoinSiteDialogOption(
+                  accountState: accountState,
+                  dialogContext: dialogContext,
+                ),
                 SimpleDialogOption(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(dialogContext);
                     context.push(ManageSitesRoute.fullPath);
                   },
                   child: Text(
@@ -229,7 +225,7 @@ class AccountSettingsButton extends StatelessWidget {
                 ),
                 SimpleDialogOption(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(dialogContext);
                     final submmitValue = SubmitAccountEvent(
                       event: AccountEvent(
                         version: accountState.nextVersion,
@@ -305,7 +301,7 @@ class AccountSettingsButton extends StatelessWidget {
                 Divider(),
                 SimpleDialogOption(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pop(dialogContext);
                     context.push(AccountEventsDisplayRoute.fullPath);
                   },
                   child: Text(
@@ -316,7 +312,7 @@ class AccountSettingsButton extends StatelessWidget {
                 SimpleDialogOption(
                   onPressed: () {
                     // pop the dialog
-                    Navigator.pop(context);
+                    Navigator.pop(dialogContext);
                     // pop the account screen
                     Navigator.pop(context);
 
@@ -338,15 +334,20 @@ class AccountSettingsButton extends StatelessWidget {
 }
 
 class CreateSiteDialogOption extends StatelessWidget {
-  const CreateSiteDialogOption({super.key, required this.accountState});
+  const CreateSiteDialogOption({
+    super.key,
+    required this.accountState,
+    required this.dialogContext,
+  });
 
   final AccountReplayBlocState accountState;
+  final BuildContext dialogContext;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         final submmitValue = SubmitAccountEvent(
           createSiteName: '',
           createSiteUserName: '',
@@ -368,22 +369,26 @@ class CreateSiteDialogOption extends StatelessWidget {
 }
 
 class JoinSiteDialogOption extends StatelessWidget {
-  const JoinSiteDialogOption({super.key, required this.accountState});
+  const JoinSiteDialogOption({
+    super.key,
+    required this.accountState,
+    required this.dialogContext,
+  });
 
   final AccountReplayBlocState accountState;
+  final BuildContext dialogContext;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         final submmitValue = SubmitAccountEvent(
           createSiteName: '',
           createSiteUserName: '',
           event: AccountEvent(
             joinSite: '',
-            version:
-                accountState.nextVersion,
+            version: accountState.nextVersion,
           ),
         );
 

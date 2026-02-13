@@ -40,28 +40,28 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
     ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(ExportSiteRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.exportSiteTitle),
     ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(ManageExportsRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.manageExportsTitle),
     ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(SiteMembersRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.manageSiteMembers),
     ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(SiteEventsDisplayRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.showSiteEventsState),
@@ -70,7 +70,7 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
     // SimpleDialogOption(
     //   onPressed: null,
     //   // onPressed: () {
-    //   //   Navigator.pop(context);
+    //   //   Navigator.pop(dialogContext);
     //   //   context.push(
     //   //     AppEventsDisplayRoute.fullPath(siteId: widgetSiteId),
     //   //   );
@@ -79,14 +79,14 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
     // ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(SiteEmailsDisplayRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.showSiteAllowedEmails),
     ),
     SimpleDialogOption(
       onPressed: () {
-        Navigator.pop(context);
+        Navigator.pop(dialogContext);
         context.push(SiteInfoRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.siteInfoTitle),
