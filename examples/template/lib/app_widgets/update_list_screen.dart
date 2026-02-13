@@ -46,15 +46,8 @@ class _UpdateListScreenState extends State<UpdateListScreen> {
       ]);
     }
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AppReplayBloc>(
-          create: (_) => AppReplayBloc(widget.siteId)..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<AppSubmitBloc>(
-          create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
-        ),
-      ],
+    return BlocProvider<AppSubmitBloc>(
+      create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
       child: Form(
         key: _formKey,
         child: BlocConsumer<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(

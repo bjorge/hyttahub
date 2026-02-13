@@ -8,7 +8,6 @@ import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
@@ -38,19 +37,8 @@ class _RenameSiteScreenState extends State<RenameSiteScreen> {
       base64Url.decode(widget.event),
     );
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<SiteReplayBloc>(
-          create:
-              (_) =>
-                  SiteReplayBloc(
-                    widget.siteId,
-                  )..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<SiteSubmitBloc>(
-          create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
-        ),
-      ],
+    return BlocProvider<SiteSubmitBloc>(
+      create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
       child: Form(
         key: _formKey,
         child: BlocConsumer<SiteSubmitBloc, BaseSubmitState<SubmitSiteEvent>>(

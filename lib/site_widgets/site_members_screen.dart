@@ -9,7 +9,6 @@ import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,24 +24,15 @@ class SiteMembersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AllowedEmailsBloc>(
-          key: Key('AllowedEmailsBloc-Site-members-screen-$siteId'),
-
-          create: (_) => AllowedEmailsBloc(firebaseSiteUsersPath(siteId))
-            ..add(
-              AllowedEmailsBlocEvent(
-                fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+    return BlocProvider<AllowedEmailsBloc>(
+      key: Key('AllowedEmailsBloc-Site-members-screen-$siteId'),
+      create:
+          (_) =>
+              AllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
+                AllowedEmailsBlocEvent(
+                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+                ),
               ),
-            ),
-        ),
-        BlocProvider<SiteReplayBloc>(
-          key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
-          create: (_) =>
-              SiteReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
-        ),
-      ],
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
           final allowedEmailsErrorWidget =
@@ -273,5 +263,3 @@ class SiteMembersScreen extends StatelessWidget {
     );
   }
 }
-
-//   }

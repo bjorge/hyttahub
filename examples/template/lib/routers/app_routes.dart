@@ -12,6 +12,13 @@ import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:template/routers/landing.dart';
+import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
+import 'package:template/app_blocs/app_replay_bloc.dart';
+import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
+import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// A route for the site screen.
 class SiteScreenRoute extends GoRoute {
@@ -195,6 +202,34 @@ final siteScreenRoute = SiteScreenRoute(
     appEventsDisplayRoute,
     ...standardSiteScreenRoutes,
   ],
+);
+
+final siteShellRoute = ShellRoute(
+  builder: (context, state, child) {
+    final siteId = state.pathParameters['siteId'] ?? '';
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SiteReplayBloc>(
+          key: Key('SiteReplayBloc-albums-$siteId'),
+          create: (_) => SiteReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AppReplayBloc>(
+          key: Key('AppReplayBloc-albums-$siteId'),
+          create: (_) => AppReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
+        ),
+        BlocProvider<AllowedEmailsBloc>(
+          key: Key('AllowedEmailsBloc-site-shell-$siteId'),
+          create: (_) => AllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
+            AllowedEmailsBlocEvent(
+              fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+            ),
+          ),
+        ),
+      ],
+      child: child,
+    );
+  },
+  routes: [siteScreenRoute],
 );
 
 /// A route for the landing page.
