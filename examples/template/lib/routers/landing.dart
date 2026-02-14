@@ -3,8 +3,6 @@
 import 'package:template/l10n/app_localizations.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,9 +64,6 @@ class LandingPage extends StatelessWidget {
                 textStyle: Theme.of(context).textTheme.titleLarge,
               ),
               onPressed: () {
-                context.read<ServiceReplayBloc>().add(
-                  CommonReplayBlocEvent(listen: true),
-                );
                 context.read<AuthBloc>().add(
                   AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
                 );

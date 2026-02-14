@@ -10,7 +10,6 @@ import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,23 +24,15 @@ class ServiceAdminsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AllowedEmailsBloc>(
-          create: (_) =>
-              AllowedEmailsBloc(
-                firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-              )..add(
-                AllowedEmailsBlocEvent(
-                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                ),
-              ),
-        ),
-        BlocProvider<ServiceReplayBloc>(
-          create: (_) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
-        ),
-      ],
+    return BlocProvider<AllowedEmailsBloc>(
+      create: (_) =>
+          AllowedEmailsBloc(
+            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          )..add(
+            AllowedEmailsBlocEvent(
+              fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+            ),
+          ),
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
           final allowedEmailsErrorWidget =

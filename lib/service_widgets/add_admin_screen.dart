@@ -56,10 +56,6 @@ class _AddServiceAdminScreenState extends State<AddServiceAdminScreen> {
         BlocProvider<ServiceSubmitBloc>(
           create: (_) => ServiceSubmitBloc(submitEvent),
         ),
-        BlocProvider<ServiceReplayBloc>(
-          create: (_) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
-        ),
       ],
       child: Form(
         key: _formKey,

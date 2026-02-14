@@ -28,6 +28,7 @@ import 'package:hyttahub/service_widgets/service_admins_screen.dart';
 import 'package:hyttahub/service_widgets/service_terms_display.dart';
 import 'package:hyttahub/common_widgets/hyttahub_info_page.dart';
 
+import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/service_widgets/login.dart';
 import 'package:hyttahub/service_widgets/open_source_licenses_screen.dart';
 import 'package:hyttahub/service_widgets/update_admin_screen.dart';
@@ -979,6 +980,23 @@ final accountShellRoute = ShellRoute(
 
 final loginTermsDisplayRoute = CreateAccountTermsDisplayRoute();
 final loginPrivacyDisplayRoute = CreateAccountPrivacyDisplayRoute();
+
+final serviceShellRoute = ShellRoute(
+  builder: (context, state, child) {
+    return BlocProvider<ServiceReplayBloc>(
+      key: const Key('ServiceShellBlocProvider'),
+      create: (context) =>
+          ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+      child: child,
+    );
+  },
+  routes: [
+    loginScreenRoute,
+    serviceLoginScreenRoute,
+    landingInfoPageRoute,
+    landingUnimplementedRoute,
+  ],
+);
 
 final loginScreenRoute = LoginScreenRoute(
   routes: [

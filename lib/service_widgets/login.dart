@@ -73,7 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, serviceState) {
         if (serviceState.state == CommonReplayStateEnum.hydrating) {
           return Scaffold(
-            appBar: AppBar(title: Text(localizations.loadingTitle)),
+            appBar: AppBar(
+              leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
+              title: Text(localizations.loadingTitle),
+            ),
             body: Center(
               child: CommonListViewLayout(
                 spacing: 10.0,
@@ -178,6 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (authState.authState == AuthState.loginSuccess) {
                   return Scaffold(
                     appBar: AppBar(
+                      leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
                       title: Text(
                         HyttaHubLocalizations.of(context)!.loginSuccessTitle,
                       ),
@@ -202,7 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // This will be shown briefly for .authenticated before the listener navigates.
 
                   return Scaffold(
-                    appBar: AppBar(title: Text(localizations.loadingTitle)),
+                    appBar: AppBar(
+                      leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
+                      title: Text(localizations.loadingTitle),
+                    ),
                     body: Center(
                       child: CommonListViewLayout(
                         spacing: 10.0,

@@ -8,7 +8,6 @@ import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,9 +34,6 @@ class _RemoveServiceAdminScreenState extends State<RemoveServiceAdminScreen> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ServiceReplayBloc>(
-          create: (_) => ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
-        ),
         BlocProvider(
           create: (_) => ServiceSubmitBloc(submitEvent)
             ..isFormValid = false

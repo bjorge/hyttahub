@@ -59,6 +59,7 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
+              leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
               title: Text(
                 widget.serviceLogin
                     ? localizations.serviceCreateAccountTitle

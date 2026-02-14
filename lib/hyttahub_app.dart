@@ -10,7 +10,6 @@ import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
-import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
@@ -80,7 +79,6 @@ class HyttaHubApp extends StatelessWidget {
               BlocProvider<CreateAccountCubit>(
                 create: (_) => CreateAccountCubit('$rootCollection:${platform.value}'),
               ),
-              BlocProvider<ServiceReplayBloc>(create: (_) => ServiceReplayBloc()),
               BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
               ...additionalInnerProviders,
             ],

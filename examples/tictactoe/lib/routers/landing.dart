@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
-import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
@@ -141,9 +139,6 @@ class LandingPage extends StatelessWidget {
                 textStyle: Theme.of(context).textTheme.titleLarge,
               ),
               onPressed: () {
-                context.read<ServiceReplayBloc>().add(
-                  CommonReplayBlocEvent(listen: true),
-                );
                 context.read<AuthBloc>().add(
                   AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
                 );
@@ -171,9 +166,6 @@ class LandingPage extends StatelessWidget {
                     textStyle: Theme.of(context).textTheme.bodySmall,
                   ),
                   onPressed: () {
-                    context.read<ServiceReplayBloc>().add(
-                      CommonReplayBlocEvent(listen: true),
-                    );
                     context.read<AuthBloc>().add(
                       AuthBlocEvent(logout: AuthBlocEvent_Logout()),
                       // AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),

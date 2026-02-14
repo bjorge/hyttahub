@@ -256,10 +256,7 @@ class LandingScreenRoute extends GoRoute {
 
 final landingScreenRoute = LandingScreenRoute(
   routes: [
-    loginScreenRoute,
-    serviceLoginScreenRoute,
-    landingUnimplementedRoute,
-    landingInfoPageRoute,
+    serviceShellRoute,
     HyttaHubRoutes.openSourceLicensesRoute,
   ],
 );

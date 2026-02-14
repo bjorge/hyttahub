@@ -9,7 +9,6 @@ import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
-import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
@@ -35,15 +34,8 @@ class _ServiceSettingsFormState extends State<ServiceSettingsForm> {
       base64Url.decode(widget.event),
     );
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ServiceReplayBloc>(
-          create: (_) => ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<ServiceSubmitBloc>(
-          create: (_) => ServiceSubmitBloc(submitEvent),
-        ),
-      ],
+    return BlocProvider<ServiceSubmitBloc>(
+      create: (_) => ServiceSubmitBloc(submitEvent),
       child: Form(
         key: _formKey,
         child:

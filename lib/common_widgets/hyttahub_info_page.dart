@@ -23,6 +23,7 @@ class HyttaHubInfoPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
         title: Text(HyttaHubOptions.appTitle),
       ),
       body: Center(
