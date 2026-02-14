@@ -47,9 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Ensure the widget is still in the tree
                     if (mounted) {
                       if (authState.isServiceAdmin) {
-                        context.push(ServiceAdminScreenRoute.fullPath);
+                        context.replace(ServiceAdminScreenRoute.fullPath);
                       } else {
-                        context.push(AccountScreenRoute.fullPath);
+                        context.replace(AccountScreenRoute.fullPath);
                       }
                     }
                   });
