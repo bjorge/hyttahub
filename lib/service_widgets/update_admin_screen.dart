@@ -7,7 +7,6 @@ import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -19,7 +18,6 @@ import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:protobuf/protobuf.dart';
 
 class UpdateServiceAdminScreen extends StatefulWidget {
@@ -48,103 +46,85 @@ class _UpdateServiceAdminScreenState extends State<UpdateServiceAdminScreen> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AllowedEmailsBloc>(
-          create: (_) =>
-              AllowedEmailsBloc(
-                firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-              )..add(
-                AllowedEmailsBlocEvent(
-                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                ),
-              ),
-        ),
         BlocProvider<ServiceSubmitBloc>(
           create: (_) => ServiceSubmitBloc(submitEvent),
         ),
       ],
       child: Form(
         key: _formKey,
-        child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-          builder: (context, allowedEmailsState) {
-            final allowedEmailsErrorWidget =
-                handleAllowedEmailsState(context, allowedEmailsState);
-            if (allowedEmailsErrorWidget != null) {
-              return allowedEmailsErrorWidget;
-            }
+        child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
+          builder: (context, serviceState) {
+            final allowedEmailsState =
+                context.watch<ServiceAllowedEmailsBloc>().state;
+            final currentUserEmail = context.read<AuthBloc>().state.email;
+            final isCurrentUser = currentUserEmail == widget.originalEmail;
+            final isOnlyAdmin = serviceState.serviceAdmins.length == 1;
+            final emailFieldEnabled = !(isCurrentUser && isOnlyAdmin);
 
-            return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
-              builder: (context, serviceState) {
-                final currentUserEmail = context.read<AuthBloc>().state.email;
-                final isCurrentUser = currentUserEmail == widget.originalEmail;
-                final isOnlyAdmin = serviceState.serviceAdmins.length == 1;
-                final emailFieldEnabled = !(isCurrentUser && isOnlyAdmin);
-
-                return BlocConsumer<
-                  ServiceSubmitBloc,
-                  BaseSubmitState<SubmitServiceEvent>
-                >(
-                  builder: (context, submitState) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        title: Text(
-                          HyttaHubLocalizations.of(context)!.updateAdminTitle,
-                        ),
-                        actions: [ServiceSubmitIconButton(formKey: _formKey)],
+            return BlocConsumer<
+              ServiceSubmitBloc,
+              BaseSubmitState<SubmitServiceEvent>
+            >(
+              builder: (context, submitState) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(
+                      HyttaHubLocalizations.of(context)!.updateAdminTitle,
+                    ),
+                    actions: [ServiceSubmitIconButton(formKey: _formKey)],
+                  ),
+                  body: CommonSubmitFormLayout<SubmitServiceEvent>(
+                    submitState: submitState,
+                    children: [
+                      UpdateAdminAliasInputWidget(
+                        formKey: _formKey,
+                        admins: serviceState.serviceAdmins.values.toList(),
+                        originalAlias:
+                            submitEvent.event.updateServiceAdmin.alias,
+                        labelText: HyttaHubLocalizations.of(
+                          context,
+                        )!.aliasLabel,
                       ),
-                      body: CommonSubmitFormLayout<SubmitServiceEvent>(
-                        submitState: submitState,
-                        children: [
-                          UpdateAdminAliasInputWidget(
-                            formKey: _formKey,
-                            admins: serviceState.serviceAdmins.values.toList(),
-                            originalAlias:
-                                submitEvent.event.updateServiceAdmin.alias,
-                            labelText: HyttaHubLocalizations.of(
-                              context,
-                            )!.aliasLabel,
-                          ),
-                          if (emailFieldEnabled)
-                            UpdateAdminEmailInputWidget(
-                              formKey: _formKey,
-                              allowedEmails: allowedEmailsState.emails,
-                              originalEmail: widget.originalEmail,
-                              serviceState: serviceState,
+                      if (emailFieldEnabled)
+                        UpdateAdminEmailInputWidget(
+                          formKey: _formKey,
+                          allowedEmails: allowedEmailsState.emails,
+                          originalEmail: widget.originalEmail,
+                          serviceState: serviceState,
+                          labelText: HyttaHubLocalizations.of(
+                            context,
+                          )!.loginEmailLabel,
+                        )
+                      else
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: TextFormField(
+                            initialValue: widget.originalEmail,
+                            enabled: false,
+                            decoration: InputDecoration(
                               labelText: HyttaHubLocalizations.of(
                                 context,
                               )!.loginEmailLabel,
-                            )
-                          else
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: TextFormField(
-                                initialValue: widget.originalEmail,
-                                enabled: false,
-                                decoration: InputDecoration(
-                                  labelText: HyttaHubLocalizations.of(
-                                    context,
-                                  )!.loginEmailLabel,
-                                  helperText: HyttaHubLocalizations.of(
-                                    context,
-                                  )!.cannotChangeEmailWhenOnlyAdminError,
-                                ),
-                              ),
+                              helperText: HyttaHubLocalizations.of(
+                                context,
+                              )!.cannotChangeEmailWhenOnlyAdminError,
                             ),
-                        ],
-                      ),
-                    );
-                  },
-                  listener:
-                      (
-                        BuildContext context,
-                        BaseSubmitState<SubmitServiceEvent> state,
-                      ) {
-                        if (state.submissionState.state ==
-                            CommonSubmitBlocState_State.success) {
-                          Navigator.pop(context);
-                        }
-                      },
+                          ),
+                        ),
+                    ],
+                  ),
                 );
               },
+              listener:
+                  (
+                    BuildContext context,
+                    BaseSubmitState<SubmitServiceEvent> state,
+                  ) {
+                    if (state.submissionState.state ==
+                        CommonSubmitBlocState_State.success) {
+                      Navigator.pop(context);
+                    }
+                  },
             );
           },
         ),

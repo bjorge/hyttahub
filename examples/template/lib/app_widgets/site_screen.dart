@@ -57,7 +57,7 @@ class _SiteScreenState extends State<SiteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+    return BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
       key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
       builder: (context, allowedEmailsState) {
         final userId =

@@ -8,7 +8,6 @@ import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -19,7 +18,6 @@ import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:protobuf/protobuf.dart';
 
 class RestoreServiceAdminScreen extends StatefulWidget {
@@ -43,78 +41,60 @@ class _RestoreServiceAdminScreenState extends State<RestoreServiceAdminScreen> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AllowedEmailsBloc>(
-          create: (_) =>
-              AllowedEmailsBloc(
-                firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-              )..add(
-                AllowedEmailsBlocEvent(
-                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                ),
-              ),
-        ),
         BlocProvider<ServiceSubmitBloc>(
           create: (_) => ServiceSubmitBloc(submitEvent),
         ),
       ],
       child: Form(
         key: _formKey,
-        child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-          builder: (context, allowedEmailsState) {
-            final allowedEmailsErrorWidget =
-                handleAllowedEmailsState(context, allowedEmailsState);
-            if (allowedEmailsErrorWidget != null) {
-              return allowedEmailsErrorWidget;
-            }
-
-            return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
-              builder: (context, serviceState) {
-                return BlocConsumer<
-                  ServiceSubmitBloc,
-                  BaseSubmitState<SubmitServiceEvent>
-                >(
-                  builder: (context, submitState) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        title: Text(
-                          HyttaHubLocalizations.of(context)!.restoreAdminTitle,
-                        ),
-                        actions: [ServiceSubmitIconButton(formKey: _formKey)],
+        child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
+          builder: (context, serviceState) {
+            final allowedEmailsState =
+                context.watch<ServiceAllowedEmailsBloc>().state;
+            return BlocConsumer<
+              ServiceSubmitBloc,
+              BaseSubmitState<SubmitServiceEvent>
+            >(
+              builder: (context, submitState) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(
+                      HyttaHubLocalizations.of(context)!.restoreAdminTitle,
+                    ),
+                    actions: [ServiceSubmitIconButton(formKey: _formKey)],
+                  ),
+                  body: CommonSubmitFormLayout<SubmitServiceEvent>(
+                    submitState: submitState,
+                    children: [
+                      RestoreAdminAliasInputWidget(
+                        formKey: _formKey,
+                        admins: serviceState.serviceAdmins.values.toList(),
+                        labelText: HyttaHubLocalizations.of(
+                          context,
+                        )!.aliasLabel,
                       ),
-                      body: CommonSubmitFormLayout<SubmitServiceEvent>(
-                        submitState: submitState,
-                        children: [
-                          RestoreAdminAliasInputWidget(
-                            formKey: _formKey,
-                            admins: serviceState.serviceAdmins.values.toList(),
-                            labelText: HyttaHubLocalizations.of(
-                              context,
-                            )!.aliasLabel,
-                          ),
-                          RestoreAdminEmailInputWidget(
-                            formKey: _formKey,
-                            allowedEmails: allowedEmailsState.emails,
-                            serviceState: serviceState,
-                            labelText: HyttaHubLocalizations.of(
-                              context,
-                            )!.loginEmailLabel,
-                          ),
-                        ],
+                      RestoreAdminEmailInputWidget(
+                        formKey: _formKey,
+                        allowedEmails: allowedEmailsState.emails,
+                        serviceState: serviceState,
+                        labelText: HyttaHubLocalizations.of(
+                          context,
+                        )!.loginEmailLabel,
                       ),
-                    );
-                  },
-                  listener:
-                      (
-                        BuildContext context,
-                        BaseSubmitState<SubmitServiceEvent> state,
-                      ) {
-                        if (state.submissionState.state ==
-                            CommonSubmitBlocState_State.success) {
-                          Navigator.pop(context);
-                        }
-                      },
+                    ],
+                  ),
                 );
               },
+              listener:
+                  (
+                    BuildContext context,
+                    BaseSubmitState<SubmitServiceEvent> state,
+                  ) {
+                    if (state.submissionState.state ==
+                        CommonSubmitBlocState_State.success) {
+                      Navigator.pop(context);
+                    }
+                  },
             );
           },
         ),

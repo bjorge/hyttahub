@@ -24,15 +24,20 @@ Widget? handleSiteReplayState(
   switch (siteState.state) {
     case CommonReplayStateEnum.listening:
       errorWidget = null;
+      break;
     case CommonReplayStateEnum.hydrating:
       errorWidget = const Center(child: CircularProgressIndicator());
+      break;
     case CommonReplayStateEnum.uninitializedListening:
     case CommonReplayStateEnum.networkError:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
     case CommonReplayStateEnum.permissionDenied:
       errorWidget = Center(child: Text(l10n.permissionDenied));
+      break;
     default:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
   }
 
   if (errorWidget != null) {
@@ -61,19 +66,24 @@ Widget? handleAccountReplayState(
   switch (accountState.state) {
     case CommonReplayStateEnum.listening:
       errorWidget = null;
+      break;
     case CommonReplayStateEnum.hydrating:
       errorWidget = const Center(child: CircularProgressIndicator());
+      break;
     case CommonReplayStateEnum.uninitializedListening:
       errorWidget = AccountInitializingWidget(
         email: GetIt.instance<AuthBloc>().state.email,
       );
-
+      break;
     case CommonReplayStateEnum.networkError:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
     case CommonReplayStateEnum.permissionDenied:
       errorWidget = Center(child: Text(l10n.permissionDenied));
+      break;
     default:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
   }
 
   if (errorWidget != null) {
@@ -101,15 +111,24 @@ Widget? handleServiceReplayState(
   switch (serviceState.state) {
     case CommonReplayStateEnum.listening:
       errorWidget = null;
+      break;
     case CommonReplayStateEnum.hydrating:
-    case CommonReplayStateEnum.uninitializedListening:
       errorWidget = const Center(child: CircularProgressIndicator());
+      break;
+    case CommonReplayStateEnum.uninitializedListening:
+      // Return null so that the shell route can handle this state
+      // (e.g. by showing the ServiceUninitializedPage)
+      errorWidget = null;
+      break;
     case CommonReplayStateEnum.networkError:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
     case CommonReplayStateEnum.permissionDenied:
       errorWidget = Center(child: Text(l10n.permissionDenied));
+      break;
     default:
       errorWidget = Center(child: Text(l10n.unexpectedError));
+      break;
   }
 
   if (errorWidget != null) {

@@ -44,7 +44,7 @@ class _RestoreMemberScreenState extends State<RestoreMemberScreen> {
       create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
       child: Form(
         key: _formKey,
-        child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+        child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
           key: Key('AllowedEmailsBloc-restore-member-${widget.siteId}'),
           builder: (context, allowedEmailsState) {
             return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(

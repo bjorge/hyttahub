@@ -22,7 +22,7 @@ class SiteMembersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+    return BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
       key: Key('AllowedEmailsBloc-Site-members-screen-$siteId'),
       builder: (context, allowedEmailsState) {
         return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(

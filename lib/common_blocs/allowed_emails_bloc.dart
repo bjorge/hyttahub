@@ -9,8 +9,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 class AllowedEmailsBloc
     extends Bloc<AllowedEmailsBlocEvent, AllowedEmailsBlocState> {
-  AllowedEmailsBloc(this.collectionPath)
-    : super(AllowedEmailsBlocState()) {
+  AllowedEmailsBloc(this.collectionPath) : super(AllowedEmailsBlocState()) {
     on<AllowedEmailsBlocEvent>(_onAllowedEmailsBlocEvent);
   }
 
@@ -62,4 +61,12 @@ class AllowedEmailsBloc
       emit(event.updateNow);
     }
   }
+}
+
+class ServiceAllowedEmailsBloc extends AllowedEmailsBloc {
+  ServiceAllowedEmailsBloc(super.collectionPath);
+}
+
+class SiteAllowedEmailsBloc extends AllowedEmailsBloc {
+  SiteAllowedEmailsBloc(super.collectionPath);
 }

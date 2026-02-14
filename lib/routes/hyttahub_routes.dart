@@ -43,6 +43,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
+import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/site_widgets/add_member_screen.dart';
 import 'package:hyttahub/site_widgets/remove_member_screen.dart';
 import 'package:hyttahub/site_widgets/rename_site_screen.dart';
@@ -1001,7 +1004,7 @@ final loginPrivacyDisplayRoute = CreateAccountPrivacyDisplayRoute();
 final serviceShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceReplayBloc>(
-      key: const Key('ServiceShellBlocProvider'),
+      key: const Key('ServiceShellServiceReplayBlocProvider'),
       create:
           (context) =>
               ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
@@ -1012,7 +1015,8 @@ final serviceShellRoute = ShellRoute(
             return errorWidget;
           }
 
-          if (serviceState.state == CommonReplayStateEnum.uninitializedListening) {
+          if (serviceState.state ==
+              CommonReplayStateEnum.uninitializedListening) {
             final submitServiceEvent = SubmitServiceEvent(
               email: '',
               event: ServiceEvent(
@@ -1022,7 +1026,9 @@ final serviceShellRoute = ShellRoute(
                   instance: generateId(),
                   alias: 'Admin',
                   filter: BloomFilter(),
-                  appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+                  appName:
+                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      '',
                   appId: HyttaHubOptions.implementation?.appId ?? '',
                 ),
               ),
@@ -1042,7 +1048,8 @@ final serviceShellRoute = ShellRoute(
 
           if (!isServiceLogin &&
               serviceState.state == CommonReplayStateEnum.listening &&
-              serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
+              serviceState.minVersion >
+                  (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
             return ServiceNewVersionPage();
           }
 
@@ -1067,8 +1074,39 @@ final loginScreenRoute = LoginScreenRoute(
   ],
 );
 
-final serviceLoginScreenRoute = ServiceLoginScreenRoute(
+final serviceAdminShellRoute = ShellRoute(
+  builder: (context, state, child) {
+    return BlocProvider<ServiceAllowedEmailsBloc>(
+      key: const Key('ServiceAllowedEmailsBlocProvider'),
+      create:
+          (context) =>
+              ServiceAllowedEmailsBloc(
+                firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+              )..add(
+                AllowedEmailsBlocEvent(
+                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+                ),
+              ),
+      child: BlocBuilder<ServiceAllowedEmailsBloc, AllowedEmailsBlocState>(
+        builder: (context, allowedEmailsState) {
+          final allowedEmailsErrorWidget = handleAllowedEmailsState(
+            context,
+            allowedEmailsState,
+          );
+          if (allowedEmailsErrorWidget != null) {
+            return allowedEmailsErrorWidget;
+          }
+
+          return child;
+        },
+      ),
+    );
+  },
   routes: [serviceAdminScreenRoute],
+);
+
+final serviceLoginScreenRoute = ServiceLoginScreenRoute(
+  routes: [serviceAdminShellRoute],
 );
 
 final standardSiteScreenRoutes = [

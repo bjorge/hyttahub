@@ -41,7 +41,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       create: (_) => SiteSubmitBloc(widget.siteId, submitEvent),
       child: Form(
         key: _formKey,
-        child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+        child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
           key: Key('AllowedEmailsBloc-add-member-${widget.siteId}'),
           builder: (context, allowedEmailsState) {
             return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(

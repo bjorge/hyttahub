@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
@@ -17,51 +16,195 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class ServiceAdminsScreen extends StatelessWidget {
   const ServiceAdminsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AllowedEmailsBloc>(
-      create: (_) =>
-          AllowedEmailsBloc(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-          )..add(
-            AllowedEmailsBlocEvent(
-              fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+    final allowedEmailsState = context.watch<ServiceAllowedEmailsBloc>().state;
+    return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
+      builder: (context, serviceState) {
+        final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              HyttaHubLocalizations.of(context)!.manageServiceAdminsTitle,
             ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  final submmitValue = SubmitServiceEvent(
+                    email: GetIt.instance<AuthBloc>().state.email,
+                    addServiceAdminEmail: '', // new admin email
+                    event: ServiceEvent(
+                      addServiceAdmin: ServiceEvent_AddServiceAdmin(
+                        alias: '', // new admin alias
+                      ),
+                      version:
+                          serviceState.events.keys.fold<int>(
+                            0,
+                            (p, e) => e > p ? e : p,
+                          ) +
+                          1,
+                    ),
+                  );
+                  final encodedSubmitValue = base64UrlEncode(
+                    submmitValue.writeToBuffer(),
+                  );
+
+                  context.push(
+                    '${AddServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
+                  );
+                },
+                icon: const Icon(Icons.add),
+              ),
+            ],
           ),
-      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-        builder: (context, allowedEmailsState) {
-          final allowedEmailsErrorWidget =
-              handleAllowedEmailsState(context, allowedEmailsState);
-          if (allowedEmailsErrorWidget != null) {
-            return allowedEmailsErrorWidget;
-          }
+          body: CommonListViewLayout(
+            children: [
+              ...serviceState.serviceAdmins.entries.map(
+                (entry) => ListTile(
+                  title: Text(entry.value.alias),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        tooltip: HyttaHubLocalizations.of(
+                          context,
+                        )!.updateMemberTooltip,
+                        onPressed: () {
+                          final originalEmail = allowedEmailsState.emails
+                              .entries
+                              .firstWhere((e) => e.value.userId == entry.key)
+                              .key;
 
-          return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
-            builder: (context, serviceState) {
-              // first check if the account state is initialized
-
-              final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
-
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    HyttaHubLocalizations.of(context)!.manageServiceAdminsTitle,
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        final submmitValue = SubmitServiceEvent(
-                          email: GetIt.instance<AuthBloc>().state.email,
-                          addServiceAdminEmail: '', // new admin email
-                          event: ServiceEvent(
-                            addServiceAdmin: ServiceEvent_AddServiceAdmin(
-                              alias: '', // new admin alias
+                          final submitValue = SubmitServiceEvent(
+                            email: currentUserEmail,
+                            updateServiceAdminOriginalEmail: originalEmail,
+                            updateServiceAdminNewEmail: originalEmail,
+                            event: ServiceEvent(
+                              updateServiceAdmin:
+                                  ServiceEvent_UpdateServiceAdmin(
+                                    id: entry.key,
+                                    alias: entry.value.alias,
+                                  ),
+                              version:
+                                  serviceState.events.keys.fold<int>(
+                                    0,
+                                    (p, e) => e > p ? e : p,
+                                  ) +
+                                  1,
                             ),
+                          );
+                          final encodedSubmitValue = base64UrlEncode(
+                            submitValue.writeToBuffer(),
+                          );
+                          context.push(
+                            '${UpdateServiceAdminRoute.fullPath}?event=$encodedSubmitValue&originalEmail=$originalEmail',
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        tooltip: HyttaHubLocalizations.of(
+                          context,
+                        )!.removeMemberTooltip,
+                        onPressed:
+                            currentUserEmail ==
+                                    allowedEmailsState.emails.entries
+                                        .firstWhere(
+                                          (e) => e.value.userId == entry.key,
+                                          orElse: () => MapEntry(
+                                            '',
+                                            AllowedEmailsBlocState_UserInfo(),
+                                          ),
+                                        )
+                                        .key
+                                ? null
+                                : () {
+                                    final emailToRemove = allowedEmailsState
+                                        .emails
+                                        .entries
+                                        .firstWhere(
+                                          (e) => e.value.userId == entry.key,
+                                          orElse: () => MapEntry(
+                                            '',
+                                            AllowedEmailsBlocState_UserInfo(),
+                                          ),
+                                        )
+                                        .key;
+                                    final newEmails = allowedEmailsState
+                                        .emails
+                                        .keys
+                                        .where((e) => e != emailToRemove)
+                                        .toList();
+                                    final bloom = BloomFilterProcessor(
+                                      size: serviceState.filter.size,
+                                      hashCount: serviceState.filter.hashCount,
+                                    )..addAll(newEmails);
+
+                                    final submitValue = SubmitServiceEvent(
+                                      email: currentUserEmail,
+                                      removeServiceAdminEmail: emailToRemove,
+                                      event: ServiceEvent(
+                                        removeServiceAdmin:
+                                            ServiceEvent_RemoveServiceAdmin(
+                                              id: entry.key,
+                                              filter: BloomFilter()
+                                                ..size = bloom.size
+                                                ..hashCount = bloom.hashCount
+                                                ..bitArray = bloom.bitArray,
+                                            ),
+                                        version:
+                                            serviceState.events.keys.fold<int>(
+                                              0,
+                                              (p, e) => e > p ? e : p,
+                                            ) +
+                                            1,
+                                      ),
+                                    );
+                                    final encodedSubmitValue = base64UrlEncode(
+                                      submitValue.writeToBuffer(),
+                                    );
+                                    context.push(
+                                      '${RemoveServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
+                                    );
+                                  },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Divider(),
+              if (serviceState.removedServiceAdmins.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.removedMembersTitle,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                ...serviceState.removedServiceAdmins.entries.map(
+                  (entry) => ListTile(
+                    title: Text(entry.value.alias),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.restore),
+                      tooltip: HyttaHubLocalizations.of(
+                        context,
+                      )!.restoreMemberTooltip,
+                      onPressed: () {
+                        final submitValue = SubmitServiceEvent(
+                          email: currentUserEmail,
+                          addServiceAdminEmail: '',
+                          event: ServiceEvent(
+                            restoreServiceAdmin:
+                                ServiceEvent_RestoreServiceAdmin(
+                                  id: entry.key,
+                                  alias: entry.value.alias,
+                                ),
                             version:
                                 serviceState.events.keys.fold<int>(
                                   0,
@@ -71,195 +214,20 @@ class ServiceAdminsScreen extends StatelessWidget {
                           ),
                         );
                         final encodedSubmitValue = base64UrlEncode(
-                          submmitValue.writeToBuffer(),
+                          submitValue.writeToBuffer(),
                         );
-
                         context.push(
-                          '${AddServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
+                          '${RestoreServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
                         );
                       },
-                      icon: const Icon(Icons.add),
                     ),
-                  ],
+                  ),
                 ),
-                body: CommonListViewLayout(
-                  children: [
-                    ...serviceState.serviceAdmins.entries.map(
-                      (entry) => ListTile(
-                        title: Text(entry.value.alias),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              tooltip: HyttaHubLocalizations.of(
-                                context,
-                              )!.updateMemberTooltip,
-                              onPressed: () {
-                                final originalEmail = allowedEmailsState
-                                    .emails
-                                    .entries
-                                    .firstWhere(
-                                      (e) => e.value.userId == entry.key,
-                                    )
-                                    .key;
-
-                                final submitValue = SubmitServiceEvent(
-                                  email: currentUserEmail,
-                                  updateServiceAdminOriginalEmail:
-                                      originalEmail,
-                                  updateServiceAdminNewEmail: originalEmail,
-                                  event: ServiceEvent(
-                                    updateServiceAdmin:
-                                        ServiceEvent_UpdateServiceAdmin(
-                                          id: entry.key,
-                                          alias: entry.value.alias,
-                                        ),
-                                    version:
-                                        serviceState.events.keys.fold<int>(
-                                          0,
-                                          (p, e) => e > p ? e : p,
-                                        ) +
-                                        1,
-                                  ),
-                                );
-                                final encodedSubmitValue = base64UrlEncode(
-                                  submitValue.writeToBuffer(),
-                                );
-                                context.push(
-                                  '${UpdateServiceAdminRoute.fullPath}?event=$encodedSubmitValue&originalEmail=$originalEmail',
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline),
-                              tooltip: HyttaHubLocalizations.of(
-                                context,
-                              )!.removeMemberTooltip,
-                              onPressed:
-                                  currentUserEmail ==
-                                      allowedEmailsState.emails.entries
-                                          .firstWhere(
-                                            (e) => e.value.userId == entry.key,
-                                            orElse: () => MapEntry(
-                                              '',
-                                              AllowedEmailsBlocState_UserInfo(),
-                                            ), // Return empty string if no match
-                                          )
-                                          .key
-                                  ? null
-                                  : () {
-                                      final emailToRemove = allowedEmailsState
-                                          .emails
-                                          .entries
-                                          .firstWhere(
-                                            (e) => e.value.userId == entry.key,
-                                            orElse: () => MapEntry(
-                                              '',
-                                              AllowedEmailsBlocState_UserInfo(),
-                                            ),
-                                          )
-                                          .key;
-                                      final newEmails = allowedEmailsState
-                                          .emails
-                                          .keys
-                                          .where((e) => e != emailToRemove)
-                                          .toList();
-                                      final bloom = BloomFilterProcessor(
-                                        size: serviceState.filter.size,
-                                        hashCount:
-                                            serviceState.filter.hashCount,
-                                      )..addAll(newEmails);
-
-                                      final submitValue = SubmitServiceEvent(
-                                        email: currentUserEmail,
-                                        removeServiceAdminEmail: emailToRemove,
-                                        event: ServiceEvent(
-                                          removeServiceAdmin:
-                                              ServiceEvent_RemoveServiceAdmin(
-                                                id: entry.key,
-                                                filter: BloomFilter()
-                                                  ..size = bloom.size
-                                                  ..hashCount = bloom.hashCount
-                                                  ..bitArray = bloom.bitArray,
-                                              ),
-                                          version:
-                                              serviceState.events.keys
-                                                  .fold<int>(
-                                                    0,
-                                                    (p, e) => e > p ? e : p,
-                                                  ) +
-                                              1,
-                                        ),
-                                      );
-                                      final encodedSubmitValue =
-                                          base64UrlEncode(
-                                            submitValue.writeToBuffer(),
-                                          );
-                                      context.push(
-                                        '${RemoveServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
-                                      );
-                                    },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Divider(),
-                    if (serviceState.removedServiceAdmins.isNotEmpty) ...[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          HyttaHubLocalizations.of(
-                            context,
-                          )!.removedMembersTitle,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ),
-                      ...serviceState.removedServiceAdmins.entries.map(
-                        (entry) => ListTile(
-                          title: Text(entry.value.alias),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.restore),
-                            tooltip: HyttaHubLocalizations.of(
-                              context,
-                            )!.restoreMemberTooltip,
-                            onPressed: () {
-                              final submitValue = SubmitServiceEvent(
-                                email: currentUserEmail,
-                                addServiceAdminEmail: '',
-                                event: ServiceEvent(
-                                  restoreServiceAdmin:
-                                      ServiceEvent_RestoreServiceAdmin(
-                                        id: entry.key,
-                                        alias: entry.value.alias,
-                                      ),
-                                  version:
-                                      serviceState.events.keys.fold<int>(
-                                        0,
-                                        (p, e) => e > p ? e : p,
-                                      ) +
-                                      1,
-                                ),
-                              );
-                              final encodedSubmitValue = base64UrlEncode(
-                                submitValue.writeToBuffer(),
-                              );
-                              context.push(
-                                '${RestoreServiceAdminRoute.fullPath}?event=$encodedSubmitValue',
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }

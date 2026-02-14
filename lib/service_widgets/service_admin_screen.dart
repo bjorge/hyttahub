@@ -27,7 +27,12 @@ class ServiceAdminScreen extends StatelessWidget {
     return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
       builder: (context, serviceState) {
         return Scaffold(
-          appBar: AppBar(title: Text(localizations.serviceAdminTitle)),
+          appBar: AppBar(
+            leading: context.canPop()
+                ? BackButton(onPressed: () => context.pop())
+                : null,
+            title: Text(localizations.serviceAdminTitle),
+          ),
           body: ListView(
             children: <Widget>[
               ServiceAvailableOption(serviceState: serviceState),
