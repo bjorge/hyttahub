@@ -14,14 +14,14 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class StorageEnum extends $pb.ProtobufEnum {
-  static const StorageEnum firestore = StorageEnum._(0, _omitEnumNames ? '' : 'firestore');
-  static const StorageEnum inMemory = StorageEnum._(1, _omitEnumNames ? '' : 'inMemory');
-  static const StorageEnum localStorage = StorageEnum._(2, _omitEnumNames ? '' : 'localStorage');
+  static const StorageEnum cloud = StorageEnum._(0, _omitEnumNames ? '' : 'cloud');
+  static const StorageEnum memory = StorageEnum._(1, _omitEnumNames ? '' : 'memory');
+  static const StorageEnum local = StorageEnum._(2, _omitEnumNames ? '' : 'local');
 
   static const $core.List<StorageEnum> values = <StorageEnum> [
-    firestore,
-    inMemory,
-    localStorage,
+    cloud,
+    memory,
+    local,
   ];
 
   static final $core.Map<$core.int, StorageEnum> _byValue = $pb.ProtobufEnum.initByValue(values);

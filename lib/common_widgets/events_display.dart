@@ -78,7 +78,7 @@ class _EventsDisplayState<
   Future<void> _fetchEvents() async {
     try {
       final storage = HyttaHubStorageFactory.getStorage(
-        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
       );
       final docs = await storage.getCollection(
         widget.config.collectionPath,

@@ -26,7 +26,7 @@ class AllowedEmailsBloc
       );
 
       final storage = HyttaHubStorageFactory.getStorage(
-        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
       );
 
       await emit.onEach<Map<String, Map<String, dynamic>>>(

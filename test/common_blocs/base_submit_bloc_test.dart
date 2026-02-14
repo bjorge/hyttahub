@@ -20,7 +20,7 @@ class TestSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
     : super(initialPayload: initialPayload);
 
   @override
-  StorageEnum get storageType => StorageEnum.inMemory;
+  StorageEnum get storageType => StorageEnum.memory;
 
   final Exception? submitError;
 
@@ -62,7 +62,7 @@ void main() {
         ..addServiceAdminEmail = 'test@test.com';
       
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.inMemory,
+        StorageEnum.memory,
         InMemoryHyttaHubStorage(),
       );
     });

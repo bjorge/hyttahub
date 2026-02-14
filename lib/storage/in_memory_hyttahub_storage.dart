@@ -11,7 +11,7 @@ import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   final StorageEnum storageType;
 
-  InMemoryHyttaHubStorage({this.storageType = StorageEnum.inMemory});
+  InMemoryHyttaHubStorage({this.storageType = StorageEnum.memory});
 
   // Map of path -> (Map of docId -> data)
   final Map<String, Map<String, Map<String, dynamic>>> data = {};

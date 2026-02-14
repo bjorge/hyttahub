@@ -18,10 +18,10 @@ class HyttaHubAuthFactory {
 
     BaseHyttaHubAuth? auth;
     switch (type) {
-      case StorageEnum.inMemory:
+      case StorageEnum.memory:
         auth = InMemoryHyttaHubAuth();
         break;
-      case StorageEnum.localStorage:
+      case StorageEnum.local:
         auth = HydratedHyttaHubAuth();
         break;
       default:

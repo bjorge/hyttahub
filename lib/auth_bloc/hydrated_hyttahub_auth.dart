@@ -13,7 +13,7 @@ class HydratedHyttaHubAuth implements BaseHyttaHubAuth {
 
   Future<void> _init() async {
     try {
-      final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
+      final storage = HyttaHubStorageFactory.getStorage(StorageEnum.local);
       final data = await storage.getDocument(_authCollection, _currentUserDocId);
       if (data != null && data.isNotEmpty) {
         _currentUser = HyttaHubAuthUser(
@@ -57,7 +57,7 @@ class HydratedHyttaHubAuth implements BaseHyttaHubAuth {
   @override
   Future<void> signOut() async {
     _currentUser = null;
-    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
+    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.local);
     await storage.setDocument(_authCollection, _currentUserDocId, {});
   }
 
@@ -75,7 +75,7 @@ class HydratedHyttaHubAuth implements BaseHyttaHubAuth {
   }
   
   Future<void> _persistUser(HyttaHubAuthUser user) async {
-    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
+    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.local);
     await storage.setDocument(_authCollection, _currentUserDocId, {
       'uid': user.uid,
       'email': user.email,

@@ -104,7 +104,7 @@ class LandingPage extends StatelessWidget {
                   onSelected: (int? newValue) {
                     if (newValue != null) {
                       final storage =
-                          StorageEnum.valueOf(newValue) ?? StorageEnum.inMemory;
+                          StorageEnum.valueOf(newValue) ?? StorageEnum.memory;
                       context.read<PlatformCubit>().setPlatform(storage);
                     }
                   },

@@ -18,7 +18,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   }
 
   StorageEnum get _storageType =>
-      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
 
   String get _appName =>
       HyttaHubOptions.implementation?.firebaseRootCollection ?? '';

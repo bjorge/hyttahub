@@ -35,16 +35,16 @@ void setupGetIt() {
 }
 
 void registerPersistence() {
-  PersistenceRegistry.registerStorage(StorageEnum.firestore, () => FirestoreHyttaHubStorage());
+  PersistenceRegistry.registerStorage(StorageEnum.cloud, () => FirestoreHyttaHubStorage());
   
-  PersistenceRegistry.registerAuth(StorageEnum.firestore, () => FirebaseHyttaHubAuth());
+  PersistenceRegistry.registerAuth(StorageEnum.cloud, () => FirebaseHyttaHubAuth());
   
-  PersistenceRegistry.registerFunctions(StorageEnum.firestore, () => FirebaseHyttaHubFunctions());
+  PersistenceRegistry.registerFunctions(StorageEnum.cloud, () => FirebaseHyttaHubFunctions());
 
-  PersistenceRegistry.registerInternalStorage(StorageEnum.firestore, () => FirebaseHyttaHubInternalStorage());
+  PersistenceRegistry.registerInternalStorage(StorageEnum.cloud, () => FirebaseHyttaHubInternalStorage());
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
-    if (storage == StorageEnum.firestore) {
+    if (storage == StorageEnum.cloud) {
       if (Firebase.apps.isEmpty) {
         if (kDebugMode) {
           print('PersistenceRegistry: Initializing Firebase for firestore');
@@ -80,8 +80,8 @@ Future<void> main() async {
   const firebaseRootCollection = 'template';
   final savedPlatform = HydratedBloc.storage.read('PlatformCubit:platform:$firebaseRootCollection');
   final storage = savedPlatform != null 
-    ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.inMemory 
-    : StorageEnum.inMemory;
+    ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.memory 
+    : StorageEnum.memory;
 
   HyttaHubOptions.appTitle = "HyttaHub Template";
   HyttaHubOptions.appVersion = appVersion;

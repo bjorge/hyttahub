@@ -10,23 +10,23 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "";
 
 export enum StorageEnum {
-  firestore = 0,
-  inMemory = 1,
-  localStorage = 2,
+  cloud = 0,
+  memory = 1,
+  local = 2,
   UNRECOGNIZED = -1,
 }
 
 export function storageEnumFromJSON(object: any): StorageEnum {
   switch (object) {
     case 0:
-    case "firestore":
-      return StorageEnum.firestore;
+    case "cloud":
+      return StorageEnum.cloud;
     case 1:
-    case "inMemory":
-      return StorageEnum.inMemory;
+    case "memory":
+      return StorageEnum.memory;
     case 2:
-    case "localStorage":
-      return StorageEnum.localStorage;
+    case "local":
+      return StorageEnum.local;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -36,12 +36,12 @@ export function storageEnumFromJSON(object: any): StorageEnum {
 
 export function storageEnumToJSON(object: StorageEnum): string {
   switch (object) {
-    case StorageEnum.firestore:
-      return "firestore";
-    case StorageEnum.inMemory:
-      return "inMemory";
-    case StorageEnum.localStorage:
-      return "localStorage";
+    case StorageEnum.cloud:
+      return "cloud";
+    case StorageEnum.memory:
+      return "memory";
+    case StorageEnum.local:
+      return "local";
     case StorageEnum.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

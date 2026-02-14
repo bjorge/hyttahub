@@ -81,7 +81,7 @@ class _ImportSiteScreenState extends State<ImportSiteScreen> {
 
     try {
       final storageType =
-          HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+          HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
       final fileStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
 
       final authState = GetIt.instance<AuthBloc>().state;

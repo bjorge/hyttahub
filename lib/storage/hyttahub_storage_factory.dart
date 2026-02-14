@@ -18,10 +18,10 @@ class HyttaHubStorageFactory {
 
     BaseHyttaHubStorage? storage;
     switch (type) {
-      case StorageEnum.inMemory:
+      case StorageEnum.memory:
         storage = InMemoryHyttaHubStorage();
         break;
-      case StorageEnum.localStorage:
+      case StorageEnum.local:
         storage = HydratedHyttaHubStorage(storageKey: 'hyttahub:local_storage');
         break;
       default:

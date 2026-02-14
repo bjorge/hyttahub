@@ -48,7 +48,7 @@ class SiteNameReplayBloc extends BaseReplayBloc<SiteNameReplayBlocState> {
 
   @override
   StorageEnum get storageType =>
-      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
 
   @override
   final String collectionName;

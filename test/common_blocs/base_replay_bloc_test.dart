@@ -122,7 +122,7 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
        );
 
   @override
-  StorageEnum get storageType => StorageEnum.firestore;
+  StorageEnum get storageType => StorageEnum.cloud;
 
   final String collectionPath;
   final bool validationResult;
@@ -178,7 +178,7 @@ void main() {
       inMemoryStorage = InMemoryHyttaHubStorage();
       
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.inMemory,
+        StorageEnum.memory,
         inMemoryStorage,
       );
     });
@@ -198,7 +198,7 @@ void main() {
         replayIsolateHandlerOverride: replayIsolateHandlerOverride,
         gapTimeout: gapTimeout,
         storage: HyttaHubStorageFactory.getStorage(
-          StorageEnum.inMemory,
+          StorageEnum.memory,
         ),
       );
     }

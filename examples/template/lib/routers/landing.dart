@@ -38,9 +38,9 @@ class LandingPage extends StatelessWidget {
               AppLanguage.nl,
             ],
             supportedPlatforms: [
-              StorageEnum.inMemory,
-              StorageEnum.firestore,
-              StorageEnum.localStorage,
+              StorageEnum.memory,
+              StorageEnum.cloud,
+              StorageEnum.local,
             ],
           ),
         ],

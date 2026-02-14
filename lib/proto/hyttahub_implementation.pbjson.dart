@@ -17,16 +17,15 @@ import 'dart:typed_data' as $typed_data;
 const StorageEnum$json = {
   '1': 'StorageEnum',
   '2': [
-    {'1': 'firestore', '2': 0},
-    {'1': 'inMemory', '2': 1},
-    {'1': 'localStorage', '2': 2},
+    {'1': 'cloud', '2': 0},
+    {'1': 'memory', '2': 1},
+    {'1': 'local', '2': 2},
   ],
 };
 
 /// Descriptor for `StorageEnum`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List storageEnumDescriptor = $convert.base64Decode(
-    'CgtTdG9yYWdlRW51bRINCglmaXJlc3RvcmUQABIMCghpbk1lbW9yeRABEhAKDGxvY2FsU3Rvcm'
-    'FnZRAC');
+    'CgtTdG9yYWdlRW51bRIJCgVjbG91ZBAAEgoKBm1lbW9yeRABEgkKBWxvY2FsEAI=');
 
 @$core.Deprecated('Use hyttaHubImplementationDescriptor instead')
 const HyttaHubImplementation$json = {

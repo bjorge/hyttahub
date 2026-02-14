@@ -15,8 +15,8 @@ class HyttaHubFunctionsFactory {
 
     BaseHyttaHubFunctions? functions;
     switch (type) {
-      case StorageEnum.inMemory:
-      case StorageEnum.localStorage:
+      case StorageEnum.memory:
+      case StorageEnum.local:
         functions = InMemoryHyttaHubFunctions(type);
         break;
       default:

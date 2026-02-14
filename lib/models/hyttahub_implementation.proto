@@ -2,9 +2,9 @@
 syntax = "proto3";
 
 enum StorageEnum {
-  firestore = 0;
-  inMemory = 1;
-  localStorage = 2;
+  cloud = 0;
+  memory = 1;
+  local = 2;
 }
 
 message HyttaHubImplementation {

@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 
 class PlatformCubit extends HydratedCubit<StorageEnum> {
   PlatformCubit(this.storageKey)
-    : super(HyttaHubOptions.implementation?.storage ?? StorageEnum.inMemory);
+    : super(HyttaHubOptions.implementation?.storage ?? StorageEnum.memory);
 
   final String storageKey;
 
@@ -43,8 +43,8 @@ class PlatformCubit extends HydratedCubit<StorageEnum> {
   @override
   StorageEnum fromJson(Map<String, dynamic> json) {
     final value = json['platform'] as int?;
-    return StorageEnum.valueOf(value ?? StorageEnum.inMemory.value) ??
-        StorageEnum.inMemory;
+    return StorageEnum.valueOf(value ?? StorageEnum.memory.value) ??
+        StorageEnum.memory;
   }
 
   @override

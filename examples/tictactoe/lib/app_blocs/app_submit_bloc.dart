@@ -36,7 +36,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
   @override
   StorageEnum get storageType =>
-      HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore;
+      HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
 
   final String siteId;
 

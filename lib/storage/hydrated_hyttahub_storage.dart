@@ -11,7 +11,7 @@ class HydratedHyttaHubStorage extends InMemoryHyttaHubStorage {
   final String storageKey;
 
   HydratedHyttaHubStorage({required this.storageKey})
-      : super(storageType: StorageEnum.localStorage) {
+      : super(storageType: StorageEnum.local) {
     _loadFromStorage();
   }
 

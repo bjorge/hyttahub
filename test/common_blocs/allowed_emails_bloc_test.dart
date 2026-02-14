@@ -17,10 +17,10 @@ void main() {
     setUp(() {
       inMemoryStorage = InMemoryHyttaHubStorage();
       HyttaHubOptions.implementation = HyttaHubImplementation(
-        storage: StorageEnum.inMemory,
+        storage: StorageEnum.memory,
       );
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.inMemory,
+        StorageEnum.memory,
         inMemoryStorage,
       );
     });

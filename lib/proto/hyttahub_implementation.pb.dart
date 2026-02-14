@@ -48,7 +48,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
   factory HyttaHubImplementation.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'HyttaHubImplementation', createEmptyInstance: create)
-    ..e<StorageEnum>(1, _omitFieldNames ? '' : 'storage', $pb.PbFieldType.OE, defaultOrMaker: StorageEnum.firestore, valueOf: StorageEnum.valueOf, enumValues: StorageEnum.values)
+    ..e<StorageEnum>(1, _omitFieldNames ? '' : 'storage', $pb.PbFieldType.OE, defaultOrMaker: StorageEnum.cloud, valueOf: StorageEnum.valueOf, enumValues: StorageEnum.values)
     ..a<$core.int>(2, _omitFieldNames ? '' : 'appBuildNumber', $pb.PbFieldType.O3, protoName: 'appBuildNumber')
     ..aOS(3, _omitFieldNames ? '' : 'appId', protoName: 'appId')
     ..aOS(4, _omitFieldNames ? '' : 'firebaseRootCollection', protoName: 'firebaseRootCollection')

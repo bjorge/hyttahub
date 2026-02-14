@@ -42,7 +42,7 @@ class _SiteScreenState extends State<SiteScreen> {
 
     final future = () async {
       final storage = HyttaHubStorageFactory.getStorage(
-        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
       );
       return storage.getFileBytes(
         appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
@@ -436,7 +436,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
 
                       final storage = HyttaHubStorageFactory.getStorage(
                         HyttaHubOptions.implementation?.storage ??
-                            StorageEnum.firestore,
+                            StorageEnum.cloud,
                       );
                       final appName =
                           HyttaHubOptions.implementation
@@ -509,7 +509,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                     final scaffoldMessenger = ScaffoldMessenger.of(context);
                     final storage = HyttaHubStorageFactory.getStorage(
                       HyttaHubOptions.implementation?.storage ??
-                          StorageEnum.firestore,
+                          StorageEnum.cloud,
                     );
                     final appName =
                         HyttaHubOptions.implementation

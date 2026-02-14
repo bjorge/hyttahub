@@ -84,7 +84,7 @@ class SiteInfoScreen extends StatelessWidget {
                       FutureBuilder<Map<String, dynamic>>(
                         future: HyttaHubFunctionsFactory.getFunctions(
                           HyttaHubOptions.implementation?.storage ??
-                              StorageEnum.firestore,
+                              StorageEnum.cloud,
                         ).listSiteFiles(
                           siteId: siteId,
                           appName: HyttaHubOptions

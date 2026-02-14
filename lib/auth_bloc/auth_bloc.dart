@@ -22,7 +22,7 @@ class AuthBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
   BaseHyttaHubAuth get _auth =>
       _authOverride ??
       HyttaHubAuthFactory.getAuth(
-        HyttaHubOptions.implementation?.storage ?? StorageEnum.firestore,
+        HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
       );
 
   final BaseHyttaHubAuth? _authOverride;
