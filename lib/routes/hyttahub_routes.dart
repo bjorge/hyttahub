@@ -1038,15 +1038,20 @@ final serviceShellRoute = ShellRoute(
             return ServiceUninitializedPage(event: encodedEvent);
           }
 
-          final isServiceLogin = state.fullPath?.contains('service') ?? false;
+          final fullPath = state.fullPath ?? '';
+          final isExempt =
+              fullPath == '/' ||
+              fullPath.startsWith(ServiceLoginScreenRoute.fullPath) ||
+              fullPath.startsWith(LandingInfoPageRoute.fullPath) ||
+              fullPath.startsWith(OpenSourceLicensesRoute.fullPath);
 
-          if (!isServiceLogin &&
+          if (!isExempt &&
               serviceState.state == CommonReplayStateEnum.listening &&
               serviceState.serviceUnavailable == true) {
             return ServiceDownPage();
           }
 
-          if (!isServiceLogin &&
+          if (!isExempt &&
               serviceState.state == CommonReplayStateEnum.listening &&
               serviceState.minVersion >
                   (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
