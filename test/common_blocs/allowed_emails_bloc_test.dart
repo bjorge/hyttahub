@@ -1,5 +1,4 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
@@ -7,22 +6,22 @@ import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 void main() {
   group('AllowedEmailsBloc', () {
-    late FakeFirebaseFirestore fakeFirestore;
+    late InMemoryHyttaHubStorage inMemoryStorage;
     const collectionPath = 'allowed_emails';
 
     setUp(() {
-      fakeFirestore = FakeFirebaseFirestore();
+      inMemoryStorage = InMemoryHyttaHubStorage();
       HyttaHubOptions.implementation = HyttaHubImplementation(
-        storage: StorageEnum.firestore,
+        storage: StorageEnum.inMemory,
       );
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.firestore,
-        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+        StorageEnum.inMemory,
+        inMemoryStorage,
       );
     });
 
@@ -38,15 +37,9 @@ void main() {
       blocTest<AllowedEmailsBloc, AllowedEmailsBlocState>(
         'emits [fetching, success] when snapshots stream emits data',
         setUp: () async {
-          // Add initial data to the fake collection.
-          await fakeFirestore
-              .collection(collectionPath)
-              .doc('test@email.com')
-              .set({fbUserId: 123});
-          await fakeFirestore
-              .collection(collectionPath)
-              .doc('another@email.com')
-              .set({fbUserId: 456});
+          // Add initial data to the in-memory storage.
+          await inMemoryStorage.setDocument(collectionPath, 'test@email.com', {fbUserId: 123});
+          await inMemoryStorage.setDocument(collectionPath, 'another@email.com', {fbUserId: 456});
         },
         build: buildBloc,
         act: (bloc) => bloc.add(

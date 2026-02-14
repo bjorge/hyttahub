@@ -4,6 +4,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/auth_bloc/hyttahub_auth_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
@@ -17,7 +18,9 @@ class PlatformCubit extends HydratedCubit<StorageEnum> {
 
   final String storageKey;
 
-  void setPlatform(StorageEnum storage) {
+  Future<void> setPlatform(StorageEnum storage) async {
+    await PersistenceRegistry.initializePlatform(storage);
+
     if (HyttaHubOptions.implementation != null) {
       HyttaHubOptions.implementation!.storage = storage;
     }

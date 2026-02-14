@@ -2,8 +2,8 @@
 
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
-import 'package:hyttahub/functions/firebase_hyttahub_functions.dart';
 import 'package:hyttahub/functions/in_memory_hyttahub_functions.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubFunctionsFactory {
   static final Map<StorageEnum, BaseHyttaHubFunctions> _instances = {};
@@ -13,18 +13,17 @@ class HyttaHubFunctionsFactory {
       return _instances[type]!;
     }
 
-    BaseHyttaHubFunctions functions;
+    BaseHyttaHubFunctions? functions;
     switch (type) {
-      case StorageEnum.firestore:
-        functions = FirebaseHyttaHubFunctions();
-        break;
       case StorageEnum.inMemory:
       case StorageEnum.localStorage:
         functions = InMemoryHyttaHubFunctions(type);
         break;
       default:
-        functions = FirebaseHyttaHubFunctions();
+        functions = PersistenceRegistry.createFunctions(type);
     }
+
+    functions ??= InMemoryHyttaHubFunctions(type);
 
     _instances[type] = functions;
     return functions;

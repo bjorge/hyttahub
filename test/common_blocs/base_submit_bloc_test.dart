@@ -6,9 +6,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:protobuf/protobuf.dart';
 
 // Mock Event
@@ -47,6 +45,11 @@ class TestSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
   }
 }
 
+class PermissionDeniedStorage extends InMemoryHyttaHubStorage {
+  @override
+  bool isPermissionDenied(Object error) => true;
+}
+
 void main() {
   group('BaseSubmitBloc', () {
     late SubmitServiceEvent initialPayload;
@@ -58,10 +61,9 @@ void main() {
       updatedPayload = SubmitServiceEvent()
         ..addServiceAdminEmail = 'test@test.com';
       
-      final fakeFirestore = FakeFirebaseFirestore();
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.firestore,
-        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+        StorageEnum.inMemory,
+        InMemoryHyttaHubStorage(),
       );
     });
 
@@ -157,15 +159,15 @@ void main() {
     );
 
     blocTest<TestSubmitBloc, BaseSubmitState<SubmitServiceEvent>>(
-      'emits [submitting, error] with permissionDenied on FirebaseException',
-      build: () => TestSubmitBloc(
-        initialPayload,
-        submitError: FirebaseException(
-          plugin: 'firestore',
-          code: 'permission-denied',
-        ),
-        storage: HyttaHubStorageFactory.getStorage(StorageEnum.firestore),
-      ),
+      'emits [submitting, error] with permissionDenied on permission error',
+      build: () {
+        final mockStorage = PermissionDeniedStorage();
+        return TestSubmitBloc(
+          initialPayload,
+          submitError: Exception('Permission denied'),
+          storage: mockStorage,
+        );
+      },
       act: (bloc) {
         bloc.isFormValid = true;
         bloc.payloadChanged = true;

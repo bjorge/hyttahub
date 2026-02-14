@@ -17,7 +17,6 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
   Database? _db;
   Completer<Database>? _dbOpenCompleter;
   
-  // Stream controller for simulated real-time updates (similar to InMemory)
   final StreamController<Map<String, dynamic>> _updateController =
       StreamController<Map<String, dynamic>>.broadcast();
 
@@ -67,13 +66,6 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
   }) async {
     final db = await _readyDb;
     final store = stringMapStoreFactory.store(path);
-    // Note: Sembast sort order boolean is 'ascending'.
-    // HyttaHub 'descending' = true means we want descending trigger.
-    // If we want descending, we pass false to Sembast SortOrder? 
-    // Wait, Sembast SortOrder(field, [bool ascending = true]).
-    // So if descending is true, we pass false.
-    // BUT, the logic above: SortOrder(orderBy, false) forces descending always?
-    // Let's fix that.
     
     Finder? correctedFinder;
     if (orderBy != null) {
@@ -104,10 +96,6 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
   ) async {
     final db = await _readyDb;
     final store = stringMapStoreFactory.store(path);
-    // split update into check exists + update to match firestore usage mostly,
-    // or just use update which returns null if not found?
-    // Firestore throws if document doesn't exist on update usually.
-    // Sembast update returns null if key not found.
     final result = await store.record(docId).update(db, data);
     if (result == null) {
        throw Exception('Document not found: $path/$docId');
@@ -117,7 +105,6 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
-    // We need a stream that emits a Map<DocId, Data>
     return Stream.fromFuture(_readyDb).switchMap((db) {
        final store = stringMapStoreFactory.store(path);
        return store.query().onSnapshots(db).map((snapshots) {
@@ -135,7 +122,6 @@ class SembastHyttaHubStorage implements BaseHyttaHubStorage {
     required String versionField,
     required String payloadField,
   }) {
-    // Similar to collection listen but with filtering
       return Stream.fromFuture(_readyDb).switchMap((db) {
        final store = stringMapStoreFactory.store(path);
        return store.query(
@@ -250,12 +236,6 @@ class SembastHyttaHubBatch implements HyttaHubBatch {
 
   @override
   void commit() {
-    // We don't execute here because we can't await. 
-    // We rely on the runBatch wrapper to execute _tasks.
-    // However, the interface contract might expect commit() to be the trigger.
-    // But since it returns void, we can't bubble errors or completion.
-    // This is a design limitation of the Sync batch interface for Async backends.
-    // For now, we will do nothing here and let runBatch handle it.
   }
   
   Future<void> commitAsync() async {
@@ -265,14 +245,13 @@ class SembastHyttaHubBatch implements HyttaHubBatch {
   }
 }
 
-// Extension to run the batch tasks
 extension on SembastHyttaHubStorage {
    Future<void> runBatchInternal(Future<void> Function(HyttaHubBatch batch) action) async {
     final db = await _readyDb;
     await db.transaction((txn) async {
        final batch = SembastHyttaHubBatch(txn, this);
-       await action(batch); // User queues ops
-       await batch.commitAsync(); // We execute them
+       await action(batch);
+       await batch.commitAsync();
     });
    }
 }

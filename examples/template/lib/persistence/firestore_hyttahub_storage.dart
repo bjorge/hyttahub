@@ -1,7 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
@@ -190,9 +190,6 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Future<List<String>> listFiles(String prefix) async {
-    // Firestore implementation usually relies on Cloud Functions for file management.
-    // For now, this is not implemented as it's not needed for the current use cases
-    // of site import/export in Firebase mode (which uses Cloud Functions directly).
     throw UnsupportedError('listFiles is not implemented for FirestoreHyttaHubStorage');
   }
 }
@@ -215,6 +212,5 @@ class FirestoreHyttaHubBatch implements HyttaHubBatch {
 
   @override
   void commit() {
-    // commit is handled by runBatch
   }
 }

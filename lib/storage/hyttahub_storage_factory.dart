@@ -2,9 +2,8 @@
 
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
-import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
-import 'package:hyttahub/storage/sembast_hyttahub_storage.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubStorageFactory {
   static final Map<StorageEnum, BaseHyttaHubStorage> _instances = {};
@@ -16,20 +15,16 @@ class HyttaHubStorageFactory {
       return _instances[type]!;
     }
 
-    BaseHyttaHubStorage storage;
+    BaseHyttaHubStorage? storage;
     switch (type) {
-      case StorageEnum.firestore:
-        storage = FirestoreHyttaHubStorage();
-        break;
       case StorageEnum.inMemory:
         storage = InMemoryHyttaHubStorage();
         break;
-      case StorageEnum.localStorage:
-        storage = SembastHyttaHubStorage();
-        break;
       default:
-        storage = FirestoreHyttaHubStorage();
+        storage = PersistenceRegistry.createStorage(type);
     }
+
+    storage ??= InMemoryHyttaHubStorage();
 
     _instances[type] = storage;
     return storage;

@@ -5,13 +5,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
-import 'package:hyttahub/storage/firestore_hyttahub_storage.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
@@ -170,17 +169,17 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
 
 void main() {
   group('BaseReplayBloc', () {
-    late FakeFirebaseFirestore fakeFirestore;
+    late InMemoryHyttaHubStorage inMemoryStorage;
     const collectionPath = 'test_collection';
 
     setUp(() {
       HyttaHubStorageFactory.clear();
       HydratedBloc.storage = MockStorage();
-      fakeFirestore = FakeFirebaseFirestore();
+      inMemoryStorage = InMemoryHyttaHubStorage();
       
       HyttaHubStorageFactory.setStorage(
-        StorageEnum.firestore,
-        FirestoreHyttaHubStorage(firestore: fakeFirestore),
+        StorageEnum.inMemory,
+        inMemoryStorage,
       );
     });
 
@@ -199,7 +198,7 @@ void main() {
         replayIsolateHandlerOverride: replayIsolateHandlerOverride,
         gapTimeout: gapTimeout,
         storage: HyttaHubStorageFactory.getStorage(
-          StorageEnum.firestore,
+          StorageEnum.inMemory,
         ),
       );
     }
@@ -214,11 +213,11 @@ void main() {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'emits ok with combined events when fetching initial data',
         setUp: () async {
-          await fakeFirestore.collection(collectionPath).doc('1').set({
+          await inMemoryStorage.setDocument(collectionPath, '1', {
             fbVersion: 1,
             fbPayload: 'event1',
           });
-          await fakeFirestore.collection(collectionPath).doc('2').set({
+          await inMemoryStorage.setDocument(collectionPath, '2', {
             fbVersion: 2,
             fbPayload: 'event2',
           });
@@ -255,7 +254,7 @@ void main() {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'correctly processes new events after initial fetch',
         setUp: () async {
-          await fakeFirestore.collection(collectionPath).doc('1').set({
+          await inMemoryStorage.setDocument(collectionPath, '1', {
             fbVersion: 1,
             fbPayload: 'event1',
           });
@@ -265,7 +264,7 @@ void main() {
           bloc.add(CommonReplayBlocEvent(listen: true));
           // Allow Firebase listener to initialize and apply the first event
           await Future.delayed(const Duration(milliseconds: 150));
-          await fakeFirestore.collection(collectionPath).doc('2').set({
+          await inMemoryStorage.setDocument(collectionPath, '2', {
             fbVersion: 2,
             fbPayload: 'event2',
           });
@@ -289,7 +288,7 @@ void main() {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'stops listening and clears state when listen is set to false',
         setUp: () async {
-          await fakeFirestore.collection(collectionPath).doc('1').set({
+          await inMemoryStorage.setDocument(collectionPath, '1', {
             fbVersion: 1,
             fbPayload: 'event1',
           });
@@ -430,7 +429,7 @@ void main() {
         seed: () => ServiceReplayBlocState(events: {1: 'stale_event'}),
         act: (bloc) {
           // Add some data to firestore that should be fetched after clearing
-          fakeFirestore.collection(collectionPath).doc('2').set({
+          inMemoryStorage.setDocument(collectionPath, '2', {
             fbVersion: 2,
             fbPayload: 'fresh_event',
           });
@@ -492,12 +491,12 @@ void main() {
           hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
         );
 
-        // Add some events to Firestore
-        await fakeFirestore.collection(collectionPath).doc('1').set({
+        // Add some events to in-memory storage
+        await inMemoryStorage.setDocument(collectionPath, '1', {
           fbVersion: 1,
           fbPayload: 'event1',
         });
-        await fakeFirestore.collection(collectionPath).doc('2').set({
+        await inMemoryStorage.setDocument(collectionPath, '2', {
           fbVersion: 2,
           fbPayload: 'event2',
         });

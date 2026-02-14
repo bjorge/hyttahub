@@ -14,11 +14,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  firebase_core: ^4.1.1
-  cloud_firestore: ^6.0.2
-  firebase_auth: ^6.1.0
-  firebase_storage: ^13.0.2
-  cloud_functions: ^6.0.2
   url_launcher: ^6.3.2
   protobuf: ^4.2.0
   go_router: ^16.2.2

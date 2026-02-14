@@ -49,6 +49,49 @@ flutter pub get
 flutter test
 ```
 
+### Persistence Registration
+
+HyttaHub is persistence-agnostic and requires the application layer to register storage, authentication, and functions implementations. This enables flexible switching between different backends (e.g., Firebase, Sembast) or using mock implementations for testing.
+
+In your application's `main.dart`, register your chosen providers using `PersistenceRegistry` before calling `initializeHyttaHub`:
+
+```dart
+import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
+// Import your concrete implementations (e.g. from a persistence package)
+
+void registerPersistence() {
+  // Register Storage (e.g., Firestore)
+  PersistenceRegistry.registerStorage(
+    StorageEnum.firestore, 
+    () => FirestoreHyttaHubStorage(),
+  );
+  
+  // Register Auth
+  PersistenceRegistry.registerAuth(
+    StorageEnum.firestore, 
+    () => FirebaseHyttaHubAuth(),
+  );
+  
+  // Register Functions
+  PersistenceRegistry.registerFunctions(
+    StorageEnum.firestore, 
+    () => FirebaseHyttaHubFunctions(),
+  );
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize persistence before starting the app
+  registerPersistence();
+  
+  // ... rest of initialization
+}
+```
+
+By default, the library falls back to in-memory mock implementations if no registry entries are found for a specific `StorageEnum`.
+
 ### Running the Application
 
 ```sh
