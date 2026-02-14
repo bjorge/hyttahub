@@ -2,6 +2,7 @@
 
 import 'package:hyttahub/auth_bloc/base_hyttahub_auth.dart';
 import 'package:hyttahub/auth_bloc/in_memory_hyttahub_auth.dart';
+import 'package:hyttahub/auth_bloc/hydrated_hyttahub_auth.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 
@@ -19,6 +20,9 @@ class HyttaHubAuthFactory {
     switch (type) {
       case StorageEnum.inMemory:
         auth = InMemoryHyttaHubAuth();
+        break;
+      case StorageEnum.localStorage:
+        auth = HydratedHyttaHubAuth();
         break;
       default:
         auth = PersistenceRegistry.createAuth(type);

@@ -3,6 +3,7 @@
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
+import 'package:hyttahub/storage/hydrated_hyttahub_storage.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubStorageFactory {
@@ -19,6 +20,9 @@ class HyttaHubStorageFactory {
     switch (type) {
       case StorageEnum.inMemory:
         storage = InMemoryHyttaHubStorage();
+        break;
+      case StorageEnum.localStorage:
+        storage = HydratedHyttaHubStorage(storageKey: 'hyttahub:local_storage');
         break;
       default:
         storage = PersistenceRegistry.createStorage(type);

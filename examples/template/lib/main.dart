@@ -11,10 +11,7 @@ import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:template/persistence/firebase_hyttahub_auth.dart';
 import 'package:template/persistence/firebase_hyttahub_functions.dart';
 import 'package:template/persistence/firestore_hyttahub_storage.dart';
-import 'package:template/persistence/local_storage_hyttahub_auth.dart';
-import 'package:template/persistence/sembast_hyttahub_storage.dart';
 import 'package:template/persistence/firebase_hyttahub_internal_storage.dart';
-import 'package:template/persistence/sembast_hyttahub_internal_storage.dart';
 import 'package:template/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,15 +36,12 @@ void setupGetIt() {
 
 void registerPersistence() {
   PersistenceRegistry.registerStorage(StorageEnum.firestore, () => FirestoreHyttaHubStorage());
-  PersistenceRegistry.registerStorage(StorageEnum.localStorage, () => SembastHyttaHubStorage());
   
   PersistenceRegistry.registerAuth(StorageEnum.firestore, () => FirebaseHyttaHubAuth());
-  PersistenceRegistry.registerAuth(StorageEnum.localStorage, () => LocalStorageHyttaHubAuth());
   
   PersistenceRegistry.registerFunctions(StorageEnum.firestore, () => FirebaseHyttaHubFunctions());
 
   PersistenceRegistry.registerInternalStorage(StorageEnum.firestore, () => FirebaseHyttaHubInternalStorage());
-  PersistenceRegistry.registerInternalStorage(StorageEnum.localStorage, () => SembastHyttaHubInternalStorage());
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
     if (storage == StorageEnum.firestore) {

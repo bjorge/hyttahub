@@ -1,31 +1,21 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
-
 import 'package:hyttahub/auth_bloc/base_hyttahub_auth.dart';
 import 'package:hyttahub/auth_bloc/hyttahub_auth_user.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
-import 'package:tictactoe/persistence/sembast_hyttahub_storage.dart';
 
-class LocalStorageHyttaHubAuth implements BaseHyttaHubAuth {
+class HydratedHyttaHubAuth implements BaseHyttaHubAuth {
   HyttaHubAuthUser? _currentUser;
   final String _authCollection = '_auth';
   final String _currentUserDocId = 'current_user';
 
-  Future<SembastHyttaHubStorage> get _storage async {
-     final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
-     if (storage is! SembastHyttaHubStorage) {
-       throw Exception('Storage is not SembastHyttaHubStorage');
-     }
-     return storage;
-  }
-
   Future<void> _init() async {
     try {
-      final storage = await _storage;
+      final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
       final data = await storage.getDocument(_authCollection, _currentUserDocId);
-      if (data != null) {
+      if (data != null && data.isNotEmpty) {
         _currentUser = HyttaHubAuthUser(
           uid: data['uid'] as String,
           email: data['email'] as String,
@@ -67,7 +57,7 @@ class LocalStorageHyttaHubAuth implements BaseHyttaHubAuth {
   @override
   Future<void> signOut() async {
     _currentUser = null;
-    final storage = await _storage;
+    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
     await storage.setDocument(_authCollection, _currentUserDocId, {});
   }
 
@@ -85,7 +75,7 @@ class LocalStorageHyttaHubAuth implements BaseHyttaHubAuth {
   }
   
   Future<void> _persistUser(HyttaHubAuthUser user) async {
-    final storage = await _storage;
+    final storage = HyttaHubStorageFactory.getStorage(StorageEnum.localStorage);
     await storage.setDocument(_authCollection, _currentUserDocId, {
       'uid': user.uid,
       'email': user.email,

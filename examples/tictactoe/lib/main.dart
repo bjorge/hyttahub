@@ -12,10 +12,7 @@ import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:tictactoe/persistence/firebase_hyttahub_auth.dart';
 import 'package:tictactoe/persistence/firebase_hyttahub_functions.dart';
 import 'package:tictactoe/persistence/firestore_hyttahub_storage.dart';
-import 'package:tictactoe/persistence/local_storage_hyttahub_auth.dart';
-import 'package:tictactoe/persistence/sembast_hyttahub_storage.dart';
 import 'package:tictactoe/persistence/firebase_hyttahub_internal_storage.dart';
-import 'package:tictactoe/persistence/sembast_hyttahub_internal_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,15 +36,12 @@ void setupGetIt() {
 
 void registerPersistence() {
   PersistenceRegistry.registerStorage(StorageEnum.firestore, () => FirestoreHyttaHubStorage());
-  PersistenceRegistry.registerStorage(StorageEnum.localStorage, () => SembastHyttaHubStorage());
   
   PersistenceRegistry.registerAuth(StorageEnum.firestore, () => FirebaseHyttaHubAuth());
-  PersistenceRegistry.registerAuth(StorageEnum.localStorage, () => LocalStorageHyttaHubAuth());
   
   PersistenceRegistry.registerFunctions(StorageEnum.firestore, () => FirebaseHyttaHubFunctions());
 
   PersistenceRegistry.registerInternalStorage(StorageEnum.firestore, () => FirebaseHyttaHubInternalStorage());
-  PersistenceRegistry.registerInternalStorage(StorageEnum.localStorage, () => SembastHyttaHubInternalStorage());
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
     if (storage == StorageEnum.firestore) {
@@ -88,10 +82,6 @@ Future<void> main() async {
   final storage = savedPlatform != null 
     ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.inMemory 
     : StorageEnum.inMemory;
-
-  HyttaHubOptions.appTitle = "Tic-Tac-Toe";
-  HyttaHubOptions.appVersion = appVersion;
-  HyttaHubOptions.appBuildNumber = appBuildNumber;
 
   HyttaHubOptions.appTitle = "Tic-Tac-Toe";
   HyttaHubOptions.appVersion = appVersion;

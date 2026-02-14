@@ -9,18 +9,22 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 
 class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
+  final StorageEnum storageType;
+
+  InMemoryHyttaHubStorage({this.storageType = StorageEnum.inMemory});
+
   // Map of path -> (Map of docId -> data)
-  final Map<String, Map<String, Map<String, dynamic>>> _data = {};
+  final Map<String, Map<String, Map<String, dynamic>>> data = {};
 
   // Stream controller for simulated real-time updates
-  final StreamController<Map<String, dynamic>> _updateController =
+  final StreamController<Map<String, dynamic>> updateController =
       StreamController<Map<String, dynamic>>.broadcast();
 
-  Stream<Map<String, dynamic>> get updates => _updateController.stream;
+  Stream<Map<String, dynamic>> get updates => updateController.stream;
 
   @override
   Future<Map<String, dynamic>?> getDocument(String path, String docId) async {
-    return _data[path]?[docId];
+    return data[path]?[docId];
   }
 
   @override
@@ -29,7 +33,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     String? orderBy,
     bool descending = false,
   }) async {
-    final docs = _data[path];
+    final docs = data[path];
     if (docs == null) return [];
 
     final list = docs.values.toList();
@@ -49,24 +53,24 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   Future<void> setDocument(
     String path,
     String docId,
-    Map<String, dynamic> data,
+    Map<String, dynamic> dataMap,
   ) async {
-    _data.putIfAbsent(path, () => {})[docId] = Map<String, dynamic>.from(data);
-    _updateController.add({'path': path, 'docId': docId});
+    data.putIfAbsent(path, () => {})[docId] = Map<String, dynamic>.from(dataMap);
+    updateController.add({'path': path, 'docId': docId});
   }
 
   @override
   Future<void> updateDocument(
     String path,
     String docId,
-    Map<String, dynamic> data,
+    Map<String, dynamic> dataMap,
   ) async {
-    final existing = _data[path]?[docId];
+    final existing = data[path]?[docId];
     if (existing == null) {
       throw Exception('Document not found: $path/$docId');
     }
-    existing.addAll(data);
-    _updateController.add({'path': path, 'docId': docId});
+    existing.addAll(dataMap);
+    updateController.add({'path': path, 'docId': docId});
   }
 
   @override
@@ -80,7 +84,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     final initialEvents = _getEvents(path, lastVersion, versionField, payloadField);
 
     // Filtered stream for updates
-    return _updateController.stream
+    return updateController.stream
         .where((update) => update['path'] == path)
         .map((_) => _getEvents(path, lastVersion, versionField, payloadField))
         .startWith2(initialEvents);
@@ -88,10 +92,10 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
-    return _updateController.stream
+    return updateController.stream
         .where((update) => update['path'] == path)
-        .map((_) => Map<String, Map<String, dynamic>>.from(_data[path] ?? {}))
-        .startWith2(Map<String, Map<String, dynamic>>.from(_data[path] ?? {}));
+        .map((_) => Map<String, Map<String, dynamic>>.from(data[path] ?? {}))
+        .startWith2(Map<String, Map<String, dynamic>>.from(data[path] ?? {}));
   }
 
   Map<int, String> _getEvents(
@@ -100,17 +104,17 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     String versionField,
     String payloadField,
   ) {
-    final events = <int, String>{};
-    final docs = _data[path] ?? {};
+    final eventsMap = <int, String>{};
+    final docs = data[path] ?? {};
     for (var doc in docs.values) {
       final version = doc[versionField] as int;
       if (version > lastVersion) {
-        events[version] = doc[payloadField] as String;
+        eventsMap[version] = doc[payloadField] as String;
       }
     }
     // Sort by version
-    final sortedKeys = events.keys.toList()..sort();
-    return Map.fromEntries(sortedKeys.map((k) => MapEntry(k, events[k]!)));
+    final sortedKeys = eventsMap.keys.toList()..sort();
+    return Map.fromEntries(sortedKeys.map((k) => MapEntry(k, eventsMap[k]!)));
   }
 
   @override
@@ -133,10 +137,10 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     required String base64Data,
   }) async {
-    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     final path = firebaseFilesPath(siteId, fileName);
     await internalStorage.uploadFile(path, base64Decode(base64Data));
-    _updateController.add({'path': '_files/$siteId', 'docId': fileName});
+    updateController.add({'path': '_files/$siteId', 'docId': fileName});
   }
 
   @override
@@ -145,7 +149,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
   }) async {
-    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     final path = firebaseFilesPath(siteId, fileName);
     return await internalStorage.downloadFile(path);
   }
@@ -156,12 +160,12 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required List<String> fileNames,
   }) async {
-    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     for (final fileName in fileNames) {
       final path = firebaseFilesPath(siteId, fileName);
       await internalStorage.deleteFile(path);
     }
-    _updateController.add({'path': '_files/$siteId'});
+    updateController.add({'path': '_files/$siteId'});
   }
 
   @override
@@ -171,14 +175,14 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
     int? expirationDays,
   }) async {
-    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     final path = firebaseFilesPath(siteId, fileName);
     return await internalStorage.getDownloadUrl(path);
   }
 
   @override
   Future<List<String>> listFiles(String prefix) async {
-    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(StorageEnum.inMemory);
+    final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     return await internalStorage.listFiles(prefix);
   }
 }
