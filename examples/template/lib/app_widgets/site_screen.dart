@@ -17,7 +17,6 @@ import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
@@ -61,12 +60,6 @@ class _SiteScreenState extends State<SiteScreen> {
     return BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
       key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
       builder: (context, allowedEmailsState) {
-        final allowedEmailsErrorWidget =
-            handleAllowedEmailsState(context, allowedEmailsState);
-        if (allowedEmailsErrorWidget != null) {
-          return allowedEmailsErrorWidget;
-        }
-
         final userId =
             allowedEmailsState.emails[GetIt.instance<AuthBloc>().state.email]
                 ?.userId;
@@ -75,10 +68,6 @@ class _SiteScreenState extends State<SiteScreen> {
           builder: (context, editModeState) {
             return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
               builder: (context, siteState) {
-                final errorWidget = handleSiteReplayState(context, siteState);
-                if (errorWidget != null) {
-                  return errorWidget;
-                }
 
                 final isAdmin = siteState.members[userId]?.admin ?? false;
 
@@ -620,11 +609,6 @@ class ScreenTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
       builder: (context, siteState) {
-        final errorWidget = handleSiteReplayState(context, siteState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
         final siteName = siteState.name;
 
         return Text(siteName);

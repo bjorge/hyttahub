@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -20,11 +19,6 @@ class SiteInfoScreen extends StatelessWidget {
 
     return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
       builder: (context, state) {
-        final errorWidget = handleSiteReplayState(context, state);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
         final siteEventCount = state.events.length;
         final siteTotalSize = state.events.values.fold<int>(
           0,

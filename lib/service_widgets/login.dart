@@ -1,9 +1,5 @@
 // Copyright (c) 2025 bjorge
 
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
@@ -11,19 +7,12 @@ import 'package:hyttahub/service_widgets/email_login_form.dart';
 import 'package:hyttahub/service_widgets/email_signup_form.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
-import 'package:hyttahub/utilities/ids.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
-import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/service_widgets/service_down_page.dart';
-import 'package:hyttahub/service_widgets/service_new_version_page.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
-import 'package:hyttahub/service_widgets/service_network_error_page.dart';
-import 'package:hyttahub/service_widgets/service_uninitialized_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,88 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final localizations = HyttaHubLocalizations.of(context)!;
     final createAccountCubit = context.read<CreateAccountCubit>();
 
-    return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
-      listener: (context, serviceState) {
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.serviceUnavailable == true) {
-          // logout and then rebuild the navigation stack
-          context.read<AuthBloc>().add(
-            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-          );
+    final serviceState = context.read<ServiceReplayBloc>().state;
 
-          context.goNamed(LoginScreenRoute.routeName);
-        }
-
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
-          // logout and then rebuild the navigation stack
-          context.read<AuthBloc>().add(
-            AuthBlocEvent(logout: AuthBlocEvent_Logout()),
-          );
-
-          context.goNamed(LoginScreenRoute.routeName);
-        }
-      },
-      builder: (context, serviceState) {
-        if (serviceState.state == CommonReplayStateEnum.hydrating) {
-          return Scaffold(
-            appBar: AppBar(
-              leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
-              title: Text(localizations.loadingTitle),
-            ),
-            body: Center(
-              child: CommonListViewLayout(
-                spacing: 10.0,
-                children: <Widget>[
-                  Center(child: const CircularProgressIndicator()),
-                ],
-              ),
-            ),
-          );
-        }
-
-        if (serviceState.state ==
-            CommonReplayStateEnum.uninitializedListening) {
-          final submitServiceEvent = SubmitServiceEvent(
-            email: '',
-            event: ServiceEvent(
-              version: 1,
-              author: 1,
-              initialEvent: ServiceEvent_InitialEvent(
-                instance: generateId(), // a good enough random value
-                alias: 'Admin',
-                filter: BloomFilter(),
-                appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
-                appId: HyttaHubOptions.implementation?.appId ?? '',
-              ),
-            ),
-          );
-
-          final encodedEvent = base64Encode(submitServiceEvent.writeToBuffer());
-
-          return ServiceUninitializedPage(event: encodedEvent);
-        }
-
-        if (serviceState.state == CommonReplayStateEnum.networkError) {
-          return ServiceNetworkErrorPage();
-        }
-
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.serviceUnavailable == true) {
-          return ServiceDownPage();
-        }
-
-        if (!widget.serviceLogin &&
-            serviceState.state == CommonReplayStateEnum.listening &&
-            serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
-          return ServiceNewVersionPage();
-        }
-
-        return BlocBuilder<CreateAccountCubit, bool>(
-          builder: (context, createAccount) {
+    return BlocBuilder<CreateAccountCubit, bool>(
+      builder: (context, createAccount) {
             return BlocConsumer<AuthBloc, AuthBlocState>(
               listener: (context, authState) {
                 if (authState.authState == AuthState.authenticated &&
@@ -242,8 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           },
         );
-      },
-    );
   }
 
   String? emailError(

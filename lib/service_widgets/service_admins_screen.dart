@@ -45,14 +45,6 @@ class ServiceAdminsScreen extends StatelessWidget {
             builder: (context, serviceState) {
               // first check if the account state is initialized
 
-              final errorWidget = handleServiceReplayState(
-                context,
-                serviceState,
-              );
-              if (errorWidget != null) {
-                return errorWidget;
-              }
-
               final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
 
               return Scaffold(

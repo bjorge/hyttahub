@@ -69,14 +69,6 @@ class _RestoreServiceAdminScreenState extends State<RestoreServiceAdminScreen> {
 
             return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
               builder: (context, serviceState) {
-                final errorWidget = handleServiceReplayState(
-                  context,
-                  serviceState,
-                );
-                if (errorWidget != null) {
-                  return errorWidget;
-                }
-
                 return BlocConsumer<
                   ServiceSubmitBloc,
                   BaseSubmitState<SubmitServiceEvent>

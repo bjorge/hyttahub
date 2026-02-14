@@ -8,7 +8,6 @@ import 'package:hyttahub/account_widgets/update_terms_form.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:hyttahub/utilities/ids.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
@@ -29,23 +28,8 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AccountReplayBloc, AccountReplayBlocState>(
       builder: (context, accountState) {
-        // first check if the account state is initialized
-        final errorWidget = handleAccountReplayState(context, accountState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
         return BlocConsumer<ServiceReplayBloc, ServiceReplayBlocState>(
           builder: (context, serviceState) {
-            // todo: error widget for service state
-            final errorWidget = handleServiceReplayState(
-              context,
-              serviceState,
-            );
-            if (errorWidget != null) {
-              return errorWidget;
-            }
-
             // next check if terms or privacy policy need to be accepted
 
             if (accountState.termsVersion < serviceState.termsVersion ||

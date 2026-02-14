@@ -33,6 +33,13 @@ import 'package:hyttahub/service_widgets/login.dart';
 import 'package:hyttahub/service_widgets/open_source_licenses_screen.dart';
 import 'package:hyttahub/service_widgets/update_admin_screen.dart';
 
+import 'package:hyttahub/proto/service_events.pb.dart';
+import 'package:hyttahub/proto/bloom_filter.pb.dart';
+import 'package:hyttahub/utilities/ids.dart';
+import 'package:hyttahub/service_widgets/service_down_page.dart';
+import 'package:hyttahub/service_widgets/service_new_version_page.dart';
+import 'package:hyttahub/service_widgets/service_uninitialized_page.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +55,7 @@ import 'package:hyttahub/site_widgets/export_site_screen.dart';
 import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
 import 'package:hyttahub/site_widgets/export_details_screen.dart';
 import 'package:hyttahub/site_widgets/site_info_screen.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 
 /// A route for the login screen.
 
@@ -969,10 +977,19 @@ final accountShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<AccountReplayBloc>(
       key: const Key('AccountShellBlocProvider'),
-      create: (context) => AccountReplayBloc(
-        context.read<AuthBloc>().state.email,
-      )..add(CommonReplayBlocEvent(listen: true)),
-      child: child,
+      create:
+          (context) => AccountReplayBloc(
+            context.read<AuthBloc>().state.email,
+          )..add(CommonReplayBlocEvent(listen: true)),
+      child: BlocBuilder<AccountReplayBloc, AccountReplayBlocState>(
+        builder: (context, accountState) {
+          final errorWidget = handleAccountReplayState(context, accountState);
+          if (errorWidget != null) {
+            return errorWidget;
+          }
+          return child;
+        },
+      ),
     );
   },
   routes: [accountScreenRoute],
@@ -985,9 +1002,53 @@ final serviceShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceReplayBloc>(
       key: const Key('ServiceShellBlocProvider'),
-      create: (context) =>
-          ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
-      child: child,
+      create:
+          (context) =>
+              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+      child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
+        builder: (context, serviceState) {
+          final errorWidget = handleServiceReplayState(context, serviceState);
+          if (errorWidget != null) {
+            return errorWidget;
+          }
+
+          if (serviceState.state == CommonReplayStateEnum.uninitializedListening) {
+            final submitServiceEvent = SubmitServiceEvent(
+              email: '',
+              event: ServiceEvent(
+                version: 1,
+                author: 1,
+                initialEvent: ServiceEvent_InitialEvent(
+                  instance: generateId(),
+                  alias: 'Admin',
+                  filter: BloomFilter(),
+                  appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+                  appId: HyttaHubOptions.implementation?.appId ?? '',
+                ),
+              ),
+            );
+
+            final encodedEvent = base64Encode(submitServiceEvent.writeToBuffer());
+            return ServiceUninitializedPage(event: encodedEvent);
+          }
+
+          final isServiceLogin = state.fullPath?.contains('service') ?? false;
+
+          if (!isServiceLogin &&
+              serviceState.state == CommonReplayStateEnum.listening &&
+              serviceState.serviceUnavailable == true) {
+            return ServiceDownPage();
+          }
+
+          if (!isServiceLogin &&
+              serviceState.state == CommonReplayStateEnum.listening &&
+              serviceState.minVersion > (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
+            return ServiceNewVersionPage();
+          }
+
+          return child;
+        },
+      ),
     );
   },
   routes: [

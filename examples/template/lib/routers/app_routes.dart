@@ -9,6 +9,7 @@ import 'package:template/app_widgets/update_checkbox_screen.dart';
 import 'package:template/app_widgets/update_dropdown_screen.dart';
 import 'package:template/app_widgets/update_list_screen.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
+import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:template/routers/landing.dart';
@@ -226,7 +227,25 @@ final siteShellRoute = ShellRoute(
           ),
         ),
       ],
-      child: child,
+      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+        builder: (context, allowedEmailsState) {
+          final allowedEmailsErrorWidget =
+              handleAllowedEmailsState(context, allowedEmailsState);
+          if (allowedEmailsErrorWidget != null) {
+            return allowedEmailsErrorWidget;
+          }
+
+          return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
+            builder: (context, siteState) {
+              final errorWidget = handleSiteReplayState(context, siteState);
+              if (errorWidget != null) {
+                return errorWidget;
+              }
+              return child;
+            },
+          );
+        },
+      ),
     );
   },
   routes: [siteScreenRoute],

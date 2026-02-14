@@ -9,12 +9,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class SiteScreen extends StatefulWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -76,51 +74,13 @@ class _SiteScreenState extends State<SiteScreen> {
           ..siteEvent = (SubmitAppEvent_SiteEvent()..version = 0)
           ..authorEmail = GetIt.instance<AuthBloc>().state.email;
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<SiteReplayBloc>(
-          key: Key('SiteReplayBloc-tictactoe-${widget.siteId}'),
-          create:
-              (_) =>
-                  SiteReplayBloc(widget.siteId)
-                    ..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<AppReplayBloc>(
-          key: Key('AppReplayBloc-tictactoe-${widget.siteId}'),
-          create:
-              (_) =>
-                  AppReplayBloc(widget.siteId)
-                    ..add(CommonReplayBlocEvent(listen: true)),
-        ),
-        BlocProvider<AppSubmitBloc>(
-          create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
-        ),
-        BlocProvider<AllowedEmailsBloc>(
-          create:
-              (_) =>
-                  AllowedEmailsBloc(firebaseSiteUsersPath(widget.siteId))..add(
-                    AllowedEmailsBlocEvent(
-                      fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                    ),
-                  ),
-        ),
-      ],
+    return BlocProvider<AppSubmitBloc>(
+      create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
       child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
         key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
         builder: (context, allowedEmailsState) {
-          final allowedEmailsErrorWidget =
-              handleAllowedEmailsState(context, allowedEmailsState);
-          if (allowedEmailsErrorWidget != null) {
-            return allowedEmailsErrorWidget;
-          }
-
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
             builder: (context, siteState) {
-              final errorWidget = handleSiteReplayState(context, siteState);
-              if (errorWidget != null) {
-                return errorWidget;
-              }
-
               // Tic Tac Toe Board
               return Scaffold(
                 appBar: AppBar(
@@ -350,11 +310,6 @@ class ScreenTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
       builder: (context, siteState) {
-        final errorWidget = handleSiteReplayState(context, siteState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
         final siteName = siteState.name;
 
         return Text(siteName);

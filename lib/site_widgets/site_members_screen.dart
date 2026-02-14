@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class SiteMembersScreen extends StatelessWidget {
   const SiteMembersScreen({super.key, required this.siteId});
@@ -24,33 +22,13 @@ class SiteMembersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AllowedEmailsBloc>(
+    return BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
       key: Key('AllowedEmailsBloc-Site-members-screen-$siteId'),
-      create:
-          (_) =>
-              AllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
-                AllowedEmailsBlocEvent(
-                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                ),
-              ),
-      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-        builder: (context, allowedEmailsState) {
-          final allowedEmailsErrorWidget =
-              handleAllowedEmailsState(context, allowedEmailsState);
-          if (allowedEmailsErrorWidget != null) {
-            return allowedEmailsErrorWidget;
-          }
-
-          return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
-            key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
-            builder: (context, siteState) {
-              // first check if the account state is initialized
-              final errorWidget = handleSiteReplayState(context, siteState);
-              if (errorWidget != null) {
-                return errorWidget;
-              }
-
-              final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+      builder: (context, allowedEmailsState) {
+        return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
+          key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
+          builder: (context, siteState) {
+            final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
 
               // return Builder(
               //   builder: (context) {
@@ -254,12 +232,9 @@ class SiteMembersScreen extends StatelessWidget {
                   ],
                 ),
               );
-              //   },
-              // );
             },
           );
         },
-      ),
-    );
+      );
   }
 }

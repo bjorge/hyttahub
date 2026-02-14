@@ -74,14 +74,6 @@ class _UpdateServiceAdminScreenState extends State<UpdateServiceAdminScreen> {
 
             return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
               builder: (context, serviceState) {
-                final errorWidget = handleServiceReplayState(
-                  context,
-                  serviceState,
-                );
-                if (errorWidget != null) {
-                  return errorWidget;
-                }
-
                 final currentUserEmail = context.read<AuthBloc>().state.email;
                 final isCurrentUser = currentUserEmail == widget.originalEmail;
                 final isOnlyAdmin = serviceState.serviceAdmins.length == 1;

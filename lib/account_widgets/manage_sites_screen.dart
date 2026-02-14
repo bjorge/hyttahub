@@ -11,7 +11,6 @@ import 'package:hyttahub/site_widgets/site_name_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 
 class ManageSitesScreen extends StatefulWidget {
   const ManageSitesScreen({super.key});
@@ -25,11 +24,6 @@ class _ManageSitesScreenState extends State<ManageSitesScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<AccountReplayBloc, AccountReplayBlocState>(
       builder: (context, accountState) {
-        final errorWidget = handleAccountReplayState(context, accountState);
-        if (errorWidget != null) {
-          return errorWidget;
-        }
-
         return Scaffold(
           appBar: AppBar(
             title: Text(HyttaHubLocalizations.of(context)!.manageSitesTitle),

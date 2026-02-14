@@ -16,7 +16,6 @@ import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:protobuf/protobuf.dart';
 
 class AddMemberScreen extends StatefulWidget {
@@ -45,18 +44,8 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
           key: Key('AllowedEmailsBloc-add-member-${widget.siteId}'),
           builder: (context, allowedEmailsState) {
-            final allowedEmailsErrorWidget =
-                handleAllowedEmailsState(context, allowedEmailsState);
-            if (allowedEmailsErrorWidget != null) {
-              return allowedEmailsErrorWidget;
-            }
-
             return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
               builder: (context, siteState) {
-                final errorWidget = handleSiteReplayState(context, siteState);
-                if (errorWidget != null) {
-                  return errorWidget;
-                }
 
                 return BlocConsumer<
                   SiteSubmitBloc,
