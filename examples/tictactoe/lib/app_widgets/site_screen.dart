@@ -14,6 +14,7 @@ import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
+import 'package:hyttahub/common_widgets/layout.dart';
 
 class SiteScreen extends StatefulWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -71,7 +72,7 @@ class _SiteScreenState extends State<SiteScreen> {
                       appOptions: [
                         SimpleDialogOption(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.of(context, rootNavigator: true).pop();
                             context.push(
                               AppEventsDisplayRoute.fullPath(
                                 siteId: widget.siteId,
@@ -104,12 +105,9 @@ class _SiteScreenState extends State<SiteScreen> {
                         listener: (context, submitState) {
                           if (submitState.submissionState.state == CommonSubmitBlocState_State.error) {
                             final errorCode = submitState.submissionState.errorCode;
-                            print('SiteScreen: Submission ERROR: $errorCode');
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Submission Error: $errorCode')),
                             );
-                          } else if (submitState.submissionState.state == CommonSubmitBlocState_State.success) {
-                            print('SiteScreen: Submission SUCCESS');
                           }
                         },
                       ),
@@ -148,7 +146,6 @@ class TicTacToeBoard extends StatelessWidget {
 
   void _startGame(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState, bool vsBot) {
     final nextVersion = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
-    print('_startGame: vsBot=$vsBot, nextVersion=$nextVersion');
     final submitEvent = SubmitAppEvent()
       ..appEvent = AppEvent(
         startGame: AppEvent_StartGame(
@@ -159,12 +156,14 @@ class TicTacToeBoard extends StatelessWidget {
       ..authorEmail = GetIt.instance<AuthBloc>().state.email;
 
     final submitBloc = context.read<AppSubmitBloc>();
+    // Step 1: Update the payload and mark form as valid
     submitBloc.add(
       AppEventSubmission(
         updatedPayload: submitEvent,
         submission: CommonSubmitBlocEvent(isFormValid: true),
       ),
     );
+    // Step 2: Trigger the submission
     submitBloc.add(
       AppEventSubmission(
         submission: CommonSubmitBlocEvent(submit: CommonSubmitBlocEvent_SubmitNow()),
@@ -215,7 +214,7 @@ class TicTacToeBoard extends StatelessWidget {
             final siteState = context.read<SiteReplayBloc>().state;
             final allowedEmailsState = context.read<SiteAllowedEmailsBloc>().state;
             final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
-            
+
             final myMemberId = allowedEmailsState.emails.entries
                 .firstWhere(
                   (e) => e.key == currentUserEmail,
@@ -226,14 +225,11 @@ class TicTacToeBoard extends StatelessWidget {
 
             final xName = _getPlayerName(appState, appState.xPlayerId);
             final oName = _getPlayerName(appState, appState.oPlayerId);
-            
-            print('TicTacToeBoard render: xId=${appState.xPlayerId}($xName), oId=${appState.oPlayerId}($oName), status=${appState.status}');
 
             final isMyTurn = (appState.turn == 1 && myMemberId == appState.xPlayerId) ||
                              (appState.turn == 2 && myMemberId == appState.oPlayerId);
 
-            return Column(
-              mainAxisSize: MainAxisSize.min,
+            return CommonListViewLayout(
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -258,117 +254,122 @@ class TicTacToeBoard extends StatelessWidget {
                 ),
                 if (appState.status == GameStatus.gameOver)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      appState.winner == 3
-                          ? "Draw!"
-                          : "${appState.winner == 1 ? xName : oName} Wins!",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: Text(
+                        appState.winner == 3
+                            ? "Draw!"
+                            : "${appState.winner == 1 ? xName : oName} Wins!",
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                        ),
-                    itemCount: 9,
-                    itemBuilder: (context, index) {
-                      final cellValue = board[index];
-                      final isPending = _isPendingBox(index, submitState);
+                Center(
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                          ),
+                      itemCount: 9,
+                      itemBuilder: (context, index) {
+                        final cellValue = board[index];
+                        final isPending = _isPendingBox(index, submitState);
 
-                      int displayValue = cellValue;
-                      bool gray = false;
+                        int displayValue = cellValue;
+                        bool gray = false;
 
-                      if (isPending) {
-                        displayValue =
-                            submitState.payload!.appEvent.move.player;
-                        gray = true;
-                      }
+                        if (isPending) {
+                          displayValue =
+                              submitState.payload!.appEvent.move.player;
+                          gray = true;
+                        }
 
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          if (appState.status == GameStatus.playing &&
-                              cellValue == 0 &&
-                              appState.winner == 0 &&
-                              !isPending &&
-                              isMyTurn &&
-                              submitState.submissionState.state !=
-                                  CommonSubmitBlocState_State.submitting) {
-                            
-                            final version = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
-                            final player = appState.turn;
-                            final x = index % 3;
-                            final y = index ~/ 3;
+                        return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            if (appState.status == GameStatus.playing &&
+                                cellValue == 0 &&
+                                appState.winner == 0 &&
+                                !isPending &&
+                                isMyTurn &&
+                                submitState.submissionState.state !=
+                                    CommonSubmitBlocState_State.submitting) {
+                              
+                              final version = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+                              final player = appState.turn;
+                              final x = index % 3;
+                              final y = index ~/ 3;
 
-                            final move = AppEvent_Move(
-                              x: x,
-                              y: y,
-                              player: player,
-                            );
-                            final appEvent = AppEvent(move: move);
+                              final move = AppEvent_Move(
+                                x: x,
+                                y: y,
+                                player: player,
+                              );
+                              final appEvent = AppEvent(move: move);
 
-                            final submitEvent =
-                                SubmitAppEvent()
-                                  ..appEvent = appEvent
-                                  ..siteEvent =
-                                      (SubmitAppEvent_SiteEvent()
-                                        ..version = version)
-                                  ..authorEmail =
-                                      currentUserEmail;
+                              final submitEvent =
+                                  SubmitAppEvent()
+                                    ..appEvent = appEvent
+                                    ..siteEvent =
+                                        (SubmitAppEvent_SiteEvent()
+                                          ..version = version)
+                                    ..authorEmail =
+                                        currentUserEmail;
 
-                            final submitBloc = context.read<AppSubmitBloc>();
-                            // Step 1: Update the payload and mark form as valid
-                            submitBloc.add(
-                              AppEventSubmission(
-                                updatedPayload: submitEvent,
-                                submission: CommonSubmitBlocEvent(isFormValid: true),
+                              final submitBloc = context.read<AppSubmitBloc>();
+                              // Step 1: Update the payload and mark form as valid
+                              submitBloc.add(
+                                AppEventSubmission(
+                                  updatedPayload: submitEvent,
+                                  submission: CommonSubmitBlocEvent(isFormValid: true),
+                                ),
+                              );
+                              // Step 2: Trigger the submission
+                              submitBloc.add(
+                                AppEventSubmission(
+                                  submission: CommonSubmitBlocEvent(
+                                    submit: CommonSubmitBlocEvent_SubmitNow(),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
                               ),
-                            );
-                            // Step 2: Trigger the submission
-                            submitBloc.add(
-                              AppEventSubmission(
-                                submission: CommonSubmitBlocEvent(
-                                  submit: CommonSubmitBlocEvent_SubmitNow(),
+                            ),
+                            child: Center(
+                              child: Text(
+                                displayValue == 1
+                                    ? "X"
+                                    : (displayValue == 2 ? "O" : ""),
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: gray
+                                      ? Colors.grey
+                                      : Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Theme.of(context).dividerColor,
                             ),
                           ),
-                          child: Center(
-                            child: Text(
-                              displayValue == 1
-                                  ? "X"
-                                  : (displayValue == 2 ? "O" : ""),
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: gray
-                                    ? Colors.grey
-                                    : Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 if (appState.status == GameStatus.notStarted)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Column(
                       children: [
                         ElevatedButton(
@@ -385,10 +386,12 @@ class TicTacToeBoard extends StatelessWidget {
                   ),
                 if (appState.status == GameStatus.gameOver)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      onPressed: () => _playAgain(context, siteState, appState),
-                      child: const Text("Play Again?"),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: () => _playAgain(context, siteState, appState),
+                        child: const Text("Play Again"),
+                      ),
                     ),
                   ),
               ],

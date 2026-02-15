@@ -39,11 +39,9 @@ AppReplayBlocState appReplay(
     final base64Event = base64Events[eventVersion];
     final event = SiteEvent.fromBuffer(base64Decode(base64Event!));
 
-    print('appReplay: processing version $eventVersion, author=${event.author}, eventType=${event.whichEventType()}');
 
     if (event.hasAppEvent()) {
       final appEvent = unpackAppEventWrapper(event.appEvent, AppEvent.create);
-      print('appReplay: appEvent=${appEvent.whichEvent()}');
 
       if (appEvent.hasMove()) {
         final move = appEvent.move;
@@ -115,7 +113,6 @@ AppReplayBlocState appReplay(
 void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
   final oldX = state.xPlayerId;
   final oldO = state.oPlayerId;
-  print('_updatePlayerAssignments: vsBot=${state.vsBot}, authorId=$authorId, members=${state.members.keys.toList()}');
   
   if (state.vsBot) {
     if (authorId != 0) {
@@ -131,7 +128,6 @@ void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
   }
   
   if (state.xPlayerId != oldX || state.oPlayerId != oldO) {
-    print('_updatePlayerAssignments: CHANGED x=${state.xPlayerId}, o=${state.oPlayerId}');
   }
 }
 

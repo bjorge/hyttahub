@@ -139,7 +139,8 @@ class _SiteScreenState extends State<SiteScreen> {
                                 appOptions: [
                                   SimpleDialogOption(
                                     onPressed: () {
-                                      Navigator.pop(context);
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
                                       context.push(
                                         AppEventsDisplayRoute.fullPath(
                                           siteId: widget.siteId,

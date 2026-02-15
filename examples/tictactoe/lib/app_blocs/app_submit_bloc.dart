@@ -68,7 +68,6 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
       }
     }
 
-    print('AppSubmitBloc.submit: siteId=$siteId, version=${siteEvent.version}, encodedEvent=$encodedEvent');
 
     await storage.setDocument(
       firebaseSiteEventsPath(siteId),
@@ -79,7 +78,6 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
         fbTimeStamp: storage.serverTimestamp,
       },
     );
-    print('AppSubmitBloc.submit: setDocument successful');
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;
@@ -109,10 +107,8 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     if (userDoc != null && userDoc.containsKey('u') == true) {
       // The 'u' field holds the author ID.
       submitAppEvent.siteEvent.author = userDoc['u'] as int;
-      print('AppSubmitBloc.getAuthor: email=$email -> authorId=${submitAppEvent.siteEvent.author}');
     } else {
       // This is an error case: an action is being performed by a non-site-user.
-      print('AppSubmitBloc.getAuthor: FAILED for email=$email. User doc: $userDoc');
       throw Exception(
         "Author not found for email: $email in site $siteId. User is not a member or document is malformed.",
       );

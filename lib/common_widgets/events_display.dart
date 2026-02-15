@@ -10,6 +10,7 @@ import 'package:protobuf/protobuf.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:go_router/go_router.dart';
 
 /// Abstract configuration to drive the generic [EventsDisplay] widget.
 ///
@@ -139,6 +140,10 @@ class _EventsDisplayState<
     final localizations = HyttaHubLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
+        leading:
+            context.canPop()
+                ? BackButton(onPressed: () => context.pop())
+                : null,
         title: Text(
           _showReplay ? widget.config.replayTitle : widget.config.screenTitle,
         ),
