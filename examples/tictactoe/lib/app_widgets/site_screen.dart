@@ -25,7 +25,6 @@ class SiteScreen extends StatefulWidget {
 }
 
 class _SiteScreenState extends State<SiteScreen> {
-  // We don't need image fetching for simple X/O game, but keeping structure valid.
   TicTacToeBot? _bot;
 
   @override
@@ -62,7 +61,6 @@ class _SiteScreenState extends State<SiteScreen> {
         builder: (context, allowedEmailsState) {
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
             builder: (context, siteState) {
-              // Tic Tac Toe Board
               return Scaffold(
                 appBar: AppBar(
                   leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
@@ -102,6 +100,19 @@ class _SiteScreenState extends State<SiteScreen> {
                           }
                         },
                       ),
+                      BlocListener<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
+                        listener: (context, submitState) {
+                          if (submitState.submissionState.state == CommonSubmitBlocState_State.error) {
+                            final errorCode = submitState.submissionState.errorCode;
+                            print('SiteScreen: Submission ERROR: $errorCode');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Submission Error: $errorCode')),
+                            );
+                          } else if (submitState.submissionState.state == CommonSubmitBlocState_State.success) {
+                            print('SiteScreen: Submission SUCCESS');
+                          }
+                        },
+                      ),
                     ],
                     child: TicTacToeBoard(siteId: widget.siteId),
                   ),
@@ -131,56 +142,66 @@ class TicTacToeBoard extends StatelessWidget {
     final appEvent = submitState.payload!.appEvent;
     if (!appEvent.hasMove()) return false;
     final move = appEvent.move;
-    // Don't show pending moves for AI (Player 2) to simulate thinking time
     if (move.player == 2) return false;
     return (move.y * 3 + move.x) == index;
   }
 
-  void _startGame(BuildContext context) {
-    final appEvent = AppEvent(startGame: AppEvent_StartGame(vsBot: true));
-    _submitAppEvent(context, appEvent);
-  }
-
-  void _playAgain(BuildContext context) {
-    final appEvent = AppEvent(playAgain: AppEvent_PlayAgain());
-    _submitAppEvent(context, appEvent);
-  }
-
-  void _submitAppEvent(BuildContext context, AppEvent appEvent) {
-    final email = GetIt.instance<AuthBloc>().state.email;
-    final version = context.read<AppReplayBloc>().state.nextVersion;
-
-    final submitEvent =
-        SubmitAppEvent()
-          ..appEvent = appEvent
-          ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
-          ..authorEmail = email;
+  void _startGame(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState, bool vsBot) {
+    final nextVersion = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+    print('_startGame: vsBot=$vsBot, nextVersion=$nextVersion');
+    final submitEvent = SubmitAppEvent()
+      ..appEvent = AppEvent(
+        startGame: AppEvent_StartGame(
+          vsBot: vsBot,
+        ),
+      )
+      ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
+      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
 
     final submitBloc = context.read<AppSubmitBloc>();
-
-    // 1. Update payload and set form to valid
     submitBloc.add(
       AppEventSubmission(
         updatedPayload: submitEvent,
         submission: CommonSubmitBlocEvent(isFormValid: true),
       ),
     );
-
-    // 2. Trigger submission
     submitBloc.add(
       AppEventSubmission(
-        submission: CommonSubmitBlocEvent(
-          submit: CommonSubmitBlocEvent_SubmitNow(),
-        ),
+        submission: CommonSubmitBlocEvent(submit: CommonSubmitBlocEvent_SubmitNow()),
       ),
     );
   }
 
+  void _playAgain(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState) {
+    final nextVersion = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+    final submitEvent = SubmitAppEvent()
+      ..appEvent = AppEvent(
+        playAgain: AppEvent_PlayAgain(),
+      )
+      ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
+      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+
+    final submitBloc = context.read<AppSubmitBloc>();
+    submitBloc.add(
+      AppEventSubmission(
+        updatedPayload: submitEvent,
+        submission: CommonSubmitBlocEvent(isFormValid: true),
+      ),
+    );
+    submitBloc.add(
+      AppEventSubmission(
+        submission: CommonSubmitBlocEvent(submit: CommonSubmitBlocEvent_SubmitNow()),
+      ),
+    );
+  }
+
+  String _getPlayerName(AppReplayBlocState appState, int playerId) {
+    if (playerId == 0) return "Bot";
+    return appState.members[playerId] ?? "Unknown ($playerId)";
+  }
+
   @override
   Widget build(BuildContext context) {
-    // We already have AppSubmitBloc provided by SiteScreen.
-    // We just need to consume it.
-
     return BlocBuilder<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
       builder: (context, submitState) {
         return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
@@ -191,16 +212,57 @@ class TicTacToeBoard extends StatelessWidget {
             final board = appState.board;
             if (board.isEmpty) return const CircularProgressIndicator();
 
+            final siteState = context.read<SiteReplayBloc>().state;
+            final allowedEmailsState = context.read<SiteAllowedEmailsBloc>().state;
+            final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+            
+            final myMemberId = allowedEmailsState.emails.entries
+                .firstWhere(
+                  (e) => e.key == currentUserEmail,
+                  orElse: () => MapEntry("", AllowedEmailsBlocState_UserInfo()),
+                )
+                .value
+                .userId;
+
+            final xName = _getPlayerName(appState, appState.xPlayerId);
+            final oName = _getPlayerName(appState, appState.oPlayerId);
+            
+            print('TicTacToeBoard render: xId=${appState.xPlayerId}($xName), oId=${appState.oPlayerId}($oName), status=${appState.status}');
+
+            final isMyTurn = (appState.turn == 1 && myMemberId == appState.xPlayerId) ||
+                             (appState.turn == 2 && myMemberId == appState.oPlayerId);
+
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (appState.winner != 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _PlayerChip(
+                        name: xName,
+                        symbol: "X",
+                        isTurn: appState.status == GameStatus.playing && appState.turn == 1,
+                        isMe: myMemberId == appState.xPlayerId,
+                      ),
+                      const SizedBox(width: 24),
+                      _PlayerChip(
+                        name: oName,
+                        symbol: "O",
+                        isTurn: appState.status == GameStatus.playing && appState.turn == 2,
+                        isMe: myMemberId == appState.oPlayerId,
+                      ),
+                    ],
+                  ),
+                ),
+                if (appState.status == GameStatus.gameOver)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
                       appState.winner == 3
                           ? "Draw!"
-                          : "Player ${appState.winner} Wins!",
+                          : "${appState.winner == 1 ? xName : oName} Wins!",
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -220,10 +282,6 @@ class TicTacToeBoard extends StatelessWidget {
                       final cellValue = board[index];
                       final isPending = _isPendingBox(index, submitState);
 
-                      // Pending move override
-                      // If pending, it must be our move (X or O).
-                      // We'll assume user is always moving as 'current turn' player or '1' if we want.
-                      // But wait, the submitState payload has the player.
                       int displayValue = cellValue;
                       bool gray = false;
 
@@ -240,12 +298,12 @@ class TicTacToeBoard extends StatelessWidget {
                               cellValue == 0 &&
                               appState.winner == 0 &&
                               !isPending &&
+                              isMyTurn &&
                               submitState.submissionState.state !=
                                   CommonSubmitBlocState_State.submitting) {
-                            final version = appState.nextVersion;
-                            // Submit move
-                            final player =
-                                appState.turn; // Move as the current turn
+                            
+                            final version = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+                            final player = appState.turn;
                             final x = index % 3;
                             final y = index ~/ 3;
 
@@ -256,8 +314,6 @@ class TicTacToeBoard extends StatelessWidget {
                             );
                             final appEvent = AppEvent(move: move);
 
-                            // We need to trigger submission.
-                            // The BaseSubmitBloc expects a 'Submit' event.
                             final submitEvent =
                                 SubmitAppEvent()
                                   ..appEvent = appEvent
@@ -265,20 +321,18 @@ class TicTacToeBoard extends StatelessWidget {
                                       (SubmitAppEvent_SiteEvent()
                                         ..version = version)
                                   ..authorEmail =
-                                      GetIt.instance<AuthBloc>().state.email;
+                                      currentUserEmail;
 
-                            // 1. Update payload and set form to valid
-                            context.read<AppSubmitBloc>().add(
+                            final submitBloc = context.read<AppSubmitBloc>();
+                            // Step 1: Update the payload and mark form as valid
+                            submitBloc.add(
                               AppEventSubmission(
                                 updatedPayload: submitEvent,
-                                submission: CommonSubmitBlocEvent(
-                                  isFormValid: true,
-                                ),
+                                submission: CommonSubmitBlocEvent(isFormValid: true),
                               ),
                             );
-
-                            // 2. Trigger submission
-                            context.read<AppSubmitBloc>().add(
+                            // Step 2: Trigger the submission
+                            submitBloc.add(
                               AppEventSubmission(
                                 submission: CommonSubmitBlocEvent(
                                   submit: CommonSubmitBlocEvent_SubmitNow(),
@@ -315,16 +369,25 @@ class TicTacToeBoard extends StatelessWidget {
                 if (appState.status == GameStatus.notStarted)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      onPressed: () => _startGame(context),
-                      child: const Text("Start Game"),
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _startGame(context, siteState, appState, false),
+                          child: const Text("Start Multiplayer Game"),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => _startGame(context, siteState, appState, true),
+                          child: const Text("Start Bot Game"),
+                        ),
+                      ],
                     ),
                   ),
                 if (appState.status == GameStatus.gameOver)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () => _playAgain(context),
+                      onPressed: () => _playAgain(context, siteState, appState),
                       child: const Text("Play Again?"),
                     ),
                   ),
@@ -333,6 +396,56 @@ class TicTacToeBoard extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class _PlayerChip extends StatelessWidget {
+  const _PlayerChip({
+    required this.name,
+    required this.symbol,
+    required this.isTurn,
+    required this.isMe,
+  });
+
+  final String name;
+  final String symbol;
+  final bool isTurn;
+  final bool isMe;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isTurn ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isTurn ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+          width: 2,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            symbol,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isTurn ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            isMe ? "$name (You)" : name,
+            style: TextStyle(
+              fontWeight: isTurn ? FontWeight.bold : FontWeight.normal,
+              color: isTurn ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

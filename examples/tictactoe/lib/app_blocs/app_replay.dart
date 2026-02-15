@@ -39,8 +39,11 @@ AppReplayBlocState appReplay(
     final base64Event = base64Events[eventVersion];
     final event = SiteEvent.fromBuffer(base64Decode(base64Event!));
 
+    print('appReplay: processing version $eventVersion, author=${event.author}, eventType=${event.whichEventType()}');
+
     if (event.hasAppEvent()) {
       final appEvent = unpackAppEventWrapper(event.appEvent, AppEvent.create);
+      print('appReplay: appEvent=${appEvent.whichEvent()}');
 
       if (appEvent.hasMove()) {
         final move = appEvent.move;
@@ -48,27 +51,88 @@ AppReplayBlocState appReplay(
 
         if (index >= 0 && index < 9 && replay.board[index] == 0) {
           if (replay.winner == 0 && replay.status == GameStatus.playing) {
-            replay.board[index] = move.player;
-            // Toggle turn
-            replay.turn = (move.player == 1) ? 2 : 1;
-            _checkWinner(replay);
-            // Player 1 is user, Player 2 is AI
+            // Validation: Does the author match the expected player ID for this move?
+            // For Player 1 (X), must match xPlayerId
+            // For Player 2 (O), must match oPlayerId (unless oPlayerId is 0/Bot)
+            bool isValidAuthor = false;
+            if (move.player == 1 && event.author == replay.xPlayerId) {
+              isValidAuthor = true;
+            } else if (move.player == 2) {
+              if (replay.vsBot || event.author == replay.oPlayerId) {
+                isValidAuthor = true;
+              }
+            }
+
+            if (isValidAuthor) {
+              replay.board[index] = move.player;
+              // Toggle turn
+              replay.turn = (move.player == 1) ? 2 : 1;
+              _checkWinner(replay);
+            }
           }
         }
       } else if (appEvent.hasStartGame()) {
         replay.status = GameStatus.playing;
         replay.vsBot = appEvent.startGame.vsBot;
+        replay.gameCount = 1;
+
+        _updatePlayerAssignments(replay, event.author);
       } else if (appEvent.hasPlayAgain()) {
         replay.board.fillRange(0, 9, 0);
         replay.turn = 1;
         replay.winner = 0;
         replay.status = GameStatus.playing;
-        // vsBot is preserved from the previous game session
+        replay.gameCount++;
+        // vsBot and player IDs are preserved
+      }
+    } else {
+      // Handle SiteEvents for member tracking
+      if (event.hasNewSite()) {
+        replay.members[event.version] = event.newSite.memberName;
+      } else if (event.hasAddMember()) {
+        replay.members[event.version] = event.addMember.memberName;
+      } else if (event.hasRemoveMember()) {
+        replay.members.remove(event.removeMember.memberId);
+      } else if (event.hasLeaveSite()) {
+        replay.members.remove(event.leaveSite.memberId);
+      } else if (event.hasRestoreMember()) {
+        replay.members[event.restoreMember.memberId] =
+            event.restoreMember.memberName;
+      } else if (event.hasUpdateMember()) {
+        replay.members[event.updateMember.memberId] =
+            event.updateMember.memberName;
+      }
+
+      if (replay.status == GameStatus.notStarted) {
+        _updatePlayerAssignments(replay, 0); // Author not yet known for StartGame
       }
     }
   }
 
   return replay;
+}
+
+void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
+  final oldX = state.xPlayerId;
+  final oldO = state.oPlayerId;
+  print('_updatePlayerAssignments: vsBot=${state.vsBot}, authorId=$authorId, members=${state.members.keys.toList()}');
+  
+  if (state.vsBot) {
+    if (authorId != 0) {
+      state.xPlayerId = authorId;
+    }
+    state.oPlayerId = 0; // Bot
+  } else {
+    final sortedIds = state.members.keys.toList()..sort();
+    if (sortedIds.isNotEmpty) {
+      state.xPlayerId = sortedIds[0];
+      state.oPlayerId = sortedIds.length > 1 ? sortedIds[1] : sortedIds[0];
+    }
+  }
+  
+  if (state.xPlayerId != oldX || state.oPlayerId != oldO) {
+    print('_updatePlayerAssignments: CHANGED x=${state.xPlayerId}, o=${state.oPlayerId}');
+  }
 }
 
 void _checkWinner(AppReplayBlocState state) {

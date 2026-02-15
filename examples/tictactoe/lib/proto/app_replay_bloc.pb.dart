@@ -26,6 +26,10 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.int? winner,
     GameStatus? status,
     $core.bool? vsBot,
+    $core.int? gameCount,
+    $core.Map<$core.int, $core.String>? members,
+    $core.int? xPlayerId,
+    $core.int? oPlayerId,
   }) {
     final $result = create();
     if (events != null) {
@@ -49,6 +53,18 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (vsBot != null) {
       $result.vsBot = vsBot;
     }
+    if (gameCount != null) {
+      $result.gameCount = gameCount;
+    }
+    if (members != null) {
+      $result.members.addAll(members);
+    }
+    if (xPlayerId != null) {
+      $result.xPlayerId = xPlayerId;
+    }
+    if (oPlayerId != null) {
+      $result.oPlayerId = oPlayerId;
+    }
     return $result;
   }
   AppReplayBlocState._() : super();
@@ -63,6 +79,10 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..a<$core.int>(5, _omitFieldNames ? '' : 'winner', $pb.PbFieldType.O3)
     ..e<GameStatus>(7, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: GameStatus.notStarted, valueOf: GameStatus.valueOf, enumValues: GameStatus.values)
     ..aOB(8, _omitFieldNames ? '' : 'vsBot')
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'gameCount', $pb.PbFieldType.O3)
+    ..m<$core.int, $core.String>(10, _omitFieldNames ? '' : 'members', entryClassName: 'AppReplayBlocState.MembersEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('hyttahub.example.tictactoe'))
+    ..a<$core.int>(11, _omitFieldNames ? '' : 'xPlayerId', $pb.PbFieldType.O3)
+    ..a<$core.int>(12, _omitFieldNames ? '' : 'oPlayerId', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
@@ -143,6 +163,38 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   $core.bool hasVsBot() => $_has(6);
   @$pb.TagNumber(8)
   void clearVsBot() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get gameCount => $_getIZ(7);
+  @$pb.TagNumber(9)
+  set gameCount($core.int v) { $_setSignedInt32(7, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasGameCount() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearGameCount() => clearField(9);
+
+  /// Map of member ID to nickname
+  @$pb.TagNumber(10)
+  $core.Map<$core.int, $core.String> get members => $_getMap(8);
+
+  /// The site member IDs for X and O players
+  @$pb.TagNumber(11)
+  $core.int get xPlayerId => $_getIZ(9);
+  @$pb.TagNumber(11)
+  set xPlayerId($core.int v) { $_setSignedInt32(9, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasXPlayerId() => $_has(9);
+  @$pb.TagNumber(11)
+  void clearXPlayerId() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.int get oPlayerId => $_getIZ(10);
+  @$pb.TagNumber(12)
+  set oPlayerId($core.int v) { $_setSignedInt32(10, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasOPlayerId() => $_has(10);
+  @$pb.TagNumber(12)
+  void clearOPlayerId() => clearField(12);
 }
 
 

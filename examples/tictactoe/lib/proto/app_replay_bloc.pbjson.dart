@@ -57,13 +57,27 @@ const AppReplayBlocState$json = {
     {'1': 'winner', '3': 5, '4': 1, '5': 5, '10': 'winner'},
     {'1': 'status', '3': 7, '4': 1, '5': 14, '6': '.hyttahub.example.tictactoe.GameStatus', '10': 'status'},
     {'1': 'vs_bot', '3': 8, '4': 1, '5': 8, '10': 'vsBot'},
+    {'1': 'game_count', '3': 9, '4': 1, '5': 5, '10': 'gameCount'},
+    {'1': 'members', '3': 10, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.AppReplayBlocState.MembersEntry', '10': 'members'},
+    {'1': 'x_player_id', '3': 11, '4': 1, '5': 5, '10': 'xPlayerId'},
+    {'1': 'o_player_id', '3': 12, '4': 1, '5': 5, '10': 'oPlayerId'},
   ],
-  '3': [AppReplayBlocState_EventsEntry$json],
+  '3': [AppReplayBlocState_EventsEntry$json, AppReplayBlocState_MembersEntry$json],
 };
 
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
 const AppReplayBlocState_EventsEntry$json = {
   '1': 'EventsEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+@$core.Deprecated('Use appReplayBlocStateDescriptor instead')
+const AppReplayBlocState_MembersEntry$json = {
+  '1': 'MembersEntry',
   '2': [
     {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
     {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
@@ -78,6 +92,11 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'dGUYAiABKA4yLi5oeXR0YWh1Yi5leGFtcGxlLnRpY3RhY3RvZS5BcHBSZXBsYXlTdGF0ZUVudW'
     '1SBXN0YXRlEhQKBWJvYXJkGAMgAygFUgVib2FyZBISCgR0dXJuGAQgASgFUgR0dXJuEhYKBndp'
     'bm5lchgFIAEoBVIGd2lubmVyEj4KBnN0YXR1cxgHIAEoDjImLmh5dHRhaHViLmV4YW1wbGUudG'
-    'ljdGFjdG9lLkdhbWVTdGF0dXNSBnN0YXR1cxIVCgZ2c19ib3QYCCABKAhSBXZzQm90GjkKC0V2'
-    'ZW50c0VudHJ5EhAKA2tleRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+    'ljdGFjdG9lLkdhbWVTdGF0dXNSBnN0YXR1cxIVCgZ2c19ib3QYCCABKAhSBXZzQm90Eh0KCmdh'
+    'bWVfY291bnQYCSABKAVSCWdhbWVDb3VudBJVCgdtZW1iZXJzGAogAygLMjsuaHl0dGFodWIuZX'
+    'hhbXBsZS50aWN0YWN0b2UuQXBwUmVwbGF5QmxvY1N0YXRlLk1lbWJlcnNFbnRyeVIHbWVtYmVy'
+    'cxIeCgt4X3BsYXllcl9pZBgLIAEoBVIJeFBsYXllcklkEh4KC29fcGxheWVyX2lkGAwgASgFUg'
+    'lvUGxheWVySWQaOQoLRXZlbnRzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiAB'
+    'KAlSBXZhbHVlOgI4ARo6CgxNZW1iZXJzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdW'
+    'UYAiABKAlSBXZhbHVlOgI4AQ==');
 

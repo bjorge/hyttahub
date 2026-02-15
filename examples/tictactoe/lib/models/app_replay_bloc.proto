@@ -37,4 +37,11 @@ message AppReplayBlocState {
 
   // Whether this is a vs bot game
   bool vs_bot = 8;
+  int32 game_count = 9;
+
+  // Map of member ID to nickname
+  map<int32, string> members = 10;
+  // The site member IDs for X and O players
+  int32 x_player_id = 11;
+  int32 o_player_id = 12;
 }
