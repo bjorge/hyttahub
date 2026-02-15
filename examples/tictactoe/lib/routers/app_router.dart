@@ -23,7 +23,7 @@ class _AppRouterState extends State<AppRouter> {
     super.initState();
 
     // tell hyttahub how to route to the site screen for the app
-    accountScreenRoute.routes.add(siteScreenRoute);
+    accountScreenRoute.routes.add(siteShellRoute);
 
     _router = GoRouter(
       initialLocation: LandingScreenRoute.fullPath,

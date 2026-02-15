@@ -84,6 +84,7 @@ class _SiteScreenState extends State<SiteScreen> {
               // Tic Tac Toe Board
               return Scaffold(
                 appBar: AppBar(
+                  leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
                   title: const ScreenTitle(),
                   actions: [
                     SiteSettingsButton(
@@ -275,7 +276,9 @@ class TicTacToeBoard extends StatelessWidget {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                            ),
                           ),
                           child: Center(
                             child: Text(
@@ -285,7 +288,9 @@ class TicTacToeBoard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.bold,
-                                color: gray ? Colors.grey : Colors.black,
+                                color: gray
+                                    ? Colors.grey
+                                    : Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
