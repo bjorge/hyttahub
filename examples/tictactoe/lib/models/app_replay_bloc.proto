@@ -32,9 +32,9 @@ message AppReplayBlocState {
   // Winner: 0 = none/ongoing, 1 = X, 2 = O, 3 = Draw
   int32 winner = 5;
 
-  // Next move for the auto-opponent
-  AppEvent.Move next_move = 6;
-
   // Game status
   GameStatus status = 7;
+
+  // Whether this is a vs bot game
+  bool vs_bot = 8;
 }

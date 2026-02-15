@@ -13,7 +13,6 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'app_events.pb.dart' as $0;
 import 'app_replay_bloc.pbenum.dart';
 
 export 'app_replay_bloc.pbenum.dart';
@@ -25,8 +24,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? board,
     $core.int? turn,
     $core.int? winner,
-    $0.AppEvent_Move? nextMove,
     GameStatus? status,
+    $core.bool? vsBot,
   }) {
     final $result = create();
     if (events != null) {
@@ -44,11 +43,11 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (winner != null) {
       $result.winner = winner;
     }
-    if (nextMove != null) {
-      $result.nextMove = nextMove;
-    }
     if (status != null) {
       $result.status = status;
+    }
+    if (vsBot != null) {
+      $result.vsBot = vsBot;
     }
     return $result;
   }
@@ -62,8 +61,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..p<$core.int>(3, _omitFieldNames ? '' : 'board', $pb.PbFieldType.K3)
     ..a<$core.int>(4, _omitFieldNames ? '' : 'turn', $pb.PbFieldType.O3)
     ..a<$core.int>(5, _omitFieldNames ? '' : 'winner', $pb.PbFieldType.O3)
-    ..aOM<$0.AppEvent_Move>(6, _omitFieldNames ? '' : 'nextMove', subBuilder: $0.AppEvent_Move.create)
     ..e<GameStatus>(7, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: GameStatus.notStarted, valueOf: GameStatus.valueOf, enumValues: GameStatus.values)
+    ..aOB(8, _omitFieldNames ? '' : 'vsBot')
     ..hasRequiredFields = false
   ;
 
@@ -125,27 +124,25 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearWinner() => clearField(5);
 
-  /// Next move for the auto-opponent
-  @$pb.TagNumber(6)
-  $0.AppEvent_Move get nextMove => $_getN(5);
-  @$pb.TagNumber(6)
-  set nextMove($0.AppEvent_Move v) { setField(6, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasNextMove() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearNextMove() => clearField(6);
-  @$pb.TagNumber(6)
-  $0.AppEvent_Move ensureNextMove() => $_ensure(5);
-
   /// Game status
   @$pb.TagNumber(7)
-  GameStatus get status => $_getN(6);
+  GameStatus get status => $_getN(5);
   @$pb.TagNumber(7)
   set status(GameStatus v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasStatus() => $_has(6);
+  $core.bool hasStatus() => $_has(5);
   @$pb.TagNumber(7)
   void clearStatus() => clearField(7);
+
+  /// Whether this is a vs bot game
+  @$pb.TagNumber(8)
+  $core.bool get vsBot => $_getBF(6);
+  @$pb.TagNumber(8)
+  set vsBot($core.bool v) { $_setBool(6, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasVsBot() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearVsBot() => clearField(8);
 }
 
 

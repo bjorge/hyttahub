@@ -40,6 +40,9 @@ const AppEvent_Move$json = {
 @$core.Deprecated('Use appEventDescriptor instead')
 const AppEvent_StartGame$json = {
   '1': 'StartGame',
+  '2': [
+    {'1': 'vs_bot', '3': 1, '4': 1, '5': 8, '10': 'vsBot'},
+  ],
 };
 
 @$core.Deprecated('Use appEventDescriptor instead')
@@ -54,7 +57,8 @@ final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
     'bGUudGljdGFjdG9lLkFwcEV2ZW50LlN0YXJ0R2FtZUgAUglzdGFydEdhbWUSTgoJcGxheUFnYW'
     'luGAMgASgLMi4uaHl0dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuQXBwRXZlbnQuUGxheUFnYWlu'
     'SABSCXBsYXlBZ2Fpbho6CgRNb3ZlEgwKAXgYASABKAVSAXgSDAoBeRgCIAEoBVIBeRIWCgZwbG'
-    'F5ZXIYAyABKAVSBnBsYXllchoLCglTdGFydEdhbWUaCwoJUGxheUFnYWluQgcKBWV2ZW50');
+    'F5ZXIYAyABKAVSBnBsYXllchoiCglTdGFydEdhbWUSFQoGdnNfYm90GAEgASgIUgV2c0JvdBoL'
+    'CglQbGF5QWdhaW5CBwoFZXZlbnQ=');
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
 const SubmitAppEvent$json = {

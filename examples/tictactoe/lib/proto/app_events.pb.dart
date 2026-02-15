@@ -92,12 +92,21 @@ class AppEvent_Move extends $pb.GeneratedMessage {
 }
 
 class AppEvent_StartGame extends $pb.GeneratedMessage {
-  factory AppEvent_StartGame() => create();
+  factory AppEvent_StartGame({
+    $core.bool? vsBot,
+  }) {
+    final $result = create();
+    if (vsBot != null) {
+      $result.vsBot = vsBot;
+    }
+    return $result;
+  }
   AppEvent_StartGame._() : super();
   factory AppEvent_StartGame.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory AppEvent_StartGame.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.StartGame', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'vsBot')
     ..hasRequiredFields = false
   ;
 
@@ -121,6 +130,15 @@ class AppEvent_StartGame extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AppEvent_StartGame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_StartGame>(create);
   static AppEvent_StartGame? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get vsBot => $_getBF(0);
+  @$pb.TagNumber(1)
+  set vsBot($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasVsBot() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearVsBot() => clearField(1);
 }
 
 class AppEvent_PlayAgain extends $pb.GeneratedMessage {

@@ -2,6 +2,7 @@ import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
+import 'package:tictactoe/app_blocs/tictactoe_bot.dart';
 import 'package:tictactoe/routers/app_routes.dart';
 import 'package:tictactoe/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
@@ -25,45 +26,25 @@ class SiteScreen extends StatefulWidget {
 
 class _SiteScreenState extends State<SiteScreen> {
   // We don't need image fetching for simple X/O game, but keeping structure valid.
+  TicTacToeBot? _bot;
 
-  void _checkAndSubmitAIMove(
-    BuildContext context,
-    AppReplayBlocState appState,
-  ) {
-    if (appState.hasNextMove()) {
-      final nextMove = appState.nextMove;
-      final version = appState.nextVersion;
+  @override
+  void dispose() {
+    _bot?.stop();
+    super.dispose();
+  }
 
-      final appEvent = AppEvent(move: nextMove);
-      final submitEvent =
-          SubmitAppEvent()
-            ..appEvent = appEvent
-            ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
-            ..authorEmail = GetIt.instance<AuthBloc>().state.email
-            ..pauseDelay = 1000; // 1 second delay
+  void _ensureBotRunning(BuildContext context) {
+    if (_bot != null) return;
 
-      final submitBloc = context.read<AppSubmitBloc>();
-      // Only submit if not already submitting
-      if (submitBloc.state.submissionState.state !=
-          CommonSubmitBlocState_State.submitting) {
-        // 1. Update payload and set form to valid
-        submitBloc.add(
-          AppEventSubmission(
-            updatedPayload: submitEvent,
-            submission: CommonSubmitBlocEvent(isFormValid: true),
-          ),
-        );
+    final appReplayBloc = context.read<AppReplayBloc>();
+    final appSubmitBloc = context.read<AppSubmitBloc>();
 
-        // 2. Trigger submission
-        submitBloc.add(
-          AppEventSubmission(
-            submission: CommonSubmitBlocEvent(
-              submit: CommonSubmitBlocEvent_SubmitNow(),
-            ),
-          ),
-        );
-      }
-    }
+    _bot = TicTacToeBot(
+      appReplayBloc: appReplayBloc,
+      appSubmitBloc: appSubmitBloc,
+    );
+    _bot!.start();
   }
 
   @override
@@ -112,21 +93,12 @@ class _SiteScreenState extends State<SiteScreen> {
                     listeners: [
                       BlocListener<AppReplayBloc, AppReplayBlocState>(
                         listener: (context, appState) {
-                          // Scenario: Replay updates after submit is already free.
-                          _checkAndSubmitAIMove(context, appState);
-                        },
-                      ),
-                      BlocListener<
-                        AppSubmitBloc,
-                        BaseSubmitState<SubmitAppEvent>
-                      >(
-                        listener: (context, submitState) {
-                          // Scenario: Submit finishes after replay has already updated.
-                          if (submitState.submissionState.state ==
-                              CommonSubmitBlocState_State.success) {
-                            final appState =
-                                context.read<AppReplayBloc>().state;
-                            _checkAndSubmitAIMove(context, appState);
+                          if (appState.status == GameStatus.playing &&
+                              appState.vsBot) {
+                            _ensureBotRunning(context);
+                          } else if (appState.status == GameStatus.gameOver) {
+                            _bot?.stop();
+                            _bot = null;
                           }
                         },
                       ),
@@ -165,7 +137,7 @@ class TicTacToeBoard extends StatelessWidget {
   }
 
   void _startGame(BuildContext context) {
-    final appEvent = AppEvent(startGame: AppEvent_StartGame());
+    final appEvent = AppEvent(startGame: AppEvent_StartGame(vsBot: true));
     _submitAppEvent(context, appEvent);
   }
 

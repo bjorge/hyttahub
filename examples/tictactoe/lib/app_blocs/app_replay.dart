@@ -29,13 +29,10 @@ AppReplayBlocState appReplay(
     replay.turn = 1; // X always starts
     replay.winner = 0;
     replay.status = GameStatus.notStarted;
+    replay.vsBot = false;
   }
 
-  // Clear next move from previous state
-  replay.clearNextMove();
-
   replay.events.addAll(base64Events);
-  var lastMoveWasUser = false;
 
   for (int i = 0; i < eventKeys.length; i++) {
     final eventVersion = eventKeys[i];
@@ -56,42 +53,18 @@ AppReplayBlocState appReplay(
             replay.turn = (move.player == 1) ? 2 : 1;
             _checkWinner(replay);
             // Player 1 is user, Player 2 is AI
-            lastMoveWasUser = (move.player == 1);
           }
         }
       } else if (appEvent.hasStartGame()) {
         replay.status = GameStatus.playing;
+        replay.vsBot = appEvent.startGame.vsBot;
       } else if (appEvent.hasPlayAgain()) {
         replay.board.fillRange(0, 9, 0);
         replay.turn = 1;
         replay.winner = 0;
         replay.status = GameStatus.playing;
+        // vsBot is preserved from the previous game session
       }
-    }
-  }
-
-  // Auto-Opponent Logic (Simple Random Move)
-  // If game is active, it's O's turn (2), and the last processed event was a user move,
-  // we hallucinate a move for O.
-  // NOTE: This assumes Player 1 (X) is the user and Player 2 (O) is the auto-opponent.
-  if (replay.status == GameStatus.playing &&
-      replay.winner == 0 &&
-      replay.turn == 2 &&
-      lastMoveWasUser) {
-    // Find empty spots
-    final emptyIndices = <int>[];
-    for (int i = 0; i < 9; i++) {
-      if (replay.board[i] == 0) {
-        emptyIndices.add(i);
-      }
-    }
-
-    if (emptyIndices.isNotEmpty) {
-      // Deterministic choice for validation stability
-      final choice = emptyIndices.first;
-
-      // Instead of applying immediately, set next_move
-      replay.nextMove = AppEvent_Move(x: choice % 3, y: choice ~/ 3, player: 2);
     }
   }
 
