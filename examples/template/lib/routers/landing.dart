@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/common_widgets/hyttahub_app_bar_actions.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
-import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 /// The initial page of the application.
 ///
@@ -38,9 +37,9 @@ class LandingPage extends StatelessWidget {
               AppLanguage.nl,
             ],
             supportedPlatforms: [
-              StorageEnum.memory,
-              StorageEnum.cloud,
-              StorageEnum.local,
+              'memory',
+              'firebase',
+              'local',
             ],
           ),
         ],

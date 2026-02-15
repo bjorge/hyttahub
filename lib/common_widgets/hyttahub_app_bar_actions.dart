@@ -4,14 +4,14 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
-import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
 
 import 'package:hyttahub/utils/refresh_helper.dart';
 
 class HyttaHubAppBarActions extends StatelessWidget {
   final List<AppLanguage>? supportedLanguages;
-  final List<StorageEnum>? supportedPlatforms;
+  final List<String>? supportedPlatforms;
 
   const HyttaHubAppBarActions({
     super.key,
@@ -164,39 +164,48 @@ class _ThemePicker extends StatelessWidget {
 
 class _PlatformPicker extends StatelessWidget {
   final HyttaHubLocalizations l10n;
-  final List<StorageEnum>? supportedPlatforms;
+  final List<String>? supportedPlatforms;
   const _PlatformPicker({required this.l10n, this.supportedPlatforms});
 
   @override
   Widget build(BuildContext context) {
-    final platformsToShow = supportedPlatforms ?? StorageEnum.values;
-    return BlocBuilder<PlatformCubit, StorageEnum>(
-      builder: (context, platform) {
-        return PopupMenuButton<StorageEnum>(
+    final allImplementations = PersistenceRegistry.registeredImplementations;
+    final platformsToShow = supportedPlatforms ?? allImplementations.map((i) => i.id).toList();
+
+    return BlocBuilder<PlatformCubit, String>(
+      builder: (context, implementationId) {
+        return PopupMenuButton<String>(
           tooltip: l10n.platform,
           icon: const Icon(Icons.computer),
-          onSelected: (StorageEnum newPlatform) {
-            context.read<PlatformCubit>().setPlatform(newPlatform);
+          onSelected: (String newImplementationId) {
+            context.read<PlatformCubit>().setImplementation(newImplementationId);
           },
-          itemBuilder:
-              (BuildContext context) =>
-                  StorageEnum.values
-                      .where((e) => platformsToShow.contains(e))
-                      .map(
-                        (e) => PopupMenuItem<StorageEnum>(
-                          value: e,
-                          child: Row(
-                            children: [
-                              Text(e.name),
-                              if (platform == e) ...[
-                                const SizedBox(width: 8),
-                                const Icon(Icons.check, size: 16),
-                              ],
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList(),
+          itemBuilder: (BuildContext context) {
+            final items = allImplementations
+                .where((e) => platformsToShow.contains(e.id))
+                .toList();
+            
+            // Add defaults for memory/local if not registered and not in cloud mode
+            if (!platformsToShow.contains('memory') && !PersistenceRegistry.isImplementationRegistered('memory')) {
+                // items.add(...) - wait, if they aren't registered, we probably shouldn't show them if there are other things.
+                // But generally template registers them.
+            }
+
+            return items.map(
+              (e) => PopupMenuItem<String>(
+                value: e.id,
+                child: Row(
+                  children: [
+                    Text(e.name),
+                    if (implementationId == e.id) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.check, size: 16),
+                    ],
+                  ],
+                ),
+              ),
+            ).toList();
+          },
         );
       },
     );

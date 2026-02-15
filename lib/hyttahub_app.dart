@@ -8,7 +8,6 @@ import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
-import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -71,13 +70,13 @@ class HyttaHubApp extends StatelessWidget {
         BlocProvider<AuthBloc>.value(value: GetIt.instance<AuthBloc>()),
         ...additionalOuterProviders,
       ],
-      child: BlocBuilder<PlatformCubit, StorageEnum>(
-        builder: (context, platform) {
+      child: BlocBuilder<PlatformCubit, String>(
+        builder: (context, implementationId) {
           return MultiBlocProvider(
-            key: ValueKey(platform),
+            key: ValueKey(implementationId),
             providers: [
               BlocProvider<CreateAccountCubit>(
-                create: (_) => CreateAccountCubit('$rootCollection:${platform.value}'),
+                create: (_) => CreateAccountCubit('$rootCollection:$implementationId'),
               ),
               BlocProvider<CloudFunctionsBloc>(create: (_) => CloudFunctionsBloc()),
               ...additionalInnerProviders,

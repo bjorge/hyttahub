@@ -35,13 +35,27 @@ void setupGetIt() {
 }
 
 void registerPersistence() {
-  PersistenceRegistry.registerStorage(StorageEnum.cloud, () => FirestoreHyttaHubStorage());
-  
-  PersistenceRegistry.registerAuth(StorageEnum.cloud, () => FirebaseHyttaHubAuth());
-  
-  PersistenceRegistry.registerFunctions(StorageEnum.cloud, () => FirebaseHyttaHubFunctions());
+  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
+    id: 'firebase',
+    name: 'Firebase Cloud',
+    type: StorageEnum.cloud,
+    storageBuilder: () => FirestoreHyttaHubStorage(),
+    authBuilder: () => FirebaseHyttaHubAuth(),
+    functionsBuilder: () => FirebaseHyttaHubFunctions(),
+    internalStorageBuilder: () => FirebaseHyttaHubInternalStorage(),
+  ));
 
-  PersistenceRegistry.registerInternalStorage(StorageEnum.cloud, () => FirebaseHyttaHubInternalStorage());
+  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
+    id: 'memory',
+    name: 'In-Memory',
+    type: StorageEnum.memory,
+  ));
+
+  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
+    id: 'local',
+    name: 'Local Storage',
+    type: StorageEnum.local,
+  ));
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
     if (storage == StorageEnum.cloud) {
@@ -79,9 +93,12 @@ Future<void> main() async {
 
   const firebaseRootCollection = 'template';
   final savedPlatform = HydratedBloc.storage.read('PlatformCubit:platform:$firebaseRootCollection');
-  final storage = savedPlatform != null 
-    ? StorageEnum.valueOf(savedPlatform['platform'] as int) ?? StorageEnum.memory 
-    : StorageEnum.memory;
+  final implementationId = savedPlatform != null 
+    ? savedPlatform['implementationId'] as String? ?? 'memory'
+    : 'memory';
+  
+  final descriptor = PersistenceRegistry.getImplementation(implementationId);
+  final storage = descriptor?.type ?? StorageEnum.memory;
 
   HyttaHubOptions.appTitle = "HyttaHub Template";
   HyttaHubOptions.appVersion = appVersion;
@@ -95,6 +112,7 @@ Future<void> main() async {
       firebaseRootCollection: firebaseRootCollection,
       appId: 'hyttahub.example.template',
       storage: storage,
+      implementationId: implementationId,
     ),
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
   );

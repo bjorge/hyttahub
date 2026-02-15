@@ -1,5 +1,4 @@
-// Copyright (c) 2025 bjorge
-
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_internal_storage.dart';
@@ -7,27 +6,40 @@ import 'package:hyttahub/storage/hydrated_hyttahub_internal_storage.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubInternalStorageFactory {
-  static final Map<StorageEnum, BaseHyttaHubInternalStorage> _instances = {};
+  static final Map<String, BaseHyttaHubInternalStorage> _instances = {};
 
-  static BaseHyttaHubInternalStorage getInternalStorage(StorageEnum type) {
-    if (_instances.containsKey(type)) {
-      return _instances[type]!;
+  static BaseHyttaHubInternalStorage getInternalStorage(StorageEnum type, {String? implementationId}) {
+    final id = implementationId ??
+        (HyttaHubOptions.implementation?.storage == type
+            ? HyttaHubOptions.implementation?.implementationId
+            : null) ??
+        type.name;
+
+    if (_instances.containsKey(id)) {
+      return _instances[id]!;
     }
 
     BaseHyttaHubInternalStorage? storage;
-    switch (type) {
-      case StorageEnum.memory:
-        storage = InMemoryHyttaHubInternalStorage();
-        break;
-      case StorageEnum.local:
-        storage = HydratedHyttaHubInternalStorage(storageKey: 'hyttahub:internal_local_storage');
-        break;
-      default:
-        storage = PersistenceRegistry.createInternalStorage(type);
+    if (implementationId != null ||
+        PersistenceRegistry.isImplementationRegistered(id)) {
+      storage = PersistenceRegistry.createInternalStorage(id);
+    }
+
+    if (storage == null) {
+      switch (type) {
+        case StorageEnum.memory:
+          storage = InMemoryHyttaHubInternalStorage();
+          break;
+        case StorageEnum.local:
+          storage = HydratedHyttaHubInternalStorage(storageKey: 'hyttahub:internal_local_storage');
+          break;
+        default:
+          break;
+      }
     }
 
     storage ??= InMemoryHyttaHubInternalStorage();
-    _instances[type] = storage;
+    _instances[id] = storage;
     return storage;
   }
 

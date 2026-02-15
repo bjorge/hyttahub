@@ -1,31 +1,48 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/functions/in_memory_hyttahub_functions.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubFunctionsFactory {
-  static final Map<StorageEnum, BaseHyttaHubFunctions> _instances = {};
+  static final Map<String, BaseHyttaHubFunctions> _instances = {};
 
-  static BaseHyttaHubFunctions getFunctions(StorageEnum type) {
-    if (_instances.containsKey(type)) {
-      return _instances[type]!;
+  static BaseHyttaHubFunctions getFunctions(
+    StorageEnum type, {
+    String? implementationId,
+  }) {
+    final id = implementationId ??
+        (HyttaHubOptions.implementation?.storage == type
+            ? HyttaHubOptions.implementation?.implementationId
+            : null) ??
+        type.name;
+
+    if (_instances.containsKey(id)) {
+      return _instances[id]!;
     }
 
     BaseHyttaHubFunctions? functions;
-    switch (type) {
-      case StorageEnum.memory:
-      case StorageEnum.local:
-        functions = InMemoryHyttaHubFunctions(type);
-        break;
-      default:
-        functions = PersistenceRegistry.createFunctions(type);
+    if (implementationId != null ||
+        PersistenceRegistry.isImplementationRegistered(id)) {
+      functions = PersistenceRegistry.createFunctions(id);
+    }
+
+    if (functions == null) {
+      switch (type) {
+        case StorageEnum.memory:
+        case StorageEnum.local:
+          functions = InMemoryHyttaHubFunctions(type);
+          break;
+        default:
+          break;
+      }
     }
 
     functions ??= InMemoryHyttaHubFunctions(type);
 
-    _instances[type] = functions;
+    _instances[id] = functions;
     return functions;
   }
 
@@ -34,5 +51,10 @@ class HyttaHubFunctionsFactory {
       await functions.dispose();
     }
     _instances.clear();
+  }
+
+  // For testing purposes
+  static void setFunctions(StorageEnum type, BaseHyttaHubFunctions functions) {
+    _instances[type.name] = functions;
   }
 }

@@ -12,6 +12,7 @@ import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:tictactoe/main.dart';
 
@@ -96,35 +97,28 @@ class LandingPage extends StatelessWidget {
                         );
                       }).toList(),
                 ),
-                DropdownMenu<int>(
+                DropdownMenu<String>(
                   width: 250,
-                  initialSelection: platformCubit.state.value,
+                  initialSelection: platformCubit.state,
                   leadingIcon: const Icon(Icons.computer),
                   label: const Text("Platform"),
-                  onSelected: (int? newValue) {
+                  onSelected: (String? newValue) {
                     if (newValue != null) {
-                      final storage =
-                          StorageEnum.valueOf(newValue) ?? StorageEnum.memory;
-                      context.read<PlatformCubit>().setPlatform(storage);
+                      context.read<PlatformCubit>().setImplementation(newValue);
                     }
                   },
-                  dropdownMenuEntries: [
-                    const DropdownMenuEntry(
-                      value: 1, // inMemory
-                      label: "In Memory",
-                      leadingIcon: Icon(Icons.memory),
-                    ),
-                    const DropdownMenuEntry(
-                      value: 0, // firestore
-                      label: "Firebase",
-                      leadingIcon: Icon(Icons.cloud),
-                    ),
-                    const DropdownMenuEntry(
-                      value: 2, // localStorage
-                      label: "Local Storage",
-                      leadingIcon: Icon(Icons.storage),
-                    ),
-                  ],
+                  dropdownMenuEntries: PersistenceRegistry.registeredImplementations.map((impl) {
+                    return DropdownMenuEntry<String>(
+                      value: impl.id,
+                      label: impl.name,
+                      leadingIcon: Icon(switch (impl.type) {
+                        StorageEnum.memory => Icons.memory,
+                        StorageEnum.cloud => Icons.cloud,
+                        StorageEnum.local => Icons.storage,
+                        _ => Icons.help_outline,
+                      }),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
