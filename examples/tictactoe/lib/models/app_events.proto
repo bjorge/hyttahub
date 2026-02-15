@@ -3,15 +3,19 @@ syntax = "proto3";
 package hyttahub.example.tictactoe;
 
 message AppEvent {
-
   message Move {
     int32 x = 1;
     int32 y = 2;
     int32 player = 3; // 1 for X, 2 for O
   }
 
+  message StartGame {}
+  message PlayAgain {}
+
   oneof event {
     Move move = 1;
+    StartGame startGame = 2;
+    PlayAgain playAgain = 3;
   }
 }
 

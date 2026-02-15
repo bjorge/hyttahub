@@ -31,6 +31,21 @@ final $typed_data.Uint8List appReplayStateEnumDescriptor = $convert.base64Decode
     '5pbml0aWFsaXplZExpc3RlbmluZxACEhAKDG5ldHdvcmtFcnJvchADEhQKEHBlcm1pc3Npb25E'
     'ZW5pZWQQBA==');
 
+@$core.Deprecated('Use gameStatusDescriptor instead')
+const GameStatus$json = {
+  '1': 'GameStatus',
+  '2': [
+    {'1': 'notStarted', '2': 0},
+    {'1': 'playing', '2': 1},
+    {'1': 'gameOver', '2': 2},
+  ],
+};
+
+/// Descriptor for `GameStatus`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List gameStatusDescriptor = $convert.base64Decode(
+    'CgpHYW1lU3RhdHVzEg4KCm5vdFN0YXJ0ZWQQABILCgdwbGF5aW5nEAESDAoIZ2FtZU92ZXIQAg'
+    '==');
+
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
 const AppReplayBlocState$json = {
   '1': 'AppReplayBlocState',
@@ -41,6 +56,7 @@ const AppReplayBlocState$json = {
     {'1': 'turn', '3': 4, '4': 1, '5': 5, '10': 'turn'},
     {'1': 'winner', '3': 5, '4': 1, '5': 5, '10': 'winner'},
     {'1': 'next_move', '3': 6, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.Move', '10': 'nextMove'},
+    {'1': 'status', '3': 7, '4': 1, '5': 14, '6': '.hyttahub.example.tictactoe.GameStatus', '10': 'status'},
   ],
   '3': [AppReplayBlocState_EventsEntry$json],
 };
@@ -62,6 +78,7 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'dGUYAiABKA4yLi5oeXR0YWh1Yi5leGFtcGxlLnRpY3RhY3RvZS5BcHBSZXBsYXlTdGF0ZUVudW'
     '1SBXN0YXRlEhQKBWJvYXJkGAMgAygFUgVib2FyZBISCgR0dXJuGAQgASgFUgR0dXJuEhYKBndp'
     'bm5lchgFIAEoBVIGd2lubmVyEkYKCW5leHRfbW92ZRgGIAEoCzIpLmh5dHRhaHViLmV4YW1wbG'
-    'UudGljdGFjdG9lLkFwcEV2ZW50Lk1vdmVSCG5leHRNb3ZlGjkKC0V2ZW50c0VudHJ5EhAKA2tl'
-    'eRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+    'UudGljdGFjdG9lLkFwcEV2ZW50Lk1vdmVSCG5leHRNb3ZlEj4KBnN0YXR1cxgHIAEoDjImLmh5'
+    'dHRhaHViLmV4YW1wbGUudGljdGFjdG9lLkdhbWVTdGF0dXNSBnN0YXR1cxo5CgtFdmVudHNFbn'
+    'RyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');
 

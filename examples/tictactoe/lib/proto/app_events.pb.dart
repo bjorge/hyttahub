@@ -91,18 +91,92 @@ class AppEvent_Move extends $pb.GeneratedMessage {
   void clearPlayer() => clearField(3);
 }
 
+class AppEvent_StartGame extends $pb.GeneratedMessage {
+  factory AppEvent_StartGame() => create();
+  AppEvent_StartGame._() : super();
+  factory AppEvent_StartGame.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_StartGame.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.StartGame', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_StartGame clone() => AppEvent_StartGame()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_StartGame copyWith(void Function(AppEvent_StartGame) updates) => super.copyWith((message) => updates(message as AppEvent_StartGame)) as AppEvent_StartGame;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_StartGame create() => AppEvent_StartGame._();
+  AppEvent_StartGame createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_StartGame> createRepeated() => $pb.PbList<AppEvent_StartGame>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_StartGame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_StartGame>(create);
+  static AppEvent_StartGame? _defaultInstance;
+}
+
+class AppEvent_PlayAgain extends $pb.GeneratedMessage {
+  factory AppEvent_PlayAgain() => create();
+  AppEvent_PlayAgain._() : super();
+  factory AppEvent_PlayAgain.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppEvent_PlayAgain.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.PlayAgain', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AppEvent_PlayAgain clone() => AppEvent_PlayAgain()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AppEvent_PlayAgain copyWith(void Function(AppEvent_PlayAgain) updates) => super.copyWith((message) => updates(message as AppEvent_PlayAgain)) as AppEvent_PlayAgain;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_PlayAgain create() => AppEvent_PlayAgain._();
+  AppEvent_PlayAgain createEmptyInstance() => create();
+  static $pb.PbList<AppEvent_PlayAgain> createRepeated() => $pb.PbList<AppEvent_PlayAgain>();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_PlayAgain getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_PlayAgain>(create);
+  static AppEvent_PlayAgain? _defaultInstance;
+}
+
 enum AppEvent_Event {
   move, 
+  startGame, 
+  playAgain, 
   notSet
 }
 
 class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent({
     AppEvent_Move? move,
+    AppEvent_StartGame? startGame,
+    AppEvent_PlayAgain? playAgain,
   }) {
     final $result = create();
     if (move != null) {
       $result.move = move;
+    }
+    if (startGame != null) {
+      $result.startGame = startGame;
+    }
+    if (playAgain != null) {
+      $result.playAgain = playAgain;
     }
     return $result;
   }
@@ -112,11 +186,15 @@ class AppEvent extends $pb.GeneratedMessage {
 
   static const $core.Map<$core.int, AppEvent_Event> _AppEvent_EventByTag = {
     1 : AppEvent_Event.move,
+    2 : AppEvent_Event.startGame,
+    3 : AppEvent_Event.playAgain,
     0 : AppEvent_Event.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
-    ..oo(0, [1])
+    ..oo(0, [1, 2, 3])
     ..aOM<AppEvent_Move>(1, _omitFieldNames ? '' : 'move', subBuilder: AppEvent_Move.create)
+    ..aOM<AppEvent_StartGame>(2, _omitFieldNames ? '' : 'startGame', protoName: 'startGame', subBuilder: AppEvent_StartGame.create)
+    ..aOM<AppEvent_PlayAgain>(3, _omitFieldNames ? '' : 'playAgain', protoName: 'playAgain', subBuilder: AppEvent_PlayAgain.create)
     ..hasRequiredFields = false
   ;
 
@@ -154,6 +232,28 @@ class AppEvent extends $pb.GeneratedMessage {
   void clearMove() => clearField(1);
   @$pb.TagNumber(1)
   AppEvent_Move ensureMove() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  AppEvent_StartGame get startGame => $_getN(1);
+  @$pb.TagNumber(2)
+  set startGame(AppEvent_StartGame v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasStartGame() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearStartGame() => clearField(2);
+  @$pb.TagNumber(2)
+  AppEvent_StartGame ensureStartGame() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  AppEvent_PlayAgain get playAgain => $_getN(2);
+  @$pb.TagNumber(3)
+  set playAgain(AppEvent_PlayAgain v) { setField(3, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasPlayAgain() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearPlayAgain() => clearField(3);
+  @$pb.TagNumber(3)
+  AppEvent_PlayAgain ensurePlayAgain() => $_ensure(2);
 }
 
 /// the final site event will contain this app event

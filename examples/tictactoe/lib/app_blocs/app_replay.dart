@@ -28,6 +28,7 @@ AppReplayBlocState appReplay(
     replay.board.addAll(List.filled(9, 0));
     replay.turn = 1; // X always starts
     replay.winner = 0;
+    replay.status = GameStatus.notStarted;
   }
 
   // Clear next move from previous state
@@ -49,7 +50,7 @@ AppReplayBlocState appReplay(
         final index = move.y * 3 + move.x;
 
         if (index >= 0 && index < 9 && replay.board[index] == 0) {
-          if (replay.winner == 0) {
+          if (replay.winner == 0 && replay.status == GameStatus.playing) {
             replay.board[index] = move.player;
             // Toggle turn
             replay.turn = (move.player == 1) ? 2 : 1;
@@ -58,6 +59,13 @@ AppReplayBlocState appReplay(
             lastMoveWasUser = (move.player == 1);
           }
         }
+      } else if (appEvent.hasStartGame()) {
+        replay.status = GameStatus.playing;
+      } else if (appEvent.hasPlayAgain()) {
+        replay.board.fillRange(0, 9, 0);
+        replay.turn = 1;
+        replay.winner = 0;
+        replay.status = GameStatus.playing;
       }
     }
   }
@@ -66,7 +74,10 @@ AppReplayBlocState appReplay(
   // If game is active, it's O's turn (2), and the last processed event was a user move,
   // we hallucinate a move for O.
   // NOTE: This assumes Player 1 (X) is the user and Player 2 (O) is the auto-opponent.
-  if (replay.winner == 0 && replay.turn == 2 && lastMoveWasUser) {
+  if (replay.status == GameStatus.playing &&
+      replay.winner == 0 &&
+      replay.turn == 2 &&
+      lastMoveWasUser) {
     // Find empty spots
     final emptyIndices = <int>[];
     for (int i = 0; i < 9; i++) {
@@ -102,11 +113,13 @@ void _checkWinner(AppReplayBlocState state) {
 
     if (a != 0 && a == b && a == c) {
       state.winner = a;
+      state.status = GameStatus.gameOver;
       return;
     }
   }
 
   if (!board.contains(0)) {
     state.winner = 3; // Draw
+    state.status = GameStatus.gameOver;
   }
 }

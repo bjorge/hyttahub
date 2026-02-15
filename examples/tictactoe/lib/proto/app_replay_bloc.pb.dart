@@ -26,6 +26,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.int? turn,
     $core.int? winner,
     $0.AppEvent_Move? nextMove,
+    GameStatus? status,
   }) {
     final $result = create();
     if (events != null) {
@@ -46,6 +47,9 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (nextMove != null) {
       $result.nextMove = nextMove;
     }
+    if (status != null) {
+      $result.status = status;
+    }
     return $result;
   }
   AppReplayBlocState._() : super();
@@ -59,6 +63,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..a<$core.int>(4, _omitFieldNames ? '' : 'turn', $pb.PbFieldType.O3)
     ..a<$core.int>(5, _omitFieldNames ? '' : 'winner', $pb.PbFieldType.O3)
     ..aOM<$0.AppEvent_Move>(6, _omitFieldNames ? '' : 'nextMove', subBuilder: $0.AppEvent_Move.create)
+    ..e<GameStatus>(7, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: GameStatus.notStarted, valueOf: GameStatus.valueOf, enumValues: GameStatus.values)
     ..hasRequiredFields = false
   ;
 
@@ -120,6 +125,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearWinner() => clearField(5);
 
+  /// Next move for the auto-opponent
   @$pb.TagNumber(6)
   $0.AppEvent_Move get nextMove => $_getN(5);
   @$pb.TagNumber(6)
@@ -130,6 +136,16 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   void clearNextMove() => clearField(6);
   @$pb.TagNumber(6)
   $0.AppEvent_Move ensureNextMove() => $_ensure(5);
+
+  /// Game status
+  @$pb.TagNumber(7)
+  GameStatus get status => $_getN(6);
+  @$pb.TagNumber(7)
+  set status(GameStatus v) { setField(7, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasStatus() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearStatus() => clearField(7);
 }
 
 

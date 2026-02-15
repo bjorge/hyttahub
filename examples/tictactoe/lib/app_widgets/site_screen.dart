@@ -164,6 +164,46 @@ class TicTacToeBoard extends StatelessWidget {
     return (move.y * 3 + move.x) == index;
   }
 
+  void _startGame(BuildContext context) {
+    final appEvent = AppEvent(startGame: AppEvent_StartGame());
+    _submitAppEvent(context, appEvent);
+  }
+
+  void _playAgain(BuildContext context) {
+    final appEvent = AppEvent(playAgain: AppEvent_PlayAgain());
+    _submitAppEvent(context, appEvent);
+  }
+
+  void _submitAppEvent(BuildContext context, AppEvent appEvent) {
+    final email = GetIt.instance<AuthBloc>().state.email;
+    final version = context.read<AppReplayBloc>().state.nextVersion;
+
+    final submitEvent =
+        SubmitAppEvent()
+          ..appEvent = appEvent
+          ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
+          ..authorEmail = email;
+
+    final submitBloc = context.read<AppSubmitBloc>();
+
+    // 1. Update payload and set form to valid
+    submitBloc.add(
+      AppEventSubmission(
+        updatedPayload: submitEvent,
+        submission: CommonSubmitBlocEvent(isFormValid: true),
+      ),
+    );
+
+    // 2. Trigger submission
+    submitBloc.add(
+      AppEventSubmission(
+        submission: CommonSubmitBlocEvent(
+          submit: CommonSubmitBlocEvent_SubmitNow(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // We already have AppSubmitBloc provided by SiteScreen.
@@ -224,7 +264,8 @@ class TicTacToeBoard extends StatelessWidget {
                       return GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
-                          if (cellValue == 0 &&
+                          if (appState.status == GameStatus.playing &&
+                              cellValue == 0 &&
                               appState.winner == 0 &&
                               !isPending &&
                               submitState.submissionState.state !=
@@ -299,6 +340,22 @@ class TicTacToeBoard extends StatelessWidget {
                     },
                   ),
                 ),
+                if (appState.status == GameStatus.notStarted)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: () => _startGame(context),
+                      child: const Text("Start Game"),
+                    ),
+                  ),
+                if (appState.status == GameStatus.gameOver)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: () => _playAgain(context),
+                      child: const Text("Play Again?"),
+                    ),
+                  ),
               ],
             );
           },

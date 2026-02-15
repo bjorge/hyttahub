@@ -34,5 +34,22 @@ class AppReplayStateEnum extends $pb.ProtobufEnum {
   const AppReplayStateEnum._($core.int v, $core.String n) : super(v, n);
 }
 
+class GameStatus extends $pb.ProtobufEnum {
+  static const GameStatus notStarted = GameStatus._(0, _omitEnumNames ? '' : 'notStarted');
+  static const GameStatus playing = GameStatus._(1, _omitEnumNames ? '' : 'playing');
+  static const GameStatus gameOver = GameStatus._(2, _omitEnumNames ? '' : 'gameOver');
+
+  static const $core.List<GameStatus> values = <GameStatus> [
+    notStarted,
+    playing,
+    gameOver,
+  ];
+
+  static final $core.Map<$core.int, GameStatus> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static GameStatus? valueOf($core.int value) => _byValue[value];
+
+  const GameStatus._($core.int v, $core.String n) : super(v, n);
+}
+
 
 const _omitEnumNames = $core.bool.fromEnvironment('protobuf.omit_enum_names');

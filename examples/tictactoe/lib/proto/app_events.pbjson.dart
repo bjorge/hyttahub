@@ -18,8 +18,10 @@ const AppEvent$json = {
   '1': 'AppEvent',
   '2': [
     {'1': 'move', '3': 1, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.Move', '9': 0, '10': 'move'},
+    {'1': 'startGame', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.StartGame', '9': 0, '10': 'startGame'},
+    {'1': 'playAgain', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.PlayAgain', '9': 0, '10': 'playAgain'},
   ],
-  '3': [AppEvent_Move$json],
+  '3': [AppEvent_Move$json, AppEvent_StartGame$json, AppEvent_PlayAgain$json],
   '8': [
     {'1': 'event'},
   ],
@@ -35,11 +37,24 @@ const AppEvent_Move$json = {
   ],
 };
 
+@$core.Deprecated('Use appEventDescriptor instead')
+const AppEvent_StartGame$json = {
+  '1': 'StartGame',
+};
+
+@$core.Deprecated('Use appEventDescriptor instead')
+const AppEvent_PlayAgain$json = {
+  '1': 'PlayAgain',
+};
+
 /// Descriptor for `AppEvent`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
     'CghBcHBFdmVudBI/CgRtb3ZlGAEgASgLMikuaHl0dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuQX'
-    'BwRXZlbnQuTW92ZUgAUgRtb3ZlGjoKBE1vdmUSDAoBeBgBIAEoBVIBeBIMCgF5GAIgASgFUgF5'
-    'EhYKBnBsYXllchgDIAEoBVIGcGxheWVyQgcKBWV2ZW50');
+    'BwRXZlbnQuTW92ZUgAUgRtb3ZlEk4KCXN0YXJ0R2FtZRgCIAEoCzIuLmh5dHRhaHViLmV4YW1w'
+    'bGUudGljdGFjdG9lLkFwcEV2ZW50LlN0YXJ0R2FtZUgAUglzdGFydEdhbWUSTgoJcGxheUFnYW'
+    'luGAMgASgLMi4uaHl0dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuQXBwRXZlbnQuUGxheUFnYWlu'
+    'SABSCXBsYXlBZ2Fpbho6CgRNb3ZlEgwKAXgYASABKAVSAXgSDAoBeRgCIAEoBVIBeRIWCgZwbG'
+    'F5ZXIYAyABKAVSBnBsYXllchoLCglTdGFydEdhbWUaCwoJUGxheUFnYWluQgcKBWV2ZW50');
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
 const SubmitAppEvent$json = {
