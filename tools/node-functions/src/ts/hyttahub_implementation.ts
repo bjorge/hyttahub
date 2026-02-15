@@ -54,10 +54,18 @@ export interface HyttaHubImplementation {
   appId: string;
   firebaseRootCollection: string;
   disableFirestoreCache: boolean;
+  implementationId: string;
 }
 
 function createBaseHyttaHubImplementation(): HyttaHubImplementation {
-  return { storage: 0, appBuildNumber: 0, appId: "", firebaseRootCollection: "", disableFirestoreCache: false };
+  return {
+    storage: 0,
+    appBuildNumber: 0,
+    appId: "",
+    firebaseRootCollection: "",
+    disableFirestoreCache: false,
+    implementationId: "",
+  };
 }
 
 export const HyttaHubImplementation = {
@@ -76,6 +84,9 @@ export const HyttaHubImplementation = {
     }
     if (message.disableFirestoreCache !== false) {
       writer.uint32(40).bool(message.disableFirestoreCache);
+    }
+    if (message.implementationId !== "") {
+      writer.uint32(50).string(message.implementationId);
     }
     return writer;
   },
@@ -122,6 +133,13 @@ export const HyttaHubImplementation = {
 
           message.disableFirestoreCache = reader.bool();
           continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.implementationId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -142,6 +160,7 @@ export const HyttaHubImplementation = {
       disableFirestoreCache: isSet(object.disableFirestoreCache)
         ? globalThis.Boolean(object.disableFirestoreCache)
         : false,
+      implementationId: isSet(object.implementationId) ? globalThis.String(object.implementationId) : "",
     };
   },
 
@@ -162,6 +181,9 @@ export const HyttaHubImplementation = {
     if (message.disableFirestoreCache !== false) {
       obj.disableFirestoreCache = message.disableFirestoreCache;
     }
+    if (message.implementationId !== "") {
+      obj.implementationId = message.implementationId;
+    }
     return obj;
   },
 
@@ -175,6 +197,7 @@ export const HyttaHubImplementation = {
     message.appId = object.appId ?? "";
     message.firebaseRootCollection = object.firebaseRootCollection ?? "";
     message.disableFirestoreCache = object.disableFirestoreCache ?? false;
+    message.implementationId = object.implementationId ?? "";
     return message;
   },
 };
