@@ -77,16 +77,16 @@ final siteShellRoute = ShellRoute(
           key: Key('AppReplayBloc-tictactoe-$siteId'),
           create: (_) => AppReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
         ),
-        BlocProvider<AllowedEmailsBloc>(
-          key: Key('AllowedEmailsBloc-site-shell-$siteId'),
-          create: (_) => AllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
+        BlocProvider<SiteAllowedEmailsBloc>(
+          key: Key('SiteAllowedEmailsBloc-site-shell-$siteId'),
+          create: (_) => SiteAllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
             AllowedEmailsBlocEvent(
               fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
             ),
           ),
         ),
       ],
-      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+      child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
           final allowedEmailsErrorWidget =
               handleAllowedEmailsState(context, allowedEmailsState);

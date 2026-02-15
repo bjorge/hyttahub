@@ -57,8 +57,8 @@ class _SiteScreenState extends State<SiteScreen> {
 
     return BlocProvider<AppSubmitBloc>(
       create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
-      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-        key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
+      child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
+        key: Key('SiteAllowedEmailsBloc-site-screen-${widget.siteId}'),
         builder: (context, allowedEmailsState) {
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
             builder: (context, siteState) {

@@ -13,21 +13,27 @@ abstract class AllowedEmailsDisplayConfig {
 }
 
 /// A generic screen for displaying a list of allowed emails from Firestore.
-class AllowedEmailsDisplay extends StatefulWidget {
-  const AllowedEmailsDisplay({super.key, required this.config});
+class AllowedEmailsDisplay<T extends AllowedEmailsBloc> extends StatefulWidget {
+  const AllowedEmailsDisplay({
+    super.key,
+    required this.config,
+    required this.create,
+  });
 
   final AllowedEmailsDisplayConfig config;
+  final T Function(String) create;
 
   @override
   State<AllowedEmailsDisplay> createState() => _AllowedEmailsDisplayState();
 }
 
-class _AllowedEmailsDisplayState extends State<AllowedEmailsDisplay> {
+class _AllowedEmailsDisplayState<T extends AllowedEmailsBloc>
+    extends State<AllowedEmailsDisplay<T>> {
   @override
   Widget build(BuildContext context) {
     final l10n = HyttaHubLocalizations.of(context)!;
-    return BlocProvider<AllowedEmailsBloc>(
-      create: (_) => AllowedEmailsBloc(widget.config.collectionPath)
+    return BlocProvider<T>(
+      create: (_) => widget.create(widget.config.collectionPath)
         ..add(
           AllowedEmailsBlocEvent(
             fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
@@ -35,7 +41,7 @@ class _AllowedEmailsDisplayState extends State<AllowedEmailsDisplay> {
         ),
       child: Scaffold(
         appBar: AppBar(title: Text(widget.config.screenTitle)),
-        body: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
+        body: BlocBuilder<T, AllowedEmailsBlocState>(
           builder: (context, state) {
             if (state.state == AllowedEmailsBlocState_State.fetching) {
               return const Center(child: CircularProgressIndicator());
