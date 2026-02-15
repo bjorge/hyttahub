@@ -12,9 +12,14 @@ class HyttaHubStorageFactory {
     StorageEnum type, {
     String? implementationId,
   }) {
-    final id = implementationId ??
-        (HyttaHubOptions.implementation?.storage == type
+    final implementationIdFromOptions =
+        HyttaHubOptions.implementation?.storage == type
             ? HyttaHubOptions.implementation?.implementationId
+            : null;
+
+    final id = implementationId ??
+        ((implementationIdFromOptions?.isNotEmpty ?? false)
+            ? implementationIdFromOptions
             : null) ??
         type.name;
 
