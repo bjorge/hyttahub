@@ -31,6 +31,21 @@ final $typed_data.Uint8List appReplayStateEnumDescriptor = $convert.base64Decode
     '5pbml0aWFsaXplZExpc3RlbmluZxACEhAKDG5ldHdvcmtFcnJvchADEhQKEHBlcm1pc3Npb25E'
     'ZW5pZWQQBA==');
 
+@$core.Deprecated('Use gameStatusDescriptor instead')
+const GameStatus$json = {
+  '1': 'GameStatus',
+  '2': [
+    {'1': 'notStarted', '2': 0},
+    {'1': 'playing', '2': 1},
+    {'1': 'gameOver', '2': 2},
+  ],
+};
+
+/// Descriptor for `GameStatus`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List gameStatusDescriptor = $convert.base64Decode(
+    'CgpHYW1lU3RhdHVzEg4KCm5vdFN0YXJ0ZWQQABILCgdwbGF5aW5nEAESDAoIZ2FtZU92ZXIQAg'
+    '==');
+
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
 const AppReplayBlocState$json = {
   '1': 'AppReplayBlocState',
@@ -40,9 +55,14 @@ const AppReplayBlocState$json = {
     {'1': 'board', '3': 3, '4': 3, '5': 5, '10': 'board'},
     {'1': 'turn', '3': 4, '4': 1, '5': 5, '10': 'turn'},
     {'1': 'winner', '3': 5, '4': 1, '5': 5, '10': 'winner'},
-    {'1': 'next_move', '3': 6, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.Move', '10': 'nextMove'},
+    {'1': 'status', '3': 7, '4': 1, '5': 14, '6': '.hyttahub.example.tictactoe.GameStatus', '10': 'status'},
+    {'1': 'vs_bot', '3': 8, '4': 1, '5': 8, '10': 'vsBot'},
+    {'1': 'game_count', '3': 9, '4': 1, '5': 5, '10': 'gameCount'},
+    {'1': 'active_member_ids', '3': 10, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.AppReplayBlocState.ActiveMemberIdsEntry', '10': 'activeMemberIds'},
+    {'1': 'x_player_id', '3': 11, '4': 1, '5': 5, '10': 'xPlayerId'},
+    {'1': 'o_player_id', '3': 12, '4': 1, '5': 5, '10': 'oPlayerId'},
   ],
-  '3': [AppReplayBlocState_EventsEntry$json],
+  '3': [AppReplayBlocState_EventsEntry$json, AppReplayBlocState_ActiveMemberIdsEntry$json],
 };
 
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
@@ -55,13 +75,28 @@ const AppReplayBlocState_EventsEntry$json = {
   '7': {'7': true},
 };
 
+@$core.Deprecated('Use appReplayBlocStateDescriptor instead')
+const AppReplayBlocState_ActiveMemberIdsEntry$json = {
+  '1': 'ActiveMemberIdsEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 8, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
 /// Descriptor for `AppReplayBlocState`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode(
     'ChJBcHBSZXBsYXlCbG9jU3RhdGUSUgoGZXZlbnRzGAEgAygLMjouaHl0dGFodWIuZXhhbXBsZS'
     '50aWN0YWN0b2UuQXBwUmVwbGF5QmxvY1N0YXRlLkV2ZW50c0VudHJ5UgZldmVudHMSRAoFc3Rh'
     'dGUYAiABKA4yLi5oeXR0YWh1Yi5leGFtcGxlLnRpY3RhY3RvZS5BcHBSZXBsYXlTdGF0ZUVudW'
     '1SBXN0YXRlEhQKBWJvYXJkGAMgAygFUgVib2FyZBISCgR0dXJuGAQgASgFUgR0dXJuEhYKBndp'
-    'bm5lchgFIAEoBVIGd2lubmVyEkYKCW5leHRfbW92ZRgGIAEoCzIpLmh5dHRhaHViLmV4YW1wbG'
-    'UudGljdGFjdG9lLkFwcEV2ZW50Lk1vdmVSCG5leHRNb3ZlGjkKC0V2ZW50c0VudHJ5EhAKA2tl'
-    'eRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgJUgV2YWx1ZToCOAE=');
+    'bm5lchgFIAEoBVIGd2lubmVyEj4KBnN0YXR1cxgHIAEoDjImLmh5dHRhaHViLmV4YW1wbGUudG'
+    'ljdGFjdG9lLkdhbWVTdGF0dXNSBnN0YXR1cxIVCgZ2c19ib3QYCCABKAhSBXZzQm90Eh0KCmdh'
+    'bWVfY291bnQYCSABKAVSCWdhbWVDb3VudBJvChFhY3RpdmVfbWVtYmVyX2lkcxgKIAMoCzJDLm'
+    'h5dHRhaHViLmV4YW1wbGUudGljdGFjdG9lLkFwcFJlcGxheUJsb2NTdGF0ZS5BY3RpdmVNZW1i'
+    'ZXJJZHNFbnRyeVIPYWN0aXZlTWVtYmVySWRzEh4KC3hfcGxheWVyX2lkGAsgASgFUgl4UGxheW'
+    'VySWQSHgoLb19wbGF5ZXJfaWQYDCABKAVSCW9QbGF5ZXJJZBo5CgtFdmVudHNFbnRyeRIQCgNr'
+    'ZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgBGkIKFEFjdGl2ZU1lbWJlck'
+    'lkc0VudHJ5EhAKA2tleRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgIUgV2YWx1ZToCOAE=');
 

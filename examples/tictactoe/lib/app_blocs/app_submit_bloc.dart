@@ -68,6 +68,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
       }
     }
 
+
     await storage.setDocument(
       firebaseSiteEventsPath(siteId),
       siteEvent.version.toString(),

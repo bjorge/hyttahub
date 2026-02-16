@@ -12,6 +12,12 @@ enum AppReplayStateEnum {
 
 import "app_events.proto";
 
+enum GameStatus {
+  notStarted = 0;
+  playing = 1;
+  gameOver = 2;
+}
+
 message AppReplayBlocState {
   map<int32, string> events = 1; // base64 encoded events
   AppReplayStateEnum state = 2;
@@ -26,5 +32,16 @@ message AppReplayBlocState {
   // Winner: 0 = none/ongoing, 1 = X, 2 = O, 3 = Draw
   int32 winner = 5;
 
-  AppEvent.Move next_move = 6;
+  // Game status
+  GameStatus status = 7;
+
+  // Whether this is a vs bot game
+  bool vs_bot = 8;
+  int32 game_count = 9;
+
+  // Active site member IDs
+  map<int32, bool> active_member_ids = 10;
+  // The site member IDs for X and O players
+  int32 x_player_id = 11;
+  int32 o_player_id = 12;
 }

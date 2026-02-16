@@ -1,5 +1,6 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/allowed_emails_display.dart';
 import 'package:hyttahub/firebase_paths.dart';
@@ -11,11 +12,12 @@ class SiteEmailsDisplayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AllowedEmailsDisplay(
+    return AllowedEmailsDisplay<SiteAllowedEmailsBloc>(
       config: SiteEmailsConfig(
         siteId,
         HyttaHubLocalizations.of(context)!.siteEmailsTitle,
       ),
+      create: (path) => SiteAllowedEmailsBloc(path),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
+import 'package:tictactoe/app_blocs/tictactoe_bot.dart';
 import 'package:tictactoe/routers/app_routes.dart';
 import 'package:tictactoe/utilities/handle_app_bloc_errors.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +14,7 @@ import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
+import 'package:hyttahub/common_widgets/layout.dart';
 
 class SiteScreen extends StatefulWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -24,46 +26,25 @@ class SiteScreen extends StatefulWidget {
 }
 
 class _SiteScreenState extends State<SiteScreen> {
-  // We don't need image fetching for simple X/O game, but keeping structure valid.
+  TicTacToeBot? _bot;
 
-  void _checkAndSubmitAIMove(
-    BuildContext context,
-    AppReplayBlocState appState,
-  ) {
-    if (appState.hasNextMove()) {
-      final nextMove = appState.nextMove;
-      final version = appState.nextVersion;
+  @override
+  void dispose() {
+    _bot?.stop();
+    super.dispose();
+  }
 
-      final appEvent = AppEvent(move: nextMove);
-      final submitEvent =
-          SubmitAppEvent()
-            ..appEvent = appEvent
-            ..siteEvent = (SubmitAppEvent_SiteEvent()..version = version)
-            ..authorEmail = GetIt.instance<AuthBloc>().state.email
-            ..pauseDelay = 1000; // 1 second delay
+  void _ensureBotRunning(BuildContext context) {
+    if (_bot != null) return;
 
-      final submitBloc = context.read<AppSubmitBloc>();
-      // Only submit if not already submitting
-      if (submitBloc.state.submissionState.state !=
-          CommonSubmitBlocState_State.submitting) {
-        // 1. Update payload and set form to valid
-        submitBloc.add(
-          AppEventSubmission(
-            updatedPayload: submitEvent,
-            submission: CommonSubmitBlocEvent(isFormValid: true),
-          ),
-        );
+    final appReplayBloc = context.read<AppReplayBloc>();
+    final appSubmitBloc = context.read<AppSubmitBloc>();
 
-        // 2. Trigger submission
-        submitBloc.add(
-          AppEventSubmission(
-            submission: CommonSubmitBlocEvent(
-              submit: CommonSubmitBlocEvent_SubmitNow(),
-            ),
-          ),
-        );
-      }
-    }
+    _bot = TicTacToeBot(
+      appReplayBloc: appReplayBloc,
+      appSubmitBloc: appSubmitBloc,
+    );
+    _bot!.start();
   }
 
   @override
@@ -76,14 +57,14 @@ class _SiteScreenState extends State<SiteScreen> {
 
     return BlocProvider<AppSubmitBloc>(
       create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
-      child: BlocBuilder<AllowedEmailsBloc, AllowedEmailsBlocState>(
-        key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
+      child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
+        key: Key('SiteAllowedEmailsBloc-site-screen-${widget.siteId}'),
         builder: (context, allowedEmailsState) {
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
             builder: (context, siteState) {
-              // Tic Tac Toe Board
               return Scaffold(
                 appBar: AppBar(
+                  leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
                   title: const ScreenTitle(),
                   actions: [
                     SiteSettingsButton(
@@ -91,7 +72,7 @@ class _SiteScreenState extends State<SiteScreen> {
                       appOptions: [
                         SimpleDialogOption(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.of(context, rootNavigator: true).pop();
                             context.push(
                               AppEventsDisplayRoute.fullPath(
                                 siteId: widget.siteId,
@@ -111,21 +92,22 @@ class _SiteScreenState extends State<SiteScreen> {
                     listeners: [
                       BlocListener<AppReplayBloc, AppReplayBlocState>(
                         listener: (context, appState) {
-                          // Scenario: Replay updates after submit is already free.
-                          _checkAndSubmitAIMove(context, appState);
+                          if (appState.status == GameStatus.playing &&
+                              appState.vsBot) {
+                            _ensureBotRunning(context);
+                          } else if (appState.status == GameStatus.gameOver) {
+                            _bot?.stop();
+                            _bot = null;
+                          }
                         },
                       ),
-                      BlocListener<
-                        AppSubmitBloc,
-                        BaseSubmitState<SubmitAppEvent>
-                      >(
+                      BlocListener<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
                         listener: (context, submitState) {
-                          // Scenario: Submit finishes after replay has already updated.
-                          if (submitState.submissionState.state ==
-                              CommonSubmitBlocState_State.success) {
-                            final appState =
-                                context.read<AppReplayBloc>().state;
-                            _checkAndSubmitAIMove(context, appState);
+                          if (submitState.submissionState.state == CommonSubmitBlocState_State.error) {
+                            final errorCode = submitState.submissionState.errorCode;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Submission Error: $errorCode')),
+                            );
                           }
                         },
                       ),
@@ -158,16 +140,69 @@ class TicTacToeBoard extends StatelessWidget {
     final appEvent = submitState.payload!.appEvent;
     if (!appEvent.hasMove()) return false;
     final move = appEvent.move;
-    // Don't show pending moves for AI (Player 2) to simulate thinking time
     if (move.player == 2) return false;
     return (move.y * 3 + move.x) == index;
   }
 
+  void _startGame(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState, bool vsBot) {
+    final nextVersion = siteState.nextVersion;
+    final submitEvent = SubmitAppEvent()
+      ..appEvent = AppEvent(
+        startGame: AppEvent_StartGame(
+          vsBot: vsBot,
+        ),
+      )
+      ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
+      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+
+    final submitBloc = context.read<AppSubmitBloc>();
+    // Step 1: Update the payload and mark form as valid
+    submitBloc.add(
+      AppEventSubmission(
+        updatedPayload: submitEvent,
+        submission: CommonSubmitBlocEvent(isFormValid: true),
+      ),
+    );
+    // Step 2: Trigger the submission
+    submitBloc.add(
+      AppEventSubmission(
+        submission: CommonSubmitBlocEvent(submit: CommonSubmitBlocEvent_SubmitNow()),
+      ),
+    );
+  }
+
+  void _playAgain(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState) {
+    final nextVersion = siteState.nextVersion;
+    final submitEvent = SubmitAppEvent()
+      ..appEvent = AppEvent(
+        playAgain: AppEvent_PlayAgain(),
+      )
+      ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
+      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+
+    final submitBloc = context.read<AppSubmitBloc>();
+    submitBloc.add(
+      AppEventSubmission(
+        updatedPayload: submitEvent,
+        submission: CommonSubmitBlocEvent(isFormValid: true),
+      ),
+    );
+    submitBloc.add(
+      AppEventSubmission(
+        submission: CommonSubmitBlocEvent(submit: CommonSubmitBlocEvent_SubmitNow()),
+      ),
+    );
+  }
+
+  String _getPlayerName(SiteReplayBlocState siteState, int playerId) {
+    if (playerId == 0) return "Bot";
+    return siteState.members[playerId]?.name ??
+        siteState.removedMembers[playerId]?.name ??
+        "Unknown ($playerId)";
+  }
+
   @override
   Widget build(BuildContext context) {
-    // We already have AppSubmitBloc provided by SiteScreen.
-    // We just need to consume it.
-
     return BlocBuilder<AppSubmitBloc, BaseSubmitState<SubmitAppEvent>>(
       builder: (context, submitState) {
         return BlocBuilder<AppReplayBloc, AppReplayBlocState>(
@@ -178,127 +213,245 @@ class TicTacToeBoard extends StatelessWidget {
             final board = appState.board;
             if (board.isEmpty) return const CircularProgressIndicator();
 
-            return Column(
-              mainAxisSize: MainAxisSize.min,
+            final siteState = context.read<SiteReplayBloc>().state;
+            final allowedEmailsState = context.read<SiteAllowedEmailsBloc>().state;
+            final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+
+            final myMemberId = allowedEmailsState.emails.entries
+                .firstWhere(
+                  (e) => e.key == currentUserEmail,
+                  orElse: () => MapEntry("", AllowedEmailsBlocState_UserInfo()),
+                )
+                .value
+                .userId;
+
+            final xName = _getPlayerName(siteState, appState.xPlayerId);
+            final oName = _getPlayerName(siteState, appState.oPlayerId);
+
+            final isPlayerX = myMemberId == appState.xPlayerId;
+            final isMyTurn = (appState.turn == 1 && isPlayerX) ||
+                             (appState.turn == 2 && myMemberId == appState.oPlayerId);
+
+            return CommonListViewLayout(
               children: [
-                if (appState.winner != 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _PlayerChip(
+                        name: xName,
+                        symbol: "X",
+                        isTurn: appState.status == GameStatus.playing && appState.turn == 1,
+                        isMe: myMemberId == appState.xPlayerId,
+                      ),
+                      const SizedBox(width: 24),
+                      _PlayerChip(
+                        name: oName,
+                        symbol: "O",
+                        isTurn: appState.status == GameStatus.playing && appState.turn == 2,
+                        isMe: myMemberId == appState.oPlayerId,
+                      ),
+                    ],
+                  ),
+                ),
+                if (appState.status == GameStatus.gameOver)
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      appState.winner == 3
-                          ? "Draw!"
-                          : "Player ${appState.winner} Wins!",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: Text(
+                        appState.winner == 3
+                            ? "Draw!"
+                            : "${appState.winner == 1 ? xName : oName} Wins!",
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                        ),
-                    itemCount: 9,
-                    itemBuilder: (context, index) {
-                      final cellValue = board[index];
-                      final isPending = _isPendingBox(index, submitState);
-
-                      // Pending move override
-                      // If pending, it must be our move (X or O).
-                      // We'll assume user is always moving as 'current turn' player or '1' if we want.
-                      // But wait, the submitState payload has the player.
-                      int displayValue = cellValue;
-                      bool gray = false;
-
-                      if (isPending) {
-                        displayValue =
-                            submitState.payload!.appEvent.move.player;
-                        gray = true;
-                      }
-
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          if (cellValue == 0 &&
-                              appState.winner == 0 &&
-                              !isPending &&
-                              submitState.submissionState.state !=
-                                  CommonSubmitBlocState_State.submitting) {
-                            final version = appState.nextVersion;
-                            // Submit move
-                            final player =
-                                appState.turn; // Move as the current turn
-                            final x = index % 3;
-                            final y = index ~/ 3;
-
-                            final move = AppEvent_Move(
-                              x: x,
-                              y: y,
-                              player: player,
-                            );
-                            final appEvent = AppEvent(move: move);
-
-                            // We need to trigger submission.
-                            // The BaseSubmitBloc expects a 'Submit' event.
-                            final submitEvent =
-                                SubmitAppEvent()
-                                  ..appEvent = appEvent
-                                  ..siteEvent =
-                                      (SubmitAppEvent_SiteEvent()
-                                        ..version = version)
-                                  ..authorEmail =
-                                      GetIt.instance<AuthBloc>().state.email;
-
-                            // 1. Update payload and set form to valid
-                            context.read<AppSubmitBloc>().add(
-                              AppEventSubmission(
-                                updatedPayload: submitEvent,
-                                submission: CommonSubmitBlocEvent(
-                                  isFormValid: true,
-                                ),
-                              ),
-                            );
-
-                            // 2. Trigger submission
-                            context.read<AppSubmitBloc>().add(
-                              AppEventSubmission(
-                                submission: CommonSubmitBlocEvent(
-                                  submit: CommonSubmitBlocEvent_SubmitNow(),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
+                Center(
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
                           ),
-                          child: Center(
-                            child: Text(
-                              displayValue == 1
-                                  ? "X"
-                                  : (displayValue == 2 ? "O" : ""),
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                                color: gray ? Colors.grey : Colors.black,
+                      itemCount: 9,
+                      itemBuilder: (context, index) {
+                        final cellValue = board[index];
+                        final isPending = _isPendingBox(index, submitState);
+
+                        int displayValue = cellValue;
+                        bool gray = false;
+
+                        if (isPending) {
+                          displayValue =
+                              submitState.payload!.appEvent.move.player;
+                          gray = true;
+                        }
+
+                        return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            if (appState.status == GameStatus.playing &&
+                                cellValue == 0 &&
+                                appState.winner == 0 &&
+                                !isPending &&
+                                isMyTurn &&
+                                submitState.submissionState.state !=
+                                    CommonSubmitBlocState_State.submitting) {
+                              
+                              final version = siteState.nextVersion;
+                              final player = appState.turn;
+                              final x = index % 3;
+                              final y = index ~/ 3;
+
+                              final move = AppEvent_Move(
+                                x: x,
+                                y: y,
+                                player: player,
+                              );
+                              final appEvent = AppEvent(move: move);
+
+                              final submitEvent =
+                                  SubmitAppEvent()
+                                    ..appEvent = appEvent
+                                    ..siteEvent =
+                                        (SubmitAppEvent_SiteEvent()
+                                          ..version = version)
+                                    ..authorEmail =
+                                        currentUserEmail;
+
+                              final submitBloc = context.read<AppSubmitBloc>();
+                              // Step 1: Update the payload and mark form as valid
+                              submitBloc.add(
+                                AppEventSubmission(
+                                  updatedPayload: submitEvent,
+                                  submission: CommonSubmitBlocEvent(isFormValid: true),
+                                ),
+                              );
+                              // Step 2: Trigger the submission
+                              submitBloc.add(
+                                AppEventSubmission(
+                                  submission: CommonSubmitBlocEvent(
+                                    submit: CommonSubmitBlocEvent_SubmitNow(),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                displayValue == 1
+                                    ? "X"
+                                    : (displayValue == 2 ? "O" : ""),
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: gray
+                                      ? Colors.grey
+                                      : Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
+                if (appState.status == GameStatus.notStarted)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: isPlayerX ? () => _startGame(context, siteState, appState, false) : null,
+                          child: const Text("Start Multiplayer Game"),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: isPlayerX ? () => _startGame(context, siteState, appState, true) : null,
+                          child: const Text("Start Bot Game"),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (appState.status == GameStatus.gameOver)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: isPlayerX ? () => _playAgain(context, siteState, appState) : null,
+                        child: const Text("Play Again"),
+                      ),
+                    ),
+                  ),
               ],
             );
           },
         );
       },
+    );
+  }
+}
+
+class _PlayerChip extends StatelessWidget {
+  const _PlayerChip({
+    required this.name,
+    required this.symbol,
+    required this.isTurn,
+    required this.isMe,
+  });
+
+  final String name;
+  final String symbol;
+  final bool isTurn;
+  final bool isMe;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: isTurn ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isTurn ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+          width: 2,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            symbol,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isTurn ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            isMe ? "$name (You)" : name,
+            style: TextStyle(
+              fontWeight: isTurn ? FontWeight.bold : FontWeight.normal,
+              color: isTurn ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

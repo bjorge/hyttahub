@@ -13,7 +13,6 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'app_events.pb.dart' as $0;
 import 'app_replay_bloc.pbenum.dart';
 
 export 'app_replay_bloc.pbenum.dart';
@@ -25,7 +24,12 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? board,
     $core.int? turn,
     $core.int? winner,
-    $0.AppEvent_Move? nextMove,
+    GameStatus? status,
+    $core.bool? vsBot,
+    $core.int? gameCount,
+    $core.Map<$core.int, $core.bool>? activeMemberIds,
+    $core.int? xPlayerId,
+    $core.int? oPlayerId,
   }) {
     final $result = create();
     if (events != null) {
@@ -43,8 +47,23 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (winner != null) {
       $result.winner = winner;
     }
-    if (nextMove != null) {
-      $result.nextMove = nextMove;
+    if (status != null) {
+      $result.status = status;
+    }
+    if (vsBot != null) {
+      $result.vsBot = vsBot;
+    }
+    if (gameCount != null) {
+      $result.gameCount = gameCount;
+    }
+    if (activeMemberIds != null) {
+      $result.activeMemberIds.addAll(activeMemberIds);
+    }
+    if (xPlayerId != null) {
+      $result.xPlayerId = xPlayerId;
+    }
+    if (oPlayerId != null) {
+      $result.oPlayerId = oPlayerId;
     }
     return $result;
   }
@@ -58,7 +77,12 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..p<$core.int>(3, _omitFieldNames ? '' : 'board', $pb.PbFieldType.K3)
     ..a<$core.int>(4, _omitFieldNames ? '' : 'turn', $pb.PbFieldType.O3)
     ..a<$core.int>(5, _omitFieldNames ? '' : 'winner', $pb.PbFieldType.O3)
-    ..aOM<$0.AppEvent_Move>(6, _omitFieldNames ? '' : 'nextMove', subBuilder: $0.AppEvent_Move.create)
+    ..e<GameStatus>(7, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: GameStatus.notStarted, valueOf: GameStatus.valueOf, enumValues: GameStatus.values)
+    ..aOB(8, _omitFieldNames ? '' : 'vsBot')
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'gameCount', $pb.PbFieldType.O3)
+    ..m<$core.int, $core.bool>(10, _omitFieldNames ? '' : 'activeMemberIds', entryClassName: 'AppReplayBlocState.ActiveMemberIdsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OB, packageName: const $pb.PackageName('hyttahub.example.tictactoe'))
+    ..a<$core.int>(11, _omitFieldNames ? '' : 'xPlayerId', $pb.PbFieldType.O3)
+    ..a<$core.int>(12, _omitFieldNames ? '' : 'oPlayerId', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
 
@@ -120,16 +144,57 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearWinner() => clearField(5);
 
-  @$pb.TagNumber(6)
-  $0.AppEvent_Move get nextMove => $_getN(5);
-  @$pb.TagNumber(6)
-  set nextMove($0.AppEvent_Move v) { setField(6, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasNextMove() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearNextMove() => clearField(6);
-  @$pb.TagNumber(6)
-  $0.AppEvent_Move ensureNextMove() => $_ensure(5);
+  /// Game status
+  @$pb.TagNumber(7)
+  GameStatus get status => $_getN(5);
+  @$pb.TagNumber(7)
+  set status(GameStatus v) { setField(7, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasStatus() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearStatus() => clearField(7);
+
+  /// Whether this is a vs bot game
+  @$pb.TagNumber(8)
+  $core.bool get vsBot => $_getBF(6);
+  @$pb.TagNumber(8)
+  set vsBot($core.bool v) { $_setBool(6, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasVsBot() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearVsBot() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get gameCount => $_getIZ(7);
+  @$pb.TagNumber(9)
+  set gameCount($core.int v) { $_setSignedInt32(7, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasGameCount() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearGameCount() => clearField(9);
+
+  /// Active site member IDs
+  @$pb.TagNumber(10)
+  $core.Map<$core.int, $core.bool> get activeMemberIds => $_getMap(8);
+
+  /// The site member IDs for X and O players
+  @$pb.TagNumber(11)
+  $core.int get xPlayerId => $_getIZ(9);
+  @$pb.TagNumber(11)
+  set xPlayerId($core.int v) { $_setSignedInt32(9, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasXPlayerId() => $_has(9);
+  @$pb.TagNumber(11)
+  void clearXPlayerId() => clearField(11);
+
+  @$pb.TagNumber(12)
+  $core.int get oPlayerId => $_getIZ(10);
+  @$pb.TagNumber(12)
+  set oPlayerId($core.int v) { $_setSignedInt32(10, v); }
+  @$pb.TagNumber(12)
+  $core.bool hasOPlayerId() => $_has(10);
+  @$pb.TagNumber(12)
+  void clearOPlayerId() => clearField(12);
 }
 
 

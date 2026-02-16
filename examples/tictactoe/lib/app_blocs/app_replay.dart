@@ -28,18 +28,19 @@ AppReplayBlocState appReplay(
     replay.board.addAll(List.filled(9, 0));
     replay.turn = 1; // X always starts
     replay.winner = 0;
+    replay.status = GameStatus.notStarted;
+    replay.vsBot = false;
   }
 
-  // Clear next move from previous state
-  replay.clearNextMove();
-
   replay.events.addAll(base64Events);
-  var lastMoveWasUser = false;
 
   for (int i = 0; i < eventKeys.length; i++) {
     final eventVersion = eventKeys[i];
     final base64Event = base64Events[eventVersion];
     final event = SiteEvent.fromBuffer(base64Decode(base64Event!));
+
+
+
 
     if (event.hasAppEvent()) {
       final appEvent = unpackAppEventWrapper(event.appEvent, AppEvent.create);
@@ -49,42 +50,88 @@ AppReplayBlocState appReplay(
         final index = move.y * 3 + move.x;
 
         if (index >= 0 && index < 9 && replay.board[index] == 0) {
-          if (replay.winner == 0) {
-            replay.board[index] = move.player;
-            // Toggle turn
-            replay.turn = (move.player == 1) ? 2 : 1;
-            _checkWinner(replay);
-            // Player 1 is user, Player 2 is AI
-            lastMoveWasUser = (move.player == 1);
+          if (replay.winner == 0 && replay.status == GameStatus.playing) {
+            // Validation: Does the author match the expected player ID for this move?
+            // For Player 1 (X), must match xPlayerId
+            // For Player 2 (O), must match oPlayerId (unless oPlayerId is 0/Bot)
+            bool isValidAuthor = false;
+            if (move.player == 1 && event.author == replay.xPlayerId) {
+              isValidAuthor = true;
+            } else if (move.player == 2) {
+              if (replay.vsBot || event.author == replay.oPlayerId) {
+                isValidAuthor = true;
+              }
+            }
+
+            if (isValidAuthor) {
+              replay.board[index] = move.player;
+              // Toggle turn
+              replay.turn = (move.player == 1) ? 2 : 1;
+              _checkWinner(replay);
+            }
           }
         }
+      } else if (appEvent.hasStartGame()) {
+        replay.status = GameStatus.playing;
+        replay.vsBot = appEvent.startGame.vsBot;
+        replay.gameCount = 1;
+
+        _updatePlayerAssignments(replay, event.author);
+      } else if (appEvent.hasPlayAgain()) {
+        replay.board.fillRange(0, 9, 0);
+        replay.turn = 1;
+        replay.winner = 0;
+        replay.status = GameStatus.playing;
+        replay.gameCount++;
+        // vsBot and player IDs are preserved
       }
-    }
-  }
-
-  // Auto-Opponent Logic (Simple Random Move)
-  // If game is active, it's O's turn (2), and the last processed event was a user move,
-  // we hallucinate a move for O.
-  // NOTE: This assumes Player 1 (X) is the user and Player 2 (O) is the auto-opponent.
-  if (replay.winner == 0 && replay.turn == 2 && lastMoveWasUser) {
-    // Find empty spots
-    final emptyIndices = <int>[];
-    for (int i = 0; i < 9; i++) {
-      if (replay.board[i] == 0) {
-        emptyIndices.add(i);
+    } else {
+      // Handle SiteEvents for member tracking
+      if (event.hasNewSite()) {
+        replay.activeMemberIds[event.version] = true;
+      } else if (event.hasAddMember()) {
+        replay.activeMemberIds[event.version] = true;
+      } else if (event.hasRemoveMember()) {
+        replay.activeMemberIds.remove(event.removeMember.memberId);
+      } else if (event.hasLeaveSite()) {
+        replay.activeMemberIds.remove(event.leaveSite.memberId);
+      } else if (event.hasRestoreMember()) {
+        replay.activeMemberIds[event.restoreMember.memberId] = true;
+      } else if (event.hasUpdateMember()) {
+        replay.activeMemberIds[event.updateMember.memberId] = true;
       }
-    }
 
-    if (emptyIndices.isNotEmpty) {
-      // Deterministic choice for validation stability
-      final choice = emptyIndices.first;
-
-      // Instead of applying immediately, set next_move
-      replay.nextMove = AppEvent_Move(x: choice % 3, y: choice ~/ 3, player: 2);
+      if (replay.status == GameStatus.notStarted) {
+        _updatePlayerAssignments(replay, 0); // Author not yet known for StartGame
+      } else {
+        // Also update player assignments mid-game if members change
+        _updatePlayerAssignments(replay, 0);
+      }
     }
   }
 
   return replay;
+}
+
+void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
+  final oldX = state.xPlayerId;
+  final oldO = state.oPlayerId;
+  
+  if (state.vsBot) {
+    if (authorId != 0) {
+      state.xPlayerId = authorId;
+    }
+    state.oPlayerId = 0; // Bot
+  } else {
+    final memberIds = state.activeMemberIds.keys.toList()..sort();
+    if (memberIds.isNotEmpty) {
+      state.xPlayerId = memberIds[0];
+      state.oPlayerId = memberIds.length > 1 ? memberIds[1] : memberIds[0];
+    }
+  }
+  
+  if (state.xPlayerId != oldX || state.oPlayerId != oldO) {
+  }
 }
 
 void _checkWinner(AppReplayBlocState state) {
@@ -102,11 +149,13 @@ void _checkWinner(AppReplayBlocState state) {
 
     if (a != 0 && a == b && a == c) {
       state.winner = a;
+      state.status = GameStatus.gameOver;
       return;
     }
   }
 
   if (!board.contains(0)) {
     state.winner = 3; // Draw
+    state.status = GameStatus.gameOver;
   }
 }
