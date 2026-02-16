@@ -145,7 +145,7 @@ class TicTacToeBoard extends StatelessWidget {
   }
 
   void _startGame(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState, bool vsBot) {
-    final nextVersion = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+    final nextVersion = siteState.nextVersion;
     final submitEvent = SubmitAppEvent()
       ..appEvent = AppEvent(
         startGame: AppEvent_StartGame(
@@ -172,7 +172,7 @@ class TicTacToeBoard extends StatelessWidget {
   }
 
   void _playAgain(BuildContext context, SiteReplayBlocState siteState, AppReplayBlocState appState) {
-    final nextVersion = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+    final nextVersion = siteState.nextVersion;
     final submitEvent = SubmitAppEvent()
       ..appEvent = AppEvent(
         playAgain: AppEvent_PlayAgain(),
@@ -305,7 +305,7 @@ class TicTacToeBoard extends StatelessWidget {
                                 submitState.submissionState.state !=
                                     CommonSubmitBlocState_State.submitting) {
                               
-                              final version = siteState.events.keys.fold<int>(0, (p, e) => e > p ? e : p) + 1;
+                              final version = siteState.nextVersion;
                               final player = appState.turn;
                               final x = index % 3;
                               final y = index ~/ 3;

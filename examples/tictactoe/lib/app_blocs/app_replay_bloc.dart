@@ -109,6 +109,6 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
 
 extension AppReplayBlocStateX on AppReplayBlocState {
   int get lastVersion =>
-      events.isEmpty ? 0 : events.keys.fold<int>(0, (p, e) => e > p ? e : p);
+      events.isEmpty ? 0 : events.keys.fold(0, (previousValue, element) => element > previousValue ? element : previousValue);
   int get nextVersion => lastVersion + 1;
 }
