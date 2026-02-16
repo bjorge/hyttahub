@@ -194,9 +194,11 @@ class TicTacToeBoard extends StatelessWidget {
     );
   }
 
-  String _getPlayerName(AppReplayBlocState appState, int playerId) {
+  String _getPlayerName(SiteReplayBlocState siteState, int playerId) {
     if (playerId == 0) return "Bot";
-    return appState.members[playerId] ?? "Unknown ($playerId)";
+    return siteState.members[playerId]?.name ??
+        siteState.removedMembers[playerId]?.name ??
+        "Unknown ($playerId)";
   }
 
   @override
@@ -223,8 +225,8 @@ class TicTacToeBoard extends StatelessWidget {
                 .value
                 .userId;
 
-            final xName = _getPlayerName(appState, appState.xPlayerId);
-            final oName = _getPlayerName(appState, appState.oPlayerId);
+            final xName = _getPlayerName(siteState, appState.xPlayerId);
+            final oName = _getPlayerName(siteState, appState.oPlayerId);
 
             final isMyTurn = (appState.turn == 1 && myMemberId == appState.xPlayerId) ||
                              (appState.turn == 2 && myMemberId == appState.oPlayerId);

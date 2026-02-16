@@ -27,7 +27,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     GameStatus? status,
     $core.bool? vsBot,
     $core.int? gameCount,
-    $core.Map<$core.int, $core.String>? members,
+    $core.Map<$core.int, $core.bool>? activeMemberIds,
     $core.int? xPlayerId,
     $core.int? oPlayerId,
   }) {
@@ -56,8 +56,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (gameCount != null) {
       $result.gameCount = gameCount;
     }
-    if (members != null) {
-      $result.members.addAll(members);
+    if (activeMemberIds != null) {
+      $result.activeMemberIds.addAll(activeMemberIds);
     }
     if (xPlayerId != null) {
       $result.xPlayerId = xPlayerId;
@@ -80,7 +80,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..e<GameStatus>(7, _omitFieldNames ? '' : 'status', $pb.PbFieldType.OE, defaultOrMaker: GameStatus.notStarted, valueOf: GameStatus.valueOf, enumValues: GameStatus.values)
     ..aOB(8, _omitFieldNames ? '' : 'vsBot')
     ..a<$core.int>(9, _omitFieldNames ? '' : 'gameCount', $pb.PbFieldType.O3)
-    ..m<$core.int, $core.String>(10, _omitFieldNames ? '' : 'members', entryClassName: 'AppReplayBlocState.MembersEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OS, packageName: const $pb.PackageName('hyttahub.example.tictactoe'))
+    ..m<$core.int, $core.bool>(10, _omitFieldNames ? '' : 'activeMemberIds', entryClassName: 'AppReplayBlocState.ActiveMemberIdsEntry', keyFieldType: $pb.PbFieldType.O3, valueFieldType: $pb.PbFieldType.OB, packageName: const $pb.PackageName('hyttahub.example.tictactoe'))
     ..a<$core.int>(11, _omitFieldNames ? '' : 'xPlayerId', $pb.PbFieldType.O3)
     ..a<$core.int>(12, _omitFieldNames ? '' : 'oPlayerId', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
@@ -173,9 +173,9 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   @$pb.TagNumber(9)
   void clearGameCount() => clearField(9);
 
-  /// Map of member ID to nickname
+  /// Active site member IDs
   @$pb.TagNumber(10)
-  $core.Map<$core.int, $core.String> get members => $_getMap(8);
+  $core.Map<$core.int, $core.bool> get activeMemberIds => $_getMap(8);
 
   /// The site member IDs for X and O players
   @$pb.TagNumber(11)

@@ -40,6 +40,8 @@ AppReplayBlocState appReplay(
     final event = SiteEvent.fromBuffer(base64Decode(base64Event!));
 
 
+
+
     if (event.hasAppEvent()) {
       final appEvent = unpackAppEventWrapper(event.appEvent, AppEvent.create);
 
@@ -86,23 +88,24 @@ AppReplayBlocState appReplay(
     } else {
       // Handle SiteEvents for member tracking
       if (event.hasNewSite()) {
-        replay.members[event.version] = event.newSite.memberName;
+        replay.activeMemberIds[event.version] = true;
       } else if (event.hasAddMember()) {
-        replay.members[event.version] = event.addMember.memberName;
+        replay.activeMemberIds[event.version] = true;
       } else if (event.hasRemoveMember()) {
-        replay.members.remove(event.removeMember.memberId);
+        replay.activeMemberIds.remove(event.removeMember.memberId);
       } else if (event.hasLeaveSite()) {
-        replay.members.remove(event.leaveSite.memberId);
+        replay.activeMemberIds.remove(event.leaveSite.memberId);
       } else if (event.hasRestoreMember()) {
-        replay.members[event.restoreMember.memberId] =
-            event.restoreMember.memberName;
+        replay.activeMemberIds[event.restoreMember.memberId] = true;
       } else if (event.hasUpdateMember()) {
-        replay.members[event.updateMember.memberId] =
-            event.updateMember.memberName;
+        replay.activeMemberIds[event.updateMember.memberId] = true;
       }
 
       if (replay.status == GameStatus.notStarted) {
         _updatePlayerAssignments(replay, 0); // Author not yet known for StartGame
+      } else {
+        // Also update player assignments mid-game if members change
+        _updatePlayerAssignments(replay, 0);
       }
     }
   }
@@ -120,10 +123,10 @@ void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
     }
     state.oPlayerId = 0; // Bot
   } else {
-    final sortedIds = state.members.keys.toList()..sort();
-    if (sortedIds.isNotEmpty) {
-      state.xPlayerId = sortedIds[0];
-      state.oPlayerId = sortedIds.length > 1 ? sortedIds[1] : sortedIds[0];
+    final memberIds = state.activeMemberIds.keys.toList()..sort();
+    if (memberIds.isNotEmpty) {
+      state.xPlayerId = memberIds[0];
+      state.oPlayerId = memberIds.length > 1 ? memberIds[1] : memberIds[0];
     }
   }
   
