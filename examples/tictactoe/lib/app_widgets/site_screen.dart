@@ -228,7 +228,8 @@ class TicTacToeBoard extends StatelessWidget {
             final xName = _getPlayerName(siteState, appState.xPlayerId);
             final oName = _getPlayerName(siteState, appState.oPlayerId);
 
-            final isMyTurn = (appState.turn == 1 && myMemberId == appState.xPlayerId) ||
+            final isPlayerX = myMemberId == appState.xPlayerId;
+            final isMyTurn = (appState.turn == 1 && isPlayerX) ||
                              (appState.turn == 2 && myMemberId == appState.oPlayerId);
 
             return CommonListViewLayout(
@@ -375,12 +376,12 @@ class TicTacToeBoard extends StatelessWidget {
                     child: Column(
                       children: [
                         ElevatedButton(
-                          onPressed: () => _startGame(context, siteState, appState, false),
+                          onPressed: isPlayerX ? () => _startGame(context, siteState, appState, false) : null,
                           child: const Text("Start Multiplayer Game"),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => _startGame(context, siteState, appState, true),
+                          onPressed: isPlayerX ? () => _startGame(context, siteState, appState, true) : null,
                           child: const Text("Start Bot Game"),
                         ),
                       ],
@@ -391,7 +392,7 @@ class TicTacToeBoard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Center(
                       child: ElevatedButton(
-                        onPressed: () => _playAgain(context, siteState, appState),
+                        onPressed: isPlayerX ? () => _playAgain(context, siteState, appState) : null,
                         child: const Text("Play Again"),
                       ),
                     ),
