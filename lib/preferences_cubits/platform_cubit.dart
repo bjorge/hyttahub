@@ -60,7 +60,7 @@ class PlatformCubit extends HydratedCubit<String> {
   }
 
   @override
-  String get id => ':platform:$storageKey';
+  String get id => ':persistence:$storageKey';
 
   @override
   String fromJson(Map<String, dynamic> json) {
