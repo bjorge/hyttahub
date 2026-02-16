@@ -183,12 +183,13 @@ export const onAccountCreated = onDocumentCreated(
 
       const sitesToJoin: string[] = [];
       sitesSnapshot.docs.forEach(doc => {
-        if (doc.id.toLowerCase() === email) {
+        const path = doc.ref.path;
+        if (doc.id.toLowerCase() === email && path.startsWith(`hyttahub/${appPathSegment}/`)) {
           // doc path: hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}
           const siteId = doc.ref.parent.parent?.id;
           if (siteId) {
             sitesToJoin.push(siteId);
-            logger.info(`Match found: Email ${email} is configured for site ${siteId}`);
+            logger.info(`Match found: Email ${email} is configured for site ${siteId} in segment ${appPathSegment}`);
           }
         }
       });
