@@ -8,6 +8,8 @@ import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
+import 'package:hyttahub/common_widgets/layout.dart';
+
 class SiteInfoScreen extends StatelessWidget {
   const SiteInfoScreen({super.key, required this.siteId});
 
@@ -41,114 +43,120 @@ class SiteInfoScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+          body: CommonListViewLayout(
+            spacing: 24.0,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Site ID',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  SelectableText(
+                    siteId,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    loc.siteEventCount,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    siteEventCount.toString(),
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    loc.siteTotalSize,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _formatSize(siteTotalSize, loc),
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ],
+              ),
+              FutureBuilder<Map<String, dynamic>>(
+                future: HyttaHubFunctionsFactory.getFunctions(
+                  HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
+                ).listSiteFiles(
+                  siteId: siteId,
+                  appName:
+                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      '',
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text(
+                      loc.errorFetchingFiles,
+                      style: const TextStyle(color: Colors.red),
+                    );
+                  }
+
+                  final data = snapshot.data;
+                  if (data == null || data['files'] == null) {
+                    return Container();
+                  }
+
+                  final files = List<Map<String, dynamic>>.from(data['files']);
+                  final fileCount = files.length;
+                  final totalSize = files.fold<int>(
+                    0,
+                    (prev, file) => prev + (file['size'] as int),
+                  );
+
+                  return Column(
+                    spacing: 24.0,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Site ID',
-                        style: Theme.of(context).textTheme.labelLarge,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            loc.siteFileCount,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            fileCount.toString(),
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        siteId,
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        loc.siteEventCount,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        siteEventCount.toString(),
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        loc.siteTotalSize,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _formatSize(siteTotalSize, loc),
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 24),
-                      FutureBuilder<Map<String, dynamic>>(
-                        future: HyttaHubFunctionsFactory.getFunctions(
-                          HyttaHubOptions.implementation?.storage ??
-                              StorageEnum.cloud,
-                        ).listSiteFiles(
-                          siteId: siteId,
-                          appName: HyttaHubOptions
-                                  .implementation?.firebaseRootCollection ??
-                              '',
-                        ),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-                          if (snapshot.hasError) {
-                            return Text(
-                              loc.errorFetchingFiles,
-                              style: const TextStyle(color: Colors.red),
-                            );
-                          }
-
-                          final data = snapshot.data;
-                          if (data == null || data['files'] == null) {
-                            return Container();
-                          }
-
-                          final files =
-                              List<Map<String, dynamic>>.from(data['files']);
-                          final fileCount = files.length;
-                          final totalSize = files.fold<int>(
-                            0,
-                            (prev, file) => prev + (file['size'] as int),
-                          );
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                loc.siteFileCount,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                fileCount.toString(),
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 24),
-                              Text(
-                                loc.siteTotalFileSize,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _formatSize(totalSize, loc),
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                            ],
-                          );
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            loc.siteTotalFileSize,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _formatSize(totalSize, loc),
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ),
+                  );
+                },
               ),
-            ),
+            ],
           ),
         );
       },
