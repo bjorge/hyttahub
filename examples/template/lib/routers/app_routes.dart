@@ -8,6 +8,7 @@ import 'package:template/app_widgets/update_code_screen.dart';
 import 'package:template/app_widgets/update_checkbox_screen.dart';
 import 'package:template/app_widgets/update_dropdown_screen.dart';
 import 'package:template/app_widgets/update_list_screen.dart';
+import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:flutter/material.dart';
@@ -226,6 +227,7 @@ final siteShellRoute = ShellRoute(
             ),
           ),
         ),
+        BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
       ],
       child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {

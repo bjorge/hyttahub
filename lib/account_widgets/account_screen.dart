@@ -15,7 +15,6 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
-import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,10 +57,6 @@ class AccountScreen extends StatelessWidget {
                             (siteId) => TextButton(
                               key: Key(siteId),
                               onPressed: () {
-                                // turn off edit mode by default before entering site screen
-                                context
-                                    .read<SiteEditModeCubit>()
-                                    .editModeClear();
 
                                 context.push(
                                   '${AccountScreenRoute.fullPath}/site/$siteId',

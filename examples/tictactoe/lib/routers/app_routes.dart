@@ -9,6 +9,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
+import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
 import 'package:tictactoe/app_widgets/app_events_display.dart';
@@ -85,6 +86,7 @@ final siteShellRoute = ShellRoute(
             ),
           ),
         ),
+        BlocProvider<SiteEditModeCubit>(create: (_) => SiteEditModeCubit()),
       ],
       child: BlocBuilder<SiteAllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
