@@ -13,6 +13,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:intl/intl.dart';
 
 class CopySiteConfirmScreen extends StatefulWidget {
   const CopySiteConfirmScreen({super.key, required this.siteId});
@@ -28,6 +29,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
   bool _isProcessing = false;
   int? _selectedVersion;
   int? _authorId;
+  final Map<int, DateTime> _eventDates = {};
 
   @override
   void initState() {
@@ -36,6 +38,44 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     _siteReplayBloc.add(CommonReplayBlocEvent(listen: true));
     
     _fetchAuthorId();
+    _fetchEventDates();
+  }
+
+  Future<void> _fetchEventDates() async {
+    final storageType = HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
+    final storage = HyttaHubStorageFactory.getStorage(storageType);
+    
+    try {
+      final docs = await storage.getCollection(
+        firebaseSiteEventsPath(widget.siteId),
+      );
+
+      final dates = <int, DateTime>{};
+      for (final data in docs) {
+        if (data case {fbVersion: int version, fbTimeStamp: dynamic timestampValue}) {
+          try {
+            if (timestampValue is DateTime) {
+               dates[version] = timestampValue;
+            } else if (timestampValue is String) {
+               dates[version] = DateTime.parse(timestampValue);
+            } else if (timestampValue != null &&
+                timestampValue.runtimeType.toString() == 'Timestamp') {
+              dates[version] = (timestampValue as dynamic).toDate();
+            }
+          } catch (e) {
+            // keep going
+          }
+        }
+      }
+      
+      if (mounted) {
+        setState(() {
+          _eventDates.addAll(dates);
+        });
+      }
+    } catch (e) {
+      // Ignored: failure fetching dates just means we won't show them
+    }
   }
 
   Future<void> _fetchAuthorId() async {
@@ -216,7 +256,17 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
                               }
                             },
                             title: Text("Version $version"),
-                            subtitle: Text("Event: ${_getEventDescription(context, decodedEvents[version]!)}"),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_getEventDescription(context, decodedEvents[version]!)),
+                                if (_eventDates.containsKey(version))
+                                  Text(
+                                    DateFormat.yMMMd(Localizations.localeOf(context).languageCode).add_jm().format(_eventDates[version]!),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7)),
+                                  ),
+                              ],
+                            ),
                           ),
                         ],
                       );
