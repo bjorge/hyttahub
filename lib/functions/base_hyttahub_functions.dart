@@ -12,6 +12,7 @@ abstract class BaseHyttaHubFunctions {
   Future<Map<String, dynamic>> copySite({
     required String siteId,
     required String appName,
+    int? upToVersion,
   });
 
 

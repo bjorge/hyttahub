@@ -981,6 +981,8 @@ export const copySite = onCall({
   }
 
   const { appName, siteId: oldSiteId } = request.data;
+  const upToVersion = request.data.upToVersion as number | undefined;
+
   const email = typeof request.auth?.token?.email === "string" ? request.auth.token.email : undefined;
 
   if (!email) {
@@ -1012,6 +1014,12 @@ export const copySite = onCall({
   oldEventsSnapshot.docs.forEach((doc) => {
     const data = doc.data();
     const version = data[fbVersion];
+    
+    // Skip events after upToVersion if specified
+    if (upToVersion !== undefined && typeof version === "number" && version > upToVersion) {
+      return;
+    }
+
     if (typeof version === "number" && version > lastVersion) {
       lastVersion = version;
     }

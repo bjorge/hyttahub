@@ -39,13 +39,14 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     }
   }
 
-  Future<Map<String, dynamic>> copySite(String siteId) async {
+  Future<Map<String, dynamic>> copySite(String siteId, {int? upToVersion}) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
       final result = await functions.copySite(
         siteId: siteId,
         appName: _appName,
+        upToVersion: upToVersion,
       );
       emit(CloudFunctionsState()); // Clear loading state or emit success
       return result;

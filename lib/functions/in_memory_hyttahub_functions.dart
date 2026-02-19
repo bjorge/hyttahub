@@ -206,6 +206,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   Future<Map<String, dynamic>> copySite({
     required String siteId,
     required String appName,
+    int? upToVersion,
   }) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
     final newSiteId = _generateId();
@@ -232,6 +233,12 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     await storage.runBatch((batch) async {
       for (final event in oldEvents) {
         final version = event[fbVersion] as int;
+        
+        // Skip events after upToVersion if specified
+        if (upToVersion != null && version > upToVersion) {
+          continue;
+        }
+
         if (version > lastVersion) lastVersion = version;
         
         batch.setDocument(

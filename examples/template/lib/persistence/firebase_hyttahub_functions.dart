@@ -28,6 +28,7 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   Future<Map<String, dynamic>> copySite({
     required String siteId,
     required String appName,
+    int? upToVersion,
   }) async {
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'copySite',
@@ -38,6 +39,7 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     final result = await callable.call(<String, dynamic>{
       'siteId': siteId,
       'appName': appName,
+      if (upToVersion != null) 'upToVersion': upToVersion,
     });
     return Map<String, dynamic>.from(result.data);
   }
