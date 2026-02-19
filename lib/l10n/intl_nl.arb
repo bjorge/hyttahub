@@ -156,9 +156,9 @@
     "cannotRemoveAccountContent": "You must leave all sites before you can remove your account.",
     "cannotChangeEmailWhenOnlyAdminError": "Cannot change your email when you are the only admin.",
     "okButton": "OK",
-    "copySiteIdTooltip": "Copy Site ID",
-    "siteIdCopied": "Site ID copied to clipboard",
-    "and": "&",
+  "copySiteIdTooltip": "Site-ID kopiëren",
+  "siteIdCopied": "Site-ID naar klembord gekopieerd",
+  "and": "&",
     "mustAgreeToTermsError": "You must agree to the terms.",
     "mustAgreeToPrivacyPolicyError": "You must agree to the privacy policy.",
     "leadingTrailingSpacesError": "Leading or trailing spaces are not allowed.",
@@ -246,7 +246,11 @@
     },
     "processingImport": "Processing import, this can take up to 10 minutes. Please wait and remain on this screen...",
     "userMustBeSignedIn": "User must be signed in to import site",
-    "errorImportingSite": "Error importing site: {error}",
+    "copySiteTitle": "Site kopiëren",
+  "copySiteTooltip": "Site kopiëren",
+  "copySiteConfirmTitle": "Bevestiging site kopiëren",
+  "copySiteConfirmMessage": "Door de site te kopiëren wordt er een privédubplicaatsite voor je gemaakt. Houd er rekening mee dat het kopiëren van mediabestanden enige tijd kan duren. Je kunt de naam van de nieuwe site bewerken en leden toevoegen zodra de kopie voltooid is.",
+  "errorImportingSite": "Error importing site: {error}",
     "@errorImportingSite": {
         "placeholders": {
             "error": {

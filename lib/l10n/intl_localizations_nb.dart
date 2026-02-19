@@ -604,17 +604,17 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   }
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Kopier nettsted';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Kopier nettsted';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Bekreft kopiering av nettsted';
 
   @override
   String get copySiteConfirmMessage =>
-      'I understand that copying this site might take some time and create a full duplicate.';
+      'Kopiering av nettstedet vil opprette et privat duplikat for deg. Vær oppmerksom på at kopiering av mediefiler kan ta litt tid. Du kan redigere navnet på det nye nettstedet og legge til medlemmer når kopieringen er fullført.';
 
   @override
   String errorAssigningUser(String error) {

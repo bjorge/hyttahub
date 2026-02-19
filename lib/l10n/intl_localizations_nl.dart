@@ -454,10 +454,10 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get okButton => 'OK';
 
   @override
-  String get copySiteIdTooltip => 'Copy Site ID';
+  String get copySiteIdTooltip => 'Site-ID kopiëren';
 
   @override
-  String get siteIdCopied => 'Site ID copied to clipboard';
+  String get siteIdCopied => 'Site-ID naar klembord gekopieerd';
 
   @override
   String get and => '&';
@@ -602,17 +602,17 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   }
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Site kopiëren';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Site kopiëren';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Bevestiging site kopiëren';
 
   @override
   String get copySiteConfirmMessage =>
-      'I understand that copying this site might take some time and create a full duplicate.';
+      'Door de site te kopiëren wordt er een privédubplicaatsite voor je gemaakt. Houd er rekening mee dat het kopiëren van mediabestanden enige tijd kan duren. Je kunt de naam van de nieuwe site bewerken en leden toevoegen zodra de kopie voltooid is.';
 
   @override
   String errorAssigningUser(String error) {

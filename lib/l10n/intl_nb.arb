@@ -246,6 +246,10 @@
   },
   "processingImport": "Behandler import, dette kan ta opptil 10 minutter. Vennligst vent og bli på denne skjermen...",
   "userMustBeSignedIn": "Bruker må være pålogget for å importere sted",
+  "copySiteTitle": "Kopier nettsted",
+  "copySiteTooltip": "Kopier nettsted",
+  "copySiteConfirmTitle": "Bekreft kopiering av nettsted",
+  "copySiteConfirmMessage": "Kopiering av nettstedet vil opprette et privat duplikat for deg. Vær oppmerksom på at kopiering av mediefiler kan ta litt tid. Du kan redigere navnet på det nye nettstedet og legge til medlemmer når kopieringen er fullført.",
   "errorImportingSite": "Feil ved import av sted: {error}",
   "@errorImportingSite": {
     "placeholders": {

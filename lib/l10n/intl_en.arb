@@ -266,7 +266,7 @@
   "@copySiteConfirmTitle": {
     "description": "Title for the copy site confirmation screen."
   },
-  "copySiteConfirmMessage": "I understand that copying this site might take some time and create a full duplicate.",
+  "copySiteConfirmMessage": "Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.",
   "@copySiteConfirmMessage": {
     "description": "Message for the copy site confirmation."
   },

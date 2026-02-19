@@ -1214,7 +1214,7 @@ abstract class HyttaHubLocalizations {
   /// Message for the copy site confirmation.
   ///
   /// In en, this message translates to:
-  /// **'I understand that copying this site might take some time and create a full duplicate.'**
+  /// **'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.'**
   String get copySiteConfirmMessage;
 
   /// No description provided for @errorAssigningUser.

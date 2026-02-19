@@ -246,6 +246,10 @@
   },
   "processingImport": "Elaborazione importazione in corso, può richiedere fino a 10 minuti. Attendere e rimanere su questa schermata...",
   "userMustBeSignedIn": "L'utente deve essere autenticato per importare il sito",
+  "copySiteTitle": "Copia sito",
+  "copySiteTooltip": "Copia sito",
+  "copySiteConfirmTitle": "Conferma copia sito",
+  "copySiteConfirmMessage": "La copia del sito creerà un sito duplicato privato per te. Tieni presente che la copia dei file multimediali potrebbe richiedere del tempo. Puoi modificare il nome del nuovo sito e aggiungere membri una volta completata la copia.",
   "errorImportingSite": "Errore durante l'importazione del sito: {error}",
   "@errorImportingSite": {
     "placeholders": {

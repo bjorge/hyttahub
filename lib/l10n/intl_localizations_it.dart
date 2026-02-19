@@ -611,17 +611,17 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   }
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Copia sito';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Copia sito';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Conferma copia sito';
 
   @override
   String get copySiteConfirmMessage =>
-      'I understand that copying this site might take some time and create a full duplicate.';
+      'La copia del sito creerà un sito duplicato privato per te. Tieni presente che la copia dei file multimediali potrebbe richiedere del tempo. Puoi modificare il nome del nuovo sito e aggiungere membri una volta completata la copia.';
 
   @override
   String errorAssigningUser(String error) {
