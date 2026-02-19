@@ -1378,6 +1378,66 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Refresh'**
   String get refresh;
+
+  /// No description provided for @eventSiteCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Created: {siteName}'**
+  String eventSiteCreated(String siteName);
+
+  /// No description provided for @eventAddedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Added Member: {memberName}'**
+  String eventAddedMember(String memberName);
+
+  /// No description provided for @eventRenamedSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Renamed Site: {siteName}'**
+  String eventRenamedSite(String siteName);
+
+  /// No description provided for @eventRemovedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed Member: {memberId}'**
+  String eventRemovedMember(int memberId);
+
+  /// No description provided for @eventMemberLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Left: {memberId}'**
+  String eventMemberLeft(int memberId);
+
+  /// No description provided for @eventRestoredMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Restored Member: {memberName}'**
+  String eventRestoredMember(String memberName);
+
+  /// No description provided for @eventUpdatedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Member: {memberName}'**
+  String eventUpdatedMember(String memberName);
+
+  /// No description provided for @eventSiteCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Site Copied/Imported'**
+  String get eventSiteCopied;
+
+  /// No description provided for @eventAppSpecific.
+  ///
+  /// In en, this message translates to:
+  /// **'App specific event'**
+  String get eventAppSpecific;
+
+  /// No description provided for @eventUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Event'**
+  String get eventUnknown;
 }
 
 class _HyttaHubLocalizationsDelegate

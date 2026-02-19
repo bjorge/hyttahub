@@ -13,6 +13,8 @@ import 'package:template/persistence/firebase_hyttahub_functions.dart';
 import 'package:template/persistence/firestore_hyttahub_storage.dart';
 import 'package:template/persistence/firebase_hyttahub_internal_storage.dart';
 import 'package:template/firebase_options.dart';
+import 'package:template/proto/app_events.pb.dart';
+import 'package:template/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -103,6 +105,23 @@ Future<void> main() async {
   HyttaHubOptions.appTitle = "HyttaHub Template";
   HyttaHubOptions.appVersion = appVersion;
   HyttaHubOptions.appBuildNumber = appBuildNumber;
+
+  HyttaHubOptions.appEventDescriptionBuilder = (context, siteEvent) {
+    if (!siteEvent.hasAppEvent()) return "App specific event";
+    
+    final appEvent = AppEvent.fromBuffer(siteEvent.appEvent.payload);
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return "App specific event";
+
+    if (appEvent.hasUpdateText()) return localizations.app_eventUpdateText(appEvent.updateText.value);
+    if (appEvent.hasUpdateCode()) return localizations.app_eventUpdateCode;
+    if (appEvent.hasUpdateCheckbox()) return localizations.app_eventUpdateCheckbox(appEvent.updateCheckbox.value.toString());
+    if (appEvent.hasUpdateDropdown()) return localizations.app_eventUpdateDropdown(appEvent.updateDropdown.value);
+    if (appEvent.hasUpdateList()) return localizations.app_eventUpdateList;
+    if (appEvent.hasUpdatePhoto()) return localizations.app_eventUpdatePhoto(appEvent.updatePhoto.name);
+    
+    return "App specific event";
+  };
 
   await PersistenceRegistry.initializePlatform(storage);
 

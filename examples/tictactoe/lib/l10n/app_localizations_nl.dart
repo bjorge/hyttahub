@@ -119,4 +119,17 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get app_accessDeniedMessage =>
       'You do not have permission to access this site';
+
+  @override
+  String app_eventMove(int player, int x, int y) {
+    return 'Player $player moved to ($x, $y)';
+  }
+
+  @override
+  String app_eventStartGame(String vsBot) {
+    return 'Started Game (vs Bot: $vsBot)';
+  }
+
+  @override
+  String get app_eventPlayAgain => 'Play Again';
 }

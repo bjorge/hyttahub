@@ -1,5 +1,6 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:flutter/widgets.dart';
 import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
@@ -9,6 +10,9 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 typedef AppReplay =
     AppReplayWrapper Function(SiteReplayBlocState siteReplay, SiteEvent event);
 
+typedef AppEventDescriptionBuilder = String Function(
+    BuildContext context, SiteEvent event);
+
 typedef SiteRoutePath = String Function(String siteId, String encodedEvent);
 typedef BaseSiteRoutePath = String Function(String siteId);
 
@@ -17,6 +21,8 @@ class HyttaHubOptions {
   static BaseSiteRoutePath? siteScreenRoute;
 
   static HyttaHubImplementation? implementation;
+
+  static AppEventDescriptionBuilder? appEventDescriptionBuilder;
 
   static String appTitle = '';
   static String appVersion = '';

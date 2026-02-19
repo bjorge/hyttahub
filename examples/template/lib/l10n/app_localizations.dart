@@ -301,6 +301,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to access this site'**
   String get app_accessDeniedMessage;
+
+  /// No description provided for @app_eventUpdateText.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Text: {value}'**
+  String app_eventUpdateText(String value);
+
+  /// No description provided for @app_eventUpdateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Code'**
+  String get app_eventUpdateCode;
+
+  /// No description provided for @app_eventUpdateCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Checkbox: {value}'**
+  String app_eventUpdateCheckbox(String value);
+
+  /// No description provided for @app_eventUpdateDropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Dropdown: {value}'**
+  String app_eventUpdateDropdown(String value);
+
+  /// No description provided for @app_eventUpdateList.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated List'**
+  String get app_eventUpdateList;
+
+  /// No description provided for @app_eventUpdatePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated Photo: {name}'**
+  String app_eventUpdatePhoto(String name);
 }
 
 class _AppLocalizationsDelegate

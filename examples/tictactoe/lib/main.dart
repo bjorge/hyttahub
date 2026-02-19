@@ -13,6 +13,8 @@ import 'package:tictactoe/persistence/firebase_hyttahub_auth.dart';
 import 'package:tictactoe/persistence/firebase_hyttahub_functions.dart';
 import 'package:tictactoe/persistence/firestore_hyttahub_storage.dart';
 import 'package:tictactoe/persistence/firebase_hyttahub_internal_storage.dart';
+import 'package:tictactoe/proto/app_events.pb.dart';
+import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -103,6 +105,20 @@ Future<void> main() async {
   HyttaHubOptions.appTitle = "Tic-Tac-Toe";
   HyttaHubOptions.appVersion = appVersion;
   HyttaHubOptions.appBuildNumber = appBuildNumber;
+
+  HyttaHubOptions.appEventDescriptionBuilder = (context, siteEvent) {
+    if (!siteEvent.hasAppEvent()) return "App specific event";
+    
+    final appEvent = AppEvent.fromBuffer(siteEvent.appEvent.payload);
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return "App specific event";
+
+    if (appEvent.hasMove()) return localizations.app_eventMove(appEvent.move.player, appEvent.move.x, appEvent.move.y);
+    if (appEvent.hasStartGame()) return localizations.app_eventStartGame(appEvent.startGame.vsBot.toString());
+    if (appEvent.hasPlayAgain()) return localizations.app_eventPlayAgain;
+    
+    return "App specific event";
+  };
 
   await PersistenceRegistry.initializePlatform(storage);
 

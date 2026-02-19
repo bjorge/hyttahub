@@ -119,4 +119,30 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get app_accessDeniedMessage =>
       'You do not have permission to access this site';
+
+  @override
+  String app_eventUpdateText(String value) {
+    return 'Updated Text: $value';
+  }
+
+  @override
+  String get app_eventUpdateCode => 'Updated Code';
+
+  @override
+  String app_eventUpdateCheckbox(String value) {
+    return 'Updated Checkbox: $value';
+  }
+
+  @override
+  String app_eventUpdateDropdown(String value) {
+    return 'Updated Dropdown: $value';
+  }
+
+  @override
+  String get app_eventUpdateList => 'Updated List';
+
+  @override
+  String app_eventUpdatePhoto(String name) {
+    return 'Updated Photo: $name';
+  }
 }

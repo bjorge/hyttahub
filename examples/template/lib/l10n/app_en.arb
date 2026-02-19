@@ -67,5 +67,39 @@
   "app_editSite": "Edit Site",
   "app_errorTitle": "Error",
   "app_accessDeniedTitle": "Access Denied",
-  "app_accessDeniedMessage": "You do not have permission to access this site"
+  "app_accessDeniedMessage": "You do not have permission to access this site",
+  "app_eventUpdateText": "Updated Text: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Updated Code",
+  "app_eventUpdateCheckbox": "Updated Checkbox: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Updated Dropdown: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Updated List",
+  "app_eventUpdatePhoto": "Updated Photo: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

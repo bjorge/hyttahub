@@ -728,4 +728,48 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
 
   @override
   String get refresh => 'Aggiorna';
+
+  @override
+  String eventSiteCreated(String siteName) {
+    return 'Site Created: $siteName';
+  }
+
+  @override
+  String eventAddedMember(String memberName) {
+    return 'Added Member: $memberName';
+  }
+
+  @override
+  String eventRenamedSite(String siteName) {
+    return 'Renamed Site: $siteName';
+  }
+
+  @override
+  String eventRemovedMember(int memberId) {
+    return 'Removed Member: $memberId';
+  }
+
+  @override
+  String eventMemberLeft(int memberId) {
+    return 'Member Left: $memberId';
+  }
+
+  @override
+  String eventRestoredMember(String memberName) {
+    return 'Restored Member: $memberName';
+  }
+
+  @override
+  String eventUpdatedMember(String memberName) {
+    return 'Updated Member: $memberName';
+  }
+
+  @override
+  String get eventSiteCopied => 'Site Copied/Imported';
+
+  @override
+  String get eventAppSpecific => 'App specific event';
+
+  @override
+  String get eventUnknown => 'Unknown Event';
 }

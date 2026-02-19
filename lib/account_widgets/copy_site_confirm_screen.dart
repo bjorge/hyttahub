@@ -96,17 +96,22 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     }
   }
 
-  String _getEventDescription(SiteEvent event) {
-    if (event.hasNewSite()) return "Site Created: ${event.newSite.siteName}";
-    if (event.hasAddMember()) return "Added Member: ${event.addMember.memberName}";
-    if (event.hasUpdateSiteName()) return "Renamed Site: ${event.updateSiteName.name}";
-    if (event.hasRemoveMember()) return "Removed Member (${event.removeMember.memberId})";
-    if (event.hasLeaveSite()) return "Member Left (${event.leaveSite.memberId})";
-    if (event.hasRestoreMember()) return "Restored Member: ${event.restoreMember.memberName}";
-    if (event.hasUpdateMember()) return "Updated Member: ${event.updateMember.memberName}";
-    if (event.hasImportEvent()) return "Site Copied/Imported";
-    if (event.hasAppEvent()) return "App specific event";
-    return "Unknown Event";
+  String _getEventDescription(BuildContext context, SiteEvent event) {
+    if (event.hasNewSite()) return HyttaHubLocalizations.of(context)!.eventSiteCreated(event.newSite.siteName);
+    if (event.hasAddMember()) return HyttaHubLocalizations.of(context)!.eventAddedMember(event.addMember.memberName);
+    if (event.hasUpdateSiteName()) return HyttaHubLocalizations.of(context)!.eventRenamedSite(event.updateSiteName.name);
+    if (event.hasRemoveMember()) return HyttaHubLocalizations.of(context)!.eventRemovedMember(event.removeMember.memberId);
+    if (event.hasLeaveSite()) return HyttaHubLocalizations.of(context)!.eventMemberLeft(event.leaveSite.memberId);
+    if (event.hasRestoreMember()) return HyttaHubLocalizations.of(context)!.eventRestoredMember(event.restoreMember.memberName);
+    if (event.hasUpdateMember()) return HyttaHubLocalizations.of(context)!.eventUpdatedMember(event.updateMember.memberName);
+    if (event.hasImportEvent()) return HyttaHubLocalizations.of(context)!.eventSiteCopied;
+    if (event.hasAppEvent()) {
+      if (HyttaHubOptions.appEventDescriptionBuilder != null) {
+        return HyttaHubOptions.appEventDescriptionBuilder!(context, event);
+      }
+      return HyttaHubLocalizations.of(context)!.eventAppSpecific;
+    }
+    return HyttaHubLocalizations.of(context)!.eventUnknown;
   }
 
   @override
@@ -211,7 +216,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
                               }
                             },
                             title: Text("Version $version"),
-                            subtitle: Text("Event: ${_getEventDescription(decodedEvents[version]!)}"),
+                            subtitle: Text("Event: ${_getEventDescription(context, decodedEvents[version]!)}"),
                           ),
                         ],
                       );

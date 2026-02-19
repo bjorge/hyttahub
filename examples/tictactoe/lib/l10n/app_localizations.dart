@@ -301,6 +301,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to access this site'**
   String get app_accessDeniedMessage;
+
+  /// No description provided for @app_eventMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Player {player} moved to ({x}, {y})'**
+  String app_eventMove(int player, int x, int y);
+
+  /// No description provided for @app_eventStartGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Started Game (vs Bot: {vsBot})'**
+  String app_eventStartGame(String vsBot);
+
+  /// No description provided for @app_eventPlayAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Again'**
+  String get app_eventPlayAgain;
 }
 
 class _AppLocalizationsDelegate
