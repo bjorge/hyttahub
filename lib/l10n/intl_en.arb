@@ -254,6 +254,29 @@
       }
     }
   },
+  "copySiteTitle": "Copy Site",
+  "@copySiteTitle": {
+    "description": "Title for the Copy Site dialog option."
+  },
+  "copySiteTooltip": "Copy Site",
+  "@copySiteTooltip": {
+    "description": "Tooltip for the copy site button."
+  },
+  "copySiteConfirmTitle": "Copy Site Confirmation",
+  "@copySiteConfirmTitle": {
+    "description": "Title for the copy site confirmation screen."
+  },
+  "copySiteConfirmMessage": "I understand that copying this site might take some time and create a full duplicate.",
+  "@copySiteConfirmMessage": {
+    "description": "Message for the copy site confirmation."
+  },
+  "@errorImportingSite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "errorAssigningUser": "Error assigning user: {error}",
   "@errorAssigningUser": {
     "placeholders": {

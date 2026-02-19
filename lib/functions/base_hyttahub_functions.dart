@@ -9,6 +9,12 @@ abstract class BaseHyttaHubFunctions {
     required String appName,
   });
 
+  Future<Map<String, dynamic>> copySite({
+    required String siteId,
+    required String appName,
+  });
+
+
   Future<void> assignUserToImportedSite({
     required String siteId,
     required String memberId,

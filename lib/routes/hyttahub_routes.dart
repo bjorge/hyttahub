@@ -12,6 +12,8 @@ import 'package:hyttahub/account_widgets/join_site_screen.dart';
 import 'package:hyttahub/account_widgets/manage_sites_screen.dart';
 import 'package:hyttahub/account_widgets/reorder_sites_screen.dart';
 import 'package:hyttahub/account_widgets/leave_site_screen.dart';
+import 'package:hyttahub/account_widgets/copy_site_screen.dart';
+import 'package:hyttahub/account_widgets/copy_site_confirm_screen.dart';
 import 'package:hyttahub/common_widgets/unimplemented_screen.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
@@ -538,6 +540,42 @@ class RemoveSiteRoute extends GoRoute {
   static final String fullPath = '${ManageSitesRoute.fullPath}/$pathSegment';
 }
 
+/// A route for copying sites.
+class CopySiteRoute extends GoRoute {
+  /// Creates an [CopySiteRoute].
+  CopySiteRoute({required super.routes})
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          return const CopySiteScreen();
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'copysite';
+
+  /// The full path to this route.
+  static final String fullPath = '${AccountScreenRoute.fullPath}/$pathSegment';
+}
+
+class CopySiteConfirmRoute extends GoRoute {
+  /// Creates an [CopySiteConfirmRoute].
+  CopySiteConfirmRoute()
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          return CopySiteConfirmScreen(siteId: siteId);
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'copysiteconfirm/:siteId';
+
+  /// The full path to this route.
+  static String fullPath({required String siteId}) => '${CopySiteRoute.fullPath}/copysiteconfirm/$siteId';
+}
+
 class ReorderSitesRoute extends GoRoute {
   /// Creates an [ReorderSitesRoute].
   ReorderSitesRoute()
@@ -913,6 +951,8 @@ final selectAdminRoute = SelectAdminRoute();
 final importSiteRoute = ImportSiteRoute(routes: [selectAdminRoute]);
 
 final manageSitesRoute = ManageSitesRoute(routes: [removeSiteRoute]);
+final copySiteConfirmRoute = CopySiteConfirmRoute();
+final copySiteRoute = CopySiteRoute(routes: [copySiteConfirmRoute]);
 final reorderSitesRoute = ReorderSitesRoute();
 final accountOptionUnimplementedRoute = AccountOptionUnimplementedRoute();
 final removeAccountRoute = RemoveAccountRoute();
@@ -967,6 +1007,7 @@ final accountScreenRoute = AccountScreenRoute(
     importSiteRoute,
     joinSiteRoute,
     manageSitesRoute,
+    copySiteRoute,
     reorderSitesRoute,
     termsDisplayRoute,
     privacyDisplayRoute,

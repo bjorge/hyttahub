@@ -604,6 +604,19 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   }
 
   @override
+  String get copySiteTitle => 'Copy Site';
+
+  @override
+  String get copySiteTooltip => 'Copy Site';
+
+  @override
+  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+
+  @override
+  String get copySiteConfirmMessage =>
+      'I understand that copying this site might take some time and create a full duplicate.';
+
+  @override
   String errorAssigningUser(String error) {
     return 'Feil ved tildeling av bruker: $error';
   }

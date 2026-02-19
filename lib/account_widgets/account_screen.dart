@@ -205,6 +205,15 @@ class AccountSettingsButton extends StatelessWidget {
                 SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(dialogContext);
+                    context.push(CopySiteRoute.fullPath);
+                  },
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.copySiteTitle,
+                  ),
+                ),
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
                     final submmitValue = SubmitAccountEvent(
                       event: AccountEvent(
                         version: accountState.nextVersion,

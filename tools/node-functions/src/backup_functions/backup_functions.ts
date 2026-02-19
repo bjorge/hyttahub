@@ -967,3 +967,141 @@ export const assignUserToImportedSite = onCall({ cors: true }, async (request) =
 
   return { success: true };
 });
+
+export const copySite = onCall({
+  cors: true,
+  memory: '4GiB',
+  timeoutSeconds: 540,
+}, async (request) => {
+  logger.info("copySite function called");
+
+  const uid = request.auth?.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "User must be signed in");
+  }
+
+  const { appName, siteId: oldSiteId } = request.data;
+  const email = typeof request.auth?.token?.email === "string" ? request.auth.token.email : undefined;
+
+  if (!email) {
+    throw new HttpsError("unauthenticated", "User email is required");
+  }
+
+  // 1. Verify user is in old site's site_users
+  const oldSiteUserRef = admin.firestore().collection(firebaseSiteUsersPath(appName, oldSiteId)).doc(email);
+  const oldSiteUserDoc = await oldSiteUserRef.get();
+  if (!oldSiteUserDoc.exists) {
+    throw new HttpsError("permission-denied", "User is not a member of the site to copy");
+  }
+  const fbUserIdValue = oldSiteUserDoc.data()?.[fbUserId];
+
+  const newSiteId = generateId();
+  const db = admin.firestore();
+  const bucket = admin.storage().bucket();
+
+  // 2. Copy events
+  const oldEventsRef = db.collection(firebaseSiteEventsPath(appName, oldSiteId));
+  const newEventsRef = db.collection(firebaseSiteEventsPath(appName, newSiteId));
+  const oldEventsSnapshot = await oldEventsRef.get();
+
+  let lastVersion = 0;
+  // Firestore batches can only have 500 operations.
+  const batchArray: admin.firestore.WriteBatch[] = [db.batch()];
+  let operationCounter = 0;
+
+  oldEventsSnapshot.docs.forEach((doc) => {
+    const data = doc.data();
+    const version = data[fbVersion];
+    if (typeof version === "number" && version > lastVersion) {
+      lastVersion = version;
+    }
+    
+    // add to batch
+    const batchIndex = Math.floor(operationCounter / 400);
+    if (batchArray.length <= batchIndex) {
+      batchArray.push(db.batch());
+    }
+    batchArray[batchIndex].set(newEventsRef.doc(doc.id), data);
+    operationCounter++;
+  });
+
+  // 3. Add ImportEvent (Copy Event) to new site
+  const newSiteEventVersion = lastVersion + 1;
+  const importSiteEvent = SiteEvent.create({
+    importEvent: SiteEvent_ImportEvent.create({}),
+    version: newSiteEventVersion,
+    author: Number(fbUserIdValue),
+  });
+  
+  const batchIndexEvent = Math.floor(operationCounter / 400);
+  if (batchArray.length <= batchIndexEvent) {
+    batchArray.push(db.batch());
+  }
+  batchArray[batchIndexEvent].set(newEventsRef.doc(newSiteEventVersion.toString()), {
+    [fbPayload]: Buffer.from(SiteEvent.encode(importSiteEvent).finish()).toString("base64"),
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
+    [fbVersion]: newSiteEventVersion,
+  });
+  operationCounter++;
+
+  // 4. Add current user to new site_users
+  const newUserRef = db.collection(firebaseSiteUsersPath(appName, newSiteId)).doc(email);
+  const batchIndexUser = Math.floor(operationCounter / 400);
+  if (batchArray.length <= batchIndexUser) {
+    batchArray.push(db.batch());
+  }
+  batchArray[batchIndexUser].set(newUserRef, {
+    [fbUserId]: fbUserIdValue,
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
+  });
+  operationCounter++;
+
+  // 5. Add joinSite event to account events
+  const accountEventsRef = db.collection(firebaseAccountEventsPath(appName, email));
+  const lastAccountEventSnapshot = await accountEventsRef.orderBy(fbVersion, "desc").limit(1).get();
+  let newAccountEventVersion = 1;
+  if (!lastAccountEventSnapshot.empty) {
+    const lastEventData = lastAccountEventSnapshot.docs[0].data();
+    if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
+      newAccountEventVersion = lastEventData[fbVersion] + 1;
+    }
+  }
+
+  const joinSiteEvent = AccountEvent.create({
+    joinSite: newSiteId,
+    version: newAccountEventVersion,
+  });
+  
+  const batchIndexAccount = Math.floor(operationCounter / 400);
+  if (batchArray.length <= batchIndexAccount) {
+    batchArray.push(db.batch());
+  }
+  batchArray[batchIndexAccount].set(accountEventsRef.doc(newAccountEventVersion.toString()), {
+    [fbPayload]: Buffer.from(AccountEvent.encode(joinSiteEvent).finish()).toString("base64"),
+    [fbTimeStamp]: FieldValue.serverTimestamp(),
+    [fbVersion]: newAccountEventVersion,
+  });
+
+  // Commit all batches
+  for (const batch of batchArray) {
+    await batch.commit();
+  }
+
+  logger.info(`Successfully created site copy metadata: ${newSiteId}`);
+
+  // 6. Copy storage items
+  const oldStoragePrefix = firebaseFilesPath(appName, oldSiteId, "");
+  const [files] = await bucket.getFiles({ prefix: oldStoragePrefix });
+  const copyPromises = [];
+  
+  // Note: For large sites, this might need batching, but we map it per file
+  for (const file of files) {
+    const relativePath = file.name.substring(oldStoragePrefix.length);
+    const newPath = firebaseFilesPath(appName, newSiteId, relativePath);
+    copyPromises.push(file.copy(bucket.file(newPath)));
+  }
+
+  await Promise.all(copyPromises);
+
+  return { siteId: newSiteId };
+});

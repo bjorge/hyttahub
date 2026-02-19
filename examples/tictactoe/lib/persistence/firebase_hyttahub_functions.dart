@@ -25,6 +25,24 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   }
 
   @override
+  Future<Map<String, dynamic>> copySite({
+    required String siteId,
+    required String appName,
+  }) async {
+    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+      'copySite',
+      options: HttpsCallableOptions(
+        timeout: const Duration(seconds: 540),
+      ),
+    );
+    final result = await callable.call(<String, dynamic>{
+      'siteId': siteId,
+      'appName': appName,
+    });
+    return Map<String, dynamic>.from(result.data);
+  }
+
+  @override
   Future<void> assignUserToImportedSite({
     required String siteId,
     required String memberId,

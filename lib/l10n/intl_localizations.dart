@@ -1193,6 +1193,30 @@ abstract class HyttaHubLocalizations {
   /// **'Error importing site: {error}'**
   String errorImportingSite(String error);
 
+  /// Title for the Copy Site dialog option.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Site'**
+  String get copySiteTitle;
+
+  /// Tooltip for the copy site button.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Site'**
+  String get copySiteTooltip;
+
+  /// Title for the copy site confirmation screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Site Confirmation'**
+  String get copySiteConfirmTitle;
+
+  /// Message for the copy site confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand that copying this site might take some time and create a full duplicate.'**
+  String get copySiteConfirmMessage;
+
   /// No description provided for @errorAssigningUser.
   ///
   /// In en, this message translates to:

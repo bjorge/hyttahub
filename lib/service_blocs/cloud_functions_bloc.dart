@@ -39,6 +39,25 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     }
   }
 
+  Future<Map<String, dynamic>> copySite(String siteId) async {
+    emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
+    try {
+      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
+      final result = await functions.copySite(
+        siteId: siteId,
+        appName: _appName,
+      );
+      emit(CloudFunctionsState()); // Clear loading state or emit success
+      return result;
+    } catch (e) {
+      emit(
+        CloudFunctionsState()
+          ..failure = CloudFunctionsFailure(error: e.toString()),
+      );
+      throw Exception('Failed to copy site: $e');
+    }
+  }
+
   Future<void> assignUserToImportedSite(String siteId, String memberId) async {
     try {
       final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
