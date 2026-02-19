@@ -45,6 +45,12 @@ String firebaseExportsPath(String siteId, String fileName) =>
 String firebaseArchivePath(String siteId) =>
     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archives/$siteId/archive.tar';
 
+String firebaseArchiveSiteEventsPath(String siteId) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archive_site_events/$siteId';
+
+String firebaseArchiveSiteFilesPath(String siteId) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archive_site_files/$siteId';
+
 // Document keys
 const fbUserId = 'u';
 const fbTimeStamp = 't';
