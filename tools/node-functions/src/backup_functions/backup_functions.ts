@@ -961,6 +961,7 @@ export const copySite = onCall({
   memory: '4GiB',
   timeoutSeconds: 540,
 }, async (request) => {
+  const startTime = Date.now();
   logger.info("copySite function called");
 
   const uid = request.auth?.uid;
@@ -1111,6 +1112,9 @@ export const copySite = onCall({
 
     pageToken = nextQuery?.pageToken;
   } while (pageToken);
+
+  const endTime = Date.now();
+  logger.info(`copySite completed in ${endTime - startTime}ms for site ${oldSiteId} -> ${newSiteId}`);
 
   return { siteId: newSiteId };
 });
