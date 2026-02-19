@@ -6,20 +6,8 @@ import { Readable } from "stream";
 import { SiteEvent, SiteEvent_ImportEvent, SiteEventRecord } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
 
-import {
-  fbPayload,
-  fbTimeStamp,
-  firebaseAccountEventsPath,
-  firebaseExportsPath,
-  firebaseSiteEventsPath,
-  firebaseSiteUsersPath,
-  isRunningInEmulator,
-  fbUserId,
-  fbVersion,
-  firebaseFilesPath,
-  firebaseArchivePath,
-  fbAppId,
-} from "../shared/constants";
+
+import { firebaseAccountEventsPath, firebaseExportsPath, firebaseSiteEventsPath, firebaseSiteUsersPath, isRunningInEmulator, fbUserId, fbVersion, firebaseFilesPath, firebaseArchivePath, fbAppId, fbPayload, fbTimeStamp } from "../shared/constants";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onDocumentWritten } from "firebase-functions/v2/firestore";
@@ -1099,17 +1087,30 @@ export const copySite = onCall({
 
   // 6. Copy storage items
   const oldStoragePrefix = firebaseFilesPath(appName, oldSiteId, "");
-  const [files] = await bucket.getFiles({ prefix: oldStoragePrefix });
-  const copyPromises = [];
-  
-  // Note: For large sites, this might need batching, but we map it per file
-  for (const file of files) {
-    const relativePath = file.name.substring(oldStoragePrefix.length);
-    const newPath = firebaseFilesPath(appName, newSiteId, relativePath);
-    copyPromises.push(file.copy(bucket.file(newPath)));
-  }
 
-  await Promise.all(copyPromises);
+  const query: any = { prefix: oldStoragePrefix, autoPaginate: false };
+  let pageToken: string | undefined;
+
+  do {
+    if (pageToken) {
+      query.pageToken = pageToken;
+    }
+
+    const [files, nextQuery] = await bucket.getFiles(query);
+    const copyPromises = [];
+
+    for (const file of files) {
+      const relativePath = file.name.substring(oldStoragePrefix.length);
+      const newPath = firebaseFilesPath(appName, newSiteId, relativePath);
+      copyPromises.push(file.copy(bucket.file(newPath)));
+    }
+
+    // Await the batch before moving to the next. 
+    // This caps concurrent HTTP connections and limits memory usage.
+    await Promise.all(copyPromises);
+
+    pageToken = nextQuery?.pageToken;
+  } while (pageToken);
 
   return { siteId: newSiteId };
 });
