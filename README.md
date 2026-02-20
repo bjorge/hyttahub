@@ -17,17 +17,23 @@ A serverless Flutter framework designed to be a solid starting point for new cas
 
 ## Features
 
--   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
--   **Service Status & Forced Upgrades:** The ability to set a minimum required application version or disable the service for maintenance, and communicate this to users.
--   **Account Deletion:** A clear, user-accessible path for account deletion.
--   **Localization:** Support for multiple languages.
--   **Theming:** Dynamic light and dark mode support.
--   **Beta/Authorized Users:** Limit access to a set of users.
--   **Service Users:** Manage the users than can maintain policies and service status.
--   **Shared Site (Resource) Management:** The common application use case of members sharing a common resource, or "site", such as a set of photo albums, a calendar, etc., is supported. The framework includes adding and removing members from a site, and self-removal. Site members can be assigned administrative roles as well. Firebase rules ensure site privacy.
--   **Event and Replay Views:** Service, account and site events and replays can be viewed in the UI.
--   **Persistence-agnostic:** The framework is designed to support the providers you want (e.g., Firebase and Supabase for cloud storage) and switch between them at runtime. Also built-in memory and local storage are supported.
--   **Event Source Framework Replayed in the Client:** The common practice of having separate models for forms in the UI, network marshalling, database and business logic is eliminated, thus reducing boilerplate code and eliminating app logic on the server side. Some cloud functions are included to assist in cleanup upon account deletion. Events are persisted on the client thus reducing significantly service queries.
+-   **GDPR and App Store Compliance**
+    -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
+    -   **Account Deletion:** A clear, user-accessible path for account deletion.
+    -   **Data Access:** Users can copy and export their complete event streams.
+-   **Service**
+    -   **Service Status & Forced Upgrades:** The ability to set a minimum required application version or disable the service for maintenance, and communicate this to users.
+    -   **Service Users:** Manage the users than can maintain policies and service status.
+    -   **Beta/Authorized Users:** Limit access to a set of regular users.
+-   **App Appearance & Personalization**
+    -   **Localization:** Support for multiple languages.
+    -   **Theming:** Dynamic light and dark mode support.
+-   **Collaboration & Core Features**
+    -   **Shared Site (Resource) Management:** The common application use case of members sharing a common resource, or "site", such as a set of photo albums, a calendar, etc., is supported. The framework includes adding and removing members from a site, and self-removal. Site members can be assigned administrative roles as well. Firebase rules ensure site privacy.
+-   **Clean Architecture**
+    -   **Event Source Framework Replayed in the Client:** The common practice of having separate models for forms in the UI, network marshalling, database and business logic is eliminated, thus reducing boilerplate code and eliminating app logic on the server side. Some cloud functions are included to assist in cleanup upon account deletion. Events are persisted on the client thus reducing significantly service queries.
+    -   **Event and Replay Views:** Service, account and site events and replays can be viewed in the UI, assisting in debugging.
+    -   **Persistence-agnostic:** The framework is designed to support the providers you want (e.g., Firebase and Supabase for cloud storage) and switch between them at runtime. Also built-in memory and local storage are supported.
 
 ## Usage
 
@@ -56,63 +62,9 @@ flutter run -d chrome
 
 ### Persistence Registration
 
-HyttaHub is persistence-agnostic and uses a dynamic registration system. This allows you to support multiple providers for the same storage type (e.g., both Firebase and Supabase for cloud storage) and switch between them at runtime.
+HyttaHub is persistence-agnostic and uses a dynamic registration system. 
 
-In your application's `main.dart`, register your implementations using `PersistenceRegistry` before calling `initializeHyttaHub`:
-
-```dart
-import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
-import 'package:hyttahub/utilities/persistence_registries.dart';
-
-void registerPersistence() {
-  // Register a cloud implementation
-  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
-    id: 'firebase',
-    name: 'Firebase Cloud',
-    type: StorageEnum.cloud,
-    storageBuilder: () => FirestoreHyttaHubStorage(),
-    authBuilder: () => FirebaseHyttaHubAuth(),
-    functionsBuilder: () => FirebaseHyttaHubFunctions(),
-    internalStorageBuilder: () => FirebaseHyttaHubInternalStorage(),
-  ));
-
-  // Register built-in providers (Memory/Local) to make them selectable in the UI
-  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
-    id: 'memory',
-    name: 'In-Memory',
-    type: StorageEnum.memory,
-  ));
-
-  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
-    id: 'local',
-    name: 'Local Storage',
-    type: StorageEnum.local,
-  ));
-}
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  registerPersistence();
-  
-  // Load saved implementation ID from storage or default to 'memory'
-  final implementationId = 'memory'; 
-  final descriptor = PersistenceRegistry.getImplementation(implementationId);
-
-  await initializeHyttaHub(
-    implementation: HyttaHubImplementation(
-      storage: descriptor?.type ?? StorageEnum.memory,
-      implementationId: implementationId,
-      // ... other options
-    ),
-    // ...
-  );
-}
-```
-
-#### How it Works:
-- **Custom Builders**: If you provide `storageBuilder`, `authBuilder`, etc., the library will use your custom classes.
-- **Built-in Fallbacks**: If you omit the builders (as shown in the 'memory' and 'local' examples above), the library falls back to its internal `InMemoryHyttaHubStorage` and `HydratedHyttaHubStorage` defaults based on the `StorageEnum` type.
-- **Runtime Switching**: The `PlatformCubit` manages the active `implementationId`, allowing the user to switch providers through the `HyttaHubAppBarActions` picker.
+Please see [PERSISTENCE.md](PERSISTENCE.md) for details on how to register and use multiple storage providers.
 
 
 
