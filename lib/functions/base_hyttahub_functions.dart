@@ -22,23 +22,6 @@ abstract class BaseHyttaHubFunctions {
     required String appName,
   });
 
-  Future<Map<String, dynamic>> listExports({
-    required String siteId,
-    required String appName,
-  });
-
-  Future<void> deleteExport({
-    required String siteId,
-    required String appName,
-    required String fileName,
-  });
-
-  Future<Map<String, dynamic>> getExportDetails({
-    required String siteId,
-    required String appName,
-    required String fileName,
-  });
-
   Future<Map<String, dynamic>> listSiteFiles({
     required String siteId,
     required String appName,

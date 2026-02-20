@@ -199,11 +199,6 @@
   "passwordEmptyError": "La contraseña no puede estar vacía.",
   "passwordTooShortError": "La contraseña es demasiado corta.",
   "passwordTooLongError": "La contraseña es demasiado larga.",
-  "exportSiteTitle": "Exportar sitio",
-  "manageExportsTitle": "Gestionar exportaciones",
-  "exportDeletedSuccessfully": "Exportación eliminada con éxito",
-  "noExportsFound": "No se encontraron exportaciones.",
-  "failedToLoadExports": "Error al cargar las exportaciones.",
   "noEventsFound": "No se encontraron eventos.",
   "importSiteTitle": "Importar sitio",
   "selectFileButton": "Seleccionar archivo",
@@ -211,7 +206,6 @@
   "selectAdminTitle": "Seleccione su cuenta de administrador",
   "selectAdminInstruction": "Seleccione su cuenta de administrador de la lista de administradores del sitio importado.",
   "assignUserButton": "Asignar usuario",
-  "exportDetailsTitle": "Detalles de exportación",
   "largeFileWarning": "Archivo grande detectado ({sizeInMB}MB). La carga puede tardar varios minutos.",
   "@largeFileWarning": {
     "placeholders": {

@@ -19,16 +19,15 @@ A serverless Flutter framework designed to be a solid starting point for new cas
 
 -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
 -   **Service Status & Forced Upgrades:** The ability to set a minimum required application version or disable the service for maintenance, and communicate this to users.
--   **Account Deletion:** A clear, user-accessible path for account deletion, a common requirement.
+-   **Account Deletion:** A clear, user-accessible path for account deletion.
 -   **Localization:** Support for multiple languages.
 -   **Theming:** Dynamic light and dark mode support.
--   **Beta Users:** Limit access to a set of users.
+-   **Beta/Authorized Users:** Limit access to a set of users.
 -   **Service Users:** Manage the users than can maintain policies and service status.
 -   **Shared Site (Resource) Management:** The common application use case of members sharing a common resource, or "site", such as a set of photo albums, a calendar, etc., is supported. The framework includes adding and removing members from a site, and self-removal. Site members can be assigned administrative roles as well. Firebase rules ensure site privacy.
--   **Export & Import:** Export a site backup and import a site backup.
--   **Event Source Framework Replayed in the Client:** The common practice of having separate models for forms in the UI, network marshalling, database and business logic is eliminated, thus reducing boilerplate code and eliminating app logic on the server side. Some cloud functions are included to assist in cleanup upon account deletion. Events are persisted on the client thus reducing significantly service queries.
 -   **Event and Replay Views:** Service, account and site events and replays can be viewed in the UI.
--   **In Memory Cloud Functions:** Cloud functions can be run in memory, eliminating the need for a server (for development purposes)
+-   **Persistence-agnostic:** The framework is designed to support the providers you want (e.g., Firebase and Supabase for cloud storage) and switch between them at runtime. Also built-in memory and local storage are supported.
+-   **Event Source Framework Replayed in the Client:** The common practice of having separate models for forms in the UI, network marshalling, database and business logic is eliminated, thus reducing boilerplate code and eliminating app logic on the server side. Some cloud functions are included to assist in cleanup upon account deletion. Events are persisted on the client thus reducing significantly service queries.
 
 ## Usage
 
@@ -47,6 +46,12 @@ git clone git@github.com:bjorge/hyttahub.git
 cd hyttahub
 flutter pub get
 flutter test
+```
+### Running the Application
+
+```sh
+cd examples/template
+flutter run -d chrome
 ```
 
 ### Persistence Registration
@@ -109,12 +114,7 @@ Future<void> main() async {
 - **Built-in Fallbacks**: If you omit the builders (as shown in the 'memory' and 'local' examples above), the library falls back to its internal `InMemoryHyttaHubStorage` and `HydratedHyttaHubStorage` defaults based on the `StorageEnum` type.
 - **Runtime Switching**: The `PlatformCubit` manages the active `implementationId`, allowing the user to switch providers through the `HyttaHubAppBarActions` picker.
 
-### Running the Application
 
-```sh
-cd examples/tictactoe
-flutter run -d chrome
-```
 
 ## FAQ
 
@@ -130,11 +130,11 @@ flutter gen-l10n
 
 -   Install either docker or podman
 -   Follow the instructions in the [`README`](tools/firebase_emulator/README) in the `tools/firebase_emulator` directory to setup and start the emulator (it will also start the cloud functions in the emulator)
--   Edit the `lib/main.dart` file to use firebase instead of inMemory
--   In a separate terminal, cd to the examples/formproto folder and run:
+-   In a separate terminal, cd to the examples/template folder and run:
     ```sh
     flutter run -d chrome
     ```
+-   In the app, select "Firebase" as the storage implementation
 
 **How do I tag a new release?**
 

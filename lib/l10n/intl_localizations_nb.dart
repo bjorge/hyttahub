@@ -531,21 +531,6 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get passwordTooLongError => 'Passordet er for langt.';
 
   @override
-  String get exportSiteTitle => 'Eksporter sted';
-
-  @override
-  String get manageExportsTitle => 'Administrer eksport';
-
-  @override
-  String get exportDeletedSuccessfully => 'Eksport slettet';
-
-  @override
-  String get noExportsFound => 'Ingen eksport funnet.';
-
-  @override
-  String get failedToLoadExports => 'Kunne ikke laste eksportene.';
-
-  @override
   String get noEventsFound => 'Ingen hendelser funnet.';
 
   @override
@@ -566,9 +551,6 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get assignUserButton => 'Tildel bruker';
-
-  @override
-  String get exportDetailsTitle => 'Eksportdetaljer';
 
   @override
   String largeFileWarning(int sizeInMB) {

@@ -61,54 +61,6 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   }
 
   @override
-  Future<Map<String, dynamic>> listExports({
-    required String siteId,
-    required String appName,
-  }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'listExports',
-    );
-    final result = await callable.call(<String, dynamic>{
-      'siteId': siteId,
-      'appName': appName,
-    });
-    return Map<String, dynamic>.from(result.data);
-  }
-
-  @override
-  Future<void> deleteExport({
-    required String siteId,
-    required String appName,
-    required String fileName,
-  }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'deleteExport',
-    );
-    await callable.call(<String, dynamic>{
-      'siteId': siteId,
-      'appName': appName,
-      'fileName': fileName,
-    });
-  }
-
-  @override
-  Future<Map<String, dynamic>> getExportDetails({
-    required String siteId,
-    required String appName,
-    required String fileName,
-  }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'exportDetails',
-    );
-    final result = await callable.call(<String, dynamic>{
-      'siteId': siteId,
-      'appName': appName,
-      'fileName': fileName,
-    });
-    return Map<String, dynamic>.from(result.data);
-  }
-
-  @override
   Future<Map<String, dynamic>> listSiteFiles({
     required String siteId,
     required String appName,

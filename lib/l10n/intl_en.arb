@@ -199,11 +199,6 @@
   "passwordEmptyError": "Password cannot be empty.",
   "passwordTooShortError": "Password is too short.",
   "passwordTooLongError": "Password is too long.",
-  "exportSiteTitle": "Export Site",
-  "manageExportsTitle": "Manage Exports",
-  "exportDeletedSuccessfully": "Export deleted successfully",
-  "noExportsFound": "No exports found.",
-  "failedToLoadExports": "Failed to load exports.",
   "noEventsFound": "No events found.",
   "importSiteTitle": "Import Site",
   "selectFileButton": "Select File",
@@ -211,7 +206,6 @@
   "selectAdminTitle": "Select Your Admin Account",
   "selectAdminInstruction": "Please select your administrator account from the list of admins for the imported site.",
   "assignUserButton": "Assign User",
-  "exportDetailsTitle": "Export Details",
   "largeFileWarning": "Large file detected ({sizeInMB}MB). Upload may take several minutes.",
   "@largeFileWarning": {
     "placeholders": {

@@ -41,20 +41,6 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
     SimpleDialogOption(
       onPressed: () {
         Navigator.pop(dialogContext);
-        context.push(ExportSiteRoute.fullPath(siteId: widgetSiteId));
-      },
-      child: Text(HyttaHubLocalizations.of(context)!.exportSiteTitle),
-    ),
-    SimpleDialogOption(
-      onPressed: () {
-        Navigator.pop(dialogContext);
-        context.push(ManageExportsRoute.fullPath(siteId: widgetSiteId));
-      },
-      child: Text(HyttaHubLocalizations.of(context)!.manageExportsTitle),
-    ),
-    SimpleDialogOption(
-      onPressed: () {
-        Navigator.pop(dialogContext);
         context.push(SiteMembersRoute.fullPath(siteId: widgetSiteId));
       },
       child: Text(HyttaHubLocalizations.of(context)!.manageSiteMembers),

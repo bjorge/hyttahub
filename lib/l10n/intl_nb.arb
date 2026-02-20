@@ -199,11 +199,6 @@
   "passwordEmptyError": "Passord kan ikke være tomt.",
   "passwordTooShortError": "Passordet er for kort.",
   "passwordTooLongError": "Passordet er for langt.",
-  "exportSiteTitle": "Eksporter sted",
-  "manageExportsTitle": "Administrer eksport",
-  "exportDeletedSuccessfully": "Eksport slettet",
-  "noExportsFound": "Ingen eksport funnet.",
-  "failedToLoadExports": "Kunne ikke laste eksportene.",
   "noEventsFound": "Ingen hendelser funnet.",
   "importSiteTitle": "Importer sted",
   "selectFileButton": "Velg fil",
@@ -211,7 +206,6 @@
   "selectAdminTitle": "Velg din administrator-konto",
   "selectAdminInstruction": "Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.",
   "assignUserButton": "Tildel bruker",
-  "exportDetailsTitle": "Eksportdetaljer",
   "largeFileWarning": "Stor fil oppdaget ({sizeInMB}MB). Opplasting kan ta flere minutter.",
   "@largeFileWarning": {
     "placeholders": {

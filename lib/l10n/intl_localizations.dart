@@ -1073,36 +1073,6 @@ abstract class HyttaHubLocalizations {
   /// **'Password is too long.'**
   String get passwordTooLongError;
 
-  /// No description provided for @exportSiteTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Site'**
-  String get exportSiteTitle;
-
-  /// No description provided for @manageExportsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Exports'**
-  String get manageExportsTitle;
-
-  /// No description provided for @exportDeletedSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Export deleted successfully'**
-  String get exportDeletedSuccessfully;
-
-  /// No description provided for @noExportsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No exports found.'**
-  String get noExportsFound;
-
-  /// No description provided for @failedToLoadExports.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load exports.'**
-  String get failedToLoadExports;
-
   /// No description provided for @noEventsFound.
   ///
   /// In en, this message translates to:
@@ -1144,12 +1114,6 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Assign User'**
   String get assignUserButton;
-
-  /// No description provided for @exportDetailsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Details'**
-  String get exportDetailsTitle;
 
   /// No description provided for @largeFileWarning.
   ///

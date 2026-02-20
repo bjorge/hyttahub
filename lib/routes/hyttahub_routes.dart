@@ -56,9 +56,6 @@ import 'package:hyttahub/site_widgets/site_emails_display.dart';
 import 'package:hyttahub/site_widgets/site_events_display.dart';
 import 'package:hyttahub/site_widgets/update_member_screen.dart';
 import 'package:hyttahub/site_widgets/site_members_screen.dart';
-import 'package:hyttahub/site_widgets/export_site_screen.dart';
-import 'package:hyttahub/site_widgets/manage_exports_screen.dart';
-import 'package:hyttahub/site_widgets/export_details_screen.dart';
 import 'package:hyttahub/site_widgets/site_info_screen.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
 
@@ -279,25 +276,6 @@ class SiteMembersRoute extends GoRoute {
       '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
 }
 
-class ExportSiteRoute extends GoRoute {
-  /// Creates an [ExportSiteRoute].
-  ExportSiteRoute()
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final siteId = state.pathParameters['siteId'] ?? '';
-          return ExportSiteScreen(siteId: siteId);
-        },
-      );
-
-  /// The path segment for this route.
-  static const String pathSegment = 'export';
-
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
-}
-
 /// A route for renaming a site.
 class RenameSiteRoute extends GoRoute {
   /// Creates a [RenameSiteRoute].
@@ -373,45 +351,6 @@ class SiteInfoRoute extends GoRoute {
   /// A builder for the full path to this route.
   static String fullPath({required String siteId}) =>
       '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
-}
-
-class ManageExportsRoute extends GoRoute {
-  /// Creates a [ManageExportsRoute].
-  ManageExportsRoute({super.routes})
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final siteId = state.pathParameters['siteId'] ?? '';
-          return ManageExportsScreen(siteId: siteId);
-        },
-      );
-
-  /// The path segment for this route.
-  static const String pathSegment = 'manage_exports';
-
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
-}
-
-class ExportDetailsRoute extends GoRoute {
-  /// Creates an [ExportDetailsRoute].
-  ExportDetailsRoute()
-    : super(
-        path: pathSegment,
-        builder: (BuildContext context, GoRouterState state) {
-          final siteId = state.pathParameters['siteId'] ?? '';
-          final fileName = state.pathParameters['fileName'] ?? '';
-          return ExportDetailsScreen(siteId: siteId, fileName: fileName);
-        },
-      );
-
-  /// The path segment for this route.
-  static const String pathSegment = 'details/:fileName';
-
-  /// A builder for the full path to this route.
-  static String fullPath({required String siteId, required String fileName}) =>
-      '${ManageExportsRoute.fullPath(siteId: siteId)}/details/$fileName';
 }
 
 class AddMemberRoute extends GoRoute {
@@ -940,10 +879,6 @@ class RestoreServiceAdminRoute extends GoRoute {
 final serviceUnimplementedRoute = ServiceUnimplementedRoute();
 final landingUnimplementedRoute = ServiceUnimplementedRoute();
 
-final exportDetailsRoute = ExportDetailsRoute();
-final exportSiteRoute = ExportSiteRoute();
-final manageExportsRoute = ManageExportsRoute(routes: [exportDetailsRoute]);
-
 final addSiteRoute = AddSiteRoute();
 final joinSiteRoute = JoinSiteRoute();
 final removeSiteRoute = RemoveSiteRoute();
@@ -1157,8 +1092,6 @@ final serviceLoginScreenRoute = ServiceLoginScreenRoute(
 
 final standardSiteScreenRoutes = [
   renameSiteRoute,
-  exportSiteRoute,
-  manageExportsRoute,
   siteMembersRoute,
   displaySiteRoute,
   siteEmailsDisplayRoute,

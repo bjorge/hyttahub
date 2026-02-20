@@ -530,21 +530,6 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get passwordTooLongError => 'Password is too long.';
 
   @override
-  String get exportSiteTitle => 'Export Site';
-
-  @override
-  String get manageExportsTitle => 'Manage Exports';
-
-  @override
-  String get exportDeletedSuccessfully => 'Export deleted successfully';
-
-  @override
-  String get noExportsFound => 'No exports found.';
-
-  @override
-  String get failedToLoadExports => 'Failed to load exports.';
-
-  @override
   String get noEventsFound => 'No events found.';
 
   @override
@@ -565,9 +550,6 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String get assignUserButton => 'Assign User';
-
-  @override
-  String get exportDetailsTitle => 'Export Details';
 
   @override
   String largeFileWarning(int sizeInMB) {
