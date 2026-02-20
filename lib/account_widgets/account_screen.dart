@@ -179,24 +179,6 @@ class AccountSettingsButton extends StatelessWidget {
                 SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(dialogContext);
-                    context.push(ManageSitesRoute.fullPath);
-                  },
-                  child: Text(
-                    HyttaHubLocalizations.of(context)!.manageSitesTitle,
-                  ),
-                ),
-                SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
-                    context.push(CopySiteRoute.fullPath);
-                  },
-                  child: Text(
-                    HyttaHubLocalizations.of(context)!.copySiteTitle,
-                  ),
-                ),
-                SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
                     final submmitValue = SubmitAccountEvent(
                       event: AccountEvent(
                         version: accountState.nextVersion,
@@ -216,6 +198,24 @@ class AccountSettingsButton extends StatelessWidget {
                   },
                   child: Text(
                     HyttaHubLocalizations.of(context)!.reorderSitesTitle,
+                  ),
+                ),
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    context.push(CopySiteRoute.fullPath);
+                  },
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.copySiteTitle,
+                  ),
+                ),
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    context.push(ManageSitesRoute.fullPath);
+                  },
+                  child: Text(
+                    HyttaHubLocalizations.of(context)!.manageSitesTitle,
                   ),
                 ),
                 Divider(),
