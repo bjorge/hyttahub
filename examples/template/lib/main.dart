@@ -87,7 +87,7 @@ Future<void> main() async {
   );
 
   const firebaseRootCollection = 'template';
-  final savedPlatform = HydratedBloc.storage.read('PlatformCubit:platform:$firebaseRootCollection');
+  final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$firebaseRootCollection');
   final implementationId = savedPlatform != null 
     ? savedPlatform['implementationId'] as String? ?? 'memory'
     : 'memory';
