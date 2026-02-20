@@ -541,73 +541,21 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String get noEventsFound => 'Nessun evento trovato.';
 
   @override
-  String get importSiteTitle => 'Importa Sito';
+  String get copySiteTitle => 'Copy Site';
 
   @override
-  String get selectFileButton => 'Seleziona File';
+  String get copySiteTooltip => 'Copy Site';
 
   @override
-  String get importButton => 'Importa';
-
-  @override
-  String get selectAdminTitle => 'Seleziona il tuo Account Amministratore';
-
-  @override
-  String get selectAdminInstruction =>
-      'Seleziona il tuo account amministratore dall\'elenco degli amministratori del sito importato.';
-
-  @override
-  String get assignUserButton => 'Assegna Utente';
-
-  @override
-  String largeFileWarning(int sizeInMB) {
-    return 'File di grandi dimensioni rilevato (${sizeInMB}MB). Il caricamento potrebbe richiedere diversi minuti.';
-  }
-
-  @override
-  String selectedFile(String fileName) {
-    return 'File selezionato: $fileName';
-  }
-
-  @override
-  String fileSizeLabel(int sizeInMB) {
-    return 'Dimensione: ${sizeInMB}MB';
-  }
-
-  @override
-  String uploadingProgress(String progress) {
-    return 'Caricamento: $progress%';
-  }
-
-  @override
-  String get processingImport =>
-      'Elaborazione importazione in corso, può richiedere fino a 10 minuti. Attendere e rimanere su questa schermata...';
-
-  @override
-  String get userMustBeSignedIn =>
-      'L\'utente deve essere autenticato per importare il sito';
-
-  @override
-  String errorImportingSite(String error) {
-    return 'Errore durante l\'importazione del sito: $error';
-  }
-
-  @override
-  String get copySiteTitle => 'Copia sito';
-
-  @override
-  String get copySiteTooltip => 'Copia sito';
-
-  @override
-  String get copySiteConfirmTitle => 'Conferma copia sito';
+  String get copySiteConfirmTitle => 'Copy Site Confirmation';
 
   @override
   String get copySiteConfirmMessage =>
-      'La copia del sito creerà un sito duplicato privato per te. Tieni presente che la copia dei file multimediali potrebbe richiedere del tempo. Puoi modificare il nome del nuovo sito e aggiungere membri una volta completata la copia.';
+      'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.';
 
   @override
   String errorAssigningUser(String error) {
-    return 'Errore durante l\'assegnazione dell\'utente: $error';
+    return 'Error assigning user: $error';
   }
 
   @override

@@ -200,54 +200,7 @@
   "passwordTooShortError": "Password is too short.",
   "passwordTooLongError": "Password is too long.",
   "noEventsFound": "No events found.",
-  "importSiteTitle": "Import Site",
-  "selectFileButton": "Select File",
-  "importButton": "Import",
-  "selectAdminTitle": "Select Your Admin Account",
-  "selectAdminInstruction": "Please select your administrator account from the list of admins for the imported site.",
-  "assignUserButton": "Assign User",
-  "largeFileWarning": "Large file detected ({sizeInMB}MB). Upload may take several minutes.",
-  "@largeFileWarning": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "selectedFile": "Selected file: {fileName}",
-  "@selectedFile": {
-    "placeholders": {
-      "fileName": {
-        "type": "String"
-      }
-    }
-  },
-  "fileSizeLabel": "Size: {sizeInMB}MB",
-  "@fileSizeLabel": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "uploadingProgress": "Uploading: {progress}%",
-  "@uploadingProgress": {
-    "placeholders": {
-      "progress": {
-        "type": "String"
-      }
-    }
-  },
-  "processingImport": "Processing import, this can take up to 10 minutes. Please wait and remain on this screen...",
-  "userMustBeSignedIn": "User must be signed in to import site",
-  "errorImportingSite": "Error importing site: {error}",
-  "@errorImportingSite": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+
   "copySiteTitle": "Copy Site",
   "@copySiteTitle": {
     "description": "Title for the Copy Site dialog option."

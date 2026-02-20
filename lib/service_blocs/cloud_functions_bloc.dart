@@ -19,21 +19,6 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
   String get _appName =>
       HyttaHubOptions.implementation?.firebaseRootCollection ?? '';
 
-  Future<Map<String, dynamic>> importSite({
-    String? base64Data,
-    String? storagePath,
-  }) async {
-    try {
-      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
-      return await functions.importSite(
-        base64Data: base64Data,
-        storagePath: storagePath,
-        appName: _appName,
-      );
-    } catch (e) {
-      throw Exception('Failed to import site: $e');
-    }
-  }
 
   Future<Map<String, dynamic>> copySite(String siteId, {int? upToVersion}) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
@@ -55,17 +40,6 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
     }
   }
 
-  Future<void> assignUserToImportedSite(String siteId, String memberId) async {
-    try {
-      final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
-      await functions.assignUserToImportedSite(
-        siteId: siteId,
-        memberId: memberId,
-        appName: _appName,
-      );
-    } catch (e) {
-      throw Exception('Failed to assign user to imported site: $e');
-    }
-  }
+
 
 }

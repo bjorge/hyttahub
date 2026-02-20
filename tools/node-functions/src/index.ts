@@ -11,8 +11,6 @@ export {
 } from "./file_functions/file_functions";
 
 export {
-  assignUserToImportedSite,
-  importSite,
   copySite,
 } from "./backup_functions/backup_functions";
 

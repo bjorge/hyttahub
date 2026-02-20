@@ -84,22 +84,6 @@ class AccountScreen extends StatelessWidget {
   }
 }
 
-class ImportSiteDialogOption extends StatelessWidget {
-  const ImportSiteDialogOption({super.key, required this.dialogContext});
-
-  final BuildContext dialogContext;
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialogOption(
-      onPressed: () {
-        Navigator.pop(dialogContext);
-        context.push(ImportSiteRoute.fullPath);
-      },
-      child: Text(HyttaHubLocalizations.of(context)!.importSiteTitle),
-    );
-  }
-}
 
 class AccountInitializingWidget extends StatefulWidget {
   const AccountInitializingWidget({super.key, required this.email});
@@ -188,7 +172,6 @@ class AccountSettingsButton extends StatelessWidget {
                   accountState: accountState,
                   dialogContext: dialogContext,
                 ),
-                ImportSiteDialogOption(dialogContext: dialogContext),
                 JoinSiteDialogOption(
                   accountState: accountState,
                   dialogContext: dialogContext,

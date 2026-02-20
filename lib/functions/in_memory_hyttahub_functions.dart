@@ -14,18 +14,6 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   final StorageEnum _type;
 
   InMemoryHyttaHubFunctions(this._type);
-
-  @override
-  Future<Map<String, dynamic>> importSite({
-    String? base64Data,
-    String? storagePath,
-    required String appName,
-  }) async {
-    // In-memory implementation of importSite does not unpack a tar archive.
-    // Instead, it returns a simulated empty site.
-    throw UnimplementedError('Importing a site is not supported in the in-memory environment.');
-  }
-
   @override
   Future<Map<String, dynamic>> copySite({
     required String siteId,
@@ -147,70 +135,6 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     return {
       'siteId': newSiteId,
     };
-  }
-
-
-  @override
-  Future<void> assignUserToImportedSite({
-    required String siteId,
-    required String memberId,
-    required String appName,
-  }) async {
-    final storage = HyttaHubStorageFactory.getStorage(_type);
-    final email = GetIt.instance<AuthBloc>().state.email;
-    
-    if (email.isEmpty) throw Exception('User not authenticated');
-
-    // 1. Add user to site_users
-    await storage.setDocument(
-      'hyttahub/$appName/sites/$siteId/site_users',
-      email,
-      {
-        fbUserId: int.parse(memberId),
-        fbTimeStamp: storage.serverTimestamp,
-      },
-    );
-
-    // 2. Add joinSite event to account_events
-    final accountPath = 'hyttahub/$appName/accounts/$email/account_events';
-    final accountEvents = await storage.getCollection(accountPath, orderBy: fbVersion, descending: true);
-    final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[fbVersion] as int) + 1;
-    
-    final joinSiteEvent = AccountEvent(
-      joinSite: siteId,
-      version: nextAccountVersion,
-    );
-    
-    await storage.setDocument(
-      accountPath,
-      nextAccountVersion.toString(),
-      {
-        fbPayload: base64Encode(joinSiteEvent.writeToBuffer()),
-        fbTimeStamp: storage.serverTimestamp,
-        fbVersion: nextAccountVersion,
-      },
-    );
-
-    // 3. Add importEvent to site_events
-    final sitePath = 'hyttahub/$appName/sites/$siteId/site_events';
-    final siteEvents = await storage.getCollection(sitePath, orderBy: fbVersion, descending: true);
-    final nextSiteVersion = siteEvents.isEmpty ? 1 : (siteEvents.first[fbVersion] as int) + 1;
-
-    final importSiteEvent = SiteEvent(
-      importEvent: SiteEvent_ImportEvent(),
-      version: nextSiteVersion,
-      author: int.parse(memberId),
-    );
-
-    await storage.setDocument(
-      sitePath,
-      nextSiteVersion.toString(),
-      {
-        fbPayload: base64Encode(importSiteEvent.writeToBuffer()),
-        fbTimeStamp: storage.serverTimestamp,
-        fbVersion: nextSiteVersion,
-      },
-    );
   }
 
   @override

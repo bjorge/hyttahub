@@ -5,26 +5,6 @@ import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 
 class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   @override
-  Future<Map<String, dynamic>> importSite({
-    String? base64Data,
-    String? storagePath,
-    required String appName,
-  }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'importSite',
-      options: HttpsCallableOptions(
-        timeout: const Duration(seconds: 540),
-      ),
-    );
-    final result = await callable.call(<String, dynamic>{
-      if (base64Data != null) 'base64Data': base64Data,
-      if (storagePath != null) 'storagePath': storagePath,
-      'appName': appName,
-    });
-    return Map<String, dynamic>.from(result.data);
-  }
-
-  @override
   Future<Map<String, dynamic>> copySite({
     required String siteId,
     required String appName,
@@ -42,22 +22,6 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
       if (upToVersion != null) 'upToVersion': upToVersion,
     });
     return Map<String, dynamic>.from(result.data);
-  }
-
-  @override
-  Future<void> assignUserToImportedSite({
-    required String siteId,
-    required String memberId,
-    required String appName,
-  }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'assignUserToImportedSite',
-    );
-    await callable.call(<String, dynamic>{
-      'siteId': siteId,
-      'memberId': memberId,
-      'appName': appName,
-    });
   }
 
   @override

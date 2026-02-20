@@ -24,7 +24,6 @@ dependencies:
   protoc_plugin: ^22.5.0
   get_it: ^8.0.3
   crypto: ^3.0.3
-  file_picker: ^10.2.0
 
 dev_dependencies:
   flutter_test:

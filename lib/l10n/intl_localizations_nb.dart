@@ -534,73 +534,21 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get noEventsFound => 'Ingen hendelser funnet.';
 
   @override
-  String get importSiteTitle => 'Importer sted';
+  String get copySiteTitle => 'Copy Site';
 
   @override
-  String get selectFileButton => 'Velg fil';
+  String get copySiteTooltip => 'Copy Site';
 
   @override
-  String get importButton => 'Importer';
-
-  @override
-  String get selectAdminTitle => 'Velg din administrator-konto';
-
-  @override
-  String get selectAdminInstruction =>
-      'Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.';
-
-  @override
-  String get assignUserButton => 'Tildel bruker';
-
-  @override
-  String largeFileWarning(int sizeInMB) {
-    return 'Stor fil oppdaget (${sizeInMB}MB). Opplasting kan ta flere minutter.';
-  }
-
-  @override
-  String selectedFile(String fileName) {
-    return 'Valgt fil: $fileName';
-  }
-
-  @override
-  String fileSizeLabel(int sizeInMB) {
-    return 'Størrelse: ${sizeInMB}MB';
-  }
-
-  @override
-  String uploadingProgress(String progress) {
-    return 'Laster opp: $progress%';
-  }
-
-  @override
-  String get processingImport =>
-      'Behandler import, dette kan ta opptil 10 minutter. Vennligst vent og bli på denne skjermen...';
-
-  @override
-  String get userMustBeSignedIn =>
-      'Bruker må være pålogget for å importere sted';
-
-  @override
-  String errorImportingSite(String error) {
-    return 'Feil ved import av sted: $error';
-  }
-
-  @override
-  String get copySiteTitle => 'Kopier nettsted';
-
-  @override
-  String get copySiteTooltip => 'Kopier nettsted';
-
-  @override
-  String get copySiteConfirmTitle => 'Bekreft kopiering av nettsted';
+  String get copySiteConfirmTitle => 'Copy Site Confirmation';
 
   @override
   String get copySiteConfirmMessage =>
-      'Kopiering av nettstedet vil opprette et privat duplikat for deg. Vær oppmerksom på at kopiering av mediefiler kan ta litt tid. Du kan redigere navnet på det nye nettstedet og legge til medlemmer når kopieringen er fullført.';
+      'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.';
 
   @override
   String errorAssigningUser(String error) {
-    return 'Feil ved tildeling av bruker: $error';
+    return 'Error assigning user: $error';
   }
 
   @override

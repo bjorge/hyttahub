@@ -200,66 +200,7 @@
   "passwordTooShortError": "Passordet er for kort.",
   "passwordTooLongError": "Passordet er for langt.",
   "noEventsFound": "Ingen hendelser funnet.",
-  "importSiteTitle": "Importer sted",
-  "selectFileButton": "Velg fil",
-  "importButton": "Importer",
-  "selectAdminTitle": "Velg din administrator-konto",
-  "selectAdminInstruction": "Velg administrator-kontoen din fra listen over administratorer for det importerte stedet.",
-  "assignUserButton": "Tildel bruker",
-  "largeFileWarning": "Stor fil oppdaget ({sizeInMB}MB). Opplasting kan ta flere minutter.",
-  "@largeFileWarning": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "selectedFile": "Valgt fil: {fileName}",
-  "@selectedFile": {
-    "placeholders": {
-      "fileName": {
-        "type": "String"
-      }
-    }
-  },
-  "fileSizeLabel": "Størrelse: {sizeInMB}MB",
-  "@fileSizeLabel": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "uploadingProgress": "Laster opp: {progress}%",
-  "@uploadingProgress": {
-    "placeholders": {
-      "progress": {
-        "type": "String"
-      }
-    }
-  },
-  "processingImport": "Behandler import, dette kan ta opptil 10 minutter. Vennligst vent og bli på denne skjermen...",
-  "userMustBeSignedIn": "Bruker må være pålogget for å importere sted",
-  "copySiteTitle": "Kopier nettsted",
-  "copySiteTooltip": "Kopier nettsted",
-  "copySiteConfirmTitle": "Bekreft kopiering av nettsted",
-  "copySiteConfirmMessage": "Kopiering av nettstedet vil opprette et privat duplikat for deg. Vær oppmerksom på at kopiering av mediefiler kan ta litt tid. Du kan redigere navnet på det nye nettstedet og legge til medlemmer når kopieringen er fullført.",
-  "errorImportingSite": "Feil ved import av sted: {error}",
-  "@errorImportingSite": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "errorAssigningUser": "Feil ved tildeling av bruker: {error}",
-  "@errorAssigningUser": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+
   "selectLanguage": "Velg språk",
   "nightMode": "Nattmodus",
   "platform": "Plattform",

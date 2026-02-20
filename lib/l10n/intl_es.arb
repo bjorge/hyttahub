@@ -200,66 +200,7 @@
   "passwordTooShortError": "La contraseña es demasiado corta.",
   "passwordTooLongError": "La contraseña es demasiado larga.",
   "noEventsFound": "No se encontraron eventos.",
-  "importSiteTitle": "Importar sitio",
-  "selectFileButton": "Seleccionar archivo",
-  "importButton": "Importar",
-  "selectAdminTitle": "Seleccione su cuenta de administrador",
-  "selectAdminInstruction": "Seleccione su cuenta de administrador de la lista de administradores del sitio importado.",
-  "assignUserButton": "Asignar usuario",
-  "largeFileWarning": "Archivo grande detectado ({sizeInMB}MB). La carga puede tardar varios minutos.",
-  "@largeFileWarning": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "selectedFile": "Archivo seleccionado: {fileName}",
-  "@selectedFile": {
-    "placeholders": {
-      "fileName": {
-        "type": "String"
-      }
-    }
-  },
-  "fileSizeLabel": "Tamaño: {sizeInMB}MB",
-  "@fileSizeLabel": {
-    "placeholders": {
-      "sizeInMB": {
-        "type": "int"
-      }
-    }
-  },
-  "uploadingProgress": "Cargando: {progress}%",
-  "@uploadingProgress": {
-    "placeholders": {
-      "progress": {
-        "type": "String"
-      }
-    }
-  },
-  "processingImport": "Procesando importación, esto puede tardar hasta 10 minutos. Por favor espere y permanezca en esta pantalla...",
-  "userMustBeSignedIn": "El usuario debe haber iniciado sesión para importar el sitio",
-  "copySiteTitle": "Copiar sitio",
-  "copySiteTooltip": "Copiar sitio",
-  "copySiteConfirmTitle": "Confirmación de copia del sitio",
-  "copySiteConfirmMessage": "Copiar el sitio creará un sitio duplicado privado para ti. Ten en cuenta que copiar los archivos multimedia puede llevar algún tiempo. Puedes editar el nombre del nuevo sitio y añadir miembros una vez que la copia esté completa.",
-  "errorImportingSite": "Error al importar sitio: {error}",
-  "@errorImportingSite": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "errorAssigningUser": "Error al asignar usuario: {error}",
-  "@errorAssigningUser": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+
   "selectLanguage": "Seleccionar idioma",
   "nightMode": "Modo nocturno",
   "platform": "Plataforma",
