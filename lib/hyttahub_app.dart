@@ -11,7 +11,7 @@ import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:get_it/get_it.dart';
+
 
 /// A wrapper around [MaterialApp.router] that provides common HyttaHub BLoCs
 /// and handles platform-specific lifecycle management.
@@ -65,7 +65,7 @@ class HyttaHubApp extends StatelessWidget {
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(rootCollection)),
         BlocProvider<LanguageCubit>(create: (_) => LanguageCubit(rootCollection)),
         BlocProvider<PlatformCubit>(create: (_) => PlatformCubit(rootCollection)),
-        BlocProvider<AuthBloc>.value(value: GetIt.instance<AuthBloc>()),
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         ...additionalOuterProviders,
       ],
       child: BlocBuilder<PlatformCubit, String>(

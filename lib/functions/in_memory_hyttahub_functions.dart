@@ -1,8 +1,6 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:convert';
-import 'package:get_it/get_it.dart';
-import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
@@ -19,10 +17,11 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
     int? upToVersion,
+    String? mockUserEmail,
   }) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
     final newSiteId = _generateId();
-    final email = GetIt.instance<AuthBloc>().state.email;
+    final email = mockUserEmail ?? '';
     
     if (email.isEmpty) throw Exception('User not authenticated');
 

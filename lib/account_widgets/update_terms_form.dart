@@ -14,7 +14,6 @@ import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -40,7 +39,7 @@ class _UpdateTermsWidget extends State<UpdateTermsWidget> {
 
     return BlocProvider(
       create: (_) => AccountSubmitBloc(
-        GetIt.instance<AuthBloc>().state.email,
+        context.read<AuthBloc>().state.email,
         accountEvent,
       ),
       child: Form(

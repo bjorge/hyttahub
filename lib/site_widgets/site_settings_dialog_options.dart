@@ -6,7 +6,7 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
 
@@ -22,7 +22,7 @@ List<SimpleDialogOption> buildSiteSettingsDialogOptions(
       onPressed: () {
         Navigator.pop(dialogContext);
         final submmitValue = SubmitSiteEvent(
-          authorEmail: GetIt.instance<AuthBloc>().state.email,
+          authorEmail: context.read<AuthBloc>().state.email,
           event: SiteEvent(
             updateSiteName: SiteEvent_UpdateSiteName(name: siteState.name),
             version: siteState.nextVersion,

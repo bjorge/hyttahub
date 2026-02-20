@@ -13,7 +13,6 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class RemoveAccountScreen extends StatefulWidget {
@@ -33,10 +32,10 @@ class _RemoveAccountScreenState extends State<RemoveAccountScreen> {
     final initialSubmitEvent = AuthBlocEvent.fromBuffer(
       base64Url.decode(widget.event),
     );
-    final email = GetIt.instance<AuthBloc>().state.email;
+    final email = context.read<AuthBloc>().state.email;
 
     return BlocProvider<AuthSubmitBloc>(
-      create: (_) => AuthSubmitBloc(email, initialSubmitEvent)
+      create: (_) => AuthSubmitBloc(email, initialSubmitEvent, authBloc: context.read<AuthBloc>())
         ..payloadChanged = true
         ..isFormValid = false, // Toggled by the confirmation checkbox
       child: BlocConsumer<AuthSubmitBloc, BaseSubmitState<AuthBlocEvent>>(

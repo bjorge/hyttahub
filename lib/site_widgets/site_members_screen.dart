@@ -11,7 +11,6 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 
@@ -28,7 +27,7 @@ class SiteMembersScreen extends StatelessWidget {
         return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
           key: Key('SiteReplayBloc-Site-members-screen-$siteId'),
           builder: (context, siteState) {
-            final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+            final currentUserEmail = context.read<AuthBloc>().state.email;
 
               // return Builder(
               //   builder: (context) {
@@ -40,7 +39,7 @@ class SiteMembersScreen extends StatelessWidget {
                     IconButton(
                       onPressed: () {
                         final submmitValue = SubmitSiteEvent(
-                          authorEmail: GetIt.instance<AuthBloc>().state.email,
+                          authorEmail: currentUserEmail,
 
                           addMemberEmail: '', // new member email
                           event: SiteEvent(

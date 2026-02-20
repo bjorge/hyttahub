@@ -20,7 +20,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       HyttaHubOptions.implementation?.firebaseRootCollection ?? '';
 
 
-  Future<Map<String, dynamic>> copySite(String siteId, {int? upToVersion}) async {
+  Future<Map<String, dynamic>> copySite(String siteId, {int? upToVersion, String? email}) async {
     emit(CloudFunctionsState()..loading = CloudFunctionsLoading());
     try {
       final functions = HyttaHubFunctionsFactory.getFunctions(_storageType);
@@ -28,6 +28,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
         siteId: siteId,
         appName: _appName,
         upToVersion: upToVersion,
+        mockUserEmail: email,
       );
       emit(CloudFunctionsState()); // Clear loading state or emit success
       return result;

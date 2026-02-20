@@ -1,7 +1,6 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:hyttahub/hyttahub_options.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
@@ -18,7 +17,7 @@ class PlatformCubit extends HydratedCubit<String> {
 
   final String storageKey;
 
-  Future<void> setImplementation(String implementationId) async {
+  Future<void> setImplementation(String implementationId, {AuthBloc? authBloc}) async {
     final descriptor = PersistenceRegistry.getImplementation(implementationId);
     if (descriptor == null) return;
 
@@ -34,21 +33,21 @@ class PlatformCubit extends HydratedCubit<String> {
     HyttaHubInternalStorageFactory.clear();
     HyttaHubFunctionsFactory.clear();
 
-    // Refresh AuthBloc in GetIt to ensure it connects to the new platform.
-    if (GetIt.instance.isRegistered<AuthBloc>()) {
-      GetIt.instance<AuthBloc>().add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup()));
+    // Refresh AuthBloc to ensure it connects to the new platform.
+    if (authBloc != null) {
+      authBloc.add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup()));
     }
 
     emit(implementationId);
   }
 
   // Backward compatibility method
-  Future<void> setPlatform(StorageEnum storage) async {
+  Future<void> setPlatform(StorageEnum storage, {AuthBloc? authBloc}) async {
     // Find the first implementation of this type
     final impls = PersistenceRegistry.registeredImplementations
         .where((i) => i.type == storage);
     if (impls.isNotEmpty) {
-      await setImplementation(impls.first.id);
+      await setImplementation(impls.first.id, authBloc: authBloc);
     } else {
       // Fallback for memory/local if not explicitly registered
       if (HyttaHubOptions.implementation != null) {

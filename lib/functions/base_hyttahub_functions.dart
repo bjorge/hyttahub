@@ -7,6 +7,7 @@ abstract class BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
     int? upToVersion,
+    String? mockUserEmail,
   });
 
   Future<Map<String, dynamic>> listSiteFiles({

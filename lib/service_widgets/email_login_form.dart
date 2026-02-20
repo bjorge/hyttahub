@@ -55,7 +55,7 @@ class _EmailLoginFormState extends State<EmailLoginForm> {
     );
 
     return BlocProvider<AuthSubmitBloc>(
-      create: (_) => AuthSubmitBloc('', initialEvent),
+      create: (_) => AuthSubmitBloc('', initialEvent, authBloc: context.read<AuthBloc>()),
       child: BlocBuilder<AuthSubmitBloc, BaseSubmitState<AuthBlocEvent>>(
         builder: (context, state) {
           return Scaffold(

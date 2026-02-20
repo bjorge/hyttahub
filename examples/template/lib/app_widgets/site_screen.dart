@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:template/app_blocs/app_replay_bloc.dart';
 import 'package:template/routers/app_routes.dart';
 import 'package:template/utilities/handle_app_bloc_errors.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
@@ -61,7 +60,7 @@ class _SiteScreenState extends State<SiteScreen> {
       key: Key('AllowedEmailsBloc-site-screen-${widget.siteId}'),
       builder: (context, allowedEmailsState) {
         final userId =
-            allowedEmailsState.emails[GetIt.instance<AuthBloc>().state.email]
+            allowedEmailsState.emails[context.read<AuthBloc>().state.email]
                 ?.userId;
 
         return BlocBuilder<SiteEditModeCubit, bool?>(
@@ -210,7 +209,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
         }
 
         final version = appState.nextVersion;
-        final email = GetIt.instance<AuthBloc>().state.email;
+        final email = context.read<AuthBloc>().state.email;
 
         return Column(
           children: [

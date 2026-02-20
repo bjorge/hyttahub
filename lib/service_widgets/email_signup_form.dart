@@ -2,6 +2,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/auth_bloc/auth_submit_bloc.dart';
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/service_widgets/login.dart';
@@ -54,7 +55,7 @@ class _EmailSignupFormState extends State<EmailSignupForm> {
     );
 
     return BlocProvider<AuthSubmitBloc>(
-      create: (_) => AuthSubmitBloc('', initialEvent)..isFormValid = false,
+      create: (_) => AuthSubmitBloc('', initialEvent, authBloc: context.read<AuthBloc>())..isFormValid = false,
       child: BlocBuilder<AuthSubmitBloc, BaseSubmitState<AuthBlocEvent>>(
         builder: (context, state) {
           return Scaffold(

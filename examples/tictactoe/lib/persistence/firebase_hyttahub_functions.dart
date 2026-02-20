@@ -9,6 +9,7 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
     int? upToVersion,
+    String? mockUserEmail,
   }) async {
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'copySite',

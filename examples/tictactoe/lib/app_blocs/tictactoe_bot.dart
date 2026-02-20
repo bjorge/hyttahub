@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'package:get_it/get_it.dart';
-import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
 
 class TicTacToeBot {
   final AppReplayBloc appReplayBloc;
   final AppSubmitBloc appSubmitBloc;
+  final String botEmail;
   StreamSubscription? _subscription;
   bool _isThinking = false;
 
   TicTacToeBot({
     required this.appReplayBloc,
     required this.appSubmitBloc,
+    required this.botEmail,
   });
 
   void start() {
@@ -68,7 +68,7 @@ class TicTacToeBot {
         move: AppEvent_Move(x: x, y: y, player: 2),
       );
 
-      final email = GetIt.instance<AuthBloc>().state.email;
+      final email = botEmail;
       final version = appReplayBloc.state.nextVersion;
 
       final submitEvent =

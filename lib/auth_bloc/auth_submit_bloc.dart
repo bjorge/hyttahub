@@ -7,7 +7,6 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:protobuf/protobuf.dart';
 
@@ -28,7 +27,7 @@ AuthEventSubmission authEventSubmissionFactory({
 }
 
 class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
-  AuthSubmitBloc(this.email, AuthBlocEvent initialPayload)
+  AuthSubmitBloc(this.email, AuthBlocEvent initialPayload, {required this.authBloc})
     : super(initialPayload: initialPayload);
 
   @override
@@ -36,19 +35,21 @@ class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
       HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
 
   final String email;
+  final AuthBloc authBloc;
 
   @override
   Future<BaseSubmitState<AuthBlocEvent>> submit(
     BaseSubmitState<AuthBlocEvent> state,
     Emitter<BaseSubmitState<AuthBlocEvent>> emitter,
   ) async {
-    return submitAuthEvent(state, email, storage);
+    return submitAuthEvent(state, email, storage, authBloc);
   }
 
   static Future<BaseSubmitState<AuthBlocEvent>> submitAuthEvent(
     BaseSubmitState<AuthBlocEvent> state,
     String email,
     BaseHyttaHubStorage storage,
+    AuthBloc authBloc,
   ) async {
     final submitAuthEvent = state.payload!;
 
@@ -59,14 +60,14 @@ class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
       // For Account removal, we might need more metadata in the store.
       
       // Handle remove account event
-      GetIt.instance<AuthBloc>().add(
+      authBloc.add(
         AuthBlocEvent(removeAccount: AuthBlocEvent_RemoveAccount()),
       );
     }
 
     if (submitAuthEvent.hasEmailSignup() || submitAuthEvent.hasEmailLogin()) {
       // Handle create account event
-      GetIt.instance<AuthBloc>().add(submitAuthEvent);
+      authBloc.add(submitAuthEvent);
     }
 
     final successState = state.submissionState.deepCopy();

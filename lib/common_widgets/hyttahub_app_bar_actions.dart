@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
@@ -178,7 +179,7 @@ class _PlatformPicker extends StatelessWidget {
           tooltip: l10n.platform,
           icon: const Icon(Icons.computer),
           onSelected: (String newImplementationId) {
-            context.read<PlatformCubit>().setImplementation(newImplementationId);
+            context.read<PlatformCubit>().setImplementation(newImplementationId, authBloc: context.read<AuthBloc>());
           },
           itemBuilder: (BuildContext context) {
             final items = allImplementations

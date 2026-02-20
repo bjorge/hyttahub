@@ -12,7 +12,6 @@ import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
@@ -25,7 +24,7 @@ class ServiceAdminsScreen extends StatelessWidget {
     final allowedEmailsState = context.watch<ServiceAllowedEmailsBloc>().state;
     return BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
       builder: (context, serviceState) {
-        final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+        final currentUserEmail = context.read<AuthBloc>().state.email;
 
         return Scaffold(
           appBar: AppBar(
@@ -36,7 +35,7 @@ class ServiceAdminsScreen extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   final submmitValue = SubmitServiceEvent(
-                    email: GetIt.instance<AuthBloc>().state.email,
+                    email: currentUserEmail,
                     addServiceAdminEmail: '', // new admin email
                     event: ServiceEvent(
                       addServiceAdmin: ServiceEvent_AddServiceAdmin(

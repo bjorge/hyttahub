@@ -104,7 +104,7 @@ class LandingPage extends StatelessWidget {
                   label: const Text("Platform"),
                   onSelected: (String? newValue) {
                     if (newValue != null) {
-                      context.read<PlatformCubit>().setImplementation(newValue);
+                      context.read<PlatformCubit>().setImplementation(newValue, authBloc: context.read<AuthBloc>());
                     }
                   },
                   dropdownMenuEntries: PersistenceRegistry.registeredImplementations.map((impl) {

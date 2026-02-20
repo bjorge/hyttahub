@@ -5,7 +5,6 @@ import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
 import 'package:tictactoe/app_blocs/tictactoe_bot.dart';
 import 'package:tictactoe/routers/app_routes.dart';
 import 'package:tictactoe/utilities/handle_app_bloc_errors.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
@@ -43,6 +42,7 @@ class _SiteScreenState extends State<SiteScreen> {
     _bot = TicTacToeBot(
       appReplayBloc: appReplayBloc,
       appSubmitBloc: appSubmitBloc,
+      botEmail: context.read<AuthBloc>().state.email,
     );
     _bot!.start();
   }
@@ -53,7 +53,7 @@ class _SiteScreenState extends State<SiteScreen> {
     final initialEvent =
         SubmitAppEvent()
           ..siteEvent = (SubmitAppEvent_SiteEvent()..version = 0)
-          ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+          ..authorEmail = context.read<AuthBloc>().state.email;
 
     return BlocProvider<AppSubmitBloc>(
       create: (context) => AppSubmitBloc(widget.siteId, initialEvent),
@@ -153,7 +153,7 @@ class TicTacToeBoard extends StatelessWidget {
         ),
       )
       ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
-      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+      ..authorEmail = context.read<AuthBloc>().state.email;
 
     final submitBloc = context.read<AppSubmitBloc>();
     // Step 1: Update the payload and mark form as valid
@@ -178,7 +178,7 @@ class TicTacToeBoard extends StatelessWidget {
         playAgain: AppEvent_PlayAgain(),
       )
       ..siteEvent = (SubmitAppEvent_SiteEvent()..version = nextVersion)
-      ..authorEmail = GetIt.instance<AuthBloc>().state.email;
+      ..authorEmail = context.read<AuthBloc>().state.email;
 
     final submitBloc = context.read<AppSubmitBloc>();
     submitBloc.add(
@@ -215,7 +215,7 @@ class TicTacToeBoard extends StatelessWidget {
 
             final siteState = context.read<SiteReplayBloc>().state;
             final allowedEmailsState = context.read<SiteAllowedEmailsBloc>().state;
-            final currentUserEmail = GetIt.instance<AuthBloc>().state.email;
+            final currentUserEmail = context.read<AuthBloc>().state.email;
 
             final myMemberId = allowedEmailsState.emails.entries
                 .firstWhere(

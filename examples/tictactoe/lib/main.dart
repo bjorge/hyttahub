@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:tictactoe/routers/app_routes.dart';
 import 'package:tictactoe/routers/app_router.dart';
-import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:tictactoe/firebase_options.dart';
 import 'package:hyttahub/hyttahub.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -23,18 +22,12 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
 String appVersion = "2.0.5";
 int appBuildNumber = 79;
 
-final getIt = GetIt.instance;
-
-void setupGetIt() {
-  getIt.registerLazySingleton<AuthBloc>(() => AuthBloc());
-}
 
 void registerPersistence() {
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
@@ -133,7 +126,7 @@ Future<void> main() async {
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
   );
 
-  setupGetIt();
+
 
   runApp(const AppRouter());
 }

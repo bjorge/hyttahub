@@ -14,7 +14,6 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class ServiceAdminScreen extends StatelessWidget {
@@ -71,7 +70,7 @@ class ServiceAvailableOption extends StatelessWidget {
       title: Text(HyttaHubLocalizations.of(context)!.serviceStatusTitle),
       onTap: () {
         final submmitValue = SubmitServiceEvent(
-          email: GetIt.instance<AuthBloc>().state.email,
+          email: context.read<AuthBloc>().state.email,
           event: ServiceEvent(
             serviceStatus: ServiceEvent_ServiceStatus(
               unavailable: serviceState.serviceUnavailable,
@@ -103,7 +102,7 @@ class ServiceMinVersionOption extends StatelessWidget {
       title: Text(HyttaHubLocalizations.of(context)!.minRequiredVersionTitle),
       onTap: () {
         final submmitValue = SubmitServiceEvent(
-          email: GetIt.instance<AuthBloc>().state.email,
+          email: context.read<AuthBloc>().state.email,
           event: ServiceEvent(
             minVersion: ServiceEvent_MinimumVersionRequired(
               value: serviceState.minVersion,
@@ -159,7 +158,7 @@ class ServiceBetaUsersOption extends StatelessWidget {
         }
 
         final submmitValue = SubmitServiceEvent(
-          email: GetIt.instance<AuthBloc>().state.email,
+          email: context.read<AuthBloc>().state.email,
           betaUsers: currentBetaUsers,
           event: ServiceEvent(
             betaUsersFilter: serviceState.hasBetaUsersFilter()
@@ -193,7 +192,7 @@ class ServiceTermsOption extends StatelessWidget {
       title: Text(HyttaHubLocalizations.of(context)!.newTermsOfServiceTitle),
       onTap: () {
         final submmitValue = SubmitServiceEvent(
-          email: GetIt.instance<AuthBloc>().state.email,
+          email: context.read<AuthBloc>().state.email,
           event: ServiceEvent(
             terms: ServiceEvent_TermsOfService(content: serviceState.terms),
             version: serviceState.nextVersion,
@@ -223,7 +222,7 @@ class ServicePrivacyOption extends StatelessWidget {
       title: Text(HyttaHubLocalizations.of(context)!.newPrivacyPolicyTitle),
       onTap: () {
         final submmitValue = SubmitServiceEvent(
-          email: GetIt.instance<AuthBloc>().state.email,
+          email: context.read<AuthBloc>().state.email,
           event: ServiceEvent(
             privacy: ServiceEvent_PrivacyPolicy(content: serviceState.privacy),
             version: serviceState.nextVersion,
