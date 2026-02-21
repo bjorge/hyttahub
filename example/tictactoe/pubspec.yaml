@@ -14,6 +14,8 @@ dependencies:
 
   hyttahub:
     path: ../..
+  hyttahub_firebase:
+    path: ../../packages/hyttahub_firebase
 
   cloud_firestore: ^6.0.2
   firebase_core: ^4.1.1
