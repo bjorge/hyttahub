@@ -110,6 +110,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
       await context.read<CloudFunctionsBloc>().copySite(
         widget.siteId,
         upToVersion: _selectedVersion,
+        email: context.read<AuthBloc>().state.email,
       );
 
       if (!mounted) return;
