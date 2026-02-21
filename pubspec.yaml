@@ -1,7 +1,7 @@
 name: hyttahub
 description: "Package for base flutter app functionality."
 version: 0.1.49
-# homepage:
+repository: https://github.com/bjorge/hyttahub
 
 environment:
   sdk: ^3.8.1

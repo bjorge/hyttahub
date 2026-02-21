@@ -3,7 +3,7 @@ This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
 
 For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+[writing package pages](https://dart.dev/tool/pub/writing-package-pages).
 
 For general information about developing packages, see the Dart guide for
 [creating packages](https://dart.dev/guides/libraries/create-packages)
@@ -56,7 +56,7 @@ flutter test
 ### Running the Application
 
 ```sh
-cd examples/template
+cd example/template
 flutter run -d chrome
 ```
 
@@ -81,8 +81,8 @@ flutter gen-l10n
 **I want to run the example app using the firebase emulator, how do I do that?**
 
 -   Install either docker or podman
--   Follow the instructions in the [`README`](tools/firebase_emulator/README) in the `tools/firebase_emulator` directory to setup and start the emulator (it will also start the cloud functions in the emulator)
--   In a separate terminal, cd to the examples/template folder and run:
+-   Follow the instructions in the [`README`](tool/firebase_emulator/README) in the `tool/firebase_emulator` directory to setup and start the emulator (it will also start the cloud functions in the emulator)
+-   In a separate terminal, cd to the example/template folder and run:
     ```sh
     flutter run -d chrome
     ```
@@ -97,7 +97,7 @@ git push origin --tags
 
 **How do I compile the protocol buffer files?**
 
-Protocol buffer files can be compiled for both Dart (flutter) and TypeScript (cloud functions) using Podman or Docker. See [`README`](tools/protobuf-compiler/README) in the `tools/protobuf-compiler` directory for instructions.
+Protocol buffer files can be compiled for both Dart (flutter) and TypeScript (cloud functions) using Podman or Docker. See [`README`](tool/protobuf-compiler/README) in the `tool/protobuf-compiler` directory for instructions.
 
 **Is any server-side code required for this project?**
 
@@ -105,7 +105,7 @@ The project requires not long running server-side code. As far as cloud function
 
 **How is shared member data kept private?**
 
-Firebase rules, defined in [`firestore.rules`](tools/firebase_emulator/firestore.rules) and [`storage.rules`](tools/firebase_emulator/storage.rules), are designed to ensure member data privacy. Only site members are permitted to access site data, and only administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the service status.
+Firebase rules, defined in [`firestore.rules`](tool/firebase_emulator/firestore.rules) and [`storage.rules`](tool/firebase_emulator/storage.rules), are designed to ensure member data privacy. Only site members are permitted to access site data, and only administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the service status.
 
 **Can I add social authentication, such as Google or Apple logins?**
 
