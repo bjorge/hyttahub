@@ -1,5 +1,5 @@
 {
-  "name": "@hyttahub/functions",
+  "name": "@hyttahub/firebase-functions",
   "version": "0.1.48",
   "description": "Hyttahub Firebase Functions",
   "main": "dist/index.js",
@@ -9,6 +9,9 @@
   ],
   "author": "William Bjorge",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
