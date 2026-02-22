@@ -1,5 +1,5 @@
 name: hyttahub
-description: "Package for base flutter app functionality."
+description: "A serverless Flutter framework for building applications with an event-sourced architecture, shared site management, and built-in compliance."
 version: 0.1.49
 repository: https://github.com/bjorge/hyttahub
 
