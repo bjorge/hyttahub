@@ -34,6 +34,19 @@ export class BloomFilterProcessor {
     this.bitArray[byteIndex] |= bitMask;
   }
 
+  mightContain(item: string): boolean {
+    for (let i = 0; i < this.hashCount; i++) {
+      const hash = this._hash(item, i);
+      const bitIndex = hash % this.size;
+      const byteIndex = Math.floor(bitIndex / 8);
+      const bitMask = 1 << (bitIndex % 8);
+      if ((this.bitArray[byteIndex] & bitMask) === 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private _hash(input: string, seed: number): number {
     const h = crypto.createHash("sha256");
     h.update(`${seed}:${input}`);
