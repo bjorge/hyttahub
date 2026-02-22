@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: app_replay_bloc.proto
-//
-// @dart = 2.12
+// Generated from app_replay_bloc.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -50,19 +52,51 @@ final $typed_data.Uint8List gameStatusDescriptor = $convert.base64Decode(
 const AppReplayBlocState$json = {
   '1': 'AppReplayBlocState',
   '2': [
-    {'1': 'events', '3': 1, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.AppReplayBlocState.EventsEntry', '10': 'events'},
-    {'1': 'state', '3': 2, '4': 1, '5': 14, '6': '.hyttahub.example.tictactoe.AppReplayStateEnum', '10': 'state'},
+    {
+      '1': 'events',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppReplayBlocState.EventsEntry',
+      '10': 'events'
+    },
+    {
+      '1': 'state',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.hyttahub.example.tictactoe.AppReplayStateEnum',
+      '10': 'state'
+    },
     {'1': 'board', '3': 3, '4': 3, '5': 5, '10': 'board'},
     {'1': 'turn', '3': 4, '4': 1, '5': 5, '10': 'turn'},
     {'1': 'winner', '3': 5, '4': 1, '5': 5, '10': 'winner'},
-    {'1': 'status', '3': 7, '4': 1, '5': 14, '6': '.hyttahub.example.tictactoe.GameStatus', '10': 'status'},
+    {
+      '1': 'status',
+      '3': 7,
+      '4': 1,
+      '5': 14,
+      '6': '.hyttahub.example.tictactoe.GameStatus',
+      '10': 'status'
+    },
     {'1': 'vs_bot', '3': 8, '4': 1, '5': 8, '10': 'vsBot'},
     {'1': 'game_count', '3': 9, '4': 1, '5': 5, '10': 'gameCount'},
-    {'1': 'active_member_ids', '3': 10, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.AppReplayBlocState.ActiveMemberIdsEntry', '10': 'activeMemberIds'},
+    {
+      '1': 'active_member_ids',
+      '3': 10,
+      '4': 3,
+      '5': 11,
+      '6':
+          '.hyttahub.example.tictactoe.AppReplayBlocState.ActiveMemberIdsEntry',
+      '10': 'activeMemberIds'
+    },
     {'1': 'x_player_id', '3': 11, '4': 1, '5': 5, '10': 'xPlayerId'},
     {'1': 'o_player_id', '3': 12, '4': 1, '5': 5, '10': 'oPlayerId'},
   ],
-  '3': [AppReplayBlocState_EventsEntry$json, AppReplayBlocState_ActiveMemberIdsEntry$json],
+  '3': [
+    AppReplayBlocState_EventsEntry$json,
+    AppReplayBlocState_ActiveMemberIdsEntry$json
+  ],
 };
 
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
@@ -99,4 +133,3 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'VySWQSHgoLb19wbGF5ZXJfaWQYDCABKAVSCW9QbGF5ZXJJZBo5CgtFdmVudHNFbnRyeRIQCgNr'
     'ZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgBGkIKFEFjdGl2ZU1lbWJlck'
     'lkc0VudHJ5EhAKA2tleRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgIUgV2YWx1ZToCOAE=');
-

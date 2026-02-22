@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: app_events.proto
-//
-// @dart = 2.12
+// Generated from app_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -17,14 +19,70 @@ import 'dart:typed_data' as $typed_data;
 const AppEvent$json = {
   '1': 'AppEvent',
   '2': [
-    {'1': 'updateText', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateText', '9': 0, '10': 'updateText'},
-    {'1': 'updateCode', '3': 4, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateCode', '9': 0, '10': 'updateCode'},
-    {'1': 'updateCheckbox', '3': 5, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateCheckbox', '9': 0, '10': 'updateCheckbox'},
-    {'1': 'updateDropdown', '3': 6, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateDropdown', '9': 0, '10': 'updateDropdown'},
-    {'1': 'updateList', '3': 7, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdateList', '9': 0, '10': 'updateList'},
-    {'1': 'updatePhoto', '3': 8, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent.UpdatePhoto', '9': 0, '10': 'updatePhoto'},
+    {
+      '1': 'updateText',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdateText',
+      '9': 0,
+      '10': 'updateText'
+    },
+    {
+      '1': 'updateCode',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdateCode',
+      '9': 0,
+      '10': 'updateCode'
+    },
+    {
+      '1': 'updateCheckbox',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdateCheckbox',
+      '9': 0,
+      '10': 'updateCheckbox'
+    },
+    {
+      '1': 'updateDropdown',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdateDropdown',
+      '9': 0,
+      '10': 'updateDropdown'
+    },
+    {
+      '1': 'updateList',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdateList',
+      '9': 0,
+      '10': 'updateList'
+    },
+    {
+      '1': 'updatePhoto',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.UpdatePhoto',
+      '9': 0,
+      '10': 'updatePhoto'
+    },
   ],
-  '3': [AppEvent_ReorderableItem$json, AppEvent_UpdateText$json, AppEvent_UpdateCode$json, AppEvent_UpdateCheckbox$json, AppEvent_UpdateDropdown$json, AppEvent_UpdateList$json, AppEvent_UpdatePhoto$json],
+  '3': [
+    AppEvent_ReorderableItem$json,
+    AppEvent_UpdateText$json,
+    AppEvent_UpdateCode$json,
+    AppEvent_UpdateCheckbox$json,
+    AppEvent_UpdateDropdown$json,
+    AppEvent_UpdateList$json,
+    AppEvent_UpdatePhoto$json
+  ],
   '8': [
     {'1': 'event'},
   ],
@@ -75,7 +133,14 @@ const AppEvent_UpdateDropdown$json = {
 const AppEvent_UpdateList$json = {
   '1': 'UpdateList',
   '2': [
-    {'1': 'items', '3': 1, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppEvent.ReorderableItem', '10': 'items'},
+    {
+      '1': 'items',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.ReorderableItem',
+      '10': 'items'
+    },
   ],
 };
 
@@ -113,10 +178,31 @@ final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
 const SubmitAppEvent$json = {
   '1': 'SubmitAppEvent',
   '2': [
-    {'1': 'appEvent', '3': 1, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent', '10': 'appEvent'},
-    {'1': 'siteEvent', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.template.SubmitAppEvent.SiteEvent', '10': 'siteEvent'},
+    {
+      '1': 'appEvent',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent',
+      '10': 'appEvent'
+    },
+    {
+      '1': 'siteEvent',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.SubmitAppEvent.SiteEvent',
+      '10': 'siteEvent'
+    },
     {'1': 'authorEmail', '3': 3, '4': 1, '5': 9, '10': 'authorEmail'},
-    {'1': 'images', '3': 4, '4': 3, '5': 11, '6': '.hyttahub.example.template.SubmitAppEvent.Image', '10': 'images'},
+    {
+      '1': 'images',
+      '3': 4,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.template.SubmitAppEvent.Image',
+      '10': 'images'
+    },
   ],
   '3': [SubmitAppEvent_SiteEvent$json, SubmitAppEvent_Image$json],
 };
@@ -157,7 +243,14 @@ const AppEventRecord$json = {
   '2': [
     {'1': 'isoDate', '3': 1, '4': 1, '5': 9, '10': 'isoDate'},
     {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'appEvent', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.template.AppEvent', '10': 'appEvent'},
+    {
+      '1': 'appEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent',
+      '10': 'appEvent'
+    },
   ],
 };
 
@@ -166,4 +259,3 @@ final $typed_data.Uint8List appEventRecordDescriptor = $convert.base64Decode(
     'Cg5BcHBFdmVudFJlY29yZBIYCgdpc29EYXRlGAEgASgJUgdpc29EYXRlEhgKB3ZlcnNpb24YAi'
     'ABKAVSB3ZlcnNpb24SPwoIYXBwRXZlbnQYAyABKAsyIy5oeXR0YWh1Yi5leGFtcGxlLnRlbXBs'
     'YXRlLkFwcEV2ZW50UghhcHBFdmVudA==');
-

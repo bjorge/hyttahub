@@ -1,4 +1,5 @@
 # To update protocol buffer files for flutter and firebase functions, use this Podman
+# Note: As of protobuf 6.0.0, this compiler image installs protoc_plugin ^25.0.0
 
 # run the following to check the local architecture:
 uname -m

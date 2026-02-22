@@ -33,7 +33,7 @@ ENV PATH="${PATH}:/usr/lib/dart-sdk/bin"
 ENV DART_SDK="/usr/lib/dart-sdk"
 
 # Install protoc-gen-dart
-RUN dart pub global activate protoc_plugin ^21.0.0
+RUN dart pub global activate protoc_plugin ^25.0.0
 ENV PATH="${PATH}:/usr/lib/dart-sdk/bin:/root/.pub-cache/bin"
 
 # Install specific ts-proto version without buf dependencies

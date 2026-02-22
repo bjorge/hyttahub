@@ -1,17 +1,20 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: app_events.proto
-//
-// @dart = 2.12
+// Generated from app_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
+
+export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 class AppEvent_Move extends $pb.GeneratedMessage {
   factory AppEvent_Move({
@@ -19,166 +22,174 @@ class AppEvent_Move extends $pb.GeneratedMessage {
     $core.int? y,
     $core.int? player,
   }) {
-    final $result = create();
-    if (x != null) {
-      $result.x = x;
-    }
-    if (y != null) {
-      $result.y = y;
-    }
-    if (player != null) {
-      $result.player = player;
-    }
-    return $result;
+    final result = create();
+    if (x != null) result.x = x;
+    if (y != null) result.y = y;
+    if (player != null) result.player = player;
+    return result;
   }
-  AppEvent_Move._() : super();
-  factory AppEvent_Move.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent_Move.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.Move', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'x', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'y', $pb.PbFieldType.O3)
-    ..a<$core.int>(3, _omitFieldNames ? '' : 'player', $pb.PbFieldType.O3)
-    ..hasRequiredFields = false
-  ;
+  AppEvent_Move._();
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent_Move clone() => AppEvent_Move()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent_Move copyWith(void Function(AppEvent_Move) updates) => super.copyWith((message) => updates(message as AppEvent_Move)) as AppEvent_Move;
+  factory AppEvent_Move.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEvent_Move.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEvent.Move',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'x')
+    ..aI(2, _omitFieldNames ? '' : 'y')
+    ..aI(3, _omitFieldNames ? '' : 'player')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_Move clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_Move copyWith(void Function(AppEvent_Move) updates) =>
+      super.copyWith((message) => updates(message as AppEvent_Move))
+          as AppEvent_Move;
+
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static AppEvent_Move create() => AppEvent_Move._();
+  @$core.override
   AppEvent_Move createEmptyInstance() => create();
-  static $pb.PbList<AppEvent_Move> createRepeated() => $pb.PbList<AppEvent_Move>();
   @$core.pragma('dart2js:noInline')
-  static AppEvent_Move getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_Move>(create);
+  static AppEvent_Move getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppEvent_Move>(create);
   static AppEvent_Move? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get x => $_getIZ(0);
   @$pb.TagNumber(1)
-  set x($core.int v) { $_setSignedInt32(0, v); }
+  set x($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasX() => $_has(0);
   @$pb.TagNumber(1)
-  void clearX() => clearField(1);
+  void clearX() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.int get y => $_getIZ(1);
   @$pb.TagNumber(2)
-  set y($core.int v) { $_setSignedInt32(1, v); }
+  set y($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasY() => $_has(1);
   @$pb.TagNumber(2)
-  void clearY() => clearField(2);
+  void clearY() => $_clearField(2);
 
   @$pb.TagNumber(3)
   $core.int get player => $_getIZ(2);
   @$pb.TagNumber(3)
-  set player($core.int v) { $_setSignedInt32(2, v); }
+  set player($core.int value) => $_setSignedInt32(2, value);
   @$pb.TagNumber(3)
   $core.bool hasPlayer() => $_has(2);
   @$pb.TagNumber(3)
-  void clearPlayer() => clearField(3);
+  void clearPlayer() => $_clearField(3);
 }
 
 class AppEvent_StartGame extends $pb.GeneratedMessage {
   factory AppEvent_StartGame({
     $core.bool? vsBot,
   }) {
-    final $result = create();
-    if (vsBot != null) {
-      $result.vsBot = vsBot;
-    }
-    return $result;
+    final result = create();
+    if (vsBot != null) result.vsBot = vsBot;
+    return result;
   }
-  AppEvent_StartGame._() : super();
-  factory AppEvent_StartGame.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent_StartGame.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.StartGame', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+  AppEvent_StartGame._();
+
+  factory AppEvent_StartGame.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEvent_StartGame.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEvent.StartGame',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
     ..aOB(1, _omitFieldNames ? '' : 'vsBot')
-    ..hasRequiredFields = false
-  ;
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent_StartGame clone() => AppEvent_StartGame()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent_StartGame copyWith(void Function(AppEvent_StartGame) updates) => super.copyWith((message) => updates(message as AppEvent_StartGame)) as AppEvent_StartGame;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_StartGame clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_StartGame copyWith(void Function(AppEvent_StartGame) updates) =>
+      super.copyWith((message) => updates(message as AppEvent_StartGame))
+          as AppEvent_StartGame;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static AppEvent_StartGame create() => AppEvent_StartGame._();
+  @$core.override
   AppEvent_StartGame createEmptyInstance() => create();
-  static $pb.PbList<AppEvent_StartGame> createRepeated() => $pb.PbList<AppEvent_StartGame>();
   @$core.pragma('dart2js:noInline')
-  static AppEvent_StartGame getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_StartGame>(create);
+  static AppEvent_StartGame getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppEvent_StartGame>(create);
   static AppEvent_StartGame? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.bool get vsBot => $_getBF(0);
   @$pb.TagNumber(1)
-  set vsBot($core.bool v) { $_setBool(0, v); }
+  set vsBot($core.bool value) => $_setBool(0, value);
   @$pb.TagNumber(1)
   $core.bool hasVsBot() => $_has(0);
   @$pb.TagNumber(1)
-  void clearVsBot() => clearField(1);
+  void clearVsBot() => $_clearField(1);
 }
 
 class AppEvent_PlayAgain extends $pb.GeneratedMessage {
   factory AppEvent_PlayAgain() => create();
-  AppEvent_PlayAgain._() : super();
-  factory AppEvent_PlayAgain.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent_PlayAgain.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent.PlayAgain', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
-    ..hasRequiredFields = false
-  ;
+  AppEvent_PlayAgain._();
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent_PlayAgain clone() => AppEvent_PlayAgain()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent_PlayAgain copyWith(void Function(AppEvent_PlayAgain) updates) => super.copyWith((message) => updates(message as AppEvent_PlayAgain)) as AppEvent_PlayAgain;
+  factory AppEvent_PlayAgain.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEvent_PlayAgain.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEvent.PlayAgain',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_PlayAgain clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_PlayAgain copyWith(void Function(AppEvent_PlayAgain) updates) =>
+      super.copyWith((message) => updates(message as AppEvent_PlayAgain))
+          as AppEvent_PlayAgain;
+
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static AppEvent_PlayAgain create() => AppEvent_PlayAgain._();
+  @$core.override
   AppEvent_PlayAgain createEmptyInstance() => create();
-  static $pb.PbList<AppEvent_PlayAgain> createRepeated() => $pb.PbList<AppEvent_PlayAgain>();
   @$core.pragma('dart2js:noInline')
-  static AppEvent_PlayAgain getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent_PlayAgain>(create);
+  static AppEvent_PlayAgain getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppEvent_PlayAgain>(create);
   static AppEvent_PlayAgain? _defaultInstance;
 }
 
-enum AppEvent_Event {
-  move, 
-  startGame, 
-  playAgain, 
-  notSet
-}
+enum AppEvent_Event { move, startGame, playAgain, notSet }
 
 class AppEvent extends $pb.GeneratedMessage {
   factory AppEvent({
@@ -186,90 +197,99 @@ class AppEvent extends $pb.GeneratedMessage {
     AppEvent_StartGame? startGame,
     AppEvent_PlayAgain? playAgain,
   }) {
-    final $result = create();
-    if (move != null) {
-      $result.move = move;
-    }
-    if (startGame != null) {
-      $result.startGame = startGame;
-    }
-    if (playAgain != null) {
-      $result.playAgain = playAgain;
-    }
-    return $result;
+    final result = create();
+    if (move != null) result.move = move;
+    if (startGame != null) result.startGame = startGame;
+    if (playAgain != null) result.playAgain = playAgain;
+    return result;
   }
-  AppEvent._() : super();
-  factory AppEvent.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  AppEvent._();
+
+  factory AppEvent.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEvent.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
   static const $core.Map<$core.int, AppEvent_Event> _AppEvent_EventByTag = {
-    1 : AppEvent_Event.move,
-    2 : AppEvent_Event.startGame,
-    3 : AppEvent_Event.playAgain,
-    0 : AppEvent_Event.notSet
+    1: AppEvent_Event.move,
+    2: AppEvent_Event.startGame,
+    3: AppEvent_Event.playAgain,
+    0: AppEvent_Event.notSet
   };
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEvent',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
     ..oo(0, [1, 2, 3])
-    ..aOM<AppEvent_Move>(1, _omitFieldNames ? '' : 'move', subBuilder: AppEvent_Move.create)
-    ..aOM<AppEvent_StartGame>(2, _omitFieldNames ? '' : 'startGame', protoName: 'startGame', subBuilder: AppEvent_StartGame.create)
-    ..aOM<AppEvent_PlayAgain>(3, _omitFieldNames ? '' : 'playAgain', protoName: 'playAgain', subBuilder: AppEvent_PlayAgain.create)
-    ..hasRequiredFields = false
-  ;
+    ..aOM<AppEvent_Move>(1, _omitFieldNames ? '' : 'move',
+        subBuilder: AppEvent_Move.create)
+    ..aOM<AppEvent_StartGame>(2, _omitFieldNames ? '' : 'startGame',
+        protoName: 'startGame', subBuilder: AppEvent_StartGame.create)
+    ..aOM<AppEvent_PlayAgain>(3, _omitFieldNames ? '' : 'playAgain',
+        protoName: 'playAgain', subBuilder: AppEvent_PlayAgain.create)
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEvent clone() => AppEvent()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEvent copyWith(void Function(AppEvent) updates) => super.copyWith((message) => updates(message as AppEvent)) as AppEvent;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent copyWith(void Function(AppEvent) updates) =>
+      super.copyWith((message) => updates(message as AppEvent)) as AppEvent;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static AppEvent create() => AppEvent._();
+  @$core.override
   AppEvent createEmptyInstance() => create();
-  static $pb.PbList<AppEvent> createRepeated() => $pb.PbList<AppEvent>();
   @$core.pragma('dart2js:noInline')
-  static AppEvent getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent>(create);
+  static AppEvent getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEvent>(create);
   static AppEvent? _defaultInstance;
 
+  @$pb.TagNumber(1)
+  @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
   AppEvent_Event whichEvent() => _AppEvent_EventByTag[$_whichOneof(0)]!;
-  void clearEvent() => clearField($_whichOneof(0));
+  @$pb.TagNumber(1)
+  @$pb.TagNumber(2)
+  @$pb.TagNumber(3)
+  void clearEvent() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
   AppEvent_Move get move => $_getN(0);
   @$pb.TagNumber(1)
-  set move(AppEvent_Move v) { setField(1, v); }
+  set move(AppEvent_Move value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasMove() => $_has(0);
   @$pb.TagNumber(1)
-  void clearMove() => clearField(1);
+  void clearMove() => $_clearField(1);
   @$pb.TagNumber(1)
   AppEvent_Move ensureMove() => $_ensure(0);
 
   @$pb.TagNumber(2)
   AppEvent_StartGame get startGame => $_getN(1);
   @$pb.TagNumber(2)
-  set startGame(AppEvent_StartGame v) { setField(2, v); }
+  set startGame(AppEvent_StartGame value) => $_setField(2, value);
   @$pb.TagNumber(2)
   $core.bool hasStartGame() => $_has(1);
   @$pb.TagNumber(2)
-  void clearStartGame() => clearField(2);
+  void clearStartGame() => $_clearField(2);
   @$pb.TagNumber(2)
   AppEvent_StartGame ensureStartGame() => $_ensure(1);
 
   @$pb.TagNumber(3)
   AppEvent_PlayAgain get playAgain => $_getN(2);
   @$pb.TagNumber(3)
-  set playAgain(AppEvent_PlayAgain v) { setField(3, v); }
+  set playAgain(AppEvent_PlayAgain value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasPlayAgain() => $_has(2);
   @$pb.TagNumber(3)
-  void clearPlayAgain() => clearField(3);
+  void clearPlayAgain() => $_clearField(3);
   @$pb.TagNumber(3)
   AppEvent_PlayAgain ensurePlayAgain() => $_ensure(2);
 }
@@ -280,63 +300,67 @@ class SubmitAppEvent_SiteEvent extends $pb.GeneratedMessage {
     $core.int? version,
     $core.int? author,
   }) {
-    final $result = create();
-    if (version != null) {
-      $result.version = version;
-    }
-    if (author != null) {
-      $result.author = author;
-    }
-    return $result;
+    final result = create();
+    if (version != null) result.version = version;
+    if (author != null) result.author = author;
+    return result;
   }
-  SubmitAppEvent_SiteEvent._() : super();
-  factory SubmitAppEvent_SiteEvent.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SubmitAppEvent_SiteEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SubmitAppEvent.SiteEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
-    ..a<$core.int>(1, _omitFieldNames ? '' : 'version', $pb.PbFieldType.O3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'author', $pb.PbFieldType.O3)
-    ..hasRequiredFields = false
-  ;
+  SubmitAppEvent_SiteEvent._();
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent_SiteEvent clone() => SubmitAppEvent_SiteEvent()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent_SiteEvent copyWith(void Function(SubmitAppEvent_SiteEvent) updates) => super.copyWith((message) => updates(message as SubmitAppEvent_SiteEvent)) as SubmitAppEvent_SiteEvent;
+  factory SubmitAppEvent_SiteEvent.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SubmitAppEvent_SiteEvent.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
 
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SubmitAppEvent.SiteEvent',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'version')
+    ..aI(2, _omitFieldNames ? '' : 'author')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent_SiteEvent clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent_SiteEvent copyWith(
+          void Function(SubmitAppEvent_SiteEvent) updates) =>
+      super.copyWith((message) => updates(message as SubmitAppEvent_SiteEvent))
+          as SubmitAppEvent_SiteEvent;
+
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static SubmitAppEvent_SiteEvent create() => SubmitAppEvent_SiteEvent._();
+  @$core.override
   SubmitAppEvent_SiteEvent createEmptyInstance() => create();
-  static $pb.PbList<SubmitAppEvent_SiteEvent> createRepeated() => $pb.PbList<SubmitAppEvent_SiteEvent>();
   @$core.pragma('dart2js:noInline')
-  static SubmitAppEvent_SiteEvent getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_SiteEvent>(create);
+  static SubmitAppEvent_SiteEvent getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_SiteEvent>(create);
   static SubmitAppEvent_SiteEvent? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get version => $_getIZ(0);
   @$pb.TagNumber(1)
-  set version($core.int v) { $_setSignedInt32(0, v); }
+  set version($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(1)
   $core.bool hasVersion() => $_has(0);
   @$pb.TagNumber(1)
-  void clearVersion() => clearField(1);
+  void clearVersion() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.int get author => $_getIZ(1);
   @$pb.TagNumber(2)
-  set author($core.int v) { $_setSignedInt32(1, v); }
+  set author($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasAuthor() => $_has(1);
   @$pb.TagNumber(2)
-  void clearAuthor() => clearField(2);
+  void clearAuthor() => $_clearField(2);
 }
 
 class SubmitAppEvent_Image extends $pb.GeneratedMessage {
@@ -345,76 +369,77 @@ class SubmitAppEvent_Image extends $pb.GeneratedMessage {
     $core.String? name,
     $core.int? size,
   }) {
-    final $result = create();
-    if (base64Data != null) {
-      $result.base64Data = base64Data;
-    }
-    if (name != null) {
-      $result.name = name;
-    }
-    if (size != null) {
-      $result.size = size;
-    }
-    return $result;
+    final result = create();
+    if (base64Data != null) result.base64Data = base64Data;
+    if (name != null) result.name = name;
+    if (size != null) result.size = size;
+    return result;
   }
-  SubmitAppEvent_Image._() : super();
-  factory SubmitAppEvent_Image.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SubmitAppEvent_Image.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SubmitAppEvent.Image', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+  SubmitAppEvent_Image._();
+
+  factory SubmitAppEvent_Image.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SubmitAppEvent_Image.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SubmitAppEvent.Image',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'base64Data', protoName: 'base64Data')
     ..aOS(2, _omitFieldNames ? '' : 'name')
-    ..a<$core.int>(3, _omitFieldNames ? '' : 'size', $pb.PbFieldType.O3)
-    ..hasRequiredFields = false
-  ;
+    ..aI(3, _omitFieldNames ? '' : 'size')
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent_Image clone() => SubmitAppEvent_Image()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent_Image copyWith(void Function(SubmitAppEvent_Image) updates) => super.copyWith((message) => updates(message as SubmitAppEvent_Image)) as SubmitAppEvent_Image;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent_Image clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent_Image copyWith(void Function(SubmitAppEvent_Image) updates) =>
+      super.copyWith((message) => updates(message as SubmitAppEvent_Image))
+          as SubmitAppEvent_Image;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static SubmitAppEvent_Image create() => SubmitAppEvent_Image._();
+  @$core.override
   SubmitAppEvent_Image createEmptyInstance() => create();
-  static $pb.PbList<SubmitAppEvent_Image> createRepeated() => $pb.PbList<SubmitAppEvent_Image>();
   @$core.pragma('dart2js:noInline')
-  static SubmitAppEvent_Image getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_Image>(create);
+  static SubmitAppEvent_Image getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_Image>(create);
   static SubmitAppEvent_Image? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get base64Data => $_getSZ(0);
   @$pb.TagNumber(1)
-  set base64Data($core.String v) { $_setString(0, v); }
+  set base64Data($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasBase64Data() => $_has(0);
   @$pb.TagNumber(1)
-  void clearBase64Data() => clearField(1);
+  void clearBase64Data() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.String get name => $_getSZ(1);
   @$pb.TagNumber(2)
-  set name($core.String v) { $_setString(1, v); }
+  set name($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
   $core.bool hasName() => $_has(1);
   @$pb.TagNumber(2)
-  void clearName() => clearField(2);
+  void clearName() => $_clearField(2);
 
   @$pb.TagNumber(3)
   $core.int get size => $_getIZ(2);
   @$pb.TagNumber(3)
-  set size($core.int v) { $_setSignedInt32(2, v); }
+  set size($core.int value) => $_setSignedInt32(2, value);
   @$pb.TagNumber(3)
   $core.bool hasSize() => $_has(2);
   @$pb.TagNumber(3)
-  void clearSize() => clearField(3);
+  void clearSize() => $_clearField(3);
 }
 
 /// The SubmitAppEvent is passed to the submit bloc handler
@@ -428,100 +453,100 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     $core.Iterable<SubmitAppEvent_Image>? images,
     $core.int? pauseDelay,
   }) {
-    final $result = create();
-    if (appEvent != null) {
-      $result.appEvent = appEvent;
-    }
-    if (siteEvent != null) {
-      $result.siteEvent = siteEvent;
-    }
-    if (authorEmail != null) {
-      $result.authorEmail = authorEmail;
-    }
-    if (images != null) {
-      $result.images.addAll(images);
-    }
-    if (pauseDelay != null) {
-      $result.pauseDelay = pauseDelay;
-    }
-    return $result;
+    final result = create();
+    if (appEvent != null) result.appEvent = appEvent;
+    if (siteEvent != null) result.siteEvent = siteEvent;
+    if (authorEmail != null) result.authorEmail = authorEmail;
+    if (images != null) result.images.addAll(images);
+    if (pauseDelay != null) result.pauseDelay = pauseDelay;
+    return result;
   }
-  SubmitAppEvent._() : super();
-  factory SubmitAppEvent.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory SubmitAppEvent.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SubmitAppEvent', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
-    ..aOM<AppEvent>(1, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: AppEvent.create)
-    ..aOM<SubmitAppEvent_SiteEvent>(2, _omitFieldNames ? '' : 'siteEvent', protoName: 'siteEvent', subBuilder: SubmitAppEvent_SiteEvent.create)
+  SubmitAppEvent._();
+
+  factory SubmitAppEvent.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SubmitAppEvent.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SubmitAppEvent',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
+    ..aOM<AppEvent>(1, _omitFieldNames ? '' : 'appEvent',
+        protoName: 'appEvent', subBuilder: AppEvent.create)
+    ..aOM<SubmitAppEvent_SiteEvent>(2, _omitFieldNames ? '' : 'siteEvent',
+        protoName: 'siteEvent', subBuilder: SubmitAppEvent_SiteEvent.create)
     ..aOS(3, _omitFieldNames ? '' : 'authorEmail', protoName: 'authorEmail')
-    ..pc<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images', $pb.PbFieldType.PM, subBuilder: SubmitAppEvent_Image.create)
-    ..a<$core.int>(5, _omitFieldNames ? '' : 'pauseDelay', $pb.PbFieldType.O3)
-    ..hasRequiredFields = false
-  ;
+    ..pPM<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images',
+        subBuilder: SubmitAppEvent_Image.create)
+    ..aI(5, _omitFieldNames ? '' : 'pauseDelay')
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent clone() => SubmitAppEvent()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  SubmitAppEvent copyWith(void Function(SubmitAppEvent) updates) => super.copyWith((message) => updates(message as SubmitAppEvent)) as SubmitAppEvent;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SubmitAppEvent copyWith(void Function(SubmitAppEvent) updates) =>
+      super.copyWith((message) => updates(message as SubmitAppEvent))
+          as SubmitAppEvent;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static SubmitAppEvent create() => SubmitAppEvent._();
+  @$core.override
   SubmitAppEvent createEmptyInstance() => create();
-  static $pb.PbList<SubmitAppEvent> createRepeated() => $pb.PbList<SubmitAppEvent>();
   @$core.pragma('dart2js:noInline')
-  static SubmitAppEvent getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent>(create);
+  static SubmitAppEvent getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent>(create);
   static SubmitAppEvent? _defaultInstance;
 
   @$pb.TagNumber(1)
   AppEvent get appEvent => $_getN(0);
   @$pb.TagNumber(1)
-  set appEvent(AppEvent v) { setField(1, v); }
+  set appEvent(AppEvent value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasAppEvent() => $_has(0);
   @$pb.TagNumber(1)
-  void clearAppEvent() => clearField(1);
+  void clearAppEvent() => $_clearField(1);
   @$pb.TagNumber(1)
   AppEvent ensureAppEvent() => $_ensure(0);
 
   @$pb.TagNumber(2)
   SubmitAppEvent_SiteEvent get siteEvent => $_getN(1);
   @$pb.TagNumber(2)
-  set siteEvent(SubmitAppEvent_SiteEvent v) { setField(2, v); }
+  set siteEvent(SubmitAppEvent_SiteEvent value) => $_setField(2, value);
   @$pb.TagNumber(2)
   $core.bool hasSiteEvent() => $_has(1);
   @$pb.TagNumber(2)
-  void clearSiteEvent() => clearField(2);
+  void clearSiteEvent() => $_clearField(2);
   @$pb.TagNumber(2)
   SubmitAppEvent_SiteEvent ensureSiteEvent() => $_ensure(1);
 
   @$pb.TagNumber(3)
   $core.String get authorEmail => $_getSZ(2);
   @$pb.TagNumber(3)
-  set authorEmail($core.String v) { $_setString(2, v); }
+  set authorEmail($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
   $core.bool hasAuthorEmail() => $_has(2);
   @$pb.TagNumber(3)
-  void clearAuthorEmail() => clearField(3);
+  void clearAuthorEmail() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.List<SubmitAppEvent_Image> get images => $_getList(3);
+  $pb.PbList<SubmitAppEvent_Image> get images => $_getList(3);
 
   @$pb.TagNumber(5)
   $core.int get pauseDelay => $_getIZ(4);
   @$pb.TagNumber(5)
-  set pauseDelay($core.int v) { $_setSignedInt32(4, v); }
+  set pauseDelay($core.int value) => $_setSignedInt32(4, value);
   @$pb.TagNumber(5)
   $core.bool hasPauseDelay() => $_has(4);
   @$pb.TagNumber(5)
-  void clearPauseDelay() => clearField(5);
+  void clearPauseDelay() => $_clearField(5);
 }
 
 /// The AppEventRecord is a representation of the actual record stored in the
@@ -532,80 +557,83 @@ class AppEventRecord extends $pb.GeneratedMessage {
     $core.int? version,
     AppEvent? appEvent,
   }) {
-    final $result = create();
-    if (isoDate != null) {
-      $result.isoDate = isoDate;
-    }
-    if (version != null) {
-      $result.version = version;
-    }
-    if (appEvent != null) {
-      $result.appEvent = appEvent;
-    }
-    return $result;
+    final result = create();
+    if (isoDate != null) result.isoDate = isoDate;
+    if (version != null) result.version = version;
+    if (appEvent != null) result.appEvent = appEvent;
+    return result;
   }
-  AppEventRecord._() : super();
-  factory AppEventRecord.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory AppEventRecord.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppEventRecord', package: const $pb.PackageName(_omitMessageNames ? '' : 'hyttahub.example.tictactoe'), createEmptyInstance: create)
+  AppEventRecord._();
+
+  factory AppEventRecord.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEventRecord.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEventRecord',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
+      createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'isoDate', protoName: 'isoDate')
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'version', $pb.PbFieldType.O3)
-    ..aOM<AppEvent>(3, _omitFieldNames ? '' : 'appEvent', protoName: 'appEvent', subBuilder: AppEvent.create)
-    ..hasRequiredFields = false
-  ;
+    ..aI(2, _omitFieldNames ? '' : 'version')
+    ..aOM<AppEvent>(3, _omitFieldNames ? '' : 'appEvent',
+        protoName: 'appEvent', subBuilder: AppEvent.create)
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  AppEventRecord clone() => AppEventRecord()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  AppEventRecord copyWith(void Function(AppEventRecord) updates) => super.copyWith((message) => updates(message as AppEventRecord)) as AppEventRecord;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEventRecord clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEventRecord copyWith(void Function(AppEventRecord) updates) =>
+      super.copyWith((message) => updates(message as AppEventRecord))
+          as AppEventRecord;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static AppEventRecord create() => AppEventRecord._();
+  @$core.override
   AppEventRecord createEmptyInstance() => create();
-  static $pb.PbList<AppEventRecord> createRepeated() => $pb.PbList<AppEventRecord>();
   @$core.pragma('dart2js:noInline')
-  static AppEventRecord getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppEventRecord>(create);
+  static AppEventRecord getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppEventRecord>(create);
   static AppEventRecord? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get isoDate => $_getSZ(0);
   @$pb.TagNumber(1)
-  set isoDate($core.String v) { $_setString(0, v); }
+  set isoDate($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
   $core.bool hasIsoDate() => $_has(0);
   @$pb.TagNumber(1)
-  void clearIsoDate() => clearField(1);
+  void clearIsoDate() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.int get version => $_getIZ(1);
   @$pb.TagNumber(2)
-  set version($core.int v) { $_setSignedInt32(1, v); }
+  set version($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasVersion() => $_has(1);
   @$pb.TagNumber(2)
-  void clearVersion() => clearField(2);
+  void clearVersion() => $_clearField(2);
 
   @$pb.TagNumber(3)
   AppEvent get appEvent => $_getN(2);
   @$pb.TagNumber(3)
-  set appEvent(AppEvent v) { setField(3, v); }
+  set appEvent(AppEvent value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasAppEvent() => $_has(2);
   @$pb.TagNumber(3)
-  void clearAppEvent() => clearField(3);
+  void clearAppEvent() => $_clearField(3);
   @$pb.TagNumber(3)
   AppEvent ensureAppEvent() => $_ensure(2);
 }
 
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
+const $core.bool _omitFieldNames =
+    $core.bool.fromEnvironment('protobuf.omit_field_names');
+const $core.bool _omitMessageNames =
+    $core.bool.fromEnvironment('protobuf.omit_message_names');

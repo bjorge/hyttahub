@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: app_replay_bloc.proto
-//
-// @dart = 2.12
+// Generated from app_replay_bloc.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -35,13 +37,34 @@ final $typed_data.Uint8List appReplayStateEnumDescriptor = $convert.base64Decode
 const AppReplayBlocState$json = {
   '1': 'AppReplayBlocState',
   '2': [
-    {'1': 'events', '3': 1, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppReplayBlocState.EventsEntry', '10': 'events'},
-    {'1': 'state', '3': 2, '4': 1, '5': 14, '6': '.hyttahub.example.template.AppReplayStateEnum', '10': 'state'},
+    {
+      '1': 'events',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppReplayBlocState.EventsEntry',
+      '10': 'events'
+    },
+    {
+      '1': 'state',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.hyttahub.example.template.AppReplayStateEnum',
+      '10': 'state'
+    },
     {'1': 'textValue', '3': 3, '4': 1, '5': 9, '10': 'textValue'},
     {'1': 'codeValue', '3': 4, '4': 1, '5': 9, '10': 'codeValue'},
     {'1': 'checkboxValue', '3': 5, '4': 1, '5': 8, '10': 'checkboxValue'},
     {'1': 'dropdownValue', '3': 6, '4': 1, '5': 9, '10': 'dropdownValue'},
-    {'1': 'listItems', '3': 7, '4': 3, '5': 11, '6': '.hyttahub.example.template.AppEvent.ReorderableItem', '10': 'listItems'},
+    {
+      '1': 'listItems',
+      '3': 7,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.ReorderableItem',
+      '10': 'listItems'
+    },
     {'1': 'photoName', '3': 8, '4': 1, '5': 9, '10': 'photoName'},
     {'1': 'photoVersion', '3': 9, '4': 1, '5': 5, '10': 'photoVersion'},
   ],
@@ -70,4 +93,3 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'VtcxIcCglwaG90b05hbWUYCCABKAlSCXBob3RvTmFtZRIiCgxwaG90b1ZlcnNpb24YCSABKAVS'
     'DHBob3RvVmVyc2lvbho5CgtFdmVudHNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZR'
     'gCIAEoCVIFdmFsdWU6AjgB');
-

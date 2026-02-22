@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: app_events.proto
-//
-// @dart = 2.12
+// Generated from app_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -17,9 +19,33 @@ import 'dart:typed_data' as $typed_data;
 const AppEvent$json = {
   '1': 'AppEvent',
   '2': [
-    {'1': 'move', '3': 1, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.Move', '9': 0, '10': 'move'},
-    {'1': 'startGame', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.StartGame', '9': 0, '10': 'startGame'},
-    {'1': 'playAgain', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent.PlayAgain', '9': 0, '10': 'playAgain'},
+    {
+      '1': 'move',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppEvent.Move',
+      '9': 0,
+      '10': 'move'
+    },
+    {
+      '1': 'startGame',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppEvent.StartGame',
+      '9': 0,
+      '10': 'startGame'
+    },
+    {
+      '1': 'playAgain',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppEvent.PlayAgain',
+      '9': 0,
+      '10': 'playAgain'
+    },
   ],
   '3': [AppEvent_Move$json, AppEvent_StartGame$json, AppEvent_PlayAgain$json],
   '8': [
@@ -64,10 +90,31 @@ final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
 const SubmitAppEvent$json = {
   '1': 'SubmitAppEvent',
   '2': [
-    {'1': 'appEvent', '3': 1, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent', '10': 'appEvent'},
-    {'1': 'siteEvent', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.SubmitAppEvent.SiteEvent', '10': 'siteEvent'},
+    {
+      '1': 'appEvent',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppEvent',
+      '10': 'appEvent'
+    },
+    {
+      '1': 'siteEvent',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.SubmitAppEvent.SiteEvent',
+      '10': 'siteEvent'
+    },
     {'1': 'authorEmail', '3': 3, '4': 1, '5': 9, '10': 'authorEmail'},
-    {'1': 'images', '3': 4, '4': 3, '5': 11, '6': '.hyttahub.example.tictactoe.SubmitAppEvent.Image', '10': 'images'},
+    {
+      '1': 'images',
+      '3': 4,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.SubmitAppEvent.Image',
+      '10': 'images'
+    },
     {'1': 'pause_delay', '3': 5, '4': 1, '5': 5, '10': 'pauseDelay'},
   ],
   '3': [SubmitAppEvent_SiteEvent$json, SubmitAppEvent_Image$json],
@@ -110,7 +157,14 @@ const AppEventRecord$json = {
   '2': [
     {'1': 'isoDate', '3': 1, '4': 1, '5': 9, '10': 'isoDate'},
     {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'appEvent', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.example.tictactoe.AppEvent', '10': 'appEvent'},
+    {
+      '1': 'appEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.tictactoe.AppEvent',
+      '10': 'appEvent'
+    },
   ],
 };
 
@@ -119,4 +173,3 @@ final $typed_data.Uint8List appEventRecordDescriptor = $convert.base64Decode(
     'Cg5BcHBFdmVudFJlY29yZBIYCgdpc29EYXRlGAEgASgJUgdpc29EYXRlEhgKB3ZlcnNpb24YAi'
     'ABKAVSB3ZlcnNpb24SQAoIYXBwRXZlbnQYAyABKAsyJC5oeXR0YWh1Yi5leGFtcGxlLnRpY3Rh'
     'Y3RvZS5BcHBFdmVudFIIYXBwRXZlbnQ=');
-
