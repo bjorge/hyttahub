@@ -20,7 +20,7 @@ sudo podman run --rm -it \
   -p 9199:9199 \
   -v "$(pwd)/firestore.rules:/app/firestore.rules" \
   -v "$(pwd)/storage.rules:/app/storage.rules" \
-  -v "$(pwd)/../node-functions":/app/node-functions \
+  -v "$(pwd)/../../packages/hyttahub_firebase_functions":/app/hyttahub_firebase_functions \
   localhost/hyttahub-firebase-emulator
 
 # docker (mac M1)
@@ -36,7 +36,7 @@ docker run --rm -it \
   -p 9199:9199 \
   -v "$(pwd)/firestore.rules:/app/firestore.rules" \
   -v "$(pwd)/storage.rules:/app/storage.rules" \
-  -v "$(pwd)/../node-functions":/app/node-functions \
+  -v "$(pwd)/../../packages/hyttahub_firebase_functions":/app/hyttahub_firebase_functions \
   hyttahub-firebase-emulator
 
 # to shell into the container

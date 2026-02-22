@@ -16,7 +16,7 @@ sudo podman run --rm -it \
   --name protobuf-compiler-container \
   -v "$(pwd)/../../lib/models:/workspace/proto_input:ro" \
   -v "$(pwd)/../../lib/proto:/workspace/flutter_output" \
-  -v "$(pwd)/../node-functions/src/ts:/workspace/functions_output" \
+  -v "$(pwd)/../../packages/hyttahub_firebase_functions/src/ts:/workspace/functions_output" \
   localhost/protobuf-compiler-image \
   /workspace/compile_proto.sh
 
@@ -25,7 +25,7 @@ docker run --rm -it \
   --name protobuf-compiler-container \
   -v "$(pwd)/../../lib/models:/workspace/proto_input:ro" \
   -v "$(pwd)/../../lib/proto:/workspace/flutter_output" \
-  -v "$(pwd)/../node-functions/src/ts:/workspace/functions_output" \
+  -v "$(pwd)/../../packages/hyttahub_firebase_functions/src/ts:/workspace/functions_output" \
   protobuf-compiler-image \
   /workspace/compile_proto.sh
 

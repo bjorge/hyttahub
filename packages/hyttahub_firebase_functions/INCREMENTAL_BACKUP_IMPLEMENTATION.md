@@ -143,7 +143,7 @@ Implemented an incremental TAR archiving system for the hyttahub family albums a
 
 1. **Install Dependencies:**
    ```bash
-   cd tools/node-functions
+   cd packages/hyttahub_firebase_functions
    npm install
    ```
 
