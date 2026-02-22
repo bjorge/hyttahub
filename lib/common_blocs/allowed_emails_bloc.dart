@@ -44,7 +44,7 @@ class AllowedEmailsBloc
           emit(
             AllowedEmailsBlocState(
               state: AllowedEmailsBlocState_State.success,
-              emails: emails,
+              emails: emails.entries,
             ),
           );
         },

@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_name_replay_bloc.pb.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 // update the passed in replay state with the new events
 SiteNameReplayBlocState siteNameReplay(

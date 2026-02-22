@@ -16,7 +16,7 @@ import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class AddMemberScreen extends StatefulWidget {
   const AddMemberScreen({super.key, required this.siteId, required this.event});

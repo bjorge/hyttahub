@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: site_events.proto
-//
-// @dart = 2.12
+// Generated from site_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -19,18 +21,108 @@ const SiteEvent$json = {
   '2': [
     {'1': 'version', '3': 1, '4': 1, '5': 5, '10': 'version'},
     {'1': 'author', '3': 2, '4': 1, '5': 5, '10': 'author'},
-    {'1': 'newSite', '3': 4, '4': 1, '5': 11, '6': '.SiteEvent.NewSite', '9': 0, '10': 'newSite'},
-    {'1': 'addMember', '3': 5, '4': 1, '5': 11, '6': '.SiteEvent.AddMember', '9': 0, '10': 'addMember'},
-    {'1': 'updateSiteName', '3': 6, '4': 1, '5': 11, '6': '.SiteEvent.UpdateSiteName', '9': 0, '10': 'updateSiteName'},
-    {'1': 'removeMember', '3': 7, '4': 1, '5': 11, '6': '.SiteEvent.RemoveMember', '9': 0, '10': 'removeMember'},
-    {'1': 'leaveSite', '3': 8, '4': 1, '5': 11, '6': '.SiteEvent.LeaveSite', '9': 0, '10': 'leaveSite'},
-    {'1': 'restoreMember', '3': 9, '4': 1, '5': 11, '6': '.SiteEvent.RestoreMember', '9': 0, '10': 'restoreMember'},
-    {'1': 'updateMember', '3': 10, '4': 1, '5': 11, '6': '.SiteEvent.UpdateMember', '9': 0, '10': 'updateMember'},
-    {'1': 'exportEvent', '3': 11, '4': 1, '5': 11, '6': '.SiteEvent.ExportEvent', '9': 0, '10': 'exportEvent'},
-    {'1': 'importEvent', '3': 12, '4': 1, '5': 11, '6': '.SiteEvent.ImportEvent', '9': 0, '10': 'importEvent'},
-    {'1': 'appEvent', '3': 20, '4': 1, '5': 11, '6': '.AppEventWrapper', '9': 0, '10': 'appEvent'},
+    {
+      '1': 'newSite',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.NewSite',
+      '9': 0,
+      '10': 'newSite'
+    },
+    {
+      '1': 'addMember',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.AddMember',
+      '9': 0,
+      '10': 'addMember'
+    },
+    {
+      '1': 'updateSiteName',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.UpdateSiteName',
+      '9': 0,
+      '10': 'updateSiteName'
+    },
+    {
+      '1': 'removeMember',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.RemoveMember',
+      '9': 0,
+      '10': 'removeMember'
+    },
+    {
+      '1': 'leaveSite',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.LeaveSite',
+      '9': 0,
+      '10': 'leaveSite'
+    },
+    {
+      '1': 'restoreMember',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.RestoreMember',
+      '9': 0,
+      '10': 'restoreMember'
+    },
+    {
+      '1': 'updateMember',
+      '3': 10,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.UpdateMember',
+      '9': 0,
+      '10': 'updateMember'
+    },
+    {
+      '1': 'exportEvent',
+      '3': 11,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.ExportEvent',
+      '9': 0,
+      '10': 'exportEvent'
+    },
+    {
+      '1': 'importEvent',
+      '3': 12,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent.ImportEvent',
+      '9': 0,
+      '10': 'importEvent'
+    },
+    {
+      '1': 'appEvent',
+      '3': 20,
+      '4': 1,
+      '5': 11,
+      '6': '.AppEventWrapper',
+      '9': 0,
+      '10': 'appEvent'
+    },
   ],
-  '3': [SiteEvent_NewSite$json, SiteEvent_AddMember$json, SiteEvent_RemoveMember$json, SiteEvent_RestoreMember$json, SiteEvent_UpdateMember$json, SiteEvent_LeaveSite$json, SiteEvent_UpdateSiteName$json, SiteEvent_ExportEvent$json, SiteEvent_ImportEvent$json],
+  '3': [
+    SiteEvent_NewSite$json,
+    SiteEvent_AddMember$json,
+    SiteEvent_RemoveMember$json,
+    SiteEvent_RestoreMember$json,
+    SiteEvent_UpdateMember$json,
+    SiteEvent_LeaveSite$json,
+    SiteEvent_UpdateSiteName$json,
+    SiteEvent_ExportEvent$json,
+    SiteEvent_ImportEvent$json
+  ],
   '8': [
     {'1': 'event_type'},
   ],
@@ -151,9 +243,27 @@ const SubmitSiteEvent$json = {
     {'1': 'event', '3': 1, '4': 1, '5': 11, '6': '.SiteEvent', '10': 'event'},
     {'1': 'authorEmail', '3': 2, '4': 1, '5': 9, '10': 'authorEmail'},
     {'1': 'addMemberEmail', '3': 4, '4': 1, '5': 9, '10': 'addMemberEmail'},
-    {'1': 'removeMemberEmail', '3': 5, '4': 1, '5': 9, '10': 'removeMemberEmail'},
-    {'1': 'updateMemberNewEmail', '3': 6, '4': 1, '5': 9, '10': 'updateMemberNewEmail'},
-    {'1': 'updateMemberOriginalEmail', '3': 7, '4': 1, '5': 9, '10': 'updateMemberOriginalEmail'},
+    {
+      '1': 'removeMemberEmail',
+      '3': 5,
+      '4': 1,
+      '5': 9,
+      '10': 'removeMemberEmail'
+    },
+    {
+      '1': 'updateMemberNewEmail',
+      '3': 6,
+      '4': 1,
+      '5': 9,
+      '10': 'updateMemberNewEmail'
+    },
+    {
+      '1': 'updateMemberOriginalEmail',
+      '3': 7,
+      '4': 1,
+      '5': 9,
+      '10': 'updateMemberOriginalEmail'
+    },
   ],
 };
 
@@ -172,7 +282,14 @@ const SiteEventRecord$json = {
   '2': [
     {'1': 'isoDate', '3': 1, '4': 1, '5': 9, '10': 'isoDate'},
     {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'siteEvent', '3': 3, '4': 1, '5': 11, '6': '.SiteEvent', '10': 'siteEvent'},
+    {
+      '1': 'siteEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.SiteEvent',
+      '10': 'siteEvent'
+    },
   ],
 };
 
@@ -180,4 +297,3 @@ const SiteEventRecord$json = {
 final $typed_data.Uint8List siteEventRecordDescriptor = $convert.base64Decode(
     'Cg9TaXRlRXZlbnRSZWNvcmQSGAoHaXNvRGF0ZRgBIAEoCVIHaXNvRGF0ZRIYCgd2ZXJzaW9uGA'
     'IgASgFUgd2ZXJzaW9uEigKCXNpdGVFdmVudBgDIAEoCzIKLlNpdGVFdmVudFIJc2l0ZUV2ZW50');
-

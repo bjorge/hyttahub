@@ -14,7 +14,7 @@ import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class ServiceUninitializedPage extends StatefulWidget {
   const ServiceUninitializedPage({super.key, required this.event});

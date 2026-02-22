@@ -12,7 +12,7 @@ import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class RenameSiteScreen extends StatefulWidget {
   const RenameSiteScreen({

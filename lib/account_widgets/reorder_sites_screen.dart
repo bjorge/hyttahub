@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class ReorderSitesScreen extends StatefulWidget {
   const ReorderSitesScreen({super.key, required this.event});

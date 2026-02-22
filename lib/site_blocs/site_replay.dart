@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 extension SiteReplayBlocStateX on SiteReplayBlocState {
   int get lastVersion => events.keys.fold(

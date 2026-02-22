@@ -13,7 +13,7 @@ import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 export 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 // Top-level isolate handler for service replay. Runs in a background isolate
 // via `compute()` and must be a top-level function.

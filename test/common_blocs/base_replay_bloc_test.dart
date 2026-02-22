@@ -14,7 +14,6 @@ import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:protobuf/protobuf.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class MockStorage implements Storage {
@@ -324,7 +323,7 @@ void main() {
           bloc.add(
             CommonReplayBlocEvent(
               newEvents: CommonReplayBlocEvent_NewEvents(
-                events: {1: 'event1', 2: 'event2'},
+                events: {1: 'event1', 2: 'event2'}.entries,
               ),
             ),
           );
@@ -340,7 +339,7 @@ void main() {
                   1: 'duplicate_event1', // Should be ignored
                   2: 'duplicate_event2', // Should be ignored
                   3: 'new_event3', // Should be added
-                },
+                }.entries,
               ),
             ),
           );
@@ -368,7 +367,7 @@ void main() {
           bloc.add(
             CommonReplayBlocEvent(
               newEvents: CommonReplayBlocEvent_NewEvents(
-                events: {1: 'event1', 3: 'event3'},
+                events: {1: 'event1', 3: 'event3'}.entries,
               ),
             ),
           );
@@ -377,7 +376,7 @@ void main() {
           // Now fill the gap with version 2
           bloc.add(
             CommonReplayBlocEvent(
-              newEvents: CommonReplayBlocEvent_NewEvents(events: {2: 'event2'}),
+              newEvents: CommonReplayBlocEvent_NewEvents(events: {2: 'event2'}.entries),
             ),
           );
         },
@@ -404,7 +403,7 @@ void main() {
           bloc.add(
             CommonReplayBlocEvent(
               newEvents: CommonReplayBlocEvent_NewEvents(
-                events: {1: 'event1', 3: 'event3'},
+                events: {1: 'event1', 3: 'event3'}.entries,
               ),
             ),
           );
@@ -426,7 +425,7 @@ void main() {
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'clears local state and refetches when validation fails',
         build: () => buildBloc(validationResult: false),
-        seed: () => ServiceReplayBlocState(events: {1: 'stale_event'}),
+        seed: () => ServiceReplayBlocState(events: {1: 'stale_event'}.entries),
         act: (bloc) {
           // Add some data to firestore that should be fetched after clearing
           inMemoryStorage.setDocument(collectionPath, '2', {
@@ -457,7 +456,7 @@ void main() {
           // Manually initialize by adding event 1
           bloc.add(
             CommonReplayBlocEvent(
-              newEvents: CommonReplayBlocEvent_NewEvents(events: {1: 'event1'}),
+              newEvents: CommonReplayBlocEvent_NewEvents(events: {1: 'event1'}.entries),
             ),
           );
           await Future.delayed(const Duration(milliseconds: 50));
@@ -465,7 +464,7 @@ void main() {
           bloc.add(
             CommonReplayBlocEvent(
               newEvents: CommonReplayBlocEvent_NewEvents(
-                events: {2: 'event2', 3: 'event3'},
+                events: {2: 'event2', 3: 'event3'}.entries,
               ),
             ),
           );
@@ -539,10 +538,10 @@ void main() {
         );
         // `state` not used here; we'll construct the serializable state below
 
-        // Build a state that uses simple string events since we're using
+        // build a state that uses simple string events since we're using
         // testHydrateIsolateHandler which doesn't decode base64.
         final json = bloc.toJson(
-          ServiceReplayBlocState(events: {1: 'test_event'}),
+          ServiceReplayBlocState(events: {1: 'test_event'}.entries),
         );
         final restoringState = bloc.fromJson(json!);
         expect(restoringState?.state, CommonReplayStateEnum.hydrating);

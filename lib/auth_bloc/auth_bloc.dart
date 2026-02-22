@@ -8,7 +8,7 @@ import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:bloc/bloc.dart';
 
-import 'package:protobuf/protobuf.dart';
+
 
 const debugAwaitDelayMilliseconds = 500;
 

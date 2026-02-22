@@ -7,6 +7,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:protobuf/protobuf.dart';
 
+
 class CommonSubmitFormLayout<T extends GeneratedMessage>
     extends StatelessWidget {
   const CommonSubmitFormLayout({

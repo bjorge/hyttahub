@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: common_blocs.proto
-//
-// @dart = 2.12
+// Generated from common_blocs.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -36,7 +38,15 @@ const CommonReplayBlocEvent$json = {
   '1': 'CommonReplayBlocEvent',
   '2': [
     {'1': 'listen', '3': 1, '4': 1, '5': 8, '9': 0, '10': 'listen'},
-    {'1': 'newEvents', '3': 2, '4': 1, '5': 11, '6': '.CommonReplayBlocEvent.NewEvents', '9': 0, '10': 'newEvents'},
+    {
+      '1': 'newEvents',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.CommonReplayBlocEvent.NewEvents',
+      '9': 0,
+      '10': 'newEvents'
+    },
   ],
   '3': [CommonReplayBlocEvent_NewEvents$json],
   '8': [
@@ -48,7 +58,14 @@ const CommonReplayBlocEvent$json = {
 const CommonReplayBlocEvent_NewEvents$json = {
   '1': 'NewEvents',
   '2': [
-    {'1': 'events', '3': 1, '4': 3, '5': 11, '6': '.CommonReplayBlocEvent.NewEvents.EventsEntry', '10': 'events'},
+    {
+      '1': 'events',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.CommonReplayBlocEvent.NewEvents.EventsEntry',
+      '10': 'events'
+    },
   ],
   '3': [CommonReplayBlocEvent_NewEvents_EventsEntry$json],
 };
@@ -75,7 +92,14 @@ final $typed_data.Uint8List commonReplayBlocEventDescriptor = $convert.base64Dec
 const EventMapProto$json = {
   '1': 'EventMapProto',
   '2': [
-    {'1': 'events', '3': 1, '4': 3, '5': 11, '6': '.EventMapProto.EventsEntry', '10': 'events'},
+    {
+      '1': 'events',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.EventMapProto.EventsEntry',
+      '10': 'events'
+    },
   ],
   '3': [EventMapProto_EventsEntry$json],
 };
@@ -100,9 +124,24 @@ final $typed_data.Uint8List eventMapProtoDescriptor = $convert.base64Decode(
 const CommonSubmitBlocEvent$json = {
   '1': 'CommonSubmitBlocEvent',
   '2': [
-    {'1': 'updatedPayload', '3': 2, '4': 1, '5': 9, '9': 0, '10': 'updatedPayload'},
+    {
+      '1': 'updatedPayload',
+      '3': 2,
+      '4': 1,
+      '5': 9,
+      '9': 0,
+      '10': 'updatedPayload'
+    },
     {'1': 'isFormValid', '3': 3, '4': 1, '5': 8, '9': 0, '10': 'isFormValid'},
-    {'1': 'submit', '3': 4, '4': 1, '5': 11, '6': '.CommonSubmitBlocEvent.SubmitNow', '9': 0, '10': 'submit'},
+    {
+      '1': 'submit',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.CommonSubmitBlocEvent.SubmitNow',
+      '9': 0,
+      '10': 'submit'
+    },
   ],
   '3': [CommonSubmitBlocEvent_SubmitNow$json],
   '8': [
@@ -126,9 +165,30 @@ final $typed_data.Uint8List commonSubmitBlocEventDescriptor = $convert.base64Dec
 const CommonSubmitBlocState$json = {
   '1': 'CommonSubmitBlocState',
   '2': [
-    {'1': 'state', '3': 1, '4': 1, '5': 14, '6': '.CommonSubmitBlocState.State', '10': 'state'},
-    {'1': 'errorCode', '3': 8, '4': 1, '5': 14, '6': '.CommonSubmitBlocState.ErrorCode', '10': 'errorCode'},
-    {'1': 'progress', '3': 9, '4': 1, '5': 11, '6': '.CommonSubmitBlocState.SubmitProgress', '10': 'progress'},
+    {
+      '1': 'state',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.CommonSubmitBlocState.State',
+      '10': 'state'
+    },
+    {
+      '1': 'errorCode',
+      '3': 8,
+      '4': 1,
+      '5': 14,
+      '6': '.CommonSubmitBlocState.ErrorCode',
+      '10': 'errorCode'
+    },
+    {
+      '1': 'progress',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.CommonSubmitBlocState.SubmitProgress',
+      '10': 'progress'
+    },
   ],
   '3': [CommonSubmitBlocState_SubmitProgress$json],
   '4': [CommonSubmitBlocState_State$json, CommonSubmitBlocState_ErrorCode$json],
@@ -175,4 +235,3 @@ final $typed_data.Uint8List commonSubmitBlocStateDescriptor = $convert.base64Dec
     'IJCgVyZWFkeRAAEg0KCWNhblN1Ym1pdBABEg4KCnN1Ym1pdHRpbmcQAhIJCgVlcnJvchADEgsK'
     'B3N1Y2Nlc3MQBCI9CglFcnJvckNvZGUSCAoEbm9uZRAAEhAKDG5ldHdvcmtFcnJvchABEhQKEH'
     'Blcm1pc3Npb25EZW5pZWQQAg==');
-

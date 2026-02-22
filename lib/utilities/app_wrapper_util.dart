@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:protobuf/protobuf.dart';
 
+
 AppReplayWrapper packAppReplayWrapper(Uint8List appState) {
   return AppReplayWrapper()..payload = appState;
 }

@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/utilities/ids.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 const Duration firebaseTimeout = Duration(seconds: 15);
 

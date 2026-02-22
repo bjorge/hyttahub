@@ -15,7 +15,7 @@ import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class UpdateTermsWidget extends StatefulWidget {
   const UpdateTermsWidget({super.key});

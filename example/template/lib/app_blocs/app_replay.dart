@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:template/app_blocs/app_replay_bloc.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
-import 'package:protobuf/protobuf.dart';
 
 AppReplayBlocState appReplay(
   AppReplayBlocState appBlocState,

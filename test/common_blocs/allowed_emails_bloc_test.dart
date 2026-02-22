@@ -56,7 +56,7 @@ void main() {
             emails: {
               'test@email.com': AllowedEmailsBlocState_UserInfo(userId: 123),
               'another@email.com': AllowedEmailsBlocState_UserInfo(userId: 456),
-            },
+            }.entries,
           ),
         ],
       );
@@ -119,7 +119,7 @@ void main() {
     group('UpdateNow event', () {
       final updatedState = AllowedEmailsBlocState(
         state: AllowedEmailsBlocState_State.success,
-        emails: {'new@email.com': AllowedEmailsBlocState_UserInfo(userId: 999)},
+        emails: {'new@email.com': AllowedEmailsBlocState_UserInfo(userId: 999)}.entries,
       );
 
       blocTest<AllowedEmailsBloc, AllowedEmailsBlocState>(

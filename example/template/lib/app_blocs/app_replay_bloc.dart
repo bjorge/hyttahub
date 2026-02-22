@@ -14,7 +14,6 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
-import 'package:protobuf/protobuf.dart';
 
 // Top-level isolate handler for service replay. Runs in a background isolate
 // via `compute()` and must be a top-level function.

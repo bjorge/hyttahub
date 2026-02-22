@@ -14,7 +14,7 @@ import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class ServiceSettingsForm extends StatefulWidget {
   const ServiceSettingsForm({super.key, required this.event});

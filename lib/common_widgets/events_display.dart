@@ -5,12 +5,13 @@ import 'dart:convert';
 
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:go_router/go_router.dart';
+import 'package:protobuf/protobuf.dart';
 
 /// Abstract configuration to drive the generic [EventsDisplay] widget.
 ///

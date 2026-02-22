@@ -8,8 +8,9 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:protobuf/protobuf.dart';
+
+
 
 abstract class BaseSubmitEvent<T extends GeneratedMessage> {
   T? updatedPayload;

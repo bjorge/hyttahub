@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: allowed_emails_bloc.proto
-//
-// @dart = 2.12
+// Generated from allowed_emails_bloc.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -17,8 +19,24 @@ import 'dart:typed_data' as $typed_data;
 const AllowedEmailsBlocEvent$json = {
   '1': 'AllowedEmailsBlocEvent',
   '2': [
-    {'1': 'fetchNow', '3': 1, '4': 1, '5': 11, '6': '.AllowedEmailsBlocEvent.FetchedAllowedEmails', '9': 0, '10': 'fetchNow'},
-    {'1': 'updateNow', '3': 2, '4': 1, '5': 11, '6': '.AllowedEmailsBlocState', '9': 0, '10': 'updateNow'},
+    {
+      '1': 'fetchNow',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.AllowedEmailsBlocEvent.FetchedAllowedEmails',
+      '9': 0,
+      '10': 'fetchNow'
+    },
+    {
+      '1': 'updateNow',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.AllowedEmailsBlocState',
+      '9': 0,
+      '10': 'updateNow'
+    },
   ],
   '3': [AllowedEmailsBlocEvent_FetchedAllowedEmails$json],
   '8': [
@@ -42,10 +60,27 @@ final $typed_data.Uint8List allowedEmailsBlocEventDescriptor = $convert.base64De
 const AllowedEmailsBlocState$json = {
   '1': 'AllowedEmailsBlocState',
   '2': [
-    {'1': 'state', '3': 1, '4': 1, '5': 14, '6': '.AllowedEmailsBlocState.State', '10': 'state'},
-    {'1': 'emails', '3': 2, '4': 3, '5': 11, '6': '.AllowedEmailsBlocState.EmailsEntry', '10': 'emails'},
+    {
+      '1': 'state',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.AllowedEmailsBlocState.State',
+      '10': 'state'
+    },
+    {
+      '1': 'emails',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.AllowedEmailsBlocState.EmailsEntry',
+      '10': 'emails'
+    },
   ],
-  '3': [AllowedEmailsBlocState_UserInfo$json, AllowedEmailsBlocState_EmailsEntry$json],
+  '3': [
+    AllowedEmailsBlocState_UserInfo$json,
+    AllowedEmailsBlocState_EmailsEntry$json
+  ],
   '4': [AllowedEmailsBlocState_State$json],
 };
 
@@ -62,7 +97,14 @@ const AllowedEmailsBlocState_EmailsEntry$json = {
   '1': 'EmailsEntry',
   '2': [
     {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.AllowedEmailsBlocState.UserInfo', '10': 'value'},
+    {
+      '1': 'value',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.AllowedEmailsBlocState.UserInfo',
+      '10': 'value'
+    },
   ],
   '7': {'7': true},
 };
@@ -87,4 +129,3 @@ final $typed_data.Uint8List allowedEmailsBlocStateDescriptor = $convert.base64De
     'CzIgLkFsbG93ZWRFbWFpbHNCbG9jU3RhdGUuVXNlckluZm9SBXZhbHVlOgI4ASJDCgVTdGF0ZR'
     'IMCghmZXRjaGluZxAAEgsKB3N1Y2Nlc3MQARIJCgVlcnJvchACEhQKEHBlcm1pc3Npb25EZW5p'
     'ZWQQAw==');
-

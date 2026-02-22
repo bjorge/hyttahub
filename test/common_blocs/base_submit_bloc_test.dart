@@ -7,7 +7,7 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 // Mock Event
 class TestSubmitEvent extends BaseSubmitEvent<SubmitServiceEvent> {

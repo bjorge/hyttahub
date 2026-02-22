@@ -9,7 +9,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class ServiceEventSubmission extends BaseSubmitEvent<SubmitServiceEvent> {
   ServiceEventSubmission({super.updatedPayload, required super.submission});

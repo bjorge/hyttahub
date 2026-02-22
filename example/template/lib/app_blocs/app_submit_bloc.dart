@@ -11,7 +11,6 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:bloc/bloc.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:hyttahub/hyttahub_options.dart';
-import 'package:protobuf/protobuf.dart';
 
 const Duration firebaseTimeout = Duration(seconds: 15);
 

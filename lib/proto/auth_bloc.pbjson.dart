@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: auth_bloc.proto
-//
-// @dart = 2.12
+// Generated from auth_bloc.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -47,7 +49,14 @@ final $typed_data.Uint8List authStateDescriptor = $convert.base64Decode(
 const AuthBlocState$json = {
   '1': 'AuthBlocState',
   '2': [
-    {'1': 'authState', '3': 1, '4': 1, '5': 14, '6': '.AuthState', '10': 'authState'},
+    {
+      '1': 'authState',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.AuthState',
+      '10': 'authState'
+    },
     {'1': 'email', '3': 2, '4': 1, '5': 9, '10': 'email'},
     {'1': 'errorMessage', '3': 3, '4': 1, '5': 9, '10': 'errorMessage'},
     {'1': 'isServiceAdmin', '3': 4, '4': 1, '5': 8, '10': 'isServiceAdmin'},
@@ -66,14 +75,69 @@ final $typed_data.Uint8List authBlocStateDescriptor = $convert.base64Decode(
 const AuthBlocEvent$json = {
   '1': 'AuthBlocEvent',
   '2': [
-    {'1': 'emailLogin', '3': 1, '4': 1, '5': 11, '6': '.AuthBlocEvent.EmailLogin', '9': 0, '10': 'emailLogin'},
-    {'1': 'emailSignup', '3': 2, '4': 1, '5': 11, '6': '.AuthBlocEvent.EmailSignup', '9': 0, '10': 'emailSignup'},
-    {'1': 'emailForgotPassword', '3': 3, '4': 1, '5': 11, '6': '.AuthBlocEvent.EmailForgotPassword', '9': 0, '10': 'emailForgotPassword'},
-    {'1': 'logout', '3': 4, '4': 1, '5': 11, '6': '.AuthBlocEvent.Logout', '9': 0, '10': 'logout'},
-    {'1': 'startup', '3': 5, '4': 1, '5': 11, '6': '.AuthBlocEvent.AppStartup', '9': 0, '10': 'startup'},
-    {'1': 'removeAccount', '3': 6, '4': 1, '5': 11, '6': '.AuthBlocEvent.RemoveAccount', '9': 0, '10': 'removeAccount'},
+    {
+      '1': 'emailLogin',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.EmailLogin',
+      '9': 0,
+      '10': 'emailLogin'
+    },
+    {
+      '1': 'emailSignup',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.EmailSignup',
+      '9': 0,
+      '10': 'emailSignup'
+    },
+    {
+      '1': 'emailForgotPassword',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.EmailForgotPassword',
+      '9': 0,
+      '10': 'emailForgotPassword'
+    },
+    {
+      '1': 'logout',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.Logout',
+      '9': 0,
+      '10': 'logout'
+    },
+    {
+      '1': 'startup',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.AppStartup',
+      '9': 0,
+      '10': 'startup'
+    },
+    {
+      '1': 'removeAccount',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.AuthBlocEvent.RemoveAccount',
+      '9': 0,
+      '10': 'removeAccount'
+    },
   ],
-  '3': [AuthBlocEvent_AppStartup$json, AuthBlocEvent_EmailLogin$json, AuthBlocEvent_EmailSignup$json, AuthBlocEvent_EmailForgotPassword$json, AuthBlocEvent_Logout$json, AuthBlocEvent_RemoveAccount$json],
+  '3': [
+    AuthBlocEvent_AppStartup$json,
+    AuthBlocEvent_EmailLogin$json,
+    AuthBlocEvent_EmailSignup$json,
+    AuthBlocEvent_EmailForgotPassword$json,
+    AuthBlocEvent_Logout$json,
+    AuthBlocEvent_RemoveAccount$json
+  ],
   '8': [
     {'1': 'eventType'},
   ],
@@ -145,4 +209,3 @@ final $typed_data.Uint8List authBlocEventDescriptor = $convert.base64Decode(
     'ZpY2VBZG1pbhgIIAEoCFIMc2VydmljZUFkbWluGkcKE0VtYWlsRm9yZ290UGFzc3dvcmQSFAoF'
     'ZW1haWwYASABKAlSBWVtYWlsEhoKCGxhbmd1YWdlGAIgASgJUghsYW5ndWFnZRoICgZMb2dvdX'
     'QaDwoNUmVtb3ZlQWNjb3VudEILCglldmVudFR5cGU=');
-

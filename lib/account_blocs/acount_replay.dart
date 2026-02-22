@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 extension AccountReplayBlocStateX on AccountReplayBlocState {
   int get lastVersion => events.keys.fold(

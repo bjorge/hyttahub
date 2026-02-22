@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 extension ServiceReplayBlocStateX on ServiceReplayBlocState {
   int get lastVersion => events.keys.fold(

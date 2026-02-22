@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: hyttahub_implementation.proto
-//
-// @dart = 2.12
+// Generated from hyttahub_implementation.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -31,12 +33,37 @@ final $typed_data.Uint8List storageEnumDescriptor = $convert.base64Decode(
 const HyttaHubImplementation$json = {
   '1': 'HyttaHubImplementation',
   '2': [
-    {'1': 'storage', '3': 1, '4': 1, '5': 14, '6': '.StorageEnum', '10': 'storage'},
+    {
+      '1': 'storage',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.StorageEnum',
+      '10': 'storage'
+    },
     {'1': 'appBuildNumber', '3': 2, '4': 1, '5': 5, '10': 'appBuildNumber'},
     {'1': 'appId', '3': 3, '4': 1, '5': 9, '10': 'appId'},
-    {'1': 'firebaseRootCollection', '3': 4, '4': 1, '5': 9, '10': 'firebaseRootCollection'},
-    {'1': 'disable_firestore_cache', '3': 5, '4': 1, '5': 8, '10': 'disableFirestoreCache'},
-    {'1': 'implementation_id', '3': 6, '4': 1, '5': 9, '10': 'implementationId'},
+    {
+      '1': 'firebaseRootCollection',
+      '3': 4,
+      '4': 1,
+      '5': 9,
+      '10': 'firebaseRootCollection'
+    },
+    {
+      '1': 'disable_firestore_cache',
+      '3': 5,
+      '4': 1,
+      '5': 8,
+      '10': 'disableFirestoreCache'
+    },
+    {
+      '1': 'implementation_id',
+      '3': 6,
+      '4': 1,
+      '5': 9,
+      '10': 'implementationId'
+    },
   ],
 };
 
@@ -48,4 +75,3 @@ final $typed_data.Uint8List hyttaHubImplementationDescriptor = $convert.base64De
     'NlUm9vdENvbGxlY3Rpb24SNgoXZGlzYWJsZV9maXJlc3RvcmVfY2FjaGUYBSABKAhSFWRpc2Fi'
     'bGVGaXJlc3RvcmVDYWNoZRIrChFpbXBsZW1lbnRhdGlvbl9pZBgGIAEoCVIQaW1wbGVtZW50YX'
     'Rpb25JZA==');
-

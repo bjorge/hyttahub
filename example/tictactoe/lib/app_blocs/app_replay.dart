@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:protobuf/protobuf.dart';
+
 import 'package:tictactoe/app_blocs/app_replay_bloc.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';

@@ -11,7 +11,7 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:flutter/foundation.dart'; // For compute()
-import 'package:protobuf/protobuf.dart'; // For GeneratedMessage
+import 'package:protobuf/protobuf.dart'; // For GeneratedMessageneratedMessage
 
 abstract class BaseReplayBloc<S extends GeneratedMessage>
     extends HydratedBloc<CommonReplayBlocEvent, S> {
@@ -176,7 +176,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
           if (!isClosed) {
             add(
               CommonReplayBlocEvent(
-                newEvents: CommonReplayBlocEvent_NewEvents(events: {0: ''}),
+                newEvents: CommonReplayBlocEvent_NewEvents(events: {0: ''}.entries),
               ),
             );
           }
@@ -359,7 +359,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
                   add(
                     CommonReplayBlocEvent(
                       newEvents: CommonReplayBlocEvent_NewEvents(
-                        events: eventsData,
+                        events: eventsData.entries,
                       ),
                     ),
                   );
@@ -445,7 +445,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   Map<String, dynamic>? toJson(S state) {
     try {
       final Map<int, String> eventsToSerialize = stateGetEventsMap(state);
-      final eventMapProto = EventMapProto(events: eventsToSerialize);
+      final eventMapProto = EventMapProto(events: eventsToSerialize.entries);
       final serializedEventsMap = base64Encode(eventMapProto.writeToBuffer());
 
       final serializedState = base64Encode(toBuffer(state));

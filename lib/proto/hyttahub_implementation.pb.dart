@@ -1,19 +1,22 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: hyttahub_implementation.proto
-//
-// @dart = 2.12
+// Generated from hyttahub_implementation.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
 
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'hyttahub_implementation.pbenum.dart';
+
+export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 export 'hyttahub_implementation.pbenum.dart';
 
@@ -26,117 +29,117 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     $core.bool? disableFirestoreCache,
     $core.String? implementationId,
   }) {
-    final $result = create();
-    if (storage != null) {
-      $result.storage = storage;
-    }
-    if (appBuildNumber != null) {
-      $result.appBuildNumber = appBuildNumber;
-    }
-    if (appId != null) {
-      $result.appId = appId;
-    }
-    if (firebaseRootCollection != null) {
-      $result.firebaseRootCollection = firebaseRootCollection;
-    }
-    if (disableFirestoreCache != null) {
-      $result.disableFirestoreCache = disableFirestoreCache;
-    }
-    if (implementationId != null) {
-      $result.implementationId = implementationId;
-    }
-    return $result;
+    final result = create();
+    if (storage != null) result.storage = storage;
+    if (appBuildNumber != null) result.appBuildNumber = appBuildNumber;
+    if (appId != null) result.appId = appId;
+    if (firebaseRootCollection != null)
+      result.firebaseRootCollection = firebaseRootCollection;
+    if (disableFirestoreCache != null)
+      result.disableFirestoreCache = disableFirestoreCache;
+    if (implementationId != null) result.implementationId = implementationId;
+    return result;
   }
-  HyttaHubImplementation._() : super();
-  factory HyttaHubImplementation.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory HyttaHubImplementation.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'HyttaHubImplementation', createEmptyInstance: create)
-    ..e<StorageEnum>(1, _omitFieldNames ? '' : 'storage', $pb.PbFieldType.OE, defaultOrMaker: StorageEnum.cloud, valueOf: StorageEnum.valueOf, enumValues: StorageEnum.values)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'appBuildNumber', $pb.PbFieldType.O3, protoName: 'appBuildNumber')
+  HyttaHubImplementation._();
+
+  factory HyttaHubImplementation.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory HyttaHubImplementation.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'HyttaHubImplementation',
+      createEmptyInstance: create)
+    ..aE<StorageEnum>(1, _omitFieldNames ? '' : 'storage',
+        enumValues: StorageEnum.values)
+    ..aI(2, _omitFieldNames ? '' : 'appBuildNumber',
+        protoName: 'appBuildNumber')
     ..aOS(3, _omitFieldNames ? '' : 'appId', protoName: 'appId')
-    ..aOS(4, _omitFieldNames ? '' : 'firebaseRootCollection', protoName: 'firebaseRootCollection')
+    ..aOS(4, _omitFieldNames ? '' : 'firebaseRootCollection',
+        protoName: 'firebaseRootCollection')
     ..aOB(5, _omitFieldNames ? '' : 'disableFirestoreCache')
     ..aOS(6, _omitFieldNames ? '' : 'implementationId')
-    ..hasRequiredFields = false
-  ;
+    ..hasRequiredFields = false;
 
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  HyttaHubImplementation clone() => HyttaHubImplementation()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  HyttaHubImplementation copyWith(void Function(HyttaHubImplementation) updates) => super.copyWith((message) => updates(message as HyttaHubImplementation)) as HyttaHubImplementation;
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HyttaHubImplementation clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HyttaHubImplementation copyWith(
+          void Function(HyttaHubImplementation) updates) =>
+      super.copyWith((message) => updates(message as HyttaHubImplementation))
+          as HyttaHubImplementation;
 
+  @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
   static HyttaHubImplementation create() => HyttaHubImplementation._();
+  @$core.override
   HyttaHubImplementation createEmptyInstance() => create();
-  static $pb.PbList<HyttaHubImplementation> createRepeated() => $pb.PbList<HyttaHubImplementation>();
   @$core.pragma('dart2js:noInline')
-  static HyttaHubImplementation getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<HyttaHubImplementation>(create);
+  static HyttaHubImplementation getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<HyttaHubImplementation>(create);
   static HyttaHubImplementation? _defaultInstance;
 
   @$pb.TagNumber(1)
   StorageEnum get storage => $_getN(0);
   @$pb.TagNumber(1)
-  set storage(StorageEnum v) { setField(1, v); }
+  set storage(StorageEnum value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasStorage() => $_has(0);
   @$pb.TagNumber(1)
-  void clearStorage() => clearField(1);
+  void clearStorage() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $core.int get appBuildNumber => $_getIZ(1);
   @$pb.TagNumber(2)
-  set appBuildNumber($core.int v) { $_setSignedInt32(1, v); }
+  set appBuildNumber($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasAppBuildNumber() => $_has(1);
   @$pb.TagNumber(2)
-  void clearAppBuildNumber() => clearField(2);
+  void clearAppBuildNumber() => $_clearField(2);
 
   @$pb.TagNumber(3)
   $core.String get appId => $_getSZ(2);
   @$pb.TagNumber(3)
-  set appId($core.String v) { $_setString(2, v); }
+  set appId($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
   $core.bool hasAppId() => $_has(2);
   @$pb.TagNumber(3)
-  void clearAppId() => clearField(3);
+  void clearAppId() => $_clearField(3);
 
   @$pb.TagNumber(4)
   $core.String get firebaseRootCollection => $_getSZ(3);
   @$pb.TagNumber(4)
-  set firebaseRootCollection($core.String v) { $_setString(3, v); }
+  set firebaseRootCollection($core.String value) => $_setString(3, value);
   @$pb.TagNumber(4)
   $core.bool hasFirebaseRootCollection() => $_has(3);
   @$pb.TagNumber(4)
-  void clearFirebaseRootCollection() => clearField(4);
+  void clearFirebaseRootCollection() => $_clearField(4);
 
   @$pb.TagNumber(5)
   $core.bool get disableFirestoreCache => $_getBF(4);
   @$pb.TagNumber(5)
-  set disableFirestoreCache($core.bool v) { $_setBool(4, v); }
+  set disableFirestoreCache($core.bool value) => $_setBool(4, value);
   @$pb.TagNumber(5)
   $core.bool hasDisableFirestoreCache() => $_has(4);
   @$pb.TagNumber(5)
-  void clearDisableFirestoreCache() => clearField(5);
+  void clearDisableFirestoreCache() => $_clearField(5);
 
   @$pb.TagNumber(6)
   $core.String get implementationId => $_getSZ(5);
   @$pb.TagNumber(6)
-  set implementationId($core.String v) { $_setString(5, v); }
+  set implementationId($core.String value) => $_setString(5, value);
   @$pb.TagNumber(6)
   $core.bool hasImplementationId() => $_has(5);
   @$pb.TagNumber(6)
-  void clearImplementationId() => clearField(6);
+  void clearImplementationId() => $_clearField(6);
 }
 
-
-const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
-const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
+const $core.bool _omitFieldNames =
+    $core.bool.fromEnvironment('protobuf.omit_field_names');
+const $core.bool _omitMessageNames =
+    $core.bool.fromEnvironment('protobuf.omit_message_names');

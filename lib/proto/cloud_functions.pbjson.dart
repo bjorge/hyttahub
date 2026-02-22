@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: cloud_functions.proto
-//
-// @dart = 2.12
+// Generated from cloud_functions.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -17,13 +19,69 @@ import 'dart:typed_data' as $typed_data;
 const CloudFunctionsState$json = {
   '1': 'CloudFunctionsState',
   '2': [
-    {'1': 'initial', '3': 1, '4': 1, '5': 11, '6': '.hyttahub.CloudFunctionsInitial', '9': 0, '10': 'initial'},
-    {'1': 'loading', '3': 2, '4': 1, '5': 11, '6': '.hyttahub.CloudFunctionsLoading', '9': 0, '10': 'loading'},
-    {'1': 'export_success', '3': 3, '4': 1, '5': 11, '6': '.hyttahub.ExportSuccess', '9': 0, '10': 'exportSuccess'},
-    {'1': 'export_list_success', '3': 4, '4': 1, '5': 11, '6': '.hyttahub.ExportListSuccess', '9': 0, '10': 'exportListSuccess'},
-    {'1': 'export_delete_success', '3': 5, '4': 1, '5': 11, '6': '.hyttahub.ExportDeleteSuccess', '9': 0, '10': 'exportDeleteSuccess'},
-    {'1': 'export_details_success', '3': 6, '4': 1, '5': 11, '6': '.hyttahub.ExportDetailsSuccess', '9': 0, '10': 'exportDetailsSuccess'},
-    {'1': 'failure', '3': 7, '4': 1, '5': 11, '6': '.hyttahub.CloudFunctionsFailure', '9': 0, '10': 'failure'},
+    {
+      '1': 'initial',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.CloudFunctionsInitial',
+      '9': 0,
+      '10': 'initial'
+    },
+    {
+      '1': 'loading',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.CloudFunctionsLoading',
+      '9': 0,
+      '10': 'loading'
+    },
+    {
+      '1': 'export_success',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.ExportSuccess',
+      '9': 0,
+      '10': 'exportSuccess'
+    },
+    {
+      '1': 'export_list_success',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.ExportListSuccess',
+      '9': 0,
+      '10': 'exportListSuccess'
+    },
+    {
+      '1': 'export_delete_success',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.ExportDeleteSuccess',
+      '9': 0,
+      '10': 'exportDeleteSuccess'
+    },
+    {
+      '1': 'export_details_success',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.ExportDetailsSuccess',
+      '9': 0,
+      '10': 'exportDetailsSuccess'
+    },
+    {
+      '1': 'failure',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.CloudFunctionsFailure',
+      '9': 0,
+      '10': 'failure'
+    },
   ],
   '8': [
     {'1': 'state'},
@@ -49,8 +107,8 @@ const CloudFunctionsInitial$json = {
 };
 
 /// Descriptor for `CloudFunctionsInitial`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List cloudFunctionsInitialDescriptor = $convert.base64Decode(
-    'ChVDbG91ZEZ1bmN0aW9uc0luaXRpYWw=');
+final $typed_data.Uint8List cloudFunctionsInitialDescriptor =
+    $convert.base64Decode('ChVDbG91ZEZ1bmN0aW9uc0luaXRpYWw=');
 
 @$core.Deprecated('Use cloudFunctionsLoadingDescriptor instead')
 const CloudFunctionsLoading$json = {
@@ -58,8 +116,8 @@ const CloudFunctionsLoading$json = {
 };
 
 /// Descriptor for `CloudFunctionsLoading`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List cloudFunctionsLoadingDescriptor = $convert.base64Decode(
-    'ChVDbG91ZEZ1bmN0aW9uc0xvYWRpbmc=');
+final $typed_data.Uint8List cloudFunctionsLoadingDescriptor =
+    $convert.base64Decode('ChVDbG91ZEZ1bmN0aW9uc0xvYWRpbmc=');
 
 @$core.Deprecated('Use exportSuccessDescriptor instead')
 const ExportSuccess$json = {
@@ -70,8 +128,8 @@ const ExportSuccess$json = {
 };
 
 /// Descriptor for `ExportSuccess`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List exportSuccessDescriptor = $convert.base64Decode(
-    'Cg1FeHBvcnRTdWNjZXNzEhgKB21lc3NhZ2UYASABKAlSB21lc3NhZ2U=');
+final $typed_data.Uint8List exportSuccessDescriptor = $convert
+    .base64Decode('Cg1FeHBvcnRTdWNjZXNzEhgKB21lc3NhZ2UYASABKAlSB21lc3NhZ2U=');
 
 @$core.Deprecated('Use exportFileDescriptor instead')
 const ExportFile$json = {
@@ -90,7 +148,14 @@ final $typed_data.Uint8List exportFileDescriptor = $convert.base64Decode(
 const ExportListSuccess$json = {
   '1': 'ExportListSuccess',
   '2': [
-    {'1': 'files', '3': 1, '4': 3, '5': 11, '6': '.hyttahub.ExportFile', '10': 'files'},
+    {
+      '1': 'files',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.hyttahub.ExportFile',
+      '10': 'files'
+    },
   ],
 };
 
@@ -105,8 +170,8 @@ const ExportDeleteSuccess$json = {
 };
 
 /// Descriptor for `ExportDeleteSuccess`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List exportDeleteSuccessDescriptor = $convert.base64Decode(
-    'ChNFeHBvcnREZWxldGVTdWNjZXNz');
+final $typed_data.Uint8List exportDeleteSuccessDescriptor =
+    $convert.base64Decode('ChNFeHBvcnREZWxldGVTdWNjZXNz');
 
 @$core.Deprecated('Use exportDetailsSuccessDescriptor instead')
 const ExportDetailsSuccess$json = {
@@ -117,8 +182,9 @@ const ExportDetailsSuccess$json = {
 };
 
 /// Descriptor for `ExportDetailsSuccess`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List exportDetailsSuccessDescriptor = $convert.base64Decode(
-    'ChRFeHBvcnREZXRhaWxzU3VjY2VzcxIWCgZldmVudHMYASABKAlSBmV2ZW50cw==');
+final $typed_data.Uint8List exportDetailsSuccessDescriptor =
+    $convert.base64Decode(
+        'ChRFeHBvcnREZXRhaWxzU3VjY2VzcxIWCgZldmVudHMYASABKAlSBmV2ZW50cw==');
 
 @$core.Deprecated('Use cloudFunctionsFailureDescriptor instead')
 const CloudFunctionsFailure$json = {
@@ -129,6 +195,6 @@ const CloudFunctionsFailure$json = {
 };
 
 /// Descriptor for `CloudFunctionsFailure`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List cloudFunctionsFailureDescriptor = $convert.base64Decode(
-    'ChVDbG91ZEZ1bmN0aW9uc0ZhaWx1cmUSFAoFZXJyb3IYASABKAlSBWVycm9y');
-
+final $typed_data.Uint8List cloudFunctionsFailureDescriptor =
+    $convert.base64Decode(
+        'ChVDbG91ZEZ1bmN0aW9uc0ZhaWx1cmUSFAoFZXJyb3IYASABKAlSBWVycm9y');

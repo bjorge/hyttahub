@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+
 
 class JoinSiteScreen extends StatefulWidget {
   const JoinSiteScreen({super.key, required this.event});

@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: service_events.proto
-//
-// @dart = 2.12
+// Generated from service_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -19,18 +21,108 @@ const ServiceEvent$json = {
   '2': [
     {'1': 'version', '3': 1, '4': 1, '5': 5, '10': 'version'},
     {'1': 'author', '3': 2, '4': 1, '5': 5, '10': 'author'},
-    {'1': 'initialEvent', '3': 3, '4': 1, '5': 11, '6': '.ServiceEvent.InitialEvent', '9': 0, '10': 'initialEvent'},
-    {'1': 'serviceStatus', '3': 4, '4': 1, '5': 11, '6': '.ServiceEvent.ServiceStatus', '9': 0, '10': 'serviceStatus'},
-    {'1': 'terms', '3': 5, '4': 1, '5': 11, '6': '.ServiceEvent.TermsOfService', '9': 0, '10': 'terms'},
-    {'1': 'privacy', '3': 6, '4': 1, '5': 11, '6': '.ServiceEvent.PrivacyPolicy', '9': 0, '10': 'privacy'},
-    {'1': 'addServiceAdmin', '3': 7, '4': 1, '5': 11, '6': '.ServiceEvent.AddServiceAdmin', '9': 0, '10': 'addServiceAdmin'},
-    {'1': 'removeServiceAdmin', '3': 8, '4': 1, '5': 11, '6': '.ServiceEvent.RemoveServiceAdmin', '9': 0, '10': 'removeServiceAdmin'},
-    {'1': 'minVersion', '3': 9, '4': 1, '5': 11, '6': '.ServiceEvent.MinimumVersionRequired', '9': 0, '10': 'minVersion'},
-    {'1': 'betaUsersFilter', '3': 10, '4': 1, '5': 11, '6': '.BloomFilter', '9': 0, '10': 'betaUsersFilter'},
-    {'1': 'updateServiceAdmin', '3': 11, '4': 1, '5': 11, '6': '.ServiceEvent.UpdateServiceAdmin', '9': 0, '10': 'updateServiceAdmin'},
-    {'1': 'restoreServiceAdmin', '3': 12, '4': 1, '5': 11, '6': '.ServiceEvent.RestoreServiceAdmin', '9': 0, '10': 'restoreServiceAdmin'},
+    {
+      '1': 'initialEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.InitialEvent',
+      '9': 0,
+      '10': 'initialEvent'
+    },
+    {
+      '1': 'serviceStatus',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.ServiceStatus',
+      '9': 0,
+      '10': 'serviceStatus'
+    },
+    {
+      '1': 'terms',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.TermsOfService',
+      '9': 0,
+      '10': 'terms'
+    },
+    {
+      '1': 'privacy',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.PrivacyPolicy',
+      '9': 0,
+      '10': 'privacy'
+    },
+    {
+      '1': 'addServiceAdmin',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.AddServiceAdmin',
+      '9': 0,
+      '10': 'addServiceAdmin'
+    },
+    {
+      '1': 'removeServiceAdmin',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.RemoveServiceAdmin',
+      '9': 0,
+      '10': 'removeServiceAdmin'
+    },
+    {
+      '1': 'minVersion',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.MinimumVersionRequired',
+      '9': 0,
+      '10': 'minVersion'
+    },
+    {
+      '1': 'betaUsersFilter',
+      '3': 10,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '9': 0,
+      '10': 'betaUsersFilter'
+    },
+    {
+      '1': 'updateServiceAdmin',
+      '3': 11,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.UpdateServiceAdmin',
+      '9': 0,
+      '10': 'updateServiceAdmin'
+    },
+    {
+      '1': 'restoreServiceAdmin',
+      '3': 12,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent.RestoreServiceAdmin',
+      '9': 0,
+      '10': 'restoreServiceAdmin'
+    },
   ],
-  '3': [ServiceEvent_InitialEvent$json, ServiceEvent_ServiceStatus$json, ServiceEvent_TermsOfService$json, ServiceEvent_PrivacyPolicy$json, ServiceEvent_AddServiceAdmin$json, ServiceEvent_RemoveServiceAdmin$json, ServiceEvent_UpdateServiceAdmin$json, ServiceEvent_RestoreServiceAdmin$json, ServiceEvent_MinimumVersionRequired$json],
+  '3': [
+    ServiceEvent_InitialEvent$json,
+    ServiceEvent_ServiceStatus$json,
+    ServiceEvent_TermsOfService$json,
+    ServiceEvent_PrivacyPolicy$json,
+    ServiceEvent_AddServiceAdmin$json,
+    ServiceEvent_RemoveServiceAdmin$json,
+    ServiceEvent_UpdateServiceAdmin$json,
+    ServiceEvent_RestoreServiceAdmin$json,
+    ServiceEvent_MinimumVersionRequired$json
+  ],
   '8': [
     {'1': 'event_type'},
   ],
@@ -42,7 +134,14 @@ const ServiceEvent_InitialEvent$json = {
   '2': [
     {'1': 'instance', '3': 1, '4': 1, '5': 9, '10': 'instance'},
     {'1': 'alias', '3': 2, '4': 1, '5': 9, '10': 'alias'},
-    {'1': 'filter', '3': 3, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '10': 'filter'
+    },
     {'1': 'appName', '3': 4, '4': 1, '5': 9, '10': 'appName'},
     {'1': 'appId', '3': 5, '4': 1, '5': 9, '10': 'appId'},
   ],
@@ -77,7 +176,14 @@ const ServiceEvent_AddServiceAdmin$json = {
   '1': 'AddServiceAdmin',
   '2': [
     {'1': 'alias', '3': 1, '4': 1, '5': 9, '10': 'alias'},
-    {'1': 'filter', '3': 2, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '10': 'filter'
+    },
   ],
 };
 
@@ -86,7 +192,14 @@ const ServiceEvent_RemoveServiceAdmin$json = {
   '1': 'RemoveServiceAdmin',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
-    {'1': 'filter', '3': 2, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '10': 'filter'
+    },
   ],
 };
 
@@ -96,7 +209,14 @@ const ServiceEvent_UpdateServiceAdmin$json = {
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'alias', '3': 2, '4': 1, '5': 9, '10': 'alias'},
-    {'1': 'filter', '3': 3, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '10': 'filter'
+    },
   ],
 };
 
@@ -106,7 +226,14 @@ const ServiceEvent_RestoreServiceAdmin$json = {
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'alias', '3': 2, '4': 1, '5': 9, '10': 'alias'},
-    {'1': 'filter', '3': 3, '4': 1, '5': 11, '6': '.BloomFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.BloomFilter',
+      '10': 'filter'
+    },
   ],
 };
 
@@ -152,13 +279,44 @@ final $typed_data.Uint8List serviceEventDescriptor = $convert.base64Decode(
 const SubmitServiceEvent$json = {
   '1': 'SubmitServiceEvent',
   '2': [
-    {'1': 'event', '3': 1, '4': 1, '5': 11, '6': '.ServiceEvent', '10': 'event'},
+    {
+      '1': 'event',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent',
+      '10': 'event'
+    },
     {'1': 'email', '3': 2, '4': 1, '5': 9, '10': 'email'},
     {'1': 'betaUsers', '3': 3, '4': 1, '5': 9, '10': 'betaUsers'},
-    {'1': 'addServiceAdminEmail', '3': 4, '4': 1, '5': 9, '10': 'addServiceAdminEmail'},
-    {'1': 'updateServiceAdminOriginalEmail', '3': 5, '4': 1, '5': 9, '10': 'updateServiceAdminOriginalEmail'},
-    {'1': 'updateServiceAdminNewEmail', '3': 6, '4': 1, '5': 9, '10': 'updateServiceAdminNewEmail'},
-    {'1': 'removeServiceAdminEmail', '3': 7, '4': 1, '5': 9, '10': 'removeServiceAdminEmail'},
+    {
+      '1': 'addServiceAdminEmail',
+      '3': 4,
+      '4': 1,
+      '5': 9,
+      '10': 'addServiceAdminEmail'
+    },
+    {
+      '1': 'updateServiceAdminOriginalEmail',
+      '3': 5,
+      '4': 1,
+      '5': 9,
+      '10': 'updateServiceAdminOriginalEmail'
+    },
+    {
+      '1': 'updateServiceAdminNewEmail',
+      '3': 6,
+      '4': 1,
+      '5': 9,
+      '10': 'updateServiceAdminNewEmail'
+    },
+    {
+      '1': 'removeServiceAdminEmail',
+      '3': 7,
+      '4': 1,
+      '5': 9,
+      '10': 'removeServiceAdminEmail'
+    },
   ],
 };
 
@@ -178,7 +336,14 @@ const ServiceEventRecord$json = {
   '2': [
     {'1': 'isoDate', '3': 1, '4': 1, '5': 9, '10': 'isoDate'},
     {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'serviceEvent', '3': 3, '4': 1, '5': 11, '6': '.ServiceEvent', '10': 'serviceEvent'},
+    {
+      '1': 'serviceEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.ServiceEvent',
+      '10': 'serviceEvent'
+    },
   ],
 };
 
@@ -187,4 +352,3 @@ final $typed_data.Uint8List serviceEventRecordDescriptor = $convert.base64Decode
     'ChJTZXJ2aWNlRXZlbnRSZWNvcmQSGAoHaXNvRGF0ZRgBIAEoCVIHaXNvRGF0ZRIYCgd2ZXJzaW'
     '9uGAIgASgFUgd2ZXJzaW9uEjEKDHNlcnZpY2VFdmVudBgDIAEoCzINLlNlcnZpY2VFdmVudFIM'
     'c2VydmljZUV2ZW50');
-

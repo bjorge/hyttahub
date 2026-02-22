@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: account_events.proto
-//
-// @dart = 2.12
+// Generated from account_events.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -18,14 +20,45 @@ const AccountEvent$json = {
   '1': 'AccountEvent',
   '2': [
     {'1': 'version', '3': 1, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'initialEvent', '3': 2, '4': 1, '5': 11, '6': '.AccountEvent.InitialEvent', '9': 0, '10': 'initialEvent'},
-    {'1': 'terms', '3': 3, '4': 1, '5': 11, '6': '.AccountEvent.Terms', '9': 0, '10': 'terms'},
-    {'1': 'allowEmailNotifications', '3': 4, '4': 1, '5': 8, '9': 0, '10': 'allowEmailNotifications'},
+    {
+      '1': 'initialEvent',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.AccountEvent.InitialEvent',
+      '9': 0,
+      '10': 'initialEvent'
+    },
+    {
+      '1': 'terms',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.AccountEvent.Terms',
+      '9': 0,
+      '10': 'terms'
+    },
+    {
+      '1': 'allowEmailNotifications',
+      '3': 4,
+      '4': 1,
+      '5': 8,
+      '9': 0,
+      '10': 'allowEmailNotifications'
+    },
     {'1': 'createSite', '3': 5, '4': 1, '5': 9, '9': 0, '10': 'createSite'},
     {'1': 'removeSite', '3': 6, '4': 1, '5': 9, '9': 0, '10': 'removeSite'},
     {'1': 'joinSite', '3': 7, '4': 1, '5': 9, '9': 0, '10': 'joinSite'},
     {'1': 'leaveSite', '3': 8, '4': 1, '5': 9, '9': 0, '10': 'leaveSite'},
-    {'1': 'reorderSites', '3': 9, '4': 1, '5': 11, '6': '.ReorderSites', '9': 0, '10': 'reorderSites'},
+    {
+      '1': 'reorderSites',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.ReorderSites',
+      '9': 0,
+      '10': 'reorderSites'
+    },
   ],
   '3': [AccountEvent_Terms$json, AccountEvent_InitialEvent$json],
   '8': [
@@ -46,7 +79,14 @@ const AccountEvent_Terms$json = {
 const AccountEvent_InitialEvent$json = {
   '1': 'InitialEvent',
   '2': [
-    {'1': 'terms', '3': 1, '4': 1, '5': 11, '6': '.AccountEvent.Terms', '10': 'terms'},
+    {
+      '1': 'terms',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.AccountEvent.Terms',
+      '10': 'terms'
+    },
     {'1': 'instance', '3': 2, '4': 1, '5': 9, '10': 'instance'},
   ],
 };
@@ -74,16 +114,29 @@ const ReorderSites$json = {
 };
 
 /// Descriptor for `ReorderSites`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List reorderSitesDescriptor = $convert.base64Decode(
-    'CgxSZW9yZGVyU2l0ZXMSGAoHc2l0ZUlkcxgBIAMoCVIHc2l0ZUlkcw==');
+final $typed_data.Uint8List reorderSitesDescriptor = $convert
+    .base64Decode('CgxSZW9yZGVyU2l0ZXMSGAoHc2l0ZUlkcxgBIAMoCVIHc2l0ZUlkcw==');
 
 @$core.Deprecated('Use submitAccountEventDescriptor instead')
 const SubmitAccountEvent$json = {
   '1': 'SubmitAccountEvent',
   '2': [
-    {'1': 'event', '3': 1, '4': 1, '5': 11, '6': '.AccountEvent', '10': 'event'},
+    {
+      '1': 'event',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.AccountEvent',
+      '10': 'event'
+    },
     {'1': 'createSiteName', '3': 2, '4': 1, '5': 9, '10': 'createSiteName'},
-    {'1': 'createSiteUserName', '3': 3, '4': 1, '5': 9, '10': 'createSiteUserName'},
+    {
+      '1': 'createSiteUserName',
+      '3': 3,
+      '4': 1,
+      '5': 9,
+      '10': 'createSiteUserName'
+    },
   ],
 };
 
@@ -99,7 +152,14 @@ const AccountEventRecord$json = {
   '2': [
     {'1': 'isoDate', '3': 1, '4': 1, '5': 9, '10': 'isoDate'},
     {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
-    {'1': 'accountEvent', '3': 3, '4': 1, '5': 11, '6': '.AccountEvent', '10': 'accountEvent'},
+    {
+      '1': 'accountEvent',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.AccountEvent',
+      '10': 'accountEvent'
+    },
   ],
 };
 
@@ -108,4 +168,3 @@ final $typed_data.Uint8List accountEventRecordDescriptor = $convert.base64Decode
     'ChJBY2NvdW50RXZlbnRSZWNvcmQSGAoHaXNvRGF0ZRgBIAEoCVIHaXNvRGF0ZRIYCgd2ZXJzaW'
     '9uGAIgASgFUgd2ZXJzaW9uEjEKDGFjY291bnRFdmVudBgDIAEoCzINLkFjY291bnRFdmVudFIM'
     'YWNjb3VudEV2ZW50');
-

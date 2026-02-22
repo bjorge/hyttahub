@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:protobuf/protobuf.dart';
+
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:template/l10n/app_localizations.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';

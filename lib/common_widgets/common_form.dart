@@ -6,12 +6,12 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:protobuf/protobuf.dart';
+import 'package:protobuf/protobuf.dart' as pb;
 
 abstract class BaseTextFormField<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends StatefulWidget {
   final String labelText;
@@ -52,7 +52,7 @@ abstract class BaseTextFormField<
 class _BaseTextFormFieldState<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends State<BaseTextFormField<B, E, T>> {
   late final TextEditingController _controller;
@@ -151,7 +151,7 @@ class _BaseTextFormFieldState<
 abstract class BaseCodeFormField<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends StatefulWidget {
   final String labelText;
@@ -186,7 +186,7 @@ abstract class BaseCodeFormField<
 class BaseCodeFormFieldState<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends State<BaseCodeFormField<B, E, T>> {
   String _code = '';
@@ -390,7 +390,7 @@ class BaseCodeFormFieldState<
 abstract class BaseCheckboxFormField<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends StatefulWidget {
   final String labelText;
@@ -427,7 +427,7 @@ abstract class BaseCheckboxFormField<
 class _BaseCheckboxFormFieldState<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends State<BaseCheckboxFormField<B, E, T>> {
   @override
@@ -510,7 +510,7 @@ class _BaseCheckboxFormFieldState<
 abstract class BaseConfirmationCheckbox<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends StatelessWidget {
   final String labelText;
@@ -601,7 +601,7 @@ class ReorderableItem {
 abstract class BaseReorderableFormField<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends StatefulWidget {
   final String labelText;
@@ -635,7 +635,7 @@ abstract class BaseReorderableFormField<
 class _BaseReorderableFormFieldState<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage
+  T extends pb.GeneratedMessage
 >
     extends State<BaseReorderableFormField<B, E, T>> {
   late List<ReorderableItem> _items;
@@ -757,7 +757,7 @@ SnackBar commonSnackBar(
 abstract class BaseDropdownFormField<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage,
+  T extends pb.GeneratedMessage,
   V
 >
     extends StatefulWidget {
@@ -794,7 +794,7 @@ abstract class BaseDropdownFormField<
 class _BaseDropdownFormFieldState<
   B extends BaseSubmitBloc<T>,
   E extends BaseSubmitEvent<T>,
-  T extends GeneratedMessage,
+  T extends pb.GeneratedMessage,
   V
 >
     extends State<BaseDropdownFormField<B, E, T, V>> {
@@ -832,7 +832,7 @@ class _BaseDropdownFormFieldState<
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: DropdownButtonFormField<V>(
-            value: _currentValue,
+            initialValue: _currentValue,
             hint: Text(widget.labelText),
             items: widget.items,
             onChanged: readOnly
