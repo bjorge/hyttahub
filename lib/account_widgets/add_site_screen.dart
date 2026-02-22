@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/account_blocs/account_submit_bloc.dart';
 import 'package:hyttahub/account_widgets/account_submit_button.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -11,8 +13,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/utilities/constants.dart';
 
 
 class AddSiteScreen extends StatefulWidget {
@@ -98,7 +99,7 @@ class SiteNameInputWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: accountEventSubmissionFactory);
+  }) : super(eventFactory: accountEventSubmissionFactory, maxLength: HyttaHubLimits.maxSiteNameLength);
 
   @override
   String? validator(BuildContext context, String value) {
@@ -135,7 +136,7 @@ class SiteUserNameInputWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: accountEventSubmissionFactory);
+  }) : super(eventFactory: accountEventSubmissionFactory, maxLength: HyttaHubLimits.maxSiteUserNameLength);
 
   @override
   String? validator(BuildContext context, String value) {

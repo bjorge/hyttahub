@@ -106,7 +106,7 @@ class _EmailField
           SubmitServiceEvent
         > {
   const _EmailField({required super.formKey, required super.labelText})
-    : super(eventFactory: ServiceEventSubmission.new);
+    : super(eventFactory: ServiceEventSubmission.new, maxLength: 100);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {

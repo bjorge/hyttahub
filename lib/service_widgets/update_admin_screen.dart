@@ -195,7 +195,7 @@ class UpdateAdminEmailInputWidget
     required this.originalEmail,
     required this.serviceState,
     required super.labelText,
-  }) : super(eventFactory: serviceEventSubmissionFactory);
+  }) : super(eventFactory: serviceEventSubmissionFactory, maxLength: 50);
 
   final Map<String, AllowedEmailsBlocState_UserInfo> allowedEmails;
   final String originalEmail;

@@ -115,7 +115,7 @@ class RestoreAdminAliasInputWidget
     required super.formKey,
     required this.admins,
     required super.labelText,
-  }) : super(eventFactory: serviceEventSubmissionFactory);
+  }) : super(eventFactory: serviceEventSubmissionFactory, maxLength: 50);
 
   final List<ServiceAdmin> admins;
 

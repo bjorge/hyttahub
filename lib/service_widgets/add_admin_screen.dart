@@ -114,7 +114,7 @@ class AdminAliasInputWidget
     required super.formKey,
     required this.serviceState,
     required super.labelText,
-  }) : super(eventFactory: serviceEventSubmissionFactory);
+  }) : super(eventFactory: serviceEventSubmissionFactory, maxLength: 50);
 
   final ServiceReplayBlocState serviceState;
 

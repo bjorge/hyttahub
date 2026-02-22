@@ -126,7 +126,7 @@ class UpdateMemberNameInputWidget
     required this.members,
     required this.originalName,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: 50);
 
   final List<SiteReplayBlocState_Member> members;
   final String originalName;
@@ -174,7 +174,7 @@ class UpdateMemberEmailInputWidget
     required this.allowedEmails,
     required this.originalEmail,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: 100);
 
   final Map<String, AllowedEmailsBlocState_UserInfo> allowedEmails;
   final String originalEmail;

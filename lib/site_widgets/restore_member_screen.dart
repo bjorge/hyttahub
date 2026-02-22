@@ -120,7 +120,7 @@ class RestoreMemberNameInputWidget
     required super.formKey,
     required this.members,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: 50);
 
   final List<SiteReplayBlocState_Member> members;
 
@@ -165,7 +165,7 @@ class RestoreMemberEmailInputWidget
     required super.formKey,
     required this.allowedEmails,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: 100);
 
   final Map<String, AllowedEmailsBlocState_UserInfo> allowedEmails;
 

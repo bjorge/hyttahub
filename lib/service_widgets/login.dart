@@ -209,7 +209,7 @@ class EmailFormField
     required super.labelText,
     required this.emailValidator,
     required this.serviceState,
-  }) : super(eventFactory: authEventSubmissionFactory);
+  }) : super(eventFactory: authEventSubmissionFactory, maxLength: 100);
 
   final String? Function(String, BuildContext, ServiceReplayBlocState)
   emailValidator;
@@ -289,13 +289,12 @@ class _PasswordFormField
   const _PasswordFormField({
     required super.formKey,
     required super.labelText,
-    required bool obscureText,
-    required Widget suffixIcon,
     this.helperText,
+    super.obscureText = true,
+    required super.suffixIcon,
   }) : super(
          eventFactory: authEventSubmissionFactory,
-         obscureText: obscureText,
-         suffixIcon: suffixIcon,
+         maxLength: 100,
        );
 
   final String? helperText;

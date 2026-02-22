@@ -13,6 +13,7 @@ import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
 import 'package:hyttahub/utilities/pattern_utils.dart';
+import 'package:hyttahub/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -112,7 +113,7 @@ class TermsWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null);
+  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null, maxLength: HyttaHubLimits.maxTermsLength);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {
@@ -153,7 +154,7 @@ class PrivacyWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null);
+  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null, maxLength: HyttaHubLimits.maxPrivacyLength);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {
@@ -228,7 +229,7 @@ class MinVersionFormField
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new);
+  }) : super(eventFactory: ServiceEventSubmission.new, maxLength: HyttaHubLimits.maxMinVersionLength);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {
@@ -270,7 +271,7 @@ class BetaUsersFormField
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null);
+  }) : super(eventFactory: ServiceEventSubmission.new, maxLines: null, maxLength: HyttaHubLimits.maxBetaUsersLength);
 
   @override
   String getValueFromPayload(SubmitServiceEvent payload) {

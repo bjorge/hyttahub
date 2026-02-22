@@ -2,20 +2,22 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
+import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
+import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/utilities/constants.dart';
 
 
 class AddMemberScreen extends StatefulWidget {
@@ -141,7 +143,7 @@ class MemberNameInputWidget
     required super.formKey,
     required this.members,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: HyttaHubLimits.maxMemberNameLength);
 
   final List<SiteReplayBlocState_Member> members;
 
@@ -186,7 +188,7 @@ class MemberEmailInputWidget
     required super.formKey,
     required this.allowedEmails,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: HyttaHubLimits.maxEmailLength);
 
   final Map<String, AllowedEmailsBlocState_UserInfo> allowedEmails;
 

@@ -19,6 +19,7 @@ abstract class BaseTextFormField<
   final GlobalKey<FormState> formKey;
   final bool? obscureText;
   final int? maxLines;
+  final int? maxLength;
   final Widget? suffixIcon;
   final E Function({
     T? updatedPayload,
@@ -32,6 +33,7 @@ abstract class BaseTextFormField<
     required this.formKey,
     this.obscureText,
     this.maxLines = 1,
+    this.maxLength,
     this.suffixIcon,
     required this.eventFactory,
   });
@@ -99,6 +101,7 @@ class _BaseTextFormFieldState<
           child: TextFormField(
             controller: _controller,
             maxLines: widget.maxLines,
+            maxLength: widget.maxLength,
             obscureText: widget.obscureText ?? false,
             readOnly: readOnly,
             style: readOnly

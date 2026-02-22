@@ -90,7 +90,7 @@ class RenameSiteInputWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: siteEventSubmissionFactory);
+  }) : super(eventFactory: siteEventSubmissionFactory, maxLength: 50);
 
   @override
   String? validator(BuildContext context, String value) {

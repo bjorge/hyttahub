@@ -2,23 +2,24 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/account_blocs/account_submit_bloc.dart';
 import 'package:hyttahub/account_widgets/update_terms_form.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/utilities/ids.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
+import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:hyttahub/utilities/constants.dart';
+import 'package:hyttahub/utilities/ids.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -201,12 +202,13 @@ class AccountSettingsButton extends StatelessWidget {
                   ),
                 ),
                 SimpleDialogOption(
-                  onPressed: () {
+                  onPressed: accountState.sitesIds.length >= HyttaHubLimits.maxSitesPerAccount ? null : () {
                     Navigator.pop(dialogContext);
                     context.push(CopySiteRoute.fullPath);
                   },
                   child: Text(
                     HyttaHubLocalizations.of(context)!.copySiteTitle,
+                    style: accountState.sitesIds.length >= HyttaHubLimits.maxSitesPerAccount ? const TextStyle(color: Colors.grey) : null,
                   ),
                 ),
                 SimpleDialogOption(
@@ -317,7 +319,7 @@ class CreateSiteDialogOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
-      onPressed: () {
+      onPressed: accountState.sitesIds.length >= 20 ? null : () {
         Navigator.pop(dialogContext);
         final submmitValue = SubmitAccountEvent(
           createSiteName: '',
@@ -334,7 +336,10 @@ class CreateSiteDialogOption extends StatelessWidget {
 
         context.push('${AddSiteRoute.fullPath}?event=$encodedSubmitValue');
       },
-      child: Text(HyttaHubLocalizations.of(context)!.createSiteTitle),
+      child: Text(
+        HyttaHubLocalizations.of(context)!.createSiteTitle,
+        style: accountState.sitesIds.length >= HyttaHubLimits.maxSitesPerAccount ? const TextStyle(color: Colors.grey) : null,
+      ),
     );
   }
 }
@@ -352,7 +357,7 @@ class JoinSiteDialogOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
-      onPressed: () {
+      onPressed: accountState.sitesIds.length >= 20 ? null : () {
         Navigator.pop(dialogContext);
         final submmitValue = SubmitAccountEvent(
           createSiteName: '',
@@ -369,7 +374,10 @@ class JoinSiteDialogOption extends StatelessWidget {
 
         context.push('${JoinSiteRoute.fullPath}?event=$encodedSubmitValue');
       },
-      child: Text(HyttaHubLocalizations.of(context)!.joinSiteTitle),
+      child: Text(
+        HyttaHubLocalizations.of(context)!.joinSiteTitle,
+        style: accountState.sitesIds.length >= HyttaHubLimits.maxSitesPerAccount ? const TextStyle(color: Colors.grey) : null,
+      ),
     );
   }
 }

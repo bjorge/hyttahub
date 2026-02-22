@@ -77,7 +77,7 @@ class TextFormFieldWidget
     super.key,
     required super.formKey,
     required super.labelText,
-  }) : super(eventFactory: appEventSubmissionFactory);
+  }) : super(eventFactory: appEventSubmissionFactory, maxLength: 1000);
 
   @override
   String? validator(BuildContext context, String value) => null;
