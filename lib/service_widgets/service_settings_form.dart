@@ -12,6 +12,7 @@ import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
 import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
+import 'package:hyttahub/utilities/pattern_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -284,7 +285,7 @@ class BetaUsersFormField
     final updatedPayload = originalPayload.deepCopy();
     updatedPayload.event = originalPayload.event.deepCopy();
 
-    final rawItems = newValue.split(RegExp(r'[,\n]')).map((e) => e.trim().toLowerCase()).toList();
+    final rawItems = newValue.split(WrappedRegExp(r'[,\n]')).map((e) => e.trim().toLowerCase()).toList();
 
     final seen = <String>{};
     final deduplicatedItems = <String>[];

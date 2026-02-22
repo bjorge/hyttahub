@@ -6,6 +6,7 @@ import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/utilities/pattern_utils.dart';
 import 'package:protobuf/protobuf.dart' as pb;
 
 abstract class BaseTextFormField<
@@ -130,7 +131,7 @@ class _BaseTextFormFieldState<
             },
             validator: (value) {
               final localizations = HyttaHubLocalizations.of(context)!;
-              if (value != null && value.contains(RegExp(r'[\[\]]'))) {
+              if (value != null && value.contains(WrappedRegExp(r'[\[\]]'))) {
                 return localizations.disallowedCharactersError;
               }
 
@@ -269,7 +270,7 @@ class BaseCodeFormFieldState<
   void backspace() => _onBackspace();
 
   void paste(String value) {
-    final upperValue = value.toUpperCase().replaceAll(RegExp(r'[^1-9A-G]'), '');
+    final upperValue = value.toUpperCase().replaceAll(WrappedRegExp(r'[^1-9A-G]'), '');
     final finalValue = upperValue.length > 8
         ? upperValue.substring(0, 8)
         : upperValue;
@@ -884,14 +885,14 @@ String? emailValidator(String elementValue, BuildContext context) {
   if (value.length > 254) {
     return localizations.loginEmailTooLongError;
   }
-  final emailRegex = RegExp(
+  final emailRegex = WrappedRegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
   );
   if (!emailRegex.hasMatch(value)) {
     return localizations.loginEmailInvalidFormatError;
   }
 
-  final firebaseReservedPattern = RegExp(r"^__.*__$");
+  final firebaseReservedPattern = WrappedRegExp(r"^__.*__$");
   if (firebaseReservedPattern.hasMatch(value)) {
     return localizations.loginEmailReservedError;
   }
