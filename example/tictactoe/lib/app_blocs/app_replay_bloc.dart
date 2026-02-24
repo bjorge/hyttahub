@@ -74,7 +74,6 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
     AppReplayBlocState currentState,
     CommonReplayStateEnum newStatusEnum,
   ) {
-    // todo: create a lookup table instead
     switch (newStatusEnum) {
       case CommonReplayStateEnum.hydrating:
         return (currentState.deepCopy()..state = AppReplayStateEnum.hydrating);

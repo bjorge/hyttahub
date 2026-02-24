@@ -13,9 +13,6 @@ import 'package:bloc/bloc.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 
 
-
-const Duration firebaseTimeout = Duration(seconds: 15);
-
 class AppEventSubmission extends BaseSubmitEvent<SubmitAppEvent> {
   AppEventSubmission({super.updatedPayload, required super.submission});
 }
@@ -57,7 +54,6 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     );
 
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
-
 
     await storage.setDocument(
       firebaseSiteEventsPath(siteId),

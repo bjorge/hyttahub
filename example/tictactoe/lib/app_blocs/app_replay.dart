@@ -20,7 +20,6 @@ AppReplayBlocState appReplay(
     return appBlocState;
   }
 
-  // ignore: deprecated_member_use, deprecated_member_use_from_same_package
   final replay = appBlocState.deepCopy();
 
   // Initialize board if empty
@@ -114,9 +113,6 @@ AppReplayBlocState appReplay(
 }
 
 void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
-  final oldX = state.xPlayerId;
-  final oldO = state.oPlayerId;
-  
   if (state.vsBot) {
     if (authorId != 0) {
       state.xPlayerId = authorId;
@@ -130,8 +126,6 @@ void _updatePlayerAssignments(AppReplayBlocState state, int authorId) {
     }
   }
   
-  if (state.xPlayerId != oldX || state.oPlayerId != oldO) {
-  }
 }
 
 void _checkWinner(AppReplayBlocState state) {
