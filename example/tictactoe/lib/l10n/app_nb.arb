@@ -25,5 +25,29 @@
   "app_dutch": "Nederlandsk",
   "app_enterButton": "Enter",
   "app_serviceLoginButton": "Tjenestepålogging",
-  "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen."
+  "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen.",
+  "app_appEventsOption": "App-hendelser",
+  "app_eventMove": "Spiller {player} flyttet til ({x}, {y})",
+  "@app_eventMove": {
+    "placeholders": {
+      "player": {
+        "type": "int"
+      },
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      }
+    }
+  },
+  "app_eventStartGame": "Spill startet (mot Bot: {vsBot})",
+  "@app_eventStartGame": {
+    "placeholders": {
+      "vsBot": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventPlayAgain": "Spill igjen"
 }

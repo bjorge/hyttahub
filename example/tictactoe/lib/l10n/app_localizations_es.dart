@@ -61,18 +61,18 @@ class AppLocalizationsEs extends AppLocalizations {
       'No tienes permiso para realizar esta acción.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'Eventos de la App';
 
   @override
   String app_eventMove(int player, int x, int y) {
-    return 'Player $player moved to ($x, $y)';
+    return 'Jugador $player movió a ($x, $y)';
   }
 
   @override
   String app_eventStartGame(String vsBot) {
-    return 'Started Game (vs Bot: $vsBot)';
+    return 'Juego Iniciado (vs Bot: $vsBot)';
   }
 
   @override
-  String get app_eventPlayAgain => 'Play Again';
+  String get app_eventPlayAgain => 'Jugar de Nuevo';
 }

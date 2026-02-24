@@ -25,5 +25,29 @@
   "app_dutch": "Olandese",
   "app_enterButton": "Invio",
   "app_serviceLoginButton": "Accesso Servizio",
-  "app_permissionDenied": "Non hai il permesso di eseguire questa azione."
+  "app_permissionDenied": "Non hai il permesso di eseguire questa azione.",
+  "app_appEventsOption": "Eventi dell'App",
+  "app_eventMove": "Giocatore {player} ha mosso in ({x}, {y})",
+  "@app_eventMove": {
+    "placeholders": {
+      "player": {
+        "type": "int"
+      },
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      }
+    }
+  },
+  "app_eventStartGame": "Partita Iniziata (vs Bot: {vsBot})",
+  "@app_eventStartGame": {
+    "placeholders": {
+      "vsBot": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventPlayAgain": "Gioca Ancora"
 }

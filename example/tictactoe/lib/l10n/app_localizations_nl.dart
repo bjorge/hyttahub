@@ -61,18 +61,18 @@ class AppLocalizationsNl extends AppLocalizations {
       'U heeft geen toestemming om deze actie uit te voeren.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'App Gebeurtenissen';
 
   @override
   String app_eventMove(int player, int x, int y) {
-    return 'Player $player moved to ($x, $y)';
+    return 'Speler $player zette op ($x, $y)';
   }
 
   @override
   String app_eventStartGame(String vsBot) {
-    return 'Started Game (vs Bot: $vsBot)';
+    return 'Spel Gestart (tegen Bot: $vsBot)';
   }
 
   @override
-  String get app_eventPlayAgain => 'Play Again';
+  String get app_eventPlayAgain => 'Opnieuw Spelen';
 }

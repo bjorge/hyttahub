@@ -61,18 +61,18 @@ class AppLocalizationsNb extends AppLocalizations {
       'Du har ikke tillatelse til å utføre denne handlingen.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'App-hendelser';
 
   @override
   String app_eventMove(int player, int x, int y) {
-    return 'Player $player moved to ($x, $y)';
+    return 'Spiller $player flyttet til ($x, $y)';
   }
 
   @override
   String app_eventStartGame(String vsBot) {
-    return 'Started Game (vs Bot: $vsBot)';
+    return 'Spill startet (mot Bot: $vsBot)';
   }
 
   @override
-  String get app_eventPlayAgain => 'Play Again';
+  String get app_eventPlayAgain => 'Spill igjen';
 }
