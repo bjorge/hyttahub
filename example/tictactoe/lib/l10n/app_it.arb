@@ -49,5 +49,45 @@
       }
     }
   },
-  "app_eventPlayAgain": "Gioca Ancora"
+  "app_eventPlayAgain": "Gioca Ancora",
+  "app_draw": "Pareggio!",
+  "app_playerWins": "{name} Vince!",
+  "@app_playerWins": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_startMultiplayerGame": "Inizia Partita Multigiocatore",
+  "app_startBotGame": "Inizia Partita contro Bot",
+  "app_playerYou": "{name} (Tu)",
+  "@app_playerYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_botName": "Bot",
+  "app_unknownPlayer": "Sconosciuto ({id})",
+  "@app_unknownPlayer": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "app_submissionErrorSnack": "Errore di Invio: {errorCode}",
+  "@app_submissionErrorSnack": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "Evento specifico dell'app",
+  "app_appEventsTitle": "Eventi dell'App",
+  "app_appStateTitle": "Stato dell'App",
+  "app_platformLabel": "Piattaforma"
 }

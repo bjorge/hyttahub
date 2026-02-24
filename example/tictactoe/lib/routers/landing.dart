@@ -101,7 +101,7 @@ class LandingPage extends StatelessWidget {
                   width: 250,
                   initialSelection: platformCubit.state,
                   leadingIcon: const Icon(Icons.computer),
-                  label: const Text("Platform"),
+                  label: Text(l10n.app_platformLabel),
                   onSelected: (String? newValue) {
                     if (newValue != null) {
                       context.read<PlatformCubit>().setImplementation(newValue, authBloc: context.read<AuthBloc>());

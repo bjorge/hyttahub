@@ -10,6 +10,7 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
+import 'package:tictactoe/l10n/app_localizations.dart';
 
 class AppEventsDisplayScreen extends StatelessWidget {
   const AppEventsDisplayScreen({super.key, required this.siteId});
@@ -17,8 +18,9 @@ class AppEventsDisplayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return EventsDisplay(
-      config: AppEventsConfig(siteId, 'App Events', 'App State'),
+      config: AppEventsConfig(siteId, l10n.app_appEventsTitle, l10n.app_appStateTitle),
     );
   }
 }

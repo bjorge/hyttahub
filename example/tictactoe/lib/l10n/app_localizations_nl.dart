@@ -75,4 +75,48 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get app_eventPlayAgain => 'Opnieuw Spelen';
+
+  @override
+  String get app_draw => 'Gelijkspel!';
+
+  @override
+  String app_playerWins(String name) {
+    return '$name Wint!';
+  }
+
+  @override
+  String get app_startMultiplayerGame => 'Start Multiplayer Spel';
+
+  @override
+  String get app_startBotGame => 'Start Bot Spel';
+
+  @override
+  String app_playerYou(String name) {
+    return '$name (Jij)';
+  }
+
+  @override
+  String get app_botName => 'Bot';
+
+  @override
+  String app_unknownPlayer(int id) {
+    return 'Onbekend ($id)';
+  }
+
+  @override
+  String app_submissionErrorSnack(String errorCode) {
+    return 'Fout bij Indienen: $errorCode';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'App-specifiek evenement';
+
+  @override
+  String get app_appEventsTitle => 'App Gebeurtenissen';
+
+  @override
+  String get app_appStateTitle => 'App Status';
+
+  @override
+  String get app_platformLabel => 'Platform';
 }

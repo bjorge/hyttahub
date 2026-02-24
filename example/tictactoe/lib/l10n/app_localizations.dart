@@ -223,6 +223,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play Again'**
   String get app_eventPlayAgain;
+
+  /// No description provided for @app_draw.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw!'**
+  String get app_draw;
+
+  /// No description provided for @app_playerWins.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} Wins!'**
+  String app_playerWins(String name);
+
+  /// No description provided for @app_startMultiplayerGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Multiplayer Game'**
+  String get app_startMultiplayerGame;
+
+  /// No description provided for @app_startBotGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Bot Game'**
+  String get app_startBotGame;
+
+  /// No description provided for @app_playerYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (You)'**
+  String app_playerYou(String name);
+
+  /// No description provided for @app_botName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bot'**
+  String get app_botName;
+
+  /// No description provided for @app_unknownPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown ({id})'**
+  String app_unknownPlayer(int id);
+
+  /// No description provided for @app_submissionErrorSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission Error: {errorCode}'**
+  String app_submissionErrorSnack(String errorCode);
+
+  /// No description provided for @app_appSpecificEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'App specific event'**
+  String get app_appSpecificEvent;
+
+  /// No description provided for @app_appEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App Events'**
+  String get app_appEventsTitle;
+
+  /// No description provided for @app_appStateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App State'**
+  String get app_appStateTitle;
+
+  /// No description provided for @app_platformLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform'**
+  String get app_platformLabel;
 }
 
 class _AppLocalizationsDelegate

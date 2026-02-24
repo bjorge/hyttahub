@@ -49,5 +49,45 @@
       }
     }
   },
-  "app_eventPlayAgain": "Play Again"
+  "app_eventPlayAgain": "Play Again",
+  "app_draw": "Draw!",
+  "app_playerWins": "{name} Wins!",
+  "@app_playerWins": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_startMultiplayerGame": "Start Multiplayer Game",
+  "app_startBotGame": "Start Bot Game",
+  "app_playerYou": "{name} (You)",
+  "@app_playerYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_botName": "Bot",
+  "app_unknownPlayer": "Unknown ({id})",
+  "@app_unknownPlayer": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "app_submissionErrorSnack": "Submission Error: {errorCode}",
+  "@app_submissionErrorSnack": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "App specific event",
+  "app_appEventsTitle": "App Events",
+  "app_appStateTitle": "App State",
+  "app_platformLabel": "Platform"
 }

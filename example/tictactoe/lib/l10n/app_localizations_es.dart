@@ -75,4 +75,48 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get app_eventPlayAgain => 'Jugar de Nuevo';
+
+  @override
+  String get app_draw => '¡Empate!';
+
+  @override
+  String app_playerWins(String name) {
+    return '¡$name Gana!';
+  }
+
+  @override
+  String get app_startMultiplayerGame => 'Iniciar Juego Multijugador';
+
+  @override
+  String get app_startBotGame => 'Iniciar Juego contra Bot';
+
+  @override
+  String app_playerYou(String name) {
+    return '$name (Tú)';
+  }
+
+  @override
+  String get app_botName => 'Bot';
+
+  @override
+  String app_unknownPlayer(int id) {
+    return 'Desconocido ($id)';
+  }
+
+  @override
+  String app_submissionErrorSnack(String errorCode) {
+    return 'Error de Envío: $errorCode';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'Evento específico de la app';
+
+  @override
+  String get app_appEventsTitle => 'Eventos de la App';
+
+  @override
+  String get app_appStateTitle => 'Estado de la App';
+
+  @override
+  String get app_platformLabel => 'Plataforma';
 }

@@ -106,7 +106,7 @@ class _SiteScreenState extends State<SiteScreen> {
                           if (submitState.submissionState.state == CommonSubmitBlocState_State.error) {
                             final errorCode = submitState.submissionState.errorCode;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Submission Error: $errorCode')),
+                              SnackBar(content: Text(AppLocalizations.of(context)!.app_submissionErrorSnack(errorCode.toString()))),
                             );
                           }
                         },
@@ -194,11 +194,12 @@ class TicTacToeBoard extends StatelessWidget {
     );
   }
 
-  String _getPlayerName(SiteReplayBlocState siteState, int playerId) {
-    if (playerId == 0) return "Bot";
+  String _getPlayerName(BuildContext context, SiteReplayBlocState siteState, int playerId) {
+    final l10n = AppLocalizations.of(context)!;
+    if (playerId == 0) return l10n.app_botName;
     return siteState.members[playerId]?.name ??
         siteState.removedMembers[playerId]?.name ??
-        "Unknown ($playerId)";
+        l10n.app_unknownPlayer(playerId);
   }
 
   @override
@@ -225,8 +226,9 @@ class TicTacToeBoard extends StatelessWidget {
                 .value
                 .userId;
 
-            final xName = _getPlayerName(siteState, appState.xPlayerId);
-            final oName = _getPlayerName(siteState, appState.oPlayerId);
+            final l10n = AppLocalizations.of(context)!;
+            final xName = _getPlayerName(context, siteState, appState.xPlayerId);
+            final oName = _getPlayerName(context, siteState, appState.oPlayerId);
 
             final isPlayerX = myMemberId == appState.xPlayerId;
             final isMyTurn = (appState.turn == 1 && isPlayerX) ||
@@ -261,8 +263,8 @@ class TicTacToeBoard extends StatelessWidget {
                     child: Center(
                       child: Text(
                         appState.winner == 3
-                            ? "Draw!"
-                            : "${appState.winner == 1 ? xName : oName} Wins!",
+                            ? l10n.app_draw
+                            : l10n.app_playerWins(appState.winner == 1 ? xName : oName),
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -377,12 +379,12 @@ class TicTacToeBoard extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           onPressed: isPlayerX ? () => _startGame(context, siteState, appState, false) : null,
-                          child: const Text("Start Multiplayer Game"),
+                          child: Text(l10n.app_startMultiplayerGame),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: isPlayerX ? () => _startGame(context, siteState, appState, true) : null,
-                          child: const Text("Start Bot Game"),
+                          child: Text(l10n.app_startBotGame),
                         ),
                       ],
                     ),
@@ -393,7 +395,7 @@ class TicTacToeBoard extends StatelessWidget {
                     child: Center(
                       child: ElevatedButton(
                         onPressed: isPlayerX ? () => _playAgain(context, siteState, appState) : null,
-                        child: const Text("Play Again"),
+                        child: Text(l10n.app_eventPlayAgain),
                       ),
                     ),
                   ),
@@ -444,7 +446,7 @@ class _PlayerChip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            isMe ? "$name (You)" : name,
+            isMe ? AppLocalizations.of(context)!.app_playerYou(name) : name,
             style: TextStyle(
               fontWeight: isTurn ? FontWeight.bold : FontWeight.normal,
               color: isTurn ? Theme.of(context).colorScheme.onPrimaryContainer : null,

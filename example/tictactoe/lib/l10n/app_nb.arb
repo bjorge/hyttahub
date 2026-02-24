@@ -49,5 +49,45 @@
       }
     }
   },
-  "app_eventPlayAgain": "Spill igjen"
+  "app_eventPlayAgain": "Spill igjen",
+  "app_draw": "Uavgjort!",
+  "app_playerWins": "{name} vinner!",
+  "@app_playerWins": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_startMultiplayerGame": "Start flerspillerspill",
+  "app_startBotGame": "Start botspill",
+  "app_playerYou": "{name} (Deg)",
+  "@app_playerYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_botName": "Bot",
+  "app_unknownPlayer": "Ukjent ({id})",
+  "@app_unknownPlayer": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "app_submissionErrorSnack": "Innsendingsfeil: {errorCode}",
+  "@app_submissionErrorSnack": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "App-spesifikk hendelse",
+  "app_appEventsTitle": "App-hendelser",
+  "app_appStateTitle": "App-tilstand",
+  "app_platformLabel": "Plattform"
 }

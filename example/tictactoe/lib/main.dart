@@ -100,7 +100,7 @@ Future<void> main() async {
   HyttaHubOptions.appBuildNumber = appBuildNumber;
 
   HyttaHubOptions.appEventDescriptionBuilder = (context, siteEvent) {
-    if (!siteEvent.hasAppEvent()) return "App specific event";
+    if (!siteEvent.hasAppEvent()) return AppLocalizations.of(context)?.app_appSpecificEvent ?? "App specific event";
     
     final appEvent = AppEvent.fromBuffer(siteEvent.appEvent.payload);
     final localizations = AppLocalizations.of(context);
@@ -110,7 +110,7 @@ Future<void> main() async {
     if (appEvent.hasStartGame()) return localizations.app_eventStartGame(appEvent.startGame.vsBot.toString());
     if (appEvent.hasPlayAgain()) return localizations.app_eventPlayAgain;
     
-    return "App specific event";
+    return localizations.app_appSpecificEvent;
   };
 
   await PersistenceRegistry.initializePlatform(storage);

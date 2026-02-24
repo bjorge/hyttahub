@@ -49,5 +49,45 @@
             }
         }
     },
-    "app_eventPlayAgain": "Opnieuw Spelen"
+    "app_eventPlayAgain": "Opnieuw Spelen",
+    "app_draw": "Gelijkspel!",
+    "app_playerWins": "{name} Wint!",
+    "@app_playerWins": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "app_startMultiplayerGame": "Start Multiplayer Spel",
+    "app_startBotGame": "Start Bot Spel",
+    "app_playerYou": "{name} (Jij)",
+    "@app_playerYou": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "app_botName": "Bot",
+    "app_unknownPlayer": "Onbekend ({id})",
+    "@app_unknownPlayer": {
+        "placeholders": {
+            "id": {
+                "type": "int"
+            }
+        }
+    },
+    "app_submissionErrorSnack": "Fout bij Indienen: {errorCode}",
+    "@app_submissionErrorSnack": {
+        "placeholders": {
+            "errorCode": {
+                "type": "String"
+            }
+        }
+    },
+    "app_appSpecificEvent": "App-specifiek evenement",
+    "app_appEventsTitle": "App Gebeurtenissen",
+    "app_appStateTitle": "App Status",
+    "app_platformLabel": "Platform"
 }
