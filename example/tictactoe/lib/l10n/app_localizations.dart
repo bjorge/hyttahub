@@ -104,24 +104,6 @@ abstract class AppLocalizations {
     Locale('nl'),
   ];
 
-  /// No description provided for @app_uploadingPhotosProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Uploading {count} of {total} files...'**
-  String app_uploadingPhotosProgress(Object count, Object total);
-
-  /// No description provided for @app_submissionError.
-  ///
-  /// In en, this message translates to:
-  /// **'Submission Error: {error}'**
-  String app_submissionError(Object error);
-
-  /// No description provided for @app_photoSizeInKB.
-  ///
-  /// In en, this message translates to:
-  /// **'{size} KB'**
-  String app_photoSizeInKB(String size);
-
   /// No description provided for @app_unexpectedError.
   ///
   /// In en, this message translates to:
@@ -212,36 +194,6 @@ abstract class AppLocalizations {
   /// **'Service Login'**
   String get app_serviceLoginButton;
 
-  /// No description provided for @app_updateTextButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Text'**
-  String get app_updateTextButton;
-
-  /// No description provided for @app_textValueDisplay.
-  ///
-  /// In en, this message translates to:
-  /// **'Text Value: {value}'**
-  String app_textValueDisplay(String value);
-
-  /// No description provided for @app_updateTextValueTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Text Value'**
-  String get app_updateTextValueTitle;
-
-  /// No description provided for @app_textValueLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Text Value'**
-  String get app_textValueLabel;
-
-  /// No description provided for @app_pickPhotosButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick Photos'**
-  String get app_pickPhotosButton;
-
   /// No description provided for @app_permissionDenied.
   ///
   /// In en, this message translates to:
@@ -253,54 +205,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App Events'**
   String get app_appEventsOption;
-
-  /// No description provided for @app_editModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit Mode'**
-  String get app_editModeTitle;
-
-  /// No description provided for @app_adminPrivileges.
-  ///
-  /// In en, this message translates to:
-  /// **'You have admin privileges for this site.'**
-  String get app_adminPrivileges;
-
-  /// No description provided for @app_howToProceed.
-  ///
-  /// In en, this message translates to:
-  /// **'How would you like to proceed?'**
-  String get app_howToProceed;
-
-  /// No description provided for @app_viewSite.
-  ///
-  /// In en, this message translates to:
-  /// **'View Site'**
-  String get app_viewSite;
-
-  /// No description provided for @app_editSite.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit Site'**
-  String get app_editSite;
-
-  /// No description provided for @app_errorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Error'**
-  String get app_errorTitle;
-
-  /// No description provided for @app_accessDeniedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Access Denied'**
-  String get app_accessDeniedTitle;
-
-  /// No description provided for @app_accessDeniedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'You do not have permission to access this site'**
-  String get app_accessDeniedMessage;
 
   /// No description provided for @app_eventMove.
   ///

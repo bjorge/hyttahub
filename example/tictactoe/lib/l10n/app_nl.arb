@@ -1,26 +1,5 @@
 {
     "@@locale": "nl",
-    "app_uploadingPhotosProgress": "Bestanden uploaden: {count} van {total}...",
-    "@app_uploadingPhotosProgress": {
-        "placeholders": {
-            "count": {},
-            "total": {}
-        }
-    },
-    "app_submissionError": "Fout bij indienen: {error}",
-    "@app_submissionError": {
-        "placeholders": {
-            "error": {}
-        }
-    },
-    "app_photoSizeInKB": "{size} KB",
-    "@app_photoSizeInKB": {
-        "placeholders": {
-            "size": {
-                "type": "String"
-            }
-        }
-    },
     "app_unexpectedError": "Onverwachte fout, controleer uw internetverbinding en probeer het opnieuw",
     "app_appTitle": "Hytta Hub Formuliervoorbeeld",
     "app_nightMode": "Nachtmodus",
@@ -46,16 +25,5 @@
     "app_dutch": "Nederlands",
     "app_enterButton": "Enter",
     "app_serviceLoginButton": "Service Aanmelden",
-    "app_updateTextButton": "Tekst bijwerken",
-    "app_textValueDisplay": "Tekstwaarde: {value}",
-    "@app_textValueDisplay": {
-        "placeholders": {
-            "value": {
-                "type": "String"
-            }
-        }
-    },
-    "app_updateTextValueTitle": "Tekstwaarde bijwerken",
-    "app_textValueLabel": "Tekstwaarde",
     "app_permissionDenied": "U heeft geen toestemming om deze actie uit te voeren."
 }

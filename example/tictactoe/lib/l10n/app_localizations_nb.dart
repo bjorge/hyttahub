@@ -9,21 +9,6 @@ class AppLocalizationsNb extends AppLocalizations {
   AppLocalizationsNb([String locale = 'nb']) : super(locale);
 
   @override
-  String app_uploadingPhotosProgress(Object count, Object total) {
-    return 'Laster opp $count av $total filer...';
-  }
-
-  @override
-  String app_submissionError(Object error) {
-    return 'Innsendingsfeil: $error';
-  }
-
-  @override
-  String app_photoSizeInKB(String size) {
-    return '$size KB';
-  }
-
-  @override
   String get app_unexpectedError =>
       'Uventet feil, sjekk internett, gå tilbake og prøv igjen';
 
@@ -72,53 +57,11 @@ class AppLocalizationsNb extends AppLocalizations {
   String get app_serviceLoginButton => 'Tjenestepålogging';
 
   @override
-  String get app_updateTextButton => 'Oppdater tekst';
-
-  @override
-  String app_textValueDisplay(String value) {
-    return 'Tekstverdi: $value';
-  }
-
-  @override
-  String get app_updateTextValueTitle => 'Oppdater tekstverdi';
-
-  @override
-  String get app_textValueLabel => 'Tekstverdi';
-
-  @override
-  String get app_pickPhotosButton => 'Pick Photos';
-
-  @override
   String get app_permissionDenied =>
       'Du har ikke tillatelse til å utføre denne handlingen.';
 
   @override
   String get app_appEventsOption => 'App Events';
-
-  @override
-  String get app_editModeTitle => 'Edit Mode';
-
-  @override
-  String get app_adminPrivileges => 'You have admin privileges for this site.';
-
-  @override
-  String get app_howToProceed => 'How would you like to proceed?';
-
-  @override
-  String get app_viewSite => 'View Site';
-
-  @override
-  String get app_editSite => 'Edit Site';
-
-  @override
-  String get app_errorTitle => 'Error';
-
-  @override
-  String get app_accessDeniedTitle => 'Access Denied';
-
-  @override
-  String get app_accessDeniedMessage =>
-      'You do not have permission to access this site';
 
   @override
   String app_eventMove(int player, int x, int y) {

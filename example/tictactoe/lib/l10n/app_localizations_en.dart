@@ -9,21 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String app_uploadingPhotosProgress(Object count, Object total) {
-    return 'Uploading $count of $total files...';
-  }
-
-  @override
-  String app_submissionError(Object error) {
-    return 'Submission Error: $error';
-  }
-
-  @override
-  String app_photoSizeInKB(String size) {
-    return '$size KB';
-  }
-
-  @override
   String get app_unexpectedError =>
       'Unexpected error, check internet, go back and try again';
 
@@ -72,53 +57,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_serviceLoginButton => 'Service Login';
 
   @override
-  String get app_updateTextButton => 'Update Text';
-
-  @override
-  String app_textValueDisplay(String value) {
-    return 'Text Value: $value';
-  }
-
-  @override
-  String get app_updateTextValueTitle => 'Update Text Value';
-
-  @override
-  String get app_textValueLabel => 'Text Value';
-
-  @override
-  String get app_pickPhotosButton => 'Pick Photos';
-
-  @override
   String get app_permissionDenied =>
       'You do not have permission to perform this action.';
 
   @override
   String get app_appEventsOption => 'App Events';
-
-  @override
-  String get app_editModeTitle => 'Edit Mode';
-
-  @override
-  String get app_adminPrivileges => 'You have admin privileges for this site.';
-
-  @override
-  String get app_howToProceed => 'How would you like to proceed?';
-
-  @override
-  String get app_viewSite => 'View Site';
-
-  @override
-  String get app_editSite => 'Edit Site';
-
-  @override
-  String get app_errorTitle => 'Error';
-
-  @override
-  String get app_accessDeniedTitle => 'Access Denied';
-
-  @override
-  String get app_accessDeniedMessage =>
-      'You do not have permission to access this site';
 
   @override
   String app_eventMove(int player, int x, int y) {
