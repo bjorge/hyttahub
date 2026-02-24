@@ -107,17 +107,8 @@ const SubmitAppEvent$json = {
       '10': 'siteEvent'
     },
     {'1': 'authorEmail', '3': 3, '4': 1, '5': 9, '10': 'authorEmail'},
-    {
-      '1': 'images',
-      '3': 4,
-      '4': 3,
-      '5': 11,
-      '6': '.hyttahub.example.tictactoe.SubmitAppEvent.Image',
-      '10': 'images'
-    },
-    {'1': 'pause_delay', '3': 5, '4': 1, '5': 5, '10': 'pauseDelay'},
   ],
-  '3': [SubmitAppEvent_SiteEvent$json, SubmitAppEvent_Image$json],
+  '3': [SubmitAppEvent_SiteEvent$json],
 };
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
@@ -129,27 +120,13 @@ const SubmitAppEvent_SiteEvent$json = {
   ],
 };
 
-@$core.Deprecated('Use submitAppEventDescriptor instead')
-const SubmitAppEvent_Image$json = {
-  '1': 'Image',
-  '2': [
-    {'1': 'base64Data', '3': 1, '4': 1, '5': 9, '10': 'base64Data'},
-    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
-    {'1': 'size', '3': 3, '4': 1, '5': 5, '10': 'size'},
-  ],
-};
-
 /// Descriptor for `SubmitAppEvent`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List submitAppEventDescriptor = $convert.base64Decode(
     'Cg5TdWJtaXRBcHBFdmVudBJACghhcHBFdmVudBgBIAEoCzIkLmh5dHRhaHViLmV4YW1wbGUudG'
     'ljdGFjdG9lLkFwcEV2ZW50UghhcHBFdmVudBJSCglzaXRlRXZlbnQYAiABKAsyNC5oeXR0YWh1'
     'Yi5leGFtcGxlLnRpY3RhY3RvZS5TdWJtaXRBcHBFdmVudC5TaXRlRXZlbnRSCXNpdGVFdmVudB'
-    'IgCgthdXRob3JFbWFpbBgDIAEoCVILYXV0aG9yRW1haWwSSAoGaW1hZ2VzGAQgAygLMjAuaHl0'
-    'dGFodWIuZXhhbXBsZS50aWN0YWN0b2UuU3VibWl0QXBwRXZlbnQuSW1hZ2VSBmltYWdlcxIfCg'
-    'twYXVzZV9kZWxheRgFIAEoBVIKcGF1c2VEZWxheRo9CglTaXRlRXZlbnQSGAoHdmVyc2lvbhgB'
-    'IAEoBVIHdmVyc2lvbhIWCgZhdXRob3IYAiABKAVSBmF1dGhvchpPCgVJbWFnZRIeCgpiYXNlNj'
-    'REYXRhGAEgASgJUgpiYXNlNjREYXRhEhIKBG5hbWUYAiABKAlSBG5hbWUSEgoEc2l6ZRgDIAEo'
-    'BVIEc2l6ZQ==');
+    'IgCgthdXRob3JFbWFpbBgDIAEoCVILYXV0aG9yRW1haWwaPQoJU2l0ZUV2ZW50EhgKB3ZlcnNp'
+    'b24YASABKAVSB3ZlcnNpb24SFgoGYXV0aG9yGAIgASgFUgZhdXRob3I=');
 
 @$core.Deprecated('Use appEventRecordDescriptor instead')
 const AppEventRecord$json = {

@@ -363,85 +363,6 @@ class SubmitAppEvent_SiteEvent extends $pb.GeneratedMessage {
   void clearAuthor() => $_clearField(2);
 }
 
-class SubmitAppEvent_Image extends $pb.GeneratedMessage {
-  factory SubmitAppEvent_Image({
-    $core.String? base64Data,
-    $core.String? name,
-    $core.int? size,
-  }) {
-    final result = create();
-    if (base64Data != null) result.base64Data = base64Data;
-    if (name != null) result.name = name;
-    if (size != null) result.size = size;
-    return result;
-  }
-
-  SubmitAppEvent_Image._();
-
-  factory SubmitAppEvent_Image.fromBuffer($core.List<$core.int> data,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(data, registry);
-  factory SubmitAppEvent_Image.fromJson($core.String json,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(json, registry);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'SubmitAppEvent.Image',
-      package: const $pb.PackageName(
-          _omitMessageNames ? '' : 'hyttahub.example.tictactoe'),
-      createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'base64Data', protoName: 'base64Data')
-    ..aOS(2, _omitFieldNames ? '' : 'name')
-    ..aI(3, _omitFieldNames ? '' : 'size')
-    ..hasRequiredFields = false;
-
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  SubmitAppEvent_Image clone() => deepCopy();
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  SubmitAppEvent_Image copyWith(void Function(SubmitAppEvent_Image) updates) =>
-      super.copyWith((message) => updates(message as SubmitAppEvent_Image))
-          as SubmitAppEvent_Image;
-
-  @$core.override
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static SubmitAppEvent_Image create() => SubmitAppEvent_Image._();
-  @$core.override
-  SubmitAppEvent_Image createEmptyInstance() => create();
-  @$core.pragma('dart2js:noInline')
-  static SubmitAppEvent_Image getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<SubmitAppEvent_Image>(create);
-  static SubmitAppEvent_Image? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get base64Data => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set base64Data($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasBase64Data() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearBase64Data() => $_clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get name => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set name($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasName() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearName() => $_clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.int get size => $_getIZ(2);
-  @$pb.TagNumber(3)
-  set size($core.int value) => $_setSignedInt32(2, value);
-  @$pb.TagNumber(3)
-  $core.bool hasSize() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearSize() => $_clearField(3);
-}
-
 /// The SubmitAppEvent is passed to the submit bloc handler
 /// PII (ex. email) is allowed in this message since not stored to immutable
 /// records
@@ -450,15 +371,11 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     AppEvent? appEvent,
     SubmitAppEvent_SiteEvent? siteEvent,
     $core.String? authorEmail,
-    $core.Iterable<SubmitAppEvent_Image>? images,
-    $core.int? pauseDelay,
   }) {
     final result = create();
     if (appEvent != null) result.appEvent = appEvent;
     if (siteEvent != null) result.siteEvent = siteEvent;
     if (authorEmail != null) result.authorEmail = authorEmail;
-    if (images != null) result.images.addAll(images);
-    if (pauseDelay != null) result.pauseDelay = pauseDelay;
     return result;
   }
 
@@ -481,9 +398,6 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     ..aOM<SubmitAppEvent_SiteEvent>(2, _omitFieldNames ? '' : 'siteEvent',
         protoName: 'siteEvent', subBuilder: SubmitAppEvent_SiteEvent.create)
     ..aOS(3, _omitFieldNames ? '' : 'authorEmail', protoName: 'authorEmail')
-    ..pPM<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images',
-        subBuilder: SubmitAppEvent_Image.create)
-    ..aI(5, _omitFieldNames ? '' : 'pauseDelay')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -535,18 +449,6 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
   $core.bool hasAuthorEmail() => $_has(2);
   @$pb.TagNumber(3)
   void clearAuthorEmail() => $_clearField(3);
-
-  @$pb.TagNumber(4)
-  $pb.PbList<SubmitAppEvent_Image> get images => $_getList(3);
-
-  @$pb.TagNumber(5)
-  $core.int get pauseDelay => $_getIZ(4);
-  @$pb.TagNumber(5)
-  set pauseDelay($core.int value) => $_setSignedInt32(4, value);
-  @$pb.TagNumber(5)
-  $core.bool hasPauseDelay() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearPauseDelay() => $_clearField(5);
 }
 
 /// The AppEventRecord is a representation of the actual record stored in the

@@ -58,16 +58,6 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
-    // Check if there are images to upload for this event
-    // For TicTacToe, we don't handle images in moves, so we skip the image logic.
-
-    if (submitAppEvent.pauseDelay > 0) {
-      await Future.delayed(Duration(milliseconds: submitAppEvent.pauseDelay));
-      if (isClosed) {
-        return state;
-      }
-    }
-
 
     await storage.setDocument(
       firebaseSiteEventsPath(siteId),

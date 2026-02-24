@@ -31,17 +31,9 @@ message SubmitAppEvent {
     int32 author = 2;  // filled in by the app submit bloc
   }
 
-  message Image {
-    string base64Data = 1;  // the image data
-    string name = 2; // the name of the image, used for display
-    int32 size = 3;  // the size of the image in bytes
-  }
-
   AppEvent appEvent = 1;   // the event to store in immutable records, required
   SiteEvent siteEvent = 2; // the version of the event, required
   string authorEmail = 3;  // the author's email, required
-  repeated Image images = 4; // for add photo events, the images to upload
-  int32 pause_delay = 5; // delay in milliseconds before submitting the event
 }
 
 // The AppEventRecord is a representation of the actual record stored in the
