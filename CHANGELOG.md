@@ -1,3 +1,10 @@
+## 0.1.51
+
+* Prevent members from changing their own email on the Update Member screen; only another admin can change a member's email.
+* Make the author of a copy-site (import event) an admin on the imported site.
+* Cleaned up unused import in `add_member_screen.dart`.
+* Example app improvements: added delete photo screen, updated favicons, cleaned up unused code and localization strings.
+
 ## 0.1.50
 
 * Added `maxLength` constraints to all text input form fields via `BaseTextFormField`.
