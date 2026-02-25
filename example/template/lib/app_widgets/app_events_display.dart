@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:template/app_blocs/app_replay.dart';
+import 'package:template/l10n/app_localizations.dart';
 import 'package:template/proto/app_events.pb.dart';
 import 'package:template/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
@@ -18,7 +19,11 @@ class AppEventsDisplayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EventsDisplay(
-      config: AppEventsConfig(siteId, 'App Events', 'App State'),
+      config: AppEventsConfig(
+        siteId,
+        AppLocalizations.of(context)!.app_appEventsTitle,
+        AppLocalizations.of(context)!.app_appStateTitle,
+      ),
     );
   }
 }

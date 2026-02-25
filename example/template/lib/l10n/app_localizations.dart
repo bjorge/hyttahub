@@ -217,6 +217,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updated Photo: {name}'**
   String app_eventUpdatePhoto(String name);
+
+  /// No description provided for @app_labelText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get app_labelText;
+
+  /// No description provided for @app_labelCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get app_labelCode;
+
+  /// No description provided for @app_labelCheckbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkbox'**
+  String get app_labelCheckbox;
+
+  /// No description provided for @app_labelDropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropdown'**
+  String get app_labelDropdown;
+
+  /// No description provided for @app_labelList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get app_labelList;
+
+  /// No description provided for @app_labelPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get app_labelPhoto;
+
+  /// No description provided for @app_reorderList.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder List'**
+  String get app_reorderList;
+
+  /// No description provided for @app_updateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Update {label}'**
+  String app_updateLabel(String label);
+
+  /// No description provided for @app_noPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'No photo'**
+  String get app_noPhoto;
+
+  /// No description provided for @app_selectedPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Photo'**
+  String get app_selectedPhoto;
+
+  /// No description provided for @app_deletePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Photo'**
+  String get app_deletePhoto;
+
+  /// No description provided for @app_getShareableUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Shareable URL'**
+  String get app_getShareableUrl;
+
+  /// No description provided for @app_generatedUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated URL (exp. 7 days):'**
+  String get app_generatedUrlLabel;
+
+  /// No description provided for @app_photoDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo deleted'**
+  String get app_photoDeleted;
+
+  /// No description provided for @app_urlGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'URL Generated'**
+  String get app_urlGenerated;
+
+  /// No description provided for @app_errorDeletingPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting photo: {error}'**
+  String app_errorDeletingPhoto(String error);
+
+  /// No description provided for @app_errorGettingUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Error getting URL: {error}'**
+  String app_errorGettingUrl(String error);
+
+  /// No description provided for @app_appSpecificEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'App specific event'**
+  String get app_appSpecificEvent;
+
+  /// No description provided for @app_updateTextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Text'**
+  String get app_updateTextTitle;
+
+  /// No description provided for @app_textValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Value'**
+  String get app_textValueLabel;
+
+  /// No description provided for @app_updateCheckboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Checkbox'**
+  String get app_updateCheckboxTitle;
+
+  /// No description provided for @app_checkboxValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkbox Value'**
+  String get app_checkboxValueLabel;
+
+  /// No description provided for @app_updateCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Code'**
+  String get app_updateCodeTitle;
+
+  /// No description provided for @app_codeValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code Value'**
+  String get app_codeValueLabel;
+
+  /// No description provided for @app_updateDropdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Dropdown'**
+  String get app_updateDropdownTitle;
+
+  /// No description provided for @app_dropdownValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropdown Value'**
+  String get app_dropdownValueLabel;
+
+  /// No description provided for @app_dropdownOption1.
+  ///
+  /// In en, this message translates to:
+  /// **'Option 1'**
+  String get app_dropdownOption1;
+
+  /// No description provided for @app_dropdownOption2.
+  ///
+  /// In en, this message translates to:
+  /// **'Option 2'**
+  String get app_dropdownOption2;
+
+  /// No description provided for @app_updateListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update List'**
+  String get app_updateListTitle;
+
+  /// No description provided for @app_reorderableListLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorderable List'**
+  String get app_reorderableListLabel;
+
+  /// No description provided for @app_updatePhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Photo'**
+  String get app_updatePhotoTitle;
+
+  /// No description provided for @app_appEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App Events'**
+  String get app_appEventsTitle;
+
+  /// No description provided for @app_appStateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App State'**
+  String get app_appStateTitle;
 }
 
 class _AppLocalizationsDelegate

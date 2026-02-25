@@ -20,5 +20,59 @@
         }
     },
     "app_enterButton": "Enter",
-    "app_permissionDenied": "U heeft geen toestemming om deze actie uit te voeren."
+    "app_permissionDenied": "U heeft geen toestemming om deze actie uit te voeren.",
+    "app_labelText": "Tekst",
+    "app_labelCode": "Code",
+    "app_labelCheckbox": "Selectievakje",
+    "app_labelDropdown": "Keuzelijst",
+    "app_labelList": "Lijst",
+    "app_labelPhoto": "Foto",
+    "app_reorderList": "Lijst Herschikken",
+    "app_updateLabel": "{label} Bijwerken",
+    "@app_updateLabel": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "app_noPhoto": "Geen foto",
+    "app_selectedPhoto": "Geselecteerde Foto",
+    "app_deletePhoto": "Foto Verwijderen",
+    "app_getShareableUrl": "Deelbare URL Ophalen",
+    "app_generatedUrlLabel": "Gegenereerde URL (verl. 7 dagen):",
+    "app_photoDeleted": "Foto verwijderd",
+    "app_urlGenerated": "URL Gegenereerd",
+    "app_errorDeletingPhoto": "Fout bij verwijderen van foto: {error}",
+    "@app_errorDeletingPhoto": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "app_errorGettingUrl": "Fout bij ophalen van URL: {error}",
+    "@app_errorGettingUrl": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "app_appSpecificEvent": "App-specifieke gebeurtenis",
+    "app_updateTextTitle": "Tekst Bijwerken",
+    "app_textValueLabel": "Tekstwaarde",
+    "app_updateCheckboxTitle": "Selectievakje Bijwerken",
+    "app_checkboxValueLabel": "Selectievakwaarde",
+    "app_updateCodeTitle": "Code Bijwerken",
+    "app_codeValueLabel": "Codewaarde",
+    "app_updateDropdownTitle": "Keuzelijst Bijwerken",
+    "app_dropdownValueLabel": "Keuzelijstwaarde",
+    "app_dropdownOption1": "Optie 1",
+    "app_dropdownOption2": "Optie 2",
+    "app_updateListTitle": "Lijst Bijwerken",
+    "app_reorderableListLabel": "Herschikbare Lijst",
+    "app_updatePhotoTitle": "Foto Bijwerken",
+    "app_appEventsTitle": "App Gebeurtenissen",
+    "app_appStateTitle": "App Status"
 }

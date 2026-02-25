@@ -44,7 +44,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
-                title: Text("Update Photo"),
+                title: Text(AppLocalizations.of(context)!.app_updatePhotoTitle),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
               body: _buildBody(context, submitState),
@@ -178,7 +178,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            "Selected Photo",
+            AppLocalizations.of(context)!.app_selectedPhoto,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),

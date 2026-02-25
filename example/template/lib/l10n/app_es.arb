@@ -20,5 +20,59 @@
         }
     },
     "app_enterButton": "Entrar",
-    "app_permissionDenied": "No tienes permiso para realizar esta acción."
+    "app_permissionDenied": "No tienes permiso para realizar esta acción.",
+    "app_labelText": "Texto",
+    "app_labelCode": "Código",
+    "app_labelCheckbox": "Casilla",
+    "app_labelDropdown": "Desplegable",
+    "app_labelList": "Lista",
+    "app_labelPhoto": "Foto",
+    "app_reorderList": "Reordenar Lista",
+    "app_updateLabel": "Actualizar {label}",
+    "@app_updateLabel": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "app_noPhoto": "Sin foto",
+    "app_selectedPhoto": "Foto Seleccionada",
+    "app_deletePhoto": "Eliminar Foto",
+    "app_getShareableUrl": "Obtener URL Compartible",
+    "app_generatedUrlLabel": "URL Generada (exp. 7 días):",
+    "app_photoDeleted": "Foto eliminada",
+    "app_urlGenerated": "URL Generada",
+    "app_errorDeletingPhoto": "Error al eliminar foto: {error}",
+    "@app_errorDeletingPhoto": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "app_errorGettingUrl": "Error al obtener URL: {error}",
+    "@app_errorGettingUrl": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "app_appSpecificEvent": "Evento específico de la aplicación",
+    "app_updateTextTitle": "Actualizar Texto",
+    "app_textValueLabel": "Valor del Texto",
+    "app_updateCheckboxTitle": "Actualizar Casilla",
+    "app_checkboxValueLabel": "Valor de la Casilla",
+    "app_updateCodeTitle": "Actualizar Código",
+    "app_codeValueLabel": "Valor del Código",
+    "app_updateDropdownTitle": "Actualizar Desplegable",
+    "app_dropdownValueLabel": "Valor del Desplegable",
+    "app_dropdownOption1": "Opción 1",
+    "app_dropdownOption2": "Opción 2",
+    "app_updateListTitle": "Actualizar Lista",
+    "app_reorderableListLabel": "Lista Reordenable",
+    "app_updatePhotoTitle": "Actualizar Foto",
+    "app_appEventsTitle": "Eventos de la Aplicación",
+    "app_appStateTitle": "Estado de la Aplicación"
 }

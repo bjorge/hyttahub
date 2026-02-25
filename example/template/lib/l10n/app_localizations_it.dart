@@ -78,4 +78,109 @@ class AppLocalizationsIt extends AppLocalizations {
   String app_eventUpdatePhoto(String name) {
     return 'Updated Photo: $name';
   }
+
+  @override
+  String get app_labelText => 'Testo';
+
+  @override
+  String get app_labelCode => 'Codice';
+
+  @override
+  String get app_labelCheckbox => 'Casella';
+
+  @override
+  String get app_labelDropdown => 'Menu a Tendina';
+
+  @override
+  String get app_labelList => 'Lista';
+
+  @override
+  String get app_labelPhoto => 'Foto';
+
+  @override
+  String get app_reorderList => 'Riordina Lista';
+
+  @override
+  String app_updateLabel(String label) {
+    return 'Aggiorna $label';
+  }
+
+  @override
+  String get app_noPhoto => 'Nessuna foto';
+
+  @override
+  String get app_selectedPhoto => 'Foto Selezionata';
+
+  @override
+  String get app_deletePhoto => 'Elimina Foto';
+
+  @override
+  String get app_getShareableUrl => 'Ottieni URL Condivisibile';
+
+  @override
+  String get app_generatedUrlLabel => 'URL Generato (scad. 7 giorni):';
+
+  @override
+  String get app_photoDeleted => 'Foto eliminata';
+
+  @override
+  String get app_urlGenerated => 'URL Generato';
+
+  @override
+  String app_errorDeletingPhoto(String error) {
+    return 'Errore nell\'eliminazione della foto: $error';
+  }
+
+  @override
+  String app_errorGettingUrl(String error) {
+    return 'Errore nell\'ottenere l\'URL: $error';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'Evento specifico dell\'applicazione';
+
+  @override
+  String get app_updateTextTitle => 'Aggiorna Testo';
+
+  @override
+  String get app_textValueLabel => 'Valore del Testo';
+
+  @override
+  String get app_updateCheckboxTitle => 'Aggiorna Casella';
+
+  @override
+  String get app_checkboxValueLabel => 'Valore della Casella';
+
+  @override
+  String get app_updateCodeTitle => 'Aggiorna Codice';
+
+  @override
+  String get app_codeValueLabel => 'Valore del Codice';
+
+  @override
+  String get app_updateDropdownTitle => 'Aggiorna Menu a Tendina';
+
+  @override
+  String get app_dropdownValueLabel => 'Valore del Menu a Tendina';
+
+  @override
+  String get app_dropdownOption1 => 'Opzione 1';
+
+  @override
+  String get app_dropdownOption2 => 'Opzione 2';
+
+  @override
+  String get app_updateListTitle => 'Aggiorna Lista';
+
+  @override
+  String get app_reorderableListLabel => 'Lista Riordinabile';
+
+  @override
+  String get app_updatePhotoTitle => 'Aggiorna Foto';
+
+  @override
+  String get app_appEventsTitle => 'Eventi dell\'Applicazione';
+
+  @override
+  String get app_appStateTitle => 'Stato dell\'Applicazione';
 }

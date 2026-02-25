@@ -100,10 +100,10 @@ Future<void> main() async {
   HyttaHubOptions.appBuildNumber = appBuildNumber;
 
   HyttaHubOptions.appEventDescriptionBuilder = (context, siteEvent) {
-    if (!siteEvent.hasAppEvent()) return "App specific event";
+    final localizations = AppLocalizations.of(context);
+    if (!siteEvent.hasAppEvent()) return localizations?.app_appSpecificEvent ?? "App specific event";
     
     final appEvent = AppEvent.fromBuffer(siteEvent.appEvent.payload);
-    final localizations = AppLocalizations.of(context);
     if (localizations == null) return "App specific event";
 
     if (appEvent.hasUpdateText()) return localizations.app_eventUpdateText(appEvent.updateText.value);
@@ -113,7 +113,7 @@ Future<void> main() async {
     if (appEvent.hasUpdateList()) return localizations.app_eventUpdateList;
     if (appEvent.hasUpdatePhoto()) return localizations.app_eventUpdatePhoto(appEvent.updatePhoto.name);
     
-    return "App specific event";
+    return localizations.app_appSpecificEvent;
   };
 
   await PersistenceRegistry.initializePlatform(storage);

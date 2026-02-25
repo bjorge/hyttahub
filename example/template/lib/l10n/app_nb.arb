@@ -20,5 +20,59 @@
     }
   },
   "app_enterButton": "Enter",
-  "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen."
+  "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen.",
+  "app_labelText": "Tekst",
+  "app_labelCode": "Kode",
+  "app_labelCheckbox": "Avkrysning",
+  "app_labelDropdown": "Nedtrekksmeny",
+  "app_labelList": "Liste",
+  "app_labelPhoto": "Bilde",
+  "app_reorderList": "Omordne Liste",
+  "app_updateLabel": "Oppdater {label}",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "Ingen bilde",
+  "app_selectedPhoto": "Valgt Bilde",
+  "app_deletePhoto": "Slett Bilde",
+  "app_getShareableUrl": "Hent Delbar URL",
+  "app_generatedUrlLabel": "Generert URL (utl. 7 dager):",
+  "app_photoDeleted": "Bilde slettet",
+  "app_urlGenerated": "URL Generert",
+  "app_errorDeletingPhoto": "Feil ved sletting av bilde: {error}",
+  "@app_errorDeletingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_errorGettingUrl": "Feil ved henting av URL: {error}",
+  "@app_errorGettingUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "Appspesifikk hendelse",
+  "app_updateTextTitle": "Oppdater Tekst",
+  "app_textValueLabel": "Tekstverdi",
+  "app_updateCheckboxTitle": "Oppdater Avkrysning",
+  "app_checkboxValueLabel": "Avkrysningsverdi",
+  "app_updateCodeTitle": "Oppdater Kode",
+  "app_codeValueLabel": "Kodeverdi",
+  "app_updateDropdownTitle": "Oppdater Nedtrekksmeny",
+  "app_dropdownValueLabel": "Nedtrekksverdi",
+  "app_dropdownOption1": "Alternativ 1",
+  "app_dropdownOption2": "Alternativ 2",
+  "app_updateListTitle": "Oppdater Liste",
+  "app_reorderableListLabel": "Omordnbar Liste",
+  "app_updatePhotoTitle": "Oppdater Bilde",
+  "app_appEventsTitle": "Apphendelser",
+  "app_appStateTitle": "Appstatus"
 }

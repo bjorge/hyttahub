@@ -78,4 +78,109 @@ class AppLocalizationsNl extends AppLocalizations {
   String app_eventUpdatePhoto(String name) {
     return 'Updated Photo: $name';
   }
+
+  @override
+  String get app_labelText => 'Tekst';
+
+  @override
+  String get app_labelCode => 'Code';
+
+  @override
+  String get app_labelCheckbox => 'Selectievakje';
+
+  @override
+  String get app_labelDropdown => 'Keuzelijst';
+
+  @override
+  String get app_labelList => 'Lijst';
+
+  @override
+  String get app_labelPhoto => 'Foto';
+
+  @override
+  String get app_reorderList => 'Lijst Herschikken';
+
+  @override
+  String app_updateLabel(String label) {
+    return '$label Bijwerken';
+  }
+
+  @override
+  String get app_noPhoto => 'Geen foto';
+
+  @override
+  String get app_selectedPhoto => 'Geselecteerde Foto';
+
+  @override
+  String get app_deletePhoto => 'Foto Verwijderen';
+
+  @override
+  String get app_getShareableUrl => 'Deelbare URL Ophalen';
+
+  @override
+  String get app_generatedUrlLabel => 'Gegenereerde URL (verl. 7 dagen):';
+
+  @override
+  String get app_photoDeleted => 'Foto verwijderd';
+
+  @override
+  String get app_urlGenerated => 'URL Gegenereerd';
+
+  @override
+  String app_errorDeletingPhoto(String error) {
+    return 'Fout bij verwijderen van foto: $error';
+  }
+
+  @override
+  String app_errorGettingUrl(String error) {
+    return 'Fout bij ophalen van URL: $error';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'App-specifieke gebeurtenis';
+
+  @override
+  String get app_updateTextTitle => 'Tekst Bijwerken';
+
+  @override
+  String get app_textValueLabel => 'Tekstwaarde';
+
+  @override
+  String get app_updateCheckboxTitle => 'Selectievakje Bijwerken';
+
+  @override
+  String get app_checkboxValueLabel => 'Selectievakwaarde';
+
+  @override
+  String get app_updateCodeTitle => 'Code Bijwerken';
+
+  @override
+  String get app_codeValueLabel => 'Codewaarde';
+
+  @override
+  String get app_updateDropdownTitle => 'Keuzelijst Bijwerken';
+
+  @override
+  String get app_dropdownValueLabel => 'Keuzelijstwaarde';
+
+  @override
+  String get app_dropdownOption1 => 'Optie 1';
+
+  @override
+  String get app_dropdownOption2 => 'Optie 2';
+
+  @override
+  String get app_updateListTitle => 'Lijst Bijwerken';
+
+  @override
+  String get app_reorderableListLabel => 'Herschikbare Lijst';
+
+  @override
+  String get app_updatePhotoTitle => 'Foto Bijwerken';
+
+  @override
+  String get app_appEventsTitle => 'App Gebeurtenissen';
+
+  @override
+  String get app_appStateTitle => 'App Status';
 }

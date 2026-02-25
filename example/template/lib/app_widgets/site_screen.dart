@@ -215,7 +215,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
           children: [
             _buildRow(
               context: context,
-              label: "Text",
+              label: AppLocalizations.of(context)!.app_labelText,
               value: appState.textValue,
               onPressed: () {
                 final appEvent = AppEvent(
@@ -232,7 +232,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             ),
             _buildRow(
               context: context,
-              label: "Code",
+              label: AppLocalizations.of(context)!.app_labelCode,
               value: appState.codeValue,
               onPressed: () {
                 final appEvent = AppEvent(
@@ -249,7 +249,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             ),
             _buildRow(
               context: context,
-              label: "Checkbox",
+              label: AppLocalizations.of(context)!.app_labelCheckbox,
               value: appState.checkboxValue.toString(),
               onPressed: () {
                 final appEvent = AppEvent(
@@ -268,7 +268,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             ),
             _buildRow(
               context: context,
-              label: "Dropdown",
+              label: AppLocalizations.of(context)!.app_labelDropdown,
               value: appState.dropdownValue,
               onPressed: () {
                 final appEvent = AppEvent(
@@ -287,8 +287,8 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             ),
             _buildRow(
               context: context,
-              label: "List",
-              buttonText: "Reorder List",
+              label: AppLocalizations.of(context)!.app_labelList,
+              buttonText: AppLocalizations.of(context)!.app_reorderList,
               value: appState.listItems.map((e) => e.title).join(', '),
               onPressed: () {
                 final appEvent = AppEvent(
@@ -305,7 +305,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             ),
             _buildPhotoRow(
               context: context,
-              label: "Photo",
+              label: AppLocalizations.of(context)!.app_labelPhoto,
               value: "${appState.photoName} (v${appState.photoVersion})",
               photoVersion: appState.photoVersion,
               onPressed: () {
@@ -330,9 +330,9 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Generated URL (exp. 7 days):",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      AppLocalizations.of(context)!.app_generatedUrlLabel,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     SelectableText(
@@ -377,7 +377,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: Text(
-                        buttonText ?? "Update $label",
+                        buttonText ?? AppLocalizations.of(context)!.app_updateLabel(label),
                         style: const TextStyle(
                           decoration: TextDecoration.underline,
                         ),
@@ -418,7 +418,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
         _buildRow(
           context: context,
           label: label,
-          value: photoVersion > 0 ? value : "No photo",
+          value: photoVersion > 0 ? value : AppLocalizations.of(context)!.app_noPhoto,
           onPressed: onPressed,
         ),
         if (photoVersion > 0)
@@ -433,6 +433,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                     onPressed: () async {
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final appReplayBloc = context.read<AppReplayBloc>();
+                      final l10n = AppLocalizations.of(context)!;
 
                       final storage = HyttaHubStorageFactory.getStorage(
                         HyttaHubOptions.implementation?.storage ??
@@ -483,11 +484,11 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                         });
 
                         scaffoldMessenger.showSnackBar(
-                          const SnackBar(content: Text('Photo deleted')),
+                          SnackBar(content: Text(l10n.app_photoDeleted)),
                         );
                       } catch (e) {
                         scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text('Error deleting photo: $e')),
+                          SnackBar(content: Text(l10n.app_errorDeletingPhoto(e.toString()))),
                         );
                       }
                     },
@@ -498,15 +499,16 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       foregroundColor: Colors.red,
                     ),
-                    child: const Text(
-                      "Delete Photo",
-                      style: TextStyle(decoration: TextDecoration.underline),
+                    child: Text(
+                      AppLocalizations.of(context)!.app_deletePhoto,
+                      style: const TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
                 if (widget.isEditModeOn) const SizedBox(width: 16),
                 TextButton(
                   onPressed: () async {
                     final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    final l10n = AppLocalizations.of(context)!;
                     final storage = HyttaHubStorageFactory.getStorage(
                       HyttaHubOptions.implementation?.storage ??
                           StorageEnum.cloud,
@@ -527,11 +529,11 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                         _generatedUrl = url;
                       });
                       scaffoldMessenger.showSnackBar(
-                        const SnackBar(content: Text('URL Generated')),
+                        SnackBar(content: Text(l10n.app_urlGenerated)),
                       );
                     } catch (e) {
                       scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text('Error getting URL: $e')),
+                        SnackBar(content: Text(l10n.app_errorGettingUrl(e.toString()))),
                       );
                     }
                   },
@@ -541,9 +543,9 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                     minimumSize: const Size(0, 0),
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: const Text(
-                    "Get Shareable URL",
-                    style: TextStyle(decoration: TextDecoration.underline),
+                  child: Text(
+                    AppLocalizations.of(context)!.app_getShareableUrl,
+                    style: const TextStyle(decoration: TextDecoration.underline),
                   ),
                 ),
               ],

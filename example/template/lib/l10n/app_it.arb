@@ -15,5 +15,59 @@
     }
   },
   "app_enterButton": "Invio",
-  "app_permissionDenied": "Non hai il permesso di eseguire questa azione."
+  "app_permissionDenied": "Non hai il permesso di eseguire questa azione.",
+  "app_labelText": "Testo",
+  "app_labelCode": "Codice",
+  "app_labelCheckbox": "Casella",
+  "app_labelDropdown": "Menu a Tendina",
+  "app_labelList": "Lista",
+  "app_labelPhoto": "Foto",
+  "app_reorderList": "Riordina Lista",
+  "app_updateLabel": "Aggiorna {label}",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "Nessuna foto",
+  "app_selectedPhoto": "Foto Selezionata",
+  "app_deletePhoto": "Elimina Foto",
+  "app_getShareableUrl": "Ottieni URL Condivisibile",
+  "app_generatedUrlLabel": "URL Generato (scad. 7 giorni):",
+  "app_photoDeleted": "Foto eliminata",
+  "app_urlGenerated": "URL Generato",
+  "app_errorDeletingPhoto": "Errore nell'eliminazione della foto: {error}",
+  "@app_errorDeletingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_errorGettingUrl": "Errore nell'ottenere l'URL: {error}",
+  "@app_errorGettingUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "Evento specifico dell'applicazione",
+  "app_updateTextTitle": "Aggiorna Testo",
+  "app_textValueLabel": "Valore del Testo",
+  "app_updateCheckboxTitle": "Aggiorna Casella",
+  "app_checkboxValueLabel": "Valore della Casella",
+  "app_updateCodeTitle": "Aggiorna Codice",
+  "app_codeValueLabel": "Valore del Codice",
+  "app_updateDropdownTitle": "Aggiorna Menu a Tendina",
+  "app_dropdownValueLabel": "Valore del Menu a Tendina",
+  "app_dropdownOption1": "Opzione 1",
+  "app_dropdownOption2": "Opzione 2",
+  "app_updateListTitle": "Aggiorna Lista",
+  "app_reorderableListLabel": "Lista Riordinabile",
+  "app_updatePhotoTitle": "Aggiorna Foto",
+  "app_appEventsTitle": "Eventi dell'Applicazione",
+  "app_appStateTitle": "Stato dell'Applicazione"
 }

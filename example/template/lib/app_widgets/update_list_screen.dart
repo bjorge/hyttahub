@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:template/l10n/app_localizations.dart';
+
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
@@ -54,7 +56,7 @@ class _UpdateListScreenState extends State<UpdateListScreen> {
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text("Update List"),
+                title: Text(AppLocalizations.of(context)!.app_updateListTitle),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
               body: CommonSubmitFormLayout<SubmitAppEvent>(
@@ -62,7 +64,7 @@ class _UpdateListScreenState extends State<UpdateListScreen> {
                 children: [
                   ReorderableFormFieldWidget(
                     formKey: _formKey,
-                    labelText: "Reorderable List",
+                    labelText: AppLocalizations.of(context)!.app_reorderableListLabel,
                   ),
                 ],
               ),

@@ -78,4 +78,109 @@ class AppLocalizationsNb extends AppLocalizations {
   String app_eventUpdatePhoto(String name) {
     return 'Updated Photo: $name';
   }
+
+  @override
+  String get app_labelText => 'Tekst';
+
+  @override
+  String get app_labelCode => 'Kode';
+
+  @override
+  String get app_labelCheckbox => 'Avkrysning';
+
+  @override
+  String get app_labelDropdown => 'Nedtrekksmeny';
+
+  @override
+  String get app_labelList => 'Liste';
+
+  @override
+  String get app_labelPhoto => 'Bilde';
+
+  @override
+  String get app_reorderList => 'Omordne Liste';
+
+  @override
+  String app_updateLabel(String label) {
+    return 'Oppdater $label';
+  }
+
+  @override
+  String get app_noPhoto => 'Ingen bilde';
+
+  @override
+  String get app_selectedPhoto => 'Valgt Bilde';
+
+  @override
+  String get app_deletePhoto => 'Slett Bilde';
+
+  @override
+  String get app_getShareableUrl => 'Hent Delbar URL';
+
+  @override
+  String get app_generatedUrlLabel => 'Generert URL (utl. 7 dager):';
+
+  @override
+  String get app_photoDeleted => 'Bilde slettet';
+
+  @override
+  String get app_urlGenerated => 'URL Generert';
+
+  @override
+  String app_errorDeletingPhoto(String error) {
+    return 'Feil ved sletting av bilde: $error';
+  }
+
+  @override
+  String app_errorGettingUrl(String error) {
+    return 'Feil ved henting av URL: $error';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'Appspesifikk hendelse';
+
+  @override
+  String get app_updateTextTitle => 'Oppdater Tekst';
+
+  @override
+  String get app_textValueLabel => 'Tekstverdi';
+
+  @override
+  String get app_updateCheckboxTitle => 'Oppdater Avkrysning';
+
+  @override
+  String get app_checkboxValueLabel => 'Avkrysningsverdi';
+
+  @override
+  String get app_updateCodeTitle => 'Oppdater Kode';
+
+  @override
+  String get app_codeValueLabel => 'Kodeverdi';
+
+  @override
+  String get app_updateDropdownTitle => 'Oppdater Nedtrekksmeny';
+
+  @override
+  String get app_dropdownValueLabel => 'Nedtrekksverdi';
+
+  @override
+  String get app_dropdownOption1 => 'Alternativ 1';
+
+  @override
+  String get app_dropdownOption2 => 'Alternativ 2';
+
+  @override
+  String get app_updateListTitle => 'Oppdater Liste';
+
+  @override
+  String get app_reorderableListLabel => 'Omordnbar Liste';
+
+  @override
+  String get app_updatePhotoTitle => 'Oppdater Bilde';
+
+  @override
+  String get app_appEventsTitle => 'Apphendelser';
+
+  @override
+  String get app_appStateTitle => 'Appstatus';
 }

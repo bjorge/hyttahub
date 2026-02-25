@@ -78,4 +78,109 @@ class AppLocalizationsEn extends AppLocalizations {
   String app_eventUpdatePhoto(String name) {
     return 'Updated Photo: $name';
   }
+
+  @override
+  String get app_labelText => 'Text';
+
+  @override
+  String get app_labelCode => 'Code';
+
+  @override
+  String get app_labelCheckbox => 'Checkbox';
+
+  @override
+  String get app_labelDropdown => 'Dropdown';
+
+  @override
+  String get app_labelList => 'List';
+
+  @override
+  String get app_labelPhoto => 'Photo';
+
+  @override
+  String get app_reorderList => 'Reorder List';
+
+  @override
+  String app_updateLabel(String label) {
+    return 'Update $label';
+  }
+
+  @override
+  String get app_noPhoto => 'No photo';
+
+  @override
+  String get app_selectedPhoto => 'Selected Photo';
+
+  @override
+  String get app_deletePhoto => 'Delete Photo';
+
+  @override
+  String get app_getShareableUrl => 'Get Shareable URL';
+
+  @override
+  String get app_generatedUrlLabel => 'Generated URL (exp. 7 days):';
+
+  @override
+  String get app_photoDeleted => 'Photo deleted';
+
+  @override
+  String get app_urlGenerated => 'URL Generated';
+
+  @override
+  String app_errorDeletingPhoto(String error) {
+    return 'Error deleting photo: $error';
+  }
+
+  @override
+  String app_errorGettingUrl(String error) {
+    return 'Error getting URL: $error';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'App specific event';
+
+  @override
+  String get app_updateTextTitle => 'Update Text';
+
+  @override
+  String get app_textValueLabel => 'Text Value';
+
+  @override
+  String get app_updateCheckboxTitle => 'Update Checkbox';
+
+  @override
+  String get app_checkboxValueLabel => 'Checkbox Value';
+
+  @override
+  String get app_updateCodeTitle => 'Update Code';
+
+  @override
+  String get app_codeValueLabel => 'Code Value';
+
+  @override
+  String get app_updateDropdownTitle => 'Update Dropdown';
+
+  @override
+  String get app_dropdownValueLabel => 'Dropdown Value';
+
+  @override
+  String get app_dropdownOption1 => 'Option 1';
+
+  @override
+  String get app_dropdownOption2 => 'Option 2';
+
+  @override
+  String get app_updateListTitle => 'Update List';
+
+  @override
+  String get app_reorderableListLabel => 'Reorderable List';
+
+  @override
+  String get app_updatePhotoTitle => 'Update Photo';
+
+  @override
+  String get app_appEventsTitle => 'App Events';
+
+  @override
+  String get app_appStateTitle => 'App State';
 }

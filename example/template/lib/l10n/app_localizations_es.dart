@@ -78,4 +78,109 @@ class AppLocalizationsEs extends AppLocalizations {
   String app_eventUpdatePhoto(String name) {
     return 'Updated Photo: $name';
   }
+
+  @override
+  String get app_labelText => 'Texto';
+
+  @override
+  String get app_labelCode => 'Código';
+
+  @override
+  String get app_labelCheckbox => 'Casilla';
+
+  @override
+  String get app_labelDropdown => 'Desplegable';
+
+  @override
+  String get app_labelList => 'Lista';
+
+  @override
+  String get app_labelPhoto => 'Foto';
+
+  @override
+  String get app_reorderList => 'Reordenar Lista';
+
+  @override
+  String app_updateLabel(String label) {
+    return 'Actualizar $label';
+  }
+
+  @override
+  String get app_noPhoto => 'Sin foto';
+
+  @override
+  String get app_selectedPhoto => 'Foto Seleccionada';
+
+  @override
+  String get app_deletePhoto => 'Eliminar Foto';
+
+  @override
+  String get app_getShareableUrl => 'Obtener URL Compartible';
+
+  @override
+  String get app_generatedUrlLabel => 'URL Generada (exp. 7 días):';
+
+  @override
+  String get app_photoDeleted => 'Foto eliminada';
+
+  @override
+  String get app_urlGenerated => 'URL Generada';
+
+  @override
+  String app_errorDeletingPhoto(String error) {
+    return 'Error al eliminar foto: $error';
+  }
+
+  @override
+  String app_errorGettingUrl(String error) {
+    return 'Error al obtener URL: $error';
+  }
+
+  @override
+  String get app_appSpecificEvent => 'Evento específico de la aplicación';
+
+  @override
+  String get app_updateTextTitle => 'Actualizar Texto';
+
+  @override
+  String get app_textValueLabel => 'Valor del Texto';
+
+  @override
+  String get app_updateCheckboxTitle => 'Actualizar Casilla';
+
+  @override
+  String get app_checkboxValueLabel => 'Valor de la Casilla';
+
+  @override
+  String get app_updateCodeTitle => 'Actualizar Código';
+
+  @override
+  String get app_codeValueLabel => 'Valor del Código';
+
+  @override
+  String get app_updateDropdownTitle => 'Actualizar Desplegable';
+
+  @override
+  String get app_dropdownValueLabel => 'Valor del Desplegable';
+
+  @override
+  String get app_dropdownOption1 => 'Opción 1';
+
+  @override
+  String get app_dropdownOption2 => 'Opción 2';
+
+  @override
+  String get app_updateListTitle => 'Actualizar Lista';
+
+  @override
+  String get app_reorderableListLabel => 'Lista Reordenable';
+
+  @override
+  String get app_updatePhotoTitle => 'Actualizar Foto';
+
+  @override
+  String get app_appEventsTitle => 'Eventos de la Aplicación';
+
+  @override
+  String get app_appStateTitle => 'Estado de la Aplicación';
 }

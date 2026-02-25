@@ -61,5 +61,59 @@
         "type": "String"
       }
     }
-  }
+  },
+  "app_labelText": "Text",
+  "app_labelCode": "Code",
+  "app_labelCheckbox": "Checkbox",
+  "app_labelDropdown": "Dropdown",
+  "app_labelList": "List",
+  "app_labelPhoto": "Photo",
+  "app_reorderList": "Reorder List",
+  "app_updateLabel": "Update {label}",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "No photo",
+  "app_selectedPhoto": "Selected Photo",
+  "app_deletePhoto": "Delete Photo",
+  "app_getShareableUrl": "Get Shareable URL",
+  "app_generatedUrlLabel": "Generated URL (exp. 7 days):",
+  "app_photoDeleted": "Photo deleted",
+  "app_urlGenerated": "URL Generated",
+  "app_errorDeletingPhoto": "Error deleting photo: {error}",
+  "@app_errorDeletingPhoto": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_errorGettingUrl": "Error getting URL: {error}",
+  "@app_errorGettingUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "App specific event",
+  "app_updateTextTitle": "Update Text",
+  "app_textValueLabel": "Text Value",
+  "app_updateCheckboxTitle": "Update Checkbox",
+  "app_checkboxValueLabel": "Checkbox Value",
+  "app_updateCodeTitle": "Update Code",
+  "app_codeValueLabel": "Code Value",
+  "app_updateDropdownTitle": "Update Dropdown",
+  "app_dropdownValueLabel": "Dropdown Value",
+  "app_dropdownOption1": "Option 1",
+  "app_dropdownOption2": "Option 2",
+  "app_updateListTitle": "Update List",
+  "app_reorderableListLabel": "Reorderable List",
+  "app_updatePhotoTitle": "Update Photo",
+  "app_appEventsTitle": "App Events",
+  "app_appStateTitle": "App State"
 }

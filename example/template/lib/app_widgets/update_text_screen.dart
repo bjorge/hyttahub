@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:template/l10n/app_localizations.dart';
+
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
@@ -44,7 +46,7 @@ class _UpdateTextScreenState extends State<UpdateTextScreen> {
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text("Update Text"),
+                title: Text(AppLocalizations.of(context)!.app_updateTextTitle),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
               body: CommonSubmitFormLayout<SubmitAppEvent>(
@@ -52,7 +54,7 @@ class _UpdateTextScreenState extends State<UpdateTextScreen> {
                 children: [
                   TextFormFieldWidget(
                     formKey: _formKey,
-                    labelText: "Text Value",
+                    labelText: AppLocalizations.of(context)!.app_textValueLabel,
                   ),
                 ],
               ),

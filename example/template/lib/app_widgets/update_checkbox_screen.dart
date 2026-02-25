@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:template/l10n/app_localizations.dart';
+
 import 'package:template/app_widgets/app_submit_button.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
@@ -45,7 +47,7 @@ class _UpdateCheckboxScreenState extends State<UpdateCheckboxScreen> {
           builder: (context, submitState) {
             return Scaffold(
               appBar: AppBar(
-                title: const Text("Update Checkbox"),
+                title: Text(AppLocalizations.of(context)!.app_updateCheckboxTitle),
                 actions: [AppSubmitIconButton(formKey: _formKey)],
               ),
               body: CommonSubmitFormLayout<SubmitAppEvent>(
@@ -53,7 +55,7 @@ class _UpdateCheckboxScreenState extends State<UpdateCheckboxScreen> {
                 children: [
                   CheckboxFormFieldWidget(
                     formKey: _formKey,
-                    labelText: "Checkbox Value",
+                    labelText: AppLocalizations.of(context)!.app_checkboxValueLabel,
                   ),
                 ],
               ),
