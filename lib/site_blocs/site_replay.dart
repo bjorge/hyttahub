@@ -127,6 +127,11 @@ SiteReplayBlocState siteReplay(
         replay.removedMembers[memberId] = replay.members[memberId]!.deepCopy();
         replay.members.remove(memberId);
       }
+
+      // make the author an admin on the imported site
+      if (replay.members.containsKey(event.author)) {
+        replay.members[event.author]!.admin = true;
+      }
     }
   }
 
