@@ -212,11 +212,11 @@ final siteShellRoute = ShellRoute(
     return MultiBlocProvider(
       providers: [
         BlocProvider<SiteReplayBloc>(
-          key: Key('SiteReplayBloc-albums-$siteId'),
+          key: Key('SiteReplayBloc-template-$siteId'),
           create: (_) => SiteReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
         ),
         BlocProvider<AppReplayBloc>(
-          key: Key('AppReplayBloc-albums-$siteId'),
+          key: Key('AppReplayBloc-template-$siteId'),
           create: (_) => AppReplayBloc(siteId)..add(CommonReplayBlocEvent(listen: true)),
         ),
         BlocProvider<SiteAllowedEmailsBloc>(

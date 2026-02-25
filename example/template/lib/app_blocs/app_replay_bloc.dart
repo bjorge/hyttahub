@@ -73,23 +73,19 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
     AppReplayBlocState currentState,
     CommonReplayStateEnum newStatusEnum,
   ) {
-    // todo: create a lookup table instead
-    switch (newStatusEnum) {
-      case CommonReplayStateEnum.hydrating:
-        return (currentState.deepCopy()..state = AppReplayStateEnum.hydrating);
-      case CommonReplayStateEnum.listening:
-        return (currentState.deepCopy()..state = AppReplayStateEnum.listening);
-      case CommonReplayStateEnum.networkError:
-        return (currentState.deepCopy()
-          ..state = AppReplayStateEnum.networkError);
-      case CommonReplayStateEnum.permissionDenied:
-        return (currentState.deepCopy()
-          ..state = AppReplayStateEnum.permissionDenied);
-      case CommonReplayStateEnum.uninitializedListening:
-        return (currentState.deepCopy()
-          ..state = AppReplayStateEnum.uninitializedListening);
-    }
-    return (currentState.deepCopy()..state = AppReplayStateEnum.networkError);
+    return switch (newStatusEnum) {
+      CommonReplayStateEnum.hydrating =>
+        currentState.deepCopy()..state = AppReplayStateEnum.hydrating,
+      CommonReplayStateEnum.listening =>
+        currentState.deepCopy()..state = AppReplayStateEnum.listening,
+      CommonReplayStateEnum.networkError =>
+        currentState.deepCopy()..state = AppReplayStateEnum.networkError,
+      CommonReplayStateEnum.permissionDenied =>
+        currentState.deepCopy()..state = AppReplayStateEnum.permissionDenied,
+      CommonReplayStateEnum.uninitializedListening =>
+        currentState.deepCopy()..state = AppReplayStateEnum.uninitializedListening,
+      _ => currentState.deepCopy()..state = AppReplayStateEnum.networkError,
+    };
   }
 
   @override

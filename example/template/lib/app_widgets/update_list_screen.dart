@@ -39,15 +39,6 @@ class _UpdateListScreenState extends State<UpdateListScreen> {
       submitEvent.appEvent.updateList = AppEvent_UpdateList();
     }
 
-    // Initialize list with some default items if empty, just so there's something to reorder
-    if (submitEvent.appEvent.updateList.items.isEmpty) {
-      submitEvent.appEvent.updateList.items.addAll([
-        AppEvent_ReorderableItem(id: 1, title: 'Item 1'),
-        AppEvent_ReorderableItem(id: 2, title: 'Item 2'),
-        AppEvent_ReorderableItem(id: 3, title: 'Item 3'),
-      ]);
-    }
-
     return BlocProvider<AppSubmitBloc>(
       create: (_) => AppSubmitBloc(widget.siteId, submitEvent),
       child: Form(

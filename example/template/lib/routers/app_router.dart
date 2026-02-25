@@ -38,13 +38,7 @@ class _AppRouterState extends State<AppRouter> {
       localizationsDelegates: const [
         AppLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('it'),
-        Locale('es'),
-        Locale('nb'),
-        Locale('nl'),
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

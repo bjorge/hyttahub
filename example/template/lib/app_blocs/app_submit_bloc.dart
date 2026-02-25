@@ -12,8 +12,6 @@ import 'package:bloc/bloc.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 
-const Duration firebaseTimeout = Duration(seconds: 15);
-
 class AppEventSubmission extends BaseSubmitEvent<SubmitAppEvent> {
   AppEventSubmission({super.updatedPayload, required super.submission});
 }
