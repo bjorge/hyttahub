@@ -111,18 +111,27 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
       },
     );
 
-    // 6. Copy storage items
-    final filesPrefix = firebaseFilesPath(siteId, '');
-    final filePaths = await storage.listFiles(filesPrefix);
+    // 6. Copy storage items — prefer archive source, fall back to main
+    final archivePrefix = firebaseArchiveFilePath(siteId, '');
+    var sourceFilePaths = await storage.listFiles(archivePrefix);
+    String sourcePrefix;
 
-    for (final path in filePaths) {
-      final fileName = path.split('/').last;
+    if (sourceFilePaths.isNotEmpty) {
+      sourcePrefix = archivePrefix;
+    } else {
+      sourcePrefix = firebaseFilesPath(siteId, '');
+      sourceFilePaths = await storage.listFiles(sourcePrefix);
+    }
+
+    for (final path in sourceFilePaths) {
+      final fileName = path.substring(sourcePrefix.length);
       final data = await storage.getFileBytes(
         appName: appName,
         siteId: siteId,
         fileName: fileName,
       );
       
+      // uploadFile already writes to both normal and archive paths
       await storage.uploadFile(
         appName: appName,
         siteId: newSiteId,

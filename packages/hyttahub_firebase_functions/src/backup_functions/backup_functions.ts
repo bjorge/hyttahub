@@ -6,7 +6,8 @@ import { SiteEvent, SiteEvent_ImportEvent } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
 
 
-import { firebaseAccountEventsPath, firebaseSiteEventsPath, firebaseSiteUsersPath, fbUserId, fbVersion, firebaseFilesPath, fbPayload, fbTimeStamp } from "../shared/constants";
+import { firebaseAccountEventsPath, firebaseSiteEventsPath, firebaseSiteUsersPath, fbUserId, fbVersion, firebaseFilesPath, firebaseArchiveFilesPath, fbPayload, fbTimeStamp, isRunningInEmulator } from "../shared/constants";
+import { getArchiveBucketName } from "../shared/config";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 
@@ -161,10 +162,41 @@ export const copySite = onCall({
 
   logger.info(`Successfully created site copy metadata: ${newSiteId}`);
 
-  // 6. Copy storage items
-  const oldStoragePrefix = firebaseFilesPath(appName, oldSiteId, "");
+  // 6. Copy storage items — prefer archive source, fall back to main bucket
+  const archiveBucketName = getArchiveBucketName();
+  let sourceBucket = bucket;
+  let sourcePrefix: string;
 
-  const query: any = { prefix: oldStoragePrefix, autoPaginate: false };
+  if (isRunningInEmulator()) {
+    // Emulator: try archive path in default bucket first
+    const archivePrefix = firebaseArchiveFilesPath(appName, oldSiteId, "");
+    const [archiveFiles] = await bucket.getFiles({ prefix: archivePrefix, maxResults: 1 });
+    if (archiveFiles.length > 0) {
+      sourcePrefix = archivePrefix;
+      logger.info(`Copying from archive path (emulator): ${archivePrefix}`);
+    } else {
+      sourcePrefix = firebaseFilesPath(appName, oldSiteId, "");
+      logger.info(`Archive path empty, falling back to main path: ${sourcePrefix}`);
+    }
+  } else if (archiveBucketName) {
+    // Production with archive bucket configured: try archive bucket first
+    const archiveSourceBucket = admin.storage().bucket(archiveBucketName);
+    const archivePrefix = firebaseFilesPath(appName, oldSiteId, "");
+    const [archiveFiles] = await archiveSourceBucket.getFiles({ prefix: archivePrefix, maxResults: 1 });
+    if (archiveFiles.length > 0) {
+      sourceBucket = archiveSourceBucket;
+      sourcePrefix = archivePrefix;
+      logger.info(`Copying from archive bucket: ${archiveBucketName}`);
+    } else {
+      sourcePrefix = firebaseFilesPath(appName, oldSiteId, "");
+      logger.info(`Archive bucket empty for site, falling back to main bucket`);
+    }
+  } else {
+    sourcePrefix = firebaseFilesPath(appName, oldSiteId, "");
+    logger.info("Archive bucket not configured, copying from main bucket");
+  }
+
+  const query: any = { prefix: sourcePrefix, autoPaginate: false };
   let pageToken: string | undefined;
 
   do {
@@ -172,13 +204,24 @@ export const copySite = onCall({
       query.pageToken = pageToken;
     }
 
-    const [files, nextQuery] = await bucket.getFiles(query);
+    const [files, nextQuery] = await sourceBucket.getFiles(query);
     const copyPromises = [];
 
     for (const file of files) {
-      const relativePath = file.name.substring(oldStoragePrefix.length);
+      const relativePath = file.name.substring(sourcePrefix.length);
+      // Copy to new site in main bucket
       const newPath = firebaseFilesPath(appName, newSiteId, relativePath);
       copyPromises.push(file.copy(bucket.file(newPath)));
+
+      // Also copy to archive for the new site
+      if (isRunningInEmulator()) {
+        const archivePath = firebaseArchiveFilesPath(appName, newSiteId, relativePath);
+        copyPromises.push(file.copy(bucket.file(archivePath)));
+      } else if (archiveBucketName) {
+        const archiveBucket = admin.storage().bucket(archiveBucketName);
+        const archivePath = firebaseFilesPath(appName, newSiteId, relativePath);
+        copyPromises.push(file.copy(archiveBucket.file(archivePath)));
+      }
     }
 
     // Await the batch before moving to the next. 
@@ -193,3 +236,4 @@ export const copySite = onCall({
 
   return { siteId: newSiteId };
 });
+
