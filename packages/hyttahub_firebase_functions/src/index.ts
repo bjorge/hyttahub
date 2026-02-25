@@ -37,3 +37,5 @@ export {
   fbVersion,
   firebaseSitesPath,
 } from "./shared/constants";
+
+export { setArchiveBucketName } from "./shared/config";

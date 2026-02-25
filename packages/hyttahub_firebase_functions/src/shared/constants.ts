@@ -11,10 +11,7 @@ export const firebaseServiceEventsPath = (
   status: string
 ) => `hyttahub/${appPathSegment}/services/${status}/service_events`;
 
-export const firebaseServiceServiceAdminsPath = (
-  appPathSegment: string,
-  status: string
-) => `hyttahub/${appPathSegment}/services/${status}/service_users`;
+
 
 export const firebaseServiceBetaUsersPath = (appPathSegment: string) =>
   `hyttahub/${appPathSegment}/services/beta_users`;
@@ -35,10 +32,7 @@ export const firebaseSiteUsersPath = (appPathSegment: string, siteId: string) =>
 export const firebaseSitesPath = (appPathSegment: string) =>
   `hyttahub/${appPathSegment}/sites`;
 
-export const firebaseSiteExportPath = (
-  appPathSegment: string,
-  siteId: string
-) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports/export_request`;
+
 
 export const firebaseSiteExportsBasePath = (
   appPathSegment: string,
@@ -79,6 +73,18 @@ export const firebaseArchivePath = (
     return `emulator/${appPathSegment}/archives/${siteId}/archive.tar`;
   } else {
     return `hyttahub/${appPathSegment}/archives/${siteId}/archive.tar`;
+  }
+};
+
+export const firebaseArchiveFilesPath = (
+  appPathSegment: string,
+  siteId: string,
+  fileId: string
+): string => {
+  if (isRunningInEmulator()) {
+    return `emulator/${appPathSegment}/archive_files/${siteId}/${fileId}`;
+  } else {
+    return `hyttahub/${appPathSegment}/archive_files/${siteId}/${fileId}`;
   }
 };
 

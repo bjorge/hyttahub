@@ -4,9 +4,12 @@ import * as logger from "firebase-functions/logger";
 
 import {
   firebaseFilesPath,
+  firebaseArchiveFilesPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
 } from "../shared/constants";
+
+import { getArchiveBucketName } from "../shared/config";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 
@@ -65,6 +68,25 @@ export const uploadFile = onCall({ cors: true }, async (request) => {
     // },
   });
   logger.info(`File uploaded to ${file.name}`);
+
+  // Archive copy
+  if (isRunningInEmulator()) {
+    // Emulator: use path-based archive in default bucket
+    const archiveFilePath = firebaseArchiveFilesPath(appName, siteId, fileName);
+    const archiveFile = bucket.file(archiveFilePath);
+    await archiveFile.save(fileBuffer, {});
+    logger.info(`File archived to ${archiveFile.name} (emulator path-based)`);
+  } else {
+    const archiveBucketName = getArchiveBucketName();
+    if (archiveBucketName) {
+      const archiveBucket = admin.storage().bucket(archiveBucketName);
+      const archiveFile = archiveBucket.file(filePath);
+      await archiveFile.save(fileBuffer, {});
+      logger.info(`File archived to ${archiveFile.name} in bucket ${archiveBucketName}`);
+    } else {
+      logger.info("Archive bucket not configured, skipping archive copy");
+    }
+  }
 
   if (isRunningInEmulator()) {
     logger.info(

@@ -7,8 +7,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 
 String firebaseServiceCollectionName = 'status';
 
-String firebaseServiceEventsPath1(String status) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/services/$status/service_events';
+
 
 String firebaseServiceEventsPath(String status) =>
     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/services/$status/service_events';
@@ -32,24 +31,19 @@ String firebaseSiteEventsPath(String siteId) =>
 String firebaseSiteUsersPath(String siteId) =>
     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/sites/$siteId/site_users';
 
-String firebaseSiteExportPath(String siteId) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/sites/$siteId/site_exports/export_request';
+
 
 // Storage paths
 String firebaseFilesPath(String siteId, String fileId) =>
     'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/sites/$siteId/$fileId';
 
-String firebaseExportsPath(String siteId, String fileName) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/exports/$siteId/$fileName';
 
-String firebaseArchivePath(String siteId) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archives/$siteId/archive.tar';
 
-String firebaseArchiveSiteEventsPath(String siteId) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archive_site_events/$siteId';
 
-String firebaseArchiveSiteFilesPath(String siteId) =>
-    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archive_site_files/$siteId';
+
+String firebaseArchiveFilePath(String siteId, String fileId) =>
+    'hyttahub/${HyttaHubOptions.implementation?.firebaseRootCollection}/archive_files/$siteId/$fileId';
+
 
 // Document keys
 const fbUserId = 'u';
@@ -58,6 +52,5 @@ const fbVersion = 'v';
 const fbPayload = 'p';
 const fbBetaUsers = 'b';
 const fbMarkedForDeletion = 'm';
-const fbAppId = 'a';
 
 const firstCollectionEventVersion = 1;

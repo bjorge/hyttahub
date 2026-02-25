@@ -51,6 +51,22 @@ export {
 };
 ```
 
+## Archive Storage (Optional)
+
+To enable automatic archiving of uploaded files to a separate GCS bucket (e.g., one configured with the "Archive" storage class for lower costs), call `setArchiveBucketName` in your `index.ts`:
+
+```typescript
+import { setArchiveBucketName } from "@hyttahub/firebase-functions";
+setArchiveBucketName("your-project-archive");
+```
+
+**Behavior:**
+- **Production**: When configured, every file uploaded via `uploadFile` is also saved to the specified archive bucket. If not configured, a log message is produced and the archive step is skipped.
+- **Emulator**: Archive files are stored using a path-based approach (`archive_files/` prefix) within the default bucket, so no additional emulator configuration is needed.
+- **Archive files are never deleted** — the `deleteFiles` function only removes files from the primary bucket.
+
+> **Note:** You must create the archive bucket in the GCP Console and configure it with the desired storage class before deploying.
+
 ## Exported Functions & Features
 
 The following features can be enabled by exporting their respective functions in your Firebase project. If you wish to disable a feature (such as auto-joining), simply omit it from your `exports`.

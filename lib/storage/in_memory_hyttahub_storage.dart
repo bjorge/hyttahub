@@ -139,7 +139,11 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   }) async {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     final path = firebaseFilesPath(siteId, fileName);
-    await internalStorage.uploadFile(path, base64Decode(base64Data));
+    final bytes = base64Decode(base64Data);
+    await internalStorage.uploadFile(path, bytes);
+    // Also write to the archive (append-only, never deleted)
+    final archivePath = firebaseArchiveFilePath(siteId, fileName);
+    await internalStorage.uploadFile(archivePath, bytes);
     updateController.add({'path': '_files/$siteId', 'docId': fileName});
   }
 
