@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
@@ -56,6 +57,11 @@ class _UpdateMemberScreenState extends State<UpdateMemberScreen> {
                   BaseSubmitState<SubmitSiteEvent>
                 >(
                   builder: (context, submitState) {
+                    final currentUserEmail =
+                        context.read<AuthBloc>().state.email;
+                    final isEditingSelf = currentUserEmail.toLowerCase() ==
+                        widget.originalEmail.toLowerCase();
+
                     return Scaffold(
                       appBar: AppBar(
                         title: Text(
@@ -81,14 +87,15 @@ class _UpdateMemberScreenState extends State<UpdateMemberScreen> {
                               context,
                             )!.administratorLabel,
                           ),
-                          UpdateMemberEmailInputWidget(
-                            formKey: _formKey,
-                            allowedEmails: allowedEmailsState.emails,
-                            originalEmail: widget.originalEmail,
-                            labelText: HyttaHubLocalizations.of(
-                              context,
-                            )!.loginEmailLabel,
-                          ),
+                          if (!isEditingSelf)
+                            UpdateMemberEmailInputWidget(
+                              formKey: _formKey,
+                              allowedEmails: allowedEmailsState.emails,
+                              originalEmail: widget.originalEmail,
+                              labelText: HyttaHubLocalizations.of(
+                                context,
+                              )!.loginEmailLabel,
+                            ),
                         ],
                       ),
                     );
