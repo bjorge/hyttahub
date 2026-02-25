@@ -42,11 +42,13 @@ AppReplayBlocState appReplay(
         replay.listItems.clear();
         replay.listItems.addAll(appEvent.updateList.items);
       } else if (appEvent.hasUpdatePhoto()) {
-        replay.photoName = appEvent.updatePhoto.name;
-        replay.photoVersion = appEvent.updatePhoto.version;
+        replay.photo = AppReplayBlocState_Photo(
+          name: appEvent.updatePhoto.name,
+          version: appEvent.updatePhoto.version,
+          size: appEvent.updatePhoto.size,
+        );
       } else if (appEvent.hasRemovePhoto()) {
-        replay.photoName = '';
-        replay.photoVersion = 0;
+        replay.clearPhoto();
       }
     }
   }

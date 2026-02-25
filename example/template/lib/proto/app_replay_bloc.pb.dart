@@ -21,6 +21,86 @@ export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 export 'app_replay_bloc.pbenum.dart';
 
+class AppReplayBlocState_Photo extends $pb.GeneratedMessage {
+  factory AppReplayBlocState_Photo({
+    $core.String? name,
+    $core.int? version,
+    $core.int? size,
+  }) {
+    final result = create();
+    if (name != null) result.name = name;
+    if (version != null) result.version = version;
+    if (size != null) result.size = size;
+    return result;
+  }
+
+  AppReplayBlocState_Photo._();
+
+  factory AppReplayBlocState_Photo.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppReplayBlocState_Photo.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppReplayBlocState.Photo',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.template'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'name')
+    ..aI(2, _omitFieldNames ? '' : 'version')
+    ..aI(3, _omitFieldNames ? '' : 'size')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppReplayBlocState_Photo clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppReplayBlocState_Photo copyWith(
+          void Function(AppReplayBlocState_Photo) updates) =>
+      super.copyWith((message) => updates(message as AppReplayBlocState_Photo))
+          as AppReplayBlocState_Photo;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppReplayBlocState_Photo create() => AppReplayBlocState_Photo._();
+  @$core.override
+  AppReplayBlocState_Photo createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static AppReplayBlocState_Photo getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppReplayBlocState_Photo>(create);
+  static AppReplayBlocState_Photo? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get version => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set version($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasVersion() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearVersion() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.int get size => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set size($core.int value) => $_setSignedInt32(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasSize() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearSize() => $_clearField(3);
+}
+
 class AppReplayBlocState extends $pb.GeneratedMessage {
   factory AppReplayBlocState({
     $core.Iterable<$core.MapEntry<$core.int, $core.String>>? events,
@@ -30,8 +110,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     $core.bool? checkboxValue,
     $core.String? dropdownValue,
     $core.Iterable<$0.AppEvent_ReorderableItem>? listItems,
-    $core.String? photoName,
-    $core.int? photoVersion,
+    AppReplayBlocState_Photo? photo,
   }) {
     final result = create();
     if (events != null) result.events.addEntries(events);
@@ -41,8 +120,7 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     if (checkboxValue != null) result.checkboxValue = checkboxValue;
     if (dropdownValue != null) result.dropdownValue = dropdownValue;
     if (listItems != null) result.listItems.addAll(listItems);
-    if (photoName != null) result.photoName = photoName;
-    if (photoVersion != null) result.photoVersion = photoVersion;
+    if (photo != null) result.photo = photo;
     return result;
   }
 
@@ -73,8 +151,8 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
     ..aOS(6, _omitFieldNames ? '' : 'dropdownValue', protoName: 'dropdownValue')
     ..pPM<$0.AppEvent_ReorderableItem>(7, _omitFieldNames ? '' : 'listItems',
         protoName: 'listItems', subBuilder: $0.AppEvent_ReorderableItem.create)
-    ..aOS(8, _omitFieldNames ? '' : 'photoName', protoName: 'photoName')
-    ..aI(9, _omitFieldNames ? '' : 'photoVersion', protoName: 'photoVersion')
+    ..aOM<AppReplayBlocState_Photo>(8, _omitFieldNames ? '' : 'photo',
+        subBuilder: AppReplayBlocState_Photo.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -148,22 +226,15 @@ class AppReplayBlocState extends $pb.GeneratedMessage {
   $pb.PbList<$0.AppEvent_ReorderableItem> get listItems => $_getList(6);
 
   @$pb.TagNumber(8)
-  $core.String get photoName => $_getSZ(7);
+  AppReplayBlocState_Photo get photo => $_getN(7);
   @$pb.TagNumber(8)
-  set photoName($core.String value) => $_setString(7, value);
+  set photo(AppReplayBlocState_Photo value) => $_setField(8, value);
   @$pb.TagNumber(8)
-  $core.bool hasPhotoName() => $_has(7);
+  $core.bool hasPhoto() => $_has(7);
   @$pb.TagNumber(8)
-  void clearPhotoName() => $_clearField(8);
-
-  @$pb.TagNumber(9)
-  $core.int get photoVersion => $_getIZ(8);
-  @$pb.TagNumber(9)
-  set photoVersion($core.int value) => $_setSignedInt32(8, value);
-  @$pb.TagNumber(9)
-  $core.bool hasPhotoVersion() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearPhotoVersion() => $_clearField(9);
+  void clearPhoto() => $_clearField(8);
+  @$pb.TagNumber(8)
+  AppReplayBlocState_Photo ensurePhoto() => $_ensure(7);
 }
 
 const $core.bool _omitFieldNames =

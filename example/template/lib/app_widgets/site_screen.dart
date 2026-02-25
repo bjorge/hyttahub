@@ -304,13 +304,13 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
             _buildPhotoRow(
               context: context,
               label: AppLocalizations.of(context)!.app_labelPhoto,
-              value: "${appState.photoName} (v${appState.photoVersion})",
-              photoVersion: appState.photoVersion,
+              value: "${appState.photo.name} (v${appState.photo.version})",
+              photoVersion: appState.hasPhoto() ? appState.photo.version : 0,
               onPressed: () {
                 final appEvent = AppEvent(
                   updatePhoto: AppEvent_UpdatePhoto(
-                    name: appState.photoName,
-                    version: appState.photoVersion,
+                    name: appState.photo.name,
+                    version: appState.photo.version,
                   ),
                 );
                 _navigateToUpdate(
@@ -319,13 +319,13 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                   version,
                   email,
                   AddPhotoRoute.fullPath(siteId: widget.siteId),
-                  photoVersionToDelete: appState.photoVersion,
+                  photoVersionToDelete: appState.hasPhoto() ? appState.photo.version : 0,
                 );
               },
-              onDelete: () {
+              onDelete: appState.hasPhoto() ? () {
                 final appEvent = AppEvent(
                   removePhoto: AppEvent_RemovePhoto(
-                    version: appState.photoVersion,
+                    version: appState.photo.version,
                   ),
                 );
                 _navigateToUpdate(
@@ -335,7 +335,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                   email,
                   DeletePhotoRoute.fullPath(siteId: widget.siteId),
                 );
-              },
+              } : null,
             ),
           ],
         );

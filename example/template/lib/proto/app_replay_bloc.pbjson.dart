@@ -65,10 +65,26 @@ const AppReplayBlocState$json = {
       '6': '.hyttahub.example.template.AppEvent.ReorderableItem',
       '10': 'listItems'
     },
-    {'1': 'photoName', '3': 8, '4': 1, '5': 9, '10': 'photoName'},
-    {'1': 'photoVersion', '3': 9, '4': 1, '5': 5, '10': 'photoVersion'},
+    {
+      '1': 'photo',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppReplayBlocState.Photo',
+      '10': 'photo'
+    },
   ],
-  '3': [AppReplayBlocState_EventsEntry$json],
+  '3': [AppReplayBlocState_Photo$json, AppReplayBlocState_EventsEntry$json],
+};
+
+@$core.Deprecated('Use appReplayBlocStateDescriptor instead')
+const AppReplayBlocState_Photo$json = {
+  '1': 'Photo',
+  '2': [
+    {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    {'1': 'version', '3': 2, '4': 1, '5': 5, '10': 'version'},
+    {'1': 'size', '3': 3, '4': 1, '5': 5, '10': 'size'},
+  ],
 };
 
 @$core.Deprecated('Use appReplayBlocStateDescriptor instead')
@@ -90,6 +106,7 @@ final $typed_data.Uint8List appReplayBlocStateDescriptor = $convert.base64Decode
     'CWNvZGVWYWx1ZRIkCg1jaGVja2JveFZhbHVlGAUgASgIUg1jaGVja2JveFZhbHVlEiQKDWRyb3'
     'Bkb3duVmFsdWUYBiABKAlSDWRyb3Bkb3duVmFsdWUSUQoJbGlzdEl0ZW1zGAcgAygLMjMuaHl0'
     'dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdmVudC5SZW9yZGVyYWJsZUl0ZW1SCWxpc3RJdG'
-    'VtcxIcCglwaG90b05hbWUYCCABKAlSCXBob3RvTmFtZRIiCgxwaG90b1ZlcnNpb24YCSABKAVS'
-    'DHBob3RvVmVyc2lvbho5CgtFdmVudHNFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZR'
-    'gCIAEoCVIFdmFsdWU6AjgB');
+    'VtcxJJCgVwaG90bxgIIAEoCzIzLmh5dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwUmVwbGF5'
+    'QmxvY1N0YXRlLlBob3RvUgVwaG90bxpJCgVQaG90bxISCgRuYW1lGAEgASgJUgRuYW1lEhgKB3'
+    'ZlcnNpb24YAiABKAVSB3ZlcnNpb24SEgoEc2l6ZRgDIAEoBVIEc2l6ZRo5CgtFdmVudHNFbnRy'
+    'eRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');

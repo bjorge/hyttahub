@@ -13,6 +13,12 @@ enum AppReplayStateEnum {
 import "app_events.proto";
 
 message AppReplayBlocState {
+  message Photo {
+    string name = 1;
+    int32 version = 2;
+    int32 size = 3;
+  }
+
   map<int32, string> events = 1; // base64 encoded events
   AppReplayStateEnum state = 2;
 
@@ -21,6 +27,5 @@ message AppReplayBlocState {
   bool checkboxValue = 5;
   string dropdownValue = 6;
   repeated hyttahub.example.template.AppEvent.ReorderableItem listItems = 7;
-  string photoName = 8;
-  int32 photoVersion = 9;
+  Photo photo = 8;
 }
