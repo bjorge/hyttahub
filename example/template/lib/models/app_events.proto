@@ -36,6 +36,10 @@ message AppEvent {
     // We don't need base64 data here as it's separate in SubmitAppEvent.images or Cloud Storage
   }
 
+  message RemovePhoto {
+    int32 version = 1; // the version of the photo to remove from storage
+  }
+
   oneof event {
     UpdateText updateText = 3;
     UpdateCode updateCode = 4;
@@ -43,6 +47,7 @@ message AppEvent {
     UpdateDropdown updateDropdown = 6;
     UpdateList updateList = 7;
     UpdatePhoto updatePhoto = 8;
+    RemovePhoto removePhoto = 9;
   }
 }
 
@@ -66,6 +71,7 @@ message SubmitAppEvent {
   SiteEvent siteEvent = 2; // the version of the event, required
   string authorEmail = 3;  // the author's email, required
   repeated Image images = 4; // for add photo events, the images to upload
+  int32 photo_version_to_delete = 5; // version of old photo to delete from storage
 }
 
 // The AppEventRecord is a representation of the actual record stored in the

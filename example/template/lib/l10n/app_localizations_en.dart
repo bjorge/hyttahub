@@ -80,6 +80,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get app_eventRemovePhoto => 'Removed Photo';
+
+  @override
   String get app_labelText => 'Text';
 
   @override
@@ -115,12 +118,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_deletePhoto => 'Delete Photo';
 
   @override
-  String app_errorDeletingPhoto(String error) {
-    return 'Error deleting photo: $error';
-  }
+  String get app_deletePhotoTitle => 'Delete Photo';
 
   @override
-  String get app_photoDeleted => 'Photo deleted';
+  String get app_deletePhotoConfirmation => 'Confirm deletion of photo';
 
   @override
   String get app_appSpecificEvent => 'App specific event';

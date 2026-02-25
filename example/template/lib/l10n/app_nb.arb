@@ -39,15 +39,9 @@
   "app_noPhoto": "Ingen bilde",
   "app_selectedPhoto": "Valgt Bilde",
   "app_deletePhoto": "Slett Bilde",
-  "app_photoDeleted": "Bilde slettet",
-  "app_errorDeletingPhoto": "Feil ved sletting av bilde: {error}",
-  "@app_errorDeletingPhoto": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "app_deletePhotoTitle": "Slett Bilde",
+  "app_deletePhotoConfirmation": "Bekreft sletting av bilde",
+  "app_eventRemovePhoto": "Bilde Fjernet",
 
   "app_appSpecificEvent": "Appspesifikk hendelse",
   "app_updateTextTitle": "Oppdater Tekst",

@@ -44,6 +44,9 @@ AppReplayBlocState appReplay(
       } else if (appEvent.hasUpdatePhoto()) {
         replay.photoName = appEvent.updatePhoto.name;
         replay.photoVersion = appEvent.updatePhoto.version;
+      } else if (appEvent.hasRemovePhoto()) {
+        replay.photoName = '';
+        replay.photoVersion = 0;
       }
     }
   }

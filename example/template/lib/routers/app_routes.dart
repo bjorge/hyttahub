@@ -2,6 +2,7 @@
 
 import 'package:template/app_widgets/site_screen.dart';
 import 'package:template/app_widgets/photo_upload_screen.dart';
+import 'package:template/app_widgets/delete_photo_screen.dart';
 import 'package:template/app_widgets/app_events_display.dart';
 import 'package:template/app_widgets/update_text_screen.dart';
 import 'package:template/app_widgets/update_code_screen.dart';
@@ -184,7 +185,35 @@ class AddPhotoRoute extends GoRoute {
       '${SiteScreenRoute.fullPath(siteId)}/$pathSegment';
 }
 
+/// A route for the delete photo screen.
+class DeletePhotoRoute extends GoRoute {
+  /// Creates a [DeletePhotoRoute].
+  DeletePhotoRoute({required super.routes})
+    : super(
+        path: pathSegment,
+        builder: (BuildContext context, GoRouterState state) {
+          final siteId = state.pathParameters['siteId'] ?? '';
+          final event = state.uri.queryParameters['event'] ?? '';
+
+          return DeletePhotoScreen(
+            key: Key('deletePhoto:$siteId'),
+            siteId: siteId,
+            event: event,
+          );
+        },
+      );
+
+  /// The path segment for this route.
+  static const String pathSegment = 'delete-photo';
+
+  /// A builder for the full path to this route.
+  static String fullPath({required String siteId}) {
+    return '${SiteScreenRoute.fullPath(siteId)}/delete-photo';
+  }
+}
+
 final addPhotoRoute = AddPhotoRoute(routes: []);
+final deletePhotoRoute = DeletePhotoRoute(routes: []);
 final updateTextRoute = UpdateTextRoute(routes: []);
 final updateCodeRoute = UpdateCodeRoute(routes: []);
 final updateCheckboxRoute = UpdateCheckboxRoute(routes: []);
@@ -196,6 +225,7 @@ final appEventsDisplayRoute = AppEventsDisplayRoute();
 final siteScreenRoute = SiteScreenRoute(
   routes: [
     addPhotoRoute,
+    deletePhotoRoute,
     updateTextRoute,
     updateCodeRoute,
     updateCheckboxRoute,

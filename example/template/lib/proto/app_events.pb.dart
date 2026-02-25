@@ -435,6 +435,61 @@ class AppEvent_UpdatePhoto extends $pb.GeneratedMessage {
   void clearSize() => $_clearField(3);
 }
 
+class AppEvent_RemovePhoto extends $pb.GeneratedMessage {
+  factory AppEvent_RemovePhoto({
+    $core.int? version,
+  }) {
+    final result = create();
+    if (version != null) result.version = version;
+    return result;
+  }
+
+  AppEvent_RemovePhoto._();
+
+  factory AppEvent_RemovePhoto.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory AppEvent_RemovePhoto.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'AppEvent.RemovePhoto',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'hyttahub.example.template'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'version')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_RemovePhoto clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  AppEvent_RemovePhoto copyWith(void Function(AppEvent_RemovePhoto) updates) =>
+      super.copyWith((message) => updates(message as AppEvent_RemovePhoto))
+          as AppEvent_RemovePhoto;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_RemovePhoto create() => AppEvent_RemovePhoto._();
+  @$core.override
+  AppEvent_RemovePhoto createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static AppEvent_RemovePhoto getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AppEvent_RemovePhoto>(create);
+  static AppEvent_RemovePhoto? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get version => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set version($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasVersion() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearVersion() => $_clearField(1);
+}
+
 enum AppEvent_Event {
   updateText,
   updateCode,
@@ -442,6 +497,7 @@ enum AppEvent_Event {
   updateDropdown,
   updateList,
   updatePhoto,
+  removePhoto,
   notSet
 }
 
@@ -453,6 +509,7 @@ class AppEvent extends $pb.GeneratedMessage {
     AppEvent_UpdateDropdown? updateDropdown,
     AppEvent_UpdateList? updateList,
     AppEvent_UpdatePhoto? updatePhoto,
+    AppEvent_RemovePhoto? removePhoto,
   }) {
     final result = create();
     if (updateText != null) result.updateText = updateText;
@@ -461,6 +518,7 @@ class AppEvent extends $pb.GeneratedMessage {
     if (updateDropdown != null) result.updateDropdown = updateDropdown;
     if (updateList != null) result.updateList = updateList;
     if (updatePhoto != null) result.updatePhoto = updatePhoto;
+    if (removePhoto != null) result.removePhoto = removePhoto;
     return result;
   }
 
@@ -480,6 +538,7 @@ class AppEvent extends $pb.GeneratedMessage {
     6: AppEvent_Event.updateDropdown,
     7: AppEvent_Event.updateList,
     8: AppEvent_Event.updatePhoto,
+    9: AppEvent_Event.removePhoto,
     0: AppEvent_Event.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
@@ -487,7 +546,7 @@ class AppEvent extends $pb.GeneratedMessage {
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'hyttahub.example.template'),
       createEmptyInstance: create)
-    ..oo(0, [3, 4, 5, 6, 7, 8])
+    ..oo(0, [3, 4, 5, 6, 7, 8, 9])
     ..aOM<AppEvent_UpdateText>(3, _omitFieldNames ? '' : 'updateText',
         protoName: 'updateText', subBuilder: AppEvent_UpdateText.create)
     ..aOM<AppEvent_UpdateCode>(4, _omitFieldNames ? '' : 'updateCode',
@@ -500,6 +559,8 @@ class AppEvent extends $pb.GeneratedMessage {
         protoName: 'updateList', subBuilder: AppEvent_UpdateList.create)
     ..aOM<AppEvent_UpdatePhoto>(8, _omitFieldNames ? '' : 'updatePhoto',
         protoName: 'updatePhoto', subBuilder: AppEvent_UpdatePhoto.create)
+    ..aOM<AppEvent_RemovePhoto>(9, _omitFieldNames ? '' : 'removePhoto',
+        protoName: 'removePhoto', subBuilder: AppEvent_RemovePhoto.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -526,6 +587,7 @@ class AppEvent extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
+  @$pb.TagNumber(9)
   AppEvent_Event whichEvent() => _AppEvent_EventByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(3)
   @$pb.TagNumber(4)
@@ -533,6 +595,7 @@ class AppEvent extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
+  @$pb.TagNumber(9)
   void clearEvent() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(3)
@@ -600,6 +663,17 @@ class AppEvent extends $pb.GeneratedMessage {
   void clearUpdatePhoto() => $_clearField(8);
   @$pb.TagNumber(8)
   AppEvent_UpdatePhoto ensureUpdatePhoto() => $_ensure(5);
+
+  @$pb.TagNumber(9)
+  AppEvent_RemovePhoto get removePhoto => $_getN(6);
+  @$pb.TagNumber(9)
+  set removePhoto(AppEvent_RemovePhoto value) => $_setField(9, value);
+  @$pb.TagNumber(9)
+  $core.bool hasRemovePhoto() => $_has(6);
+  @$pb.TagNumber(9)
+  void clearRemovePhoto() => $_clearField(9);
+  @$pb.TagNumber(9)
+  AppEvent_RemovePhoto ensureRemovePhoto() => $_ensure(6);
 }
 
 /// the final site event will contain this app event
@@ -759,12 +833,15 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     SubmitAppEvent_SiteEvent? siteEvent,
     $core.String? authorEmail,
     $core.Iterable<SubmitAppEvent_Image>? images,
+    $core.int? photoVersionToDelete,
   }) {
     final result = create();
     if (appEvent != null) result.appEvent = appEvent;
     if (siteEvent != null) result.siteEvent = siteEvent;
     if (authorEmail != null) result.authorEmail = authorEmail;
     if (images != null) result.images.addAll(images);
+    if (photoVersionToDelete != null)
+      result.photoVersionToDelete = photoVersionToDelete;
     return result;
   }
 
@@ -789,6 +866,7 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'authorEmail', protoName: 'authorEmail')
     ..pPM<SubmitAppEvent_Image>(4, _omitFieldNames ? '' : 'images',
         subBuilder: SubmitAppEvent_Image.create)
+    ..aI(5, _omitFieldNames ? '' : 'photoVersionToDelete')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -843,6 +921,15 @@ class SubmitAppEvent extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(4)
   $pb.PbList<SubmitAppEvent_Image> get images => $_getList(3);
+
+  @$pb.TagNumber(5)
+  $core.int get photoVersionToDelete => $_getIZ(4);
+  @$pb.TagNumber(5)
+  set photoVersionToDelete($core.int value) => $_setSignedInt32(4, value);
+  @$pb.TagNumber(5)
+  $core.bool hasPhotoVersionToDelete() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearPhotoVersionToDelete() => $_clearField(5);
 }
 
 /// The AppEventRecord is a representation of the actual record stored in the

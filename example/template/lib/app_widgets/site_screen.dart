@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
-import 'package:hyttahub/firebase_paths.dart';
+
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
@@ -19,8 +19,7 @@ import 'package:hyttahub/site_widgets/site_screen_settings_button.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:hyttahub/utilities/app_wrapper_util.dart';
+
 
 class SiteScreen extends StatefulWidget {
   const SiteScreen({super.key, required this.siteId});
@@ -320,6 +319,21 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                   version,
                   email,
                   AddPhotoRoute.fullPath(siteId: widget.siteId),
+                  photoVersionToDelete: appState.photoVersion,
+                );
+              },
+              onDelete: () {
+                final appEvent = AppEvent(
+                  removePhoto: AppEvent_RemovePhoto(
+                    version: appState.photoVersion,
+                  ),
+                );
+                _navigateToUpdate(
+                  context,
+                  appEvent,
+                  version,
+                  email,
+                  DeletePhotoRoute.fullPath(siteId: widget.siteId),
                 );
               },
             ),
@@ -388,6 +402,7 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
     required String value,
     required int photoVersion,
     required VoidCallback onPressed,
+    VoidCallback? onDelete,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,67 +420,9 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
               children: [
                 const SizedBox(width: 150),
                 const SizedBox(width: 16),
-                if (widget.isEditModeOn)
+                if (widget.isEditModeOn && onDelete != null)
                   TextButton(
-                    onPressed: () async {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      final appReplayBloc = context.read<AppReplayBloc>();
-                      final l10n = AppLocalizations.of(context)!;
-
-                      final storage = HyttaHubStorageFactory.getStorage(
-                        HyttaHubOptions.implementation?.storage ??
-                            StorageEnum.cloud,
-                      );
-                      final appName =
-                          HyttaHubOptions.implementation
-                              ?.firebaseRootCollection ??
-                          '';
-
-                      try {
-                        await storage.deleteFiles(
-                          appName: appName,
-                          siteId: widget.siteId,
-                          fileNames: [photoVersion.toString()],
-                        );
-
-                        final appEvent = AppEvent(
-                          updatePhoto:
-                              AppEvent_UpdatePhoto(name: "", version: 0),
-                        );
-
-                        // Now base64 encode the event part
-                        final siteEvent = SiteEvent(
-                          version: appReplayBloc.state.nextVersion,
-                          appEvent: packAppEventWrapper(
-                            appEvent.writeToBuffer(),
-                          ),
-                          author: widget.authorId,
-                        );
-
-                        final encodedEvent = base64Encode(
-                          siteEvent.writeToBuffer(),
-                        );
-
-                        await storage.setDocument(
-                          firebaseSiteEventsPath(widget.siteId),
-                          siteEvent.version.toString(),
-                          {
-                            fbPayload: encodedEvent,
-                            fbVersion: siteEvent.version,
-                            fbTimeStamp: storage.serverTimestamp,
-                          },
-                        );
-
-
-                        scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text(l10n.app_photoDeleted)),
-                        );
-                      } catch (e) {
-                        scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text(l10n.app_errorDeletingPhoto(e.toString()))),
-                        );
-                      }
-                    },
+                    onPressed: onDelete,
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       alignment: Alignment.centerLeft,
@@ -522,12 +479,14 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
     AppEvent appEvent,
     int version,
     String email,
-    String routePath,
-  ) {
+    String routePath, {
+    int photoVersionToDelete = 0,
+  }) {
     final submitAppEvent = SubmitAppEvent(
       authorEmail: email,
       appEvent: appEvent,
       siteEvent: SubmitAppEvent_SiteEvent(version: version),
+      photoVersionToDelete: photoVersionToDelete,
     );
     final encodedSubmitValue = base64UrlEncode(submitAppEvent.writeToBuffer());
     context.push('$routePath?event=$encodedSubmitValue');

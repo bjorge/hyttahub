@@ -62,6 +62,7 @@
       }
     }
   },
+  "app_eventRemovePhoto": "Removed Photo",
   "app_labelText": "Text",
   "app_labelCode": "Code",
   "app_labelCheckbox": "Checkbox",
@@ -80,15 +81,9 @@
   "app_noPhoto": "No photo",
   "app_selectedPhoto": "Selected Photo",
   "app_deletePhoto": "Delete Photo",
-  "app_errorDeletingPhoto": "Error deleting photo: {error}",
-  "@app_errorDeletingPhoto": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "app_photoDeleted": "Photo deleted",
+  "app_deletePhotoTitle": "Delete Photo",
+  "app_deletePhotoConfirmation": "Confirm deletion of photo",
+
   "app_appSpecificEvent": "App specific event",
   "app_updateTextTitle": "Update Text",
   "app_textValueLabel": "Text Value",

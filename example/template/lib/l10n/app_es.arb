@@ -39,15 +39,9 @@
     "app_noPhoto": "Sin foto",
     "app_selectedPhoto": "Foto Seleccionada",
     "app_deletePhoto": "Eliminar Foto",
-    "app_photoDeleted": "Foto eliminada",
-    "app_errorDeletingPhoto": "Error al eliminar foto: {error}",
-    "@app_errorDeletingPhoto": {
-        "placeholders": {
-            "error": {
-                "type": "String"
-            }
-        }
-    },
+    "app_deletePhotoTitle": "Eliminar Foto",
+    "app_deletePhotoConfirmation": "Confirmar eliminación de foto",
+    "app_eventRemovePhoto": "Foto Eliminada",
 
     "app_appSpecificEvent": "Evento específico de la aplicación",
     "app_updateTextTitle": "Actualizar Texto",

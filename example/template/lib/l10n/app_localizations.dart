@@ -218,6 +218,12 @@ abstract class AppLocalizations {
   /// **'Updated Photo: {name}'**
   String app_eventUpdatePhoto(String name);
 
+  /// No description provided for @app_eventRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed Photo'**
+  String get app_eventRemovePhoto;
+
   /// No description provided for @app_labelText.
   ///
   /// In en, this message translates to:
@@ -284,17 +290,17 @@ abstract class AppLocalizations {
   /// **'Delete Photo'**
   String get app_deletePhoto;
 
-  /// No description provided for @app_errorDeletingPhoto.
+  /// No description provided for @app_deletePhotoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Error deleting photo: {error}'**
-  String app_errorDeletingPhoto(String error);
+  /// **'Delete Photo'**
+  String get app_deletePhotoTitle;
 
-  /// No description provided for @app_photoDeleted.
+  /// No description provided for @app_deletePhotoConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Photo deleted'**
-  String get app_photoDeleted;
+  /// **'Confirm deletion of photo'**
+  String get app_deletePhotoConfirmation;
 
   /// No description provided for @app_appSpecificEvent.
   ///

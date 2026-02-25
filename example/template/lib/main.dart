@@ -112,6 +112,7 @@ Future<void> main() async {
     if (appEvent.hasUpdateDropdown()) return localizations.app_eventUpdateDropdown(appEvent.updateDropdown.value);
     if (appEvent.hasUpdateList()) return localizations.app_eventUpdateList;
     if (appEvent.hasUpdatePhoto()) return localizations.app_eventUpdatePhoto(appEvent.updatePhoto.name);
+    if (appEvent.hasRemovePhoto()) return localizations.app_eventRemovePhoto;
     
     return localizations.app_appSpecificEvent;
   };

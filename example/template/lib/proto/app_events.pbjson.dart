@@ -73,6 +73,15 @@ const AppEvent$json = {
       '9': 0,
       '10': 'updatePhoto'
     },
+    {
+      '1': 'removePhoto',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.hyttahub.example.template.AppEvent.RemovePhoto',
+      '9': 0,
+      '10': 'removePhoto'
+    },
   ],
   '3': [
     AppEvent_ReorderableItem$json,
@@ -81,7 +90,8 @@ const AppEvent$json = {
     AppEvent_UpdateCheckbox$json,
     AppEvent_UpdateDropdown$json,
     AppEvent_UpdateList$json,
-    AppEvent_UpdatePhoto$json
+    AppEvent_UpdatePhoto$json,
+    AppEvent_RemovePhoto$json
   ],
   '8': [
     {'1': 'event'},
@@ -154,6 +164,14 @@ const AppEvent_UpdatePhoto$json = {
   ],
 };
 
+@$core.Deprecated('Use appEventDescriptor instead')
+const AppEvent_RemovePhoto$json = {
+  '1': 'RemovePhoto',
+  '2': [
+    {'1': 'version', '3': 1, '4': 1, '5': 5, '10': 'version'},
+  ],
+};
+
 /// Descriptor for `AppEvent`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
     'CghBcHBFdmVudBJQCgp1cGRhdGVUZXh0GAMgASgLMi4uaHl0dGFodWIuZXhhbXBsZS50ZW1wbG'
@@ -165,14 +183,16 @@ final $typed_data.Uint8List appEventDescriptor = $convert.base64Decode(
     'YXRlRHJvcGRvd25IAFIOdXBkYXRlRHJvcGRvd24SUAoKdXBkYXRlTGlzdBgHIAEoCzIuLmh5dH'
     'RhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuVXBkYXRlTGlzdEgAUgp1cGRhdGVMaXN0'
     'ElMKC3VwZGF0ZVBob3RvGAggASgLMi8uaHl0dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdm'
-    'VudC5VcGRhdGVQaG90b0gAUgt1cGRhdGVQaG90bxo3Cg9SZW9yZGVyYWJsZUl0ZW0SDgoCaWQY'
-    'ASABKAVSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRoiCgpVcGRhdGVUZXh0EhQKBXZhbHVlGA'
-    'EgASgJUgV2YWx1ZRoiCgpVcGRhdGVDb2RlEhQKBXZhbHVlGAEgASgJUgV2YWx1ZRomCg5VcGRh'
-    'dGVDaGVja2JveBIUCgV2YWx1ZRgBIAEoCFIFdmFsdWUaJgoOVXBkYXRlRHJvcGRvd24SFAoFdm'
-    'FsdWUYASABKAlSBXZhbHVlGlcKClVwZGF0ZUxpc3QSSQoFaXRlbXMYASADKAsyMy5oeXR0YWh1'
-    'Yi5leGFtcGxlLnRlbXBsYXRlLkFwcEV2ZW50LlJlb3JkZXJhYmxlSXRlbVIFaXRlbXMaTwoLVX'
-    'BkYXRlUGhvdG8SEgoEbmFtZRgBIAEoCVIEbmFtZRIYCgd2ZXJzaW9uGAIgASgFUgd2ZXJzaW9u'
-    'EhIKBHNpemUYAyABKAVSBHNpemVCBwoFZXZlbnQ=');
+    'VudC5VcGRhdGVQaG90b0gAUgt1cGRhdGVQaG90bxJTCgtyZW1vdmVQaG90bxgJIAEoCzIvLmh5'
+    'dHRhaHViLmV4YW1wbGUudGVtcGxhdGUuQXBwRXZlbnQuUmVtb3ZlUGhvdG9IAFILcmVtb3ZlUG'
+    'hvdG8aNwoPUmVvcmRlcmFibGVJdGVtEg4KAmlkGAEgASgFUgJpZBIUCgV0aXRsZRgCIAEoCVIF'
+    'dGl0bGUaIgoKVXBkYXRlVGV4dBIUCgV2YWx1ZRgBIAEoCVIFdmFsdWUaIgoKVXBkYXRlQ29kZR'
+    'IUCgV2YWx1ZRgBIAEoCVIFdmFsdWUaJgoOVXBkYXRlQ2hlY2tib3gSFAoFdmFsdWUYASABKAhS'
+    'BXZhbHVlGiYKDlVwZGF0ZURyb3Bkb3duEhQKBXZhbHVlGAEgASgJUgV2YWx1ZRpXCgpVcGRhdG'
+    'VMaXN0EkkKBWl0ZW1zGAEgAygLMjMuaHl0dGFodWIuZXhhbXBsZS50ZW1wbGF0ZS5BcHBFdmVu'
+    'dC5SZW9yZGVyYWJsZUl0ZW1SBWl0ZW1zGk8KC1VwZGF0ZVBob3RvEhIKBG5hbWUYASABKAlSBG'
+    '5hbWUSGAoHdmVyc2lvbhgCIAEoBVIHdmVyc2lvbhISCgRzaXplGAMgASgFUgRzaXplGicKC1Jl'
+    'bW92ZVBob3RvEhgKB3ZlcnNpb24YASABKAVSB3ZlcnNpb25CBwoFZXZlbnQ=');
 
 @$core.Deprecated('Use submitAppEventDescriptor instead')
 const SubmitAppEvent$json = {
@@ -203,6 +223,13 @@ const SubmitAppEvent$json = {
       '6': '.hyttahub.example.template.SubmitAppEvent.Image',
       '10': 'images'
     },
+    {
+      '1': 'photo_version_to_delete',
+      '3': 5,
+      '4': 1,
+      '5': 5,
+      '10': 'photoVersionToDelete'
+    },
   ],
   '3': [SubmitAppEvent_SiteEvent$json, SubmitAppEvent_Image$json],
 };
@@ -232,10 +259,11 @@ final $typed_data.Uint8List submitAppEventDescriptor = $convert.base64Decode(
     'VtcGxhdGUuQXBwRXZlbnRSCGFwcEV2ZW50ElEKCXNpdGVFdmVudBgCIAEoCzIzLmh5dHRhaHVi'
     'LmV4YW1wbGUudGVtcGxhdGUuU3VibWl0QXBwRXZlbnQuU2l0ZUV2ZW50UglzaXRlRXZlbnQSIA'
     'oLYXV0aG9yRW1haWwYAyABKAlSC2F1dGhvckVtYWlsEkcKBmltYWdlcxgEIAMoCzIvLmh5dHRh'
-    'aHViLmV4YW1wbGUudGVtcGxhdGUuU3VibWl0QXBwRXZlbnQuSW1hZ2VSBmltYWdlcxo9CglTaX'
-    'RlRXZlbnQSGAoHdmVyc2lvbhgBIAEoBVIHdmVyc2lvbhIWCgZhdXRob3IYAiABKAVSBmF1dGhv'
-    'chpPCgVJbWFnZRIeCgpiYXNlNjREYXRhGAEgASgJUgpiYXNlNjREYXRhEhIKBG5hbWUYAiABKA'
-    'lSBG5hbWUSEgoEc2l6ZRgDIAEoBVIEc2l6ZQ==');
+    'aHViLmV4YW1wbGUudGVtcGxhdGUuU3VibWl0QXBwRXZlbnQuSW1hZ2VSBmltYWdlcxI1ChdwaG'
+    '90b192ZXJzaW9uX3RvX2RlbGV0ZRgFIAEoBVIUcGhvdG9WZXJzaW9uVG9EZWxldGUaPQoJU2l0'
+    'ZUV2ZW50EhgKB3ZlcnNpb24YASABKAVSB3ZlcnNpb24SFgoGYXV0aG9yGAIgASgFUgZhdXRob3'
+    'IaTwoFSW1hZ2USHgoKYmFzZTY0RGF0YRgBIAEoCVIKYmFzZTY0RGF0YRISCgRuYW1lGAIgASgJ'
+    'UgRuYW1lEhIKBHNpemUYAyABKAVSBHNpemU=');
 
 @$core.Deprecated('Use appEventRecordDescriptor instead')
 const AppEventRecord$json = {

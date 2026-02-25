@@ -53,7 +53,18 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
     // Check if there are images to upload for this event
-    if (submitAppEvent.images.isNotEmpty) {
+    if (submitAppEvent.appEvent.hasUpdatePhoto() &&
+        submitAppEvent.images.isNotEmpty) {
+      // Delete old photo from storage if replacing
+      if (submitAppEvent.photoVersionToDelete > 0) {
+        await storage.deleteFiles(
+          appName:
+              HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+          siteId: siteId,
+          fileNames: [submitAppEvent.photoVersionToDelete.toString()],
+        );
+      }
+
       var version = submitAppEvent.siteEvent.version;
       var uploadedCount = 0;
       final totalCount = submitAppEvent.images.length;
@@ -112,6 +123,27 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
 
         emit(state.copyWith(submissionState: progressState..freeze()));
       }
+    } else if (submitAppEvent.appEvent.hasRemovePhoto()) {
+      // Delete the photo file from storage
+      final versionToDelete = submitAppEvent.appEvent.removePhoto.version;
+      if (versionToDelete > 0) {
+        await storage.deleteFiles(
+          appName:
+              HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+          siteId: siteId,
+          fileNames: [versionToDelete.toString()],
+        );
+      }
+
+      await storage.setDocument(
+        firebaseSiteEventsPath(siteId),
+        siteEvent.version.toString(),
+        {
+          fbPayload: encodedEvent,
+          fbVersion: siteEvent.version,
+          fbTimeStamp: storage.serverTimestamp,
+        },
+      );
     } else {
       await storage.setDocument(
         firebaseSiteEventsPath(siteId),

@@ -39,15 +39,9 @@
     "app_noPhoto": "Geen foto",
     "app_selectedPhoto": "Geselecteerde Foto",
     "app_deletePhoto": "Foto Verwijderen",
-    "app_photoDeleted": "Foto verwijderd",
-    "app_errorDeletingPhoto": "Fout bij verwijderen van foto: {error}",
-    "@app_errorDeletingPhoto": {
-        "placeholders": {
-            "error": {
-                "type": "String"
-            }
-        }
-    },
+    "app_deletePhotoTitle": "Foto Verwijderen",
+    "app_deletePhotoConfirmation": "Bevestig verwijdering van foto",
+    "app_eventRemovePhoto": "Foto Verwijderd",
 
     "app_appSpecificEvent": "App-specifieke gebeurtenis",
     "app_updateTextTitle": "Tekst Bijwerken",
