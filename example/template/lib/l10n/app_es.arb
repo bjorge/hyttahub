@@ -39,10 +39,7 @@
     "app_noPhoto": "Sin foto",
     "app_selectedPhoto": "Foto Seleccionada",
     "app_deletePhoto": "Eliminar Foto",
-    "app_getShareableUrl": "Obtener URL Compartible",
-    "app_generatedUrlLabel": "URL Generada (exp. 7 días):",
     "app_photoDeleted": "Foto eliminada",
-    "app_urlGenerated": "URL Generada",
     "app_errorDeletingPhoto": "Error al eliminar foto: {error}",
     "@app_errorDeletingPhoto": {
         "placeholders": {
@@ -51,14 +48,7 @@
             }
         }
     },
-    "app_errorGettingUrl": "Error al obtener URL: {error}",
-    "@app_errorGettingUrl": {
-        "placeholders": {
-            "error": {
-                "type": "String"
-            }
-        }
-    },
+
     "app_appSpecificEvent": "Evento específico de la aplicación",
     "app_updateTextTitle": "Actualizar Texto",
     "app_textValueLabel": "Valor del Texto",

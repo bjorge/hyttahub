@@ -284,41 +284,17 @@ abstract class AppLocalizations {
   /// **'Delete Photo'**
   String get app_deletePhoto;
 
-  /// No description provided for @app_getShareableUrl.
-  ///
-  /// In en, this message translates to:
-  /// **'Get Shareable URL'**
-  String get app_getShareableUrl;
-
-  /// No description provided for @app_generatedUrlLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Generated URL (exp. 7 days):'**
-  String get app_generatedUrlLabel;
-
-  /// No description provided for @app_photoDeleted.
-  ///
-  /// In en, this message translates to:
-  /// **'Photo deleted'**
-  String get app_photoDeleted;
-
-  /// No description provided for @app_urlGenerated.
-  ///
-  /// In en, this message translates to:
-  /// **'URL Generated'**
-  String get app_urlGenerated;
-
   /// No description provided for @app_errorDeletingPhoto.
   ///
   /// In en, this message translates to:
   /// **'Error deleting photo: {error}'**
   String app_errorDeletingPhoto(String error);
 
-  /// No description provided for @app_errorGettingUrl.
+  /// No description provided for @app_photoDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Error getting URL: {error}'**
-  String app_errorGettingUrl(String error);
+  /// **'Photo deleted'**
+  String get app_photoDeleted;
 
   /// No description provided for @app_appSpecificEvent.
   ///

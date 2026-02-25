@@ -28,7 +28,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   final _formKey = GlobalKey<FormState>();
 
   List<PlatformFile> _files = [];
-  final Set<PlatformFile> _selectedFiles = {};
 
   @override
   Widget build(BuildContext context) {
@@ -79,23 +78,20 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
 
     setState(() {
       _files = result.files;
-      _selectedFiles.clear();
-      _selectedFiles.addAll(_files);
     });
-    _updateBlocWithSelection(submitBloc);
+    _updateBloc(submitBloc);
   }
 
-  void _updateBlocWithSelection(AppSubmitBloc submitBloc) {
+  void _updateBloc(AppSubmitBloc submitBloc) {
     final payload = submitBloc.state.payload!;
     final updatedPayload = payload.deepCopy();
     updatedPayload.images.clear();
 
-    // For template: Clear previous photo data if a new one is selected
+    // Clear previous photo data
     updatedPayload.appEvent.updatePhoto.name = "";
     updatedPayload.appEvent.updatePhoto.version = 0;
-    // updatedPayload.appEvent.updatePhoto.size = 0; // if size exists
 
-    for (final file in _selectedFiles) {
+    for (final file in _files) {
       if (file.bytes != null) {
         final base64Data = base64Encode(file.bytes!);
         final image =
@@ -105,11 +101,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
               ..size = file.size;
         updatedPayload.images.add(image);
 
-        // We do NOT set photoVersion here. AppSubmitBloc handles upload and sets version.
-        // We set initial metadata just in case, but version is key.
         updatedPayload.appEvent.updatePhoto.name = file.name;
         updatedPayload.appEvent.updatePhoto.size = file.size;
-        // The bloc will update version in the event before submitting
       }
     }
     final isFormValid = updatedPayload.images.isNotEmpty;
@@ -159,8 +152,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       );
     }
 
-    final submitBloc = context.read<AppSubmitBloc>();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,9 +178,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
             itemCount: _files.length,
             itemBuilder: (context, index) {
               final file = _files[index];
-              final isSelected = _selectedFiles.contains(file);
-              return CheckboxListTile(
-                secondary: SizedBox(
+              return ListTile(
+                leading: SizedBox(
                   width: 50,
                   height: 50,
                   child:
@@ -205,17 +195,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                 ),
                 title: Text(file.name),
                 subtitle: Text('${(file.size / 1024).toStringAsFixed(2)} KB'),
-                value: isSelected,
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedFiles.add(file);
-                    } else {
-                      _selectedFiles.remove(file);
-                    }
-                  });
-                  _updateBlocWithSelection(submitBloc);
-                },
               );
             },
           ),

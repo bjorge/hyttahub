@@ -115,26 +115,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get app_deletePhoto => 'Eliminar Foto';
 
   @override
-  String get app_getShareableUrl => 'Obtener URL Compartible';
-
-  @override
-  String get app_generatedUrlLabel => 'URL Generada (exp. 7 días):';
-
-  @override
-  String get app_photoDeleted => 'Foto eliminada';
-
-  @override
-  String get app_urlGenerated => 'URL Generada';
-
-  @override
   String app_errorDeletingPhoto(String error) {
     return 'Error al eliminar foto: $error';
   }
 
   @override
-  String app_errorGettingUrl(String error) {
-    return 'Error al obtener URL: $error';
-  }
+  String get app_photoDeleted => 'Foto eliminada';
 
   @override
   String get app_appSpecificEvent => 'Evento específico de la aplicación';

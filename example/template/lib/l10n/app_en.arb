@@ -80,10 +80,6 @@
   "app_noPhoto": "No photo",
   "app_selectedPhoto": "Selected Photo",
   "app_deletePhoto": "Delete Photo",
-  "app_getShareableUrl": "Get Shareable URL",
-  "app_generatedUrlLabel": "Generated URL (exp. 7 days):",
-  "app_photoDeleted": "Photo deleted",
-  "app_urlGenerated": "URL Generated",
   "app_errorDeletingPhoto": "Error deleting photo: {error}",
   "@app_errorDeletingPhoto": {
     "placeholders": {
@@ -92,14 +88,7 @@
       }
     }
   },
-  "app_errorGettingUrl": "Error getting URL: {error}",
-  "@app_errorGettingUrl": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  "app_photoDeleted": "Photo deleted",
   "app_appSpecificEvent": "App specific event",
   "app_updateTextTitle": "Update Text",
   "app_textValueLabel": "Text Value",

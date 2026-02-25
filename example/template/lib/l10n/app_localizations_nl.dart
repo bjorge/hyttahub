@@ -115,26 +115,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get app_deletePhoto => 'Foto Verwijderen';
 
   @override
-  String get app_getShareableUrl => 'Deelbare URL Ophalen';
-
-  @override
-  String get app_generatedUrlLabel => 'Gegenereerde URL (verl. 7 dagen):';
-
-  @override
-  String get app_photoDeleted => 'Foto verwijderd';
-
-  @override
-  String get app_urlGenerated => 'URL Gegenereerd';
-
-  @override
   String app_errorDeletingPhoto(String error) {
     return 'Fout bij verwijderen van foto: $error';
   }
 
   @override
-  String app_errorGettingUrl(String error) {
-    return 'Fout bij ophalen van URL: $error';
-  }
+  String get app_photoDeleted => 'Foto verwijderd';
 
   @override
   String get app_appSpecificEvent => 'App-specifieke gebeurtenis';

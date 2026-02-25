@@ -197,7 +197,6 @@ class AppStateAndButtons extends StatefulWidget {
 }
 
 class _AppStateAndButtonsState extends State<AppStateAndButtons> {
-  String? _generatedUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -324,28 +323,6 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                 );
               },
             ),
-            if (_generatedUrl != null)
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.app_generatedUrlLabel,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    SelectableText(
-                      _generatedUrl!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
           ],
         );
       },
@@ -479,9 +456,6 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                           },
                         );
 
-                        setState(() {
-                          _generatedUrl = null;
-                        });
 
                         scaffoldMessenger.showSnackBar(
                           SnackBar(content: Text(l10n.app_photoDeleted)),
@@ -504,50 +478,6 @@ class _AppStateAndButtonsState extends State<AppStateAndButtons> {
                       style: const TextStyle(decoration: TextDecoration.underline),
                     ),
                   ),
-                if (widget.isEditModeOn) const SizedBox(width: 16),
-                TextButton(
-                  onPressed: () async {
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    final l10n = AppLocalizations.of(context)!;
-                    final storage = HyttaHubStorageFactory.getStorage(
-                      HyttaHubOptions.implementation?.storage ??
-                          StorageEnum.cloud,
-                    );
-                    final appName =
-                        HyttaHubOptions.implementation
-                            ?.firebaseRootCollection ??
-                        '';
-
-                    try {
-                      final url = await storage.getFileUrl(
-                        appName: appName,
-                        siteId: widget.siteId,
-                        fileName: photoVersion.toString(),
-                        expirationDays: 7,
-                      );
-                      setState(() {
-                        _generatedUrl = url;
-                      });
-                      scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text(l10n.app_urlGenerated)),
-                      );
-                    } catch (e) {
-                      scaffoldMessenger.showSnackBar(
-                        SnackBar(content: Text(l10n.app_errorGettingUrl(e.toString()))),
-                      );
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    alignment: Alignment.centerLeft,
-                    minimumSize: const Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.app_getShareableUrl,
-                    style: const TextStyle(decoration: TextDecoration.underline),
-                  ),
-                ),
               ],
             ),
           ),

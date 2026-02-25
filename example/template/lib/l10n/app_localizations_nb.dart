@@ -115,26 +115,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get app_deletePhoto => 'Slett Bilde';
 
   @override
-  String get app_getShareableUrl => 'Hent Delbar URL';
-
-  @override
-  String get app_generatedUrlLabel => 'Generert URL (utl. 7 dager):';
-
-  @override
-  String get app_photoDeleted => 'Bilde slettet';
-
-  @override
-  String get app_urlGenerated => 'URL Generert';
-
-  @override
   String app_errorDeletingPhoto(String error) {
     return 'Feil ved sletting av bilde: $error';
   }
 
   @override
-  String app_errorGettingUrl(String error) {
-    return 'Feil ved henting av URL: $error';
-  }
+  String get app_photoDeleted => 'Bilde slettet';
 
   @override
   String get app_appSpecificEvent => 'Appspesifikk hendelse';

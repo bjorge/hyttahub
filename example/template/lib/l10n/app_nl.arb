@@ -39,10 +39,7 @@
     "app_noPhoto": "Geen foto",
     "app_selectedPhoto": "Geselecteerde Foto",
     "app_deletePhoto": "Foto Verwijderen",
-    "app_getShareableUrl": "Deelbare URL Ophalen",
-    "app_generatedUrlLabel": "Gegenereerde URL (verl. 7 dagen):",
     "app_photoDeleted": "Foto verwijderd",
-    "app_urlGenerated": "URL Gegenereerd",
     "app_errorDeletingPhoto": "Fout bij verwijderen van foto: {error}",
     "@app_errorDeletingPhoto": {
         "placeholders": {
@@ -51,14 +48,7 @@
             }
         }
     },
-    "app_errorGettingUrl": "Fout bij ophalen van URL: {error}",
-    "@app_errorGettingUrl": {
-        "placeholders": {
-            "error": {
-                "type": "String"
-            }
-        }
-    },
+
     "app_appSpecificEvent": "App-specifieke gebeurtenis",
     "app_updateTextTitle": "Tekst Bijwerken",
     "app_textValueLabel": "Tekstwaarde",
