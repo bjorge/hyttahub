@@ -104,23 +104,11 @@ abstract class AppLocalizations {
     Locale('nl'),
   ];
 
-  /// No description provided for @app_uploadingPhotosProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Uploading {count} of {total} files...'**
-  String app_uploadingPhotosProgress(Object count, Object total);
-
   /// No description provided for @app_submissionError.
   ///
   /// In en, this message translates to:
   /// **'Submission Error: {error}'**
   String app_submissionError(Object error);
-
-  /// No description provided for @app_photoSizeInKB.
-  ///
-  /// In en, this message translates to:
-  /// **'{size} KB'**
-  String app_photoSizeInKB(String size);
 
   /// No description provided for @app_unexpectedError.
   ///
@@ -134,107 +122,17 @@ abstract class AppLocalizations {
   /// **'Hytta Hub Form Example'**
   String get app_appTitle;
 
-  /// No description provided for @app_nightMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Night Mode'**
-  String get app_nightMode;
-
-  /// No description provided for @app_themeSettingsAlwaysOff.
-  ///
-  /// In en, this message translates to:
-  /// **'Always Off'**
-  String get app_themeSettingsAlwaysOff;
-
-  /// No description provided for @app_themeSettingsAlwaysOn.
-  ///
-  /// In en, this message translates to:
-  /// **'Always On'**
-  String get app_themeSettingsAlwaysOn;
-
-  /// No description provided for @app_themeSettingsAutomatic.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatic'**
-  String get app_themeSettingsAutomatic;
-
   /// No description provided for @app_versionInfo.
   ///
   /// In en, this message translates to:
   /// **'Version {appVersion}-{appBuildNumber}'**
   String app_versionInfo(String appVersion, int appBuildNumber);
 
-  /// No description provided for @app_selectLanguage.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Language'**
-  String get app_selectLanguage;
-
-  /// No description provided for @app_english.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get app_english;
-
-  /// No description provided for @app_italian.
-  ///
-  /// In en, this message translates to:
-  /// **'Italian'**
-  String get app_italian;
-
-  /// No description provided for @app_spanish.
-  ///
-  /// In en, this message translates to:
-  /// **'Spanish'**
-  String get app_spanish;
-
-  /// No description provided for @app_norwegian.
-  ///
-  /// In en, this message translates to:
-  /// **'Norwegian'**
-  String get app_norwegian;
-
-  /// No description provided for @app_dutch.
-  ///
-  /// In en, this message translates to:
-  /// **'Dutch'**
-  String get app_dutch;
-
   /// No description provided for @app_enterButton.
   ///
   /// In en, this message translates to:
   /// **'Enter'**
   String get app_enterButton;
-
-  /// No description provided for @app_serviceLoginButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Service Login'**
-  String get app_serviceLoginButton;
-
-  /// No description provided for @app_updateTextButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Text'**
-  String get app_updateTextButton;
-
-  /// No description provided for @app_textValueDisplay.
-  ///
-  /// In en, this message translates to:
-  /// **'Text Value: {value}'**
-  String app_textValueDisplay(String value);
-
-  /// No description provided for @app_updateTextValueTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Update Text Value'**
-  String get app_updateTextValueTitle;
-
-  /// No description provided for @app_textValueLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Text Value'**
-  String get app_textValueLabel;
 
   /// No description provided for @app_pickPhotosButton.
   ///
@@ -283,24 +181,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Site'**
   String get app_editSite;
-
-  /// No description provided for @app_errorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Error'**
-  String get app_errorTitle;
-
-  /// No description provided for @app_accessDeniedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Access Denied'**
-  String get app_accessDeniedTitle;
-
-  /// No description provided for @app_accessDeniedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'You do not have permission to access this site'**
-  String get app_accessDeniedMessage;
 
   /// No description provided for @app_eventUpdateText.
   ///

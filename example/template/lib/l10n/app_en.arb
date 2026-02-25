@@ -1,32 +1,13 @@
 {
   "@@locale": "en",
-  "app_uploadingPhotosProgress": "Uploading {count} of {total} files...",
-  "@app_uploadingPhotosProgress": {
-    "placeholders": {
-      "count": {},
-      "total": {}
-    }
-  },
   "app_submissionError": "Submission Error: {error}",
   "@app_submissionError": {
     "placeholders": {
       "error": {}
     }
   },
-  "app_photoSizeInKB": "{size} KB",
-  "@app_photoSizeInKB": {
-    "placeholders": {
-      "size": {
-        "type": "String"
-      }
-    }
-  },
   "app_unexpectedError": "Unexpected error, check internet, go back and try again",
   "app_appTitle": "Hytta Hub Form Example",
-  "app_nightMode": "Night Mode",
-  "app_themeSettingsAlwaysOff": "Always Off",
-  "app_themeSettingsAlwaysOn": "Always On",
-  "app_themeSettingsAutomatic": "Automatic",
   "app_versionInfo": "Version {appVersion}-{appBuildNumber}",
   "@app_versionInfo": {
     "placeholders": {
@@ -38,25 +19,7 @@
       }
     }
   },
-  "app_selectLanguage": "Select Language",
-  "app_english": "English",
-  "app_italian": "Italian",
-  "app_spanish": "Spanish",
-  "app_norwegian": "Norwegian",
-  "app_dutch": "Dutch",
   "app_enterButton": "Enter",
-  "app_serviceLoginButton": "Service Login",
-  "app_updateTextButton": "Update Text",
-  "app_textValueDisplay": "Text Value: {value}",
-  "@app_textValueDisplay": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "app_updateTextValueTitle": "Update Text Value",
-  "app_textValueLabel": "Text Value",
   "app_pickPhotosButton": "Pick Photos",
   "app_permissionDenied": "You do not have permission to perform this action.",
   "app_appEventsOption": "App Events",
@@ -65,9 +28,6 @@
   "app_howToProceed": "How would you like to proceed?",
   "app_viewSite": "View Site",
   "app_editSite": "Edit Site",
-  "app_errorTitle": "Error",
-  "app_accessDeniedTitle": "Access Denied",
-  "app_accessDeniedMessage": "You do not have permission to access this site",
   "app_eventUpdateText": "Updated Text: {value}",
   "@app_eventUpdateText": {
     "placeholders": {

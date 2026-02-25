@@ -1,32 +1,13 @@
 {
   "@@locale": "nb",
-  "app_uploadingPhotosProgress": "Laster opp {count} av {total} filer...",
-  "@app_uploadingPhotosProgress": {
-    "placeholders": {
-      "count": {},
-      "total": {}
-    }
-  },
   "app_submissionError": "Innsendingsfeil: {error}",
   "@app_submissionError": {
     "placeholders": {
       "error": {}
     }
   },
-  "app_photoSizeInKB": "{size} KB",
-  "@app_photoSizeInKB": {
-    "placeholders": {
-      "size": {
-        "type": "String"
-      }
-    }
-  },
   "app_unexpectedError": "Uventet feil, sjekk internett, gå tilbake og prøv igjen",
   "app_appTitle": "Hytta Hub Skjemaeksempel",
-  "app_nightMode": "Nattmodus",
-  "app_themeSettingsAlwaysOff": "Alltid av",
-  "app_themeSettingsAlwaysOn": "Alltid på",
-  "app_themeSettingsAutomatic": "Automatisk",
   "app_versionInfo": "Versjon {appVersion}-{appBuildNumber}",
   "@app_versionInfo": {
     "placeholders": {
@@ -38,24 +19,6 @@
       }
     }
   },
-  "app_selectLanguage": "Velg språk",
-  "app_english": "Engelsk",
-  "app_italian": "Italiensk",
-  "app_spanish": "Spansk",
-  "app_norwegian": "Norsk",
-  "app_dutch": "Nederlandsk",
   "app_enterButton": "Enter",
-  "app_serviceLoginButton": "Tjenestepålogging",
-  "app_updateTextButton": "Oppdater tekst",
-  "app_textValueDisplay": "Tekstverdi: {value}",
-  "@app_textValueDisplay": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "app_updateTextValueTitle": "Oppdater tekstverdi",
-  "app_textValueLabel": "Tekstverdi",
   "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen."
 }

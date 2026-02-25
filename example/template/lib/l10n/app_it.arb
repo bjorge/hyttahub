@@ -1,21 +1,8 @@
 {
   "@@locale": "it",
-  "app_uploadingPhotosProgress": "Caricamento di {count} di {total} file...",
   "app_submissionError": "Errore di invio: {error}",
-  "app_photoSizeInKB": "{size} KB",
-  "@app_photoSizeInKB": {
-    "placeholders": {
-      "size": {
-        "type": "String"
-      }
-    }
-  },
   "app_unexpectedError": "Errore imprevisto, controlla la connessione internet, torna indietro e riprova",
   "app_appTitle": "Hytta Hub Esempio di Modulo",
-  "app_nightMode": "Modalità Notte",
-  "app_themeSettingsAlwaysOff": "Sempre Spento",
-  "app_themeSettingsAlwaysOn": "Sempre Acceso",
-  "app_themeSettingsAutomatic": "Automatico",
   "app_versionInfo": "Versione {appVersion}-{appBuildNumber}",
   "@app_versionInfo": {
     "placeholders": {
@@ -27,24 +14,6 @@
       }
     }
   },
-  "app_selectLanguage": "Seleziona Lingua",
-  "app_english": "Inglese",
-  "app_italian": "Italiano",
-  "app_spanish": "Spagnolo",
-  "app_norwegian": "Norvegese",
-  "app_dutch": "Olandese",
   "app_enterButton": "Invio",
-  "app_serviceLoginButton": "Accesso Servizio",
-  "app_updateTextButton": "Aggiorna Testo",
-  "app_textValueDisplay": "Valore del Testo: {value}",
-  "@app_textValueDisplay": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "app_updateTextValueTitle": "Aggiorna Valore del Testo",
-  "app_textValueLabel": "Valore del Testo",
   "app_permissionDenied": "Non hai il permesso di eseguire questa azione."
 }
