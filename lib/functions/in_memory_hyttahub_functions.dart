@@ -6,6 +6,7 @@ import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 
 class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
@@ -125,11 +126,8 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
     for (final path in sourceFilePaths) {
       final fileName = path.substring(sourcePrefix.length);
-      final data = await storage.getFileBytes(
-        appName: appName,
-        siteId: siteId,
-        fileName: fileName,
-      );
+      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(_type);
+      final data = await internalStorage.downloadFile(path);
       
       // uploadFile already writes to both normal and archive paths
       await storage.uploadFile(
