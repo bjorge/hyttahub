@@ -34,12 +34,6 @@ export const firebaseSitesPath = (appPathSegment: string) =>
 
 
 
-export const firebaseSiteExportsBasePath = (
-  appPathSegment: string,
-  siteId: string
-) => `hyttahub/${appPathSegment}/sites/${siteId}/site_exports`;
-
-
 
 export const firebaseFilesPath = (
   appPathSegment: string,
@@ -53,40 +47,12 @@ export const firebaseFilesPath = (
   }
 };
 
-export const firebaseExportsPath = (
-  appPathSegment: string,
-  siteId: string,
-  fileName: string
-): string => {
-  if (isRunningInEmulator()) {
-    return `emulator/${appPathSegment}/exports/${siteId}/${fileName}`;
-  } else {
-    return `hyttahub/${appPathSegment}/exports/${siteId}/${fileName}`;
-  }
-};
-
-export const firebaseArchivePath = (
-  appPathSegment: string,
-  siteId: string
-): string => {
-  if (isRunningInEmulator()) {
-    return `emulator/${appPathSegment}/archives/${siteId}/archive.tar`;
-  } else {
-    return `hyttahub/${appPathSegment}/archives/${siteId}/archive.tar`;
-  }
-};
-
-export const firebaseArchiveFilesPath = (
+/** Emulator-only: archive files path in the default bucket. */
+export const firebaseEmulatorArchiveFilesPath = (
   appPathSegment: string,
   siteId: string,
   fileId: string
-): string => {
-  if (isRunningInEmulator()) {
-    return `emulator/${appPathSegment}/archive_files/${siteId}/${fileId}`;
-  } else {
-    return `hyttahub/${appPathSegment}/archive_files/${siteId}/${fileId}`;
-  }
-};
+): string => `emulator/${appPathSegment}/archive_files/${siteId}/${fileId}`;
 
 // Document keys
 export const fbUserId = "u";

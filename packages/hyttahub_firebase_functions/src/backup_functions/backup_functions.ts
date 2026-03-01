@@ -6,7 +6,7 @@ import { SiteEvent, SiteEvent_ImportEvent } from "../ts/site_events";
 import { AccountEvent } from "../ts/account_events";
 
 
-import { firebaseAccountEventsPath, firebaseSiteEventsPath, firebaseSiteUsersPath, fbUserId, fbVersion, firebaseFilesPath, firebaseArchiveFilesPath, fbPayload, fbTimeStamp, isRunningInEmulator } from "../shared/constants";
+import { firebaseAccountEventsPath, firebaseSiteEventsPath, firebaseSiteUsersPath, fbUserId, fbVersion, firebaseFilesPath, firebaseEmulatorArchiveFilesPath, fbPayload, fbTimeStamp, isRunningInEmulator } from "../shared/constants";
 import { getArchiveBucketName } from "../shared/config";
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
@@ -169,7 +169,7 @@ export const copySite = onCall({
 
   if (isRunningInEmulator()) {
     // Emulator: try archive path in default bucket first
-    const archivePrefix = firebaseArchiveFilesPath(appName, oldSiteId, "");
+    const archivePrefix = firebaseEmulatorArchiveFilesPath(appName, oldSiteId, "");
     const [archiveFiles] = await bucket.getFiles({ prefix: archivePrefix, maxResults: 1 });
     if (archiveFiles.length > 0) {
       sourcePrefix = archivePrefix;
@@ -215,7 +215,7 @@ export const copySite = onCall({
 
       // Also copy to archive for the new site
       if (isRunningInEmulator()) {
-        const archivePath = firebaseArchiveFilesPath(appName, newSiteId, relativePath);
+        const archivePath = firebaseEmulatorArchiveFilesPath(appName, newSiteId, relativePath);
         copyPromises.push(file.copy(bucket.file(archivePath)));
       } else if (archiveBucketName) {
         const archiveBucket = admin.storage().bucket(archiveBucketName);

@@ -10,21 +10,20 @@ import {
   MarkForDeletion_DeleteReason,
 } from "../ts/site_email";
 import { onSchedule } from "firebase-functions/scheduler";
+import { getArchiveBucketName } from "../shared/config";
 import {
   firebaseAccountEventsPath,
   firebaseSiteEventsPath,
   firebaseSitesPath,
   firebaseSiteUsersPath,
-  firebaseSiteExportsBasePath,
   isRunningInEmulator,
   fbMarkedForDeletion,
   fbUserId,
   fbVersion,
   fbPayload,
   fbTimeStamp,
-  firebaseExportsPath,
   firebaseFilesPath,
-  firebaseArchivePath,
+  firebaseEmulatorArchiveFilesPath,
 } from "../shared/constants";
 
 export const executetask = onRequest({}, async (req, res) => {
@@ -287,19 +286,7 @@ async function cleanUp() {
         // Queue deletions in the batch
         eventRefs.forEach((doc) => batch.delete(doc));
 
-        const [exportRefs] = await Promise.all([
-          admin
-            .firestore()
-            .collection(firebaseSiteExportsBasePath(appPathSegment, siteId))
-            .listDocuments(),
-        ]);
-
-        logger.info(`cleanUp: Found ${exportRefs.length} exports to delete.`);
-
-        // Queue deletions in the batch
-        exportRefs.forEach((doc) => batch.delete(doc));
-
-        deletions += eventRefs.length + exportRefs.length;
+        deletions += eventRefs.length;
 
         // Ensure Firestore batch limit (500 writes per commit)
         if (deletions >= 450) {
@@ -335,23 +322,27 @@ async function cleanUp() {
           await bucket.deleteFiles({ prefix });
           logger.info(`cleanUp: Files for site ${siteId} deleted.`);
         }
+        // GDPR: Also delete archive copies of site files
+        const archiveBucketName = getArchiveBucketName();
         for (const siteId of orphanedSiteIds) {
-          // Pass an empty string for export name to get the directory path.
-          const prefix = firebaseExportsPath(appPathSegment, siteId, "");
-          logger.info(
-            `cleanUp: Deleting exports for site ${siteId} with prefix: ${prefix}`
-          );
-          await bucket.deleteFiles({ prefix });
-          logger.info(`cleanUp: Exports for site ${siteId} deleted.`);
-        }
-        for (const siteId of orphanedSiteIds) {
-          // Prefix also works for files
-          const prefix = firebaseArchivePath(appPathSegment, siteId);
-          logger.info(
-            `cleanUp: Deleting archive for site ${siteId} with prefix: ${prefix}`
-          );
-          await bucket.deleteFiles({ prefix });
-          logger.info(`cleanUp: Archive for site ${siteId} deleted.`);
+          if (archiveBucketName) {
+            // Production: archive files live in a separate bucket with the same path structure
+            const archiveBucket = admin.storage().bucket(archiveBucketName);
+            const prefix = firebaseFilesPath(appPathSegment, siteId, "");
+            logger.info(
+              `cleanUp: Deleting archive bucket files for site ${siteId} with prefix: ${prefix}`
+            );
+            await archiveBucket.deleteFiles({ prefix });
+            logger.info(`cleanUp: Archive bucket files for site ${siteId} deleted.`);
+          } else {
+            // Emulator: archive files live in the default bucket under archive_files/
+            const prefix = firebaseEmulatorArchiveFilesPath(appPathSegment, siteId, "");
+            logger.info(
+              `cleanUp: Deleting archive files for site ${siteId} with prefix: ${prefix}`
+            );
+            await bucket.deleteFiles({ prefix });
+            logger.info(`cleanUp: Archive files for site ${siteId} deleted.`);
+          }
         }
 
       }

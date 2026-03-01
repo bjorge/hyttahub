@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 
 import {
   firebaseFilesPath,
-  firebaseArchiveFilesPath,
+  firebaseEmulatorArchiveFilesPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
 } from "../shared/constants";
@@ -72,7 +72,7 @@ export const uploadFile = onCall({ cors: true }, async (request) => {
   // Archive copy
   if (isRunningInEmulator()) {
     // Emulator: use path-based archive in default bucket
-    const archiveFilePath = firebaseArchiveFilesPath(appName, siteId, fileName);
+    const archiveFilePath = firebaseEmulatorArchiveFilesPath(appName, siteId, fileName);
     const archiveFile = bucket.file(archiveFilePath);
     await archiveFile.save(fileBuffer, {});
     logger.info(`File archived to ${archiveFile.name} (emulator path-based)`);
