@@ -51,6 +51,6 @@ const fbTimeStamp = 't';
 const fbVersion = 'v';
 const fbPayload = 'p';
 const fbBetaUsers = 'b';
-const fbMarkedForDeletion = 'm';
+const fbSiteMemberMarkedForDeletion = 'm';
 
 const firstCollectionEventVersion = 1;

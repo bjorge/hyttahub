@@ -65,7 +65,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           firebaseSiteUsersPath(siteId),
           submitSiteEvent.removeMemberEmail,
           {
-            fbMarkedForDeletion: markForDeletionInfo,
+            fbSiteMemberMarkedForDeletion: markForDeletionInfo,
             fbTimeStamp: storage.serverTimestamp,
           },
         );
@@ -96,7 +96,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
             firebaseSiteUsersPath(siteId),
             originalEmail,
             {
-              fbMarkedForDeletion: markForDeletionInfo,
+              fbSiteMemberMarkedForDeletion: markForDeletionInfo,
               fbTimeStamp: storage.serverTimestamp,
             },
           );

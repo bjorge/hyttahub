@@ -17,8 +17,8 @@ import {
   firebaseSitesPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
-  fbMarkedForDeletion,
-  fbMemberCount,
+  fbSiteMemberMarkedForDeletion,
+  fbSiteMarkedForDeletion,
   fbUserId,
   fbVersion,
   fbPayload,
@@ -65,11 +65,11 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
     const data = afterData;
     const appPathSegment = event.params.appPathSegment;
 
-    if (data[fbMarkedForDeletion] && typeof data[fbMarkedForDeletion] === "string") {
+    if (data[fbSiteMemberMarkedForDeletion] && typeof data[fbSiteMemberMarkedForDeletion] === "string") {
       try {
         // The 'm' field contains the base64-encoded protobuf data.
         // We first decode it into a buffer.
-        const buffer = Buffer.from(data[fbMarkedForDeletion], "base64");
+        const buffer = Buffer.from(data[fbSiteMemberMarkedForDeletion], "base64");
 
         // Then, we use the MarkForDeletion definition to decode the buffer.
         const markForDeletionInfo = MarkForDeletion.decode(buffer);
@@ -220,7 +220,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
           const siteDocRef = admin
             .firestore()
             .doc(`${firebaseSitesPath(appPathSegment)}/${event.params.siteId}`);
-          await siteDocRef.set({ [fbMemberCount]: 0 }, { merge: true });
+          await siteDocRef.set({ [fbSiteMarkedForDeletion]: true }, { merge: true });
           logger.info(
             `Site ${event.params.siteId} has no remaining users. Marked for cleanup.`
           );
@@ -233,6 +233,12 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
 );
 
 async function cleanUp() {
+  // Cloud Functions have a 540-second (9 min) timeout.
+  // Exit after 50% of the budget to leave a safety margin.
+  const maxExecutionMs = 540 * 1000;
+  const timeBudgetMs = maxExecutionMs * 0.5;
+  const startTime = Date.now();
+
   // Dynamically discover all app path segments under the top-level `hyttahub` collection
   const hyttahubRoot = admin.firestore().collection('hyttahub');
   const appDocs = await hyttahubRoot.listDocuments();
@@ -242,7 +248,12 @@ async function cleanUp() {
     return;
   }
 
+  let sitesProcessed = 0;
+  let timedOut = false;
+
   for (const appDoc of appDocs) {
+    if (timedOut) break;
+
     const appPathSegment = appDoc.id;
     logger.info(`App path segment for cleanup: ${appPathSegment}`);
 
@@ -253,7 +264,7 @@ async function cleanUp() {
       const orphanedSitesSnapshot = await admin
         .firestore()
         .collection(firebaseSitesPath(appPathSegment))
-        .where(fbMemberCount, "==", 0)
+        .where(fbSiteMarkedForDeletion, "==", true)
         .get();
 
       if (orphanedSitesSnapshot.empty) {
@@ -261,65 +272,75 @@ async function cleanUp() {
         continue;
       }
 
-      const orphanedSiteIds: string[] = [];
+      logger.info(
+        `cleanUp: Found ${orphanedSitesSnapshot.size} orphaned site(s) to process.`
+      );
+
+      const bucket = admin.storage().bucket();
+      const archiveBucketName = getArchiveBucketName();
 
       for (const siteDoc of orphanedSitesSnapshot.docs) {
-        const siteId = siteDoc.id;
-        orphanedSiteIds.push(siteId);
-
-        logger.info(
-          `cleanUp: Site ${siteId} marked as orphaned. Deleting site document and all subcollections.`
-        );
-
-        // Recursively delete the site document and all its subcollections
-        // (site_events, site_users, and any future subcollections)
-        await admin.firestore().recursiveDelete(siteDoc.ref);
-        logger.info(`cleanUp: Recursively deleted site ${siteId} and all subcollections.`);
-      }
-
-      // Now delete all the photos for orphaned sites
-      if (orphanedSiteIds.length > 0) {
-        logger.info(
-          `cleanUp: Deleting photos for ${orphanedSiteIds.length} orphaned sites.`
-        );
-        const bucket = admin.storage().bucket();
-        for (const siteId of orphanedSiteIds) {
-          // Pass an empty string for photoId to get the directory path.
-          const prefix = firebaseFilesPath(appPathSegment, siteId, "");
-          logger.info(
-            `cleanUp: Deleting files for site ${siteId} with prefix: ${prefix}`
+        // Check time budget before processing the next site
+        const elapsedMs = Date.now() - startTime;
+        if (elapsedMs >= timeBudgetMs) {
+          logger.warn(
+            `cleanUp: Time budget exceeded (${Math.round(elapsedMs / 1000)}s / ${Math.round(timeBudgetMs / 1000)}s). ` +
+            `Processed ${sitesProcessed} site(s). Exiting to avoid timeout; remaining sites will be cleaned up on the next run.`
           );
-          await bucket.deleteFiles({ prefix });
-          logger.info(`cleanUp: Files for site ${siteId} deleted.`);
+          timedOut = true;
+          break;
         }
-        // GDPR: Also delete archive copies of site files
-        const archiveBucketName = getArchiveBucketName();
-        for (const siteId of orphanedSiteIds) {
+
+        const siteId = siteDoc.id;
+        logger.info(
+          `cleanUp: Processing orphaned site ${siteId} (${sitesProcessed + 1} so far, ${Math.round(elapsedMs / 1000)}s elapsed)...`
+        );
+
+        try {
+          // 1. Recursively delete the site document and all its subcollections
+          //    (site_events, site_users, and any future subcollections)
+          await admin.firestore().recursiveDelete(siteDoc.ref);
+          logger.info(`cleanUp: Recursively deleted site ${siteId} and all subcollections.`);
+
+          // 2. Delete active files for this site
+          const filePrefix = firebaseFilesPath(appPathSegment, siteId, "");
+          logger.info(`cleanUp: Deleting files for site ${siteId} with prefix: ${filePrefix}`);
+          await bucket.deleteFiles({ prefix: filePrefix });
+          logger.info(`cleanUp: Files for site ${siteId} deleted.`);
+
+          // 3. GDPR: Delete archive copies of site files
           if (archiveBucketName) {
             // Production: archive files live in a separate bucket with the same path structure
             const archiveBucket = admin.storage().bucket(archiveBucketName);
-            const prefix = firebaseFilesPath(appPathSegment, siteId, "");
-            logger.info(
-              `cleanUp: Deleting archive bucket files for site ${siteId} with prefix: ${prefix}`
-            );
-            await archiveBucket.deleteFiles({ prefix });
+            const archivePrefix = firebaseFilesPath(appPathSegment, siteId, "");
+            logger.info(`cleanUp: Deleting archive bucket files for site ${siteId} with prefix: ${archivePrefix}`);
+            await archiveBucket.deleteFiles({ prefix: archivePrefix });
             logger.info(`cleanUp: Archive bucket files for site ${siteId} deleted.`);
           } else {
             // Emulator: archive files live in the default bucket under archive_files/
-            const prefix = firebaseEmulatorArchiveFilesPath(appPathSegment, siteId, "");
-            logger.info(
-              `cleanUp: Deleting archive files for site ${siteId} with prefix: ${prefix}`
-            );
-            await bucket.deleteFiles({ prefix });
+            const archivePrefix = firebaseEmulatorArchiveFilesPath(appPathSegment, siteId, "");
+            logger.info(`cleanUp: Deleting archive files for site ${siteId} with prefix: ${archivePrefix}`);
+            await bucket.deleteFiles({ prefix: archivePrefix });
             logger.info(`cleanUp: Archive files for site ${siteId} deleted.`);
           }
-        }
 
+          sitesProcessed++;
+          logger.info(`cleanUp: Fully cleaned up site ${siteId}.`);
+        } catch (siteError) {
+          logger.error(`cleanUp: Error cleaning up site ${siteId}:`, siteError);
+          // Continue to the next site rather than aborting the entire cleanup
+        }
       }
     } catch (error) {
       logger.error("cleanUp: Error executing cleanup:", error);
     }
   }
+
+  const totalElapsedMs = Date.now() - startTime;
+  logger.info(
+    `cleanUp: Finished. Processed ${sitesProcessed} site(s) in ${Math.round(totalElapsedMs / 1000)}s.` +
+    (timedOut ? " Exited early due to time budget." : "")
+  );
   return null;
 }
 

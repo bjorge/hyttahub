@@ -141,7 +141,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
             firebaseSiteUsersPath(siteId),
             email,
             {
-              fbMarkedForDeletion: markForDeletionInfo,
+              fbSiteMemberMarkedForDeletion: markForDeletionInfo,
               fbTimeStamp: storage.serverTimestamp,
             },
           );
