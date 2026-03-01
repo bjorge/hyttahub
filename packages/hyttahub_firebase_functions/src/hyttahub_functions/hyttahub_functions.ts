@@ -18,6 +18,7 @@ import {
   firebaseSiteUsersPath,
   isRunningInEmulator,
   fbMarkedForDeletion,
+  fbMemberCount,
   fbUserId,
   fbVersion,
   fbPayload,
@@ -206,6 +207,24 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
         logger.info(
           `Deleted user document for ${event.params.email} in site ${event.params.siteId} after processing MarkForDeletion.`
         );
+
+        // Check if the site now has no remaining users
+        const remainingUsers = await admin
+          .firestore()
+          .collection(firebaseSiteUsersPath(appPathSegment, event.params.siteId))
+          .limit(1)
+          .get();
+
+        if (remainingUsers.empty) {
+          // Mark the site as having no members so cleanup can find it efficiently
+          const siteDocRef = admin
+            .firestore()
+            .doc(`${firebaseSitesPath(appPathSegment)}/${event.params.siteId}`);
+          await siteDocRef.set({ [fbMemberCount]: 0 }, { merge: true });
+          logger.info(
+            `Site ${event.params.siteId} has no remaining users. Marked for cleanup.`
+          );
+        }
       } catch (error) {
         logger.error("Failed to decode MarkForDeletion protobuf:", error);
       }
@@ -230,54 +249,31 @@ async function cleanUp() {
     try {
       logger.info("cleanUp: Starting cleanup for orphaned sites...");
 
-      const siteRefs = await admin
+      // Query for sites explicitly marked as having no members
+      const orphanedSitesSnapshot = await admin
         .firestore()
         .collection(firebaseSitesPath(appPathSegment))
-        .listDocuments();
+        .where(fbMemberCount, "==", 0)
+        .get();
 
-      if (siteRefs.length === 0) {
-        logger.info("cleanUp: No site documents found.");
+      if (orphanedSitesSnapshot.empty) {
+        logger.info("cleanUp: No orphaned sites found.");
         continue;
       }
 
-      logger.info("cleanUp: Detected sites:");
-      siteRefs.forEach((siteRef) => logger.info(`- ${siteRef.id}`));
-      // If you expect a large number of site documents, you can set autoPaginate to false.
-      // However, listDocuments() does not support autoPaginate; it's only relevant for .get() queries.
-      // For Firestore .get() queries, you could use:
-      // await admin.firestore().collection(...).get({ autoPaginate: false });
-      // But here, listDocuments() returns all document references in one call.
-      // No need to set autoPaginate for listDocuments().
       const orphanedSiteIds: string[] = [];
 
-      for (const siteDoc of siteRefs) {
+      for (const siteDoc of orphanedSitesSnapshot.docs) {
         const siteId = siteDoc.id;
-
-        logger.info(`cleanUp: Checking site ${siteId}...`);
-
-        // Check if the site has users
-        const usersSnapshot = await admin
-          .firestore()
-          .collection(firebaseSiteUsersPath(appPathSegment, siteId))
-          .limit(1)
-          .get();
-
-        if (!usersSnapshot.empty) {
-          logger.info(`cleanUp: Site ${siteId} has users. Skipping deletion.`);
-          continue; // Skip deletion if users exist
-        }
-
         orphanedSiteIds.push(siteId);
+
         logger.info(
-          `cleanUp: Site ${siteId} has no users. Deleting site document and all subcollections.`
+          `cleanUp: Site ${siteId} marked as orphaned. Deleting site document and all subcollections.`
         );
 
         // Recursively delete the site document and all its subcollections
         // (site_events, site_users, and any future subcollections)
-        const siteDocRef = admin
-          .firestore()
-          .doc(`${firebaseSitesPath(appPathSegment)}/${siteId}`);
-        await admin.firestore().recursiveDelete(siteDocRef);
+        await admin.firestore().recursiveDelete(siteDoc.ref);
         logger.info(`cleanUp: Recursively deleted site ${siteId} and all subcollections.`);
       }
 

@@ -62,3 +62,4 @@ export const fbPayload = "p";
 export const fbBetaUsers = "b";
 export const fbMarkedForDeletion = "m";
 export const fbAppId = "a";
+export const fbMemberCount = "mc";
