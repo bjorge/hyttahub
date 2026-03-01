@@ -248,8 +248,6 @@ async function cleanUp() {
       // await admin.firestore().collection(...).get({ autoPaginate: false });
       // But here, listDocuments() returns all document references in one call.
       // No need to set autoPaginate for listDocuments().
-      let batch = admin.firestore().batch();
-      let deletions = 0;
       const orphanedSiteIds: string[] = [];
 
       for (const siteDoc of siteRefs) {
@@ -271,40 +269,16 @@ async function cleanUp() {
 
         orphanedSiteIds.push(siteId);
         logger.info(
-          `cleanUp: Site ${siteId} has no users. Deleting emails and events.`
+          `cleanUp: Site ${siteId} has no users. Deleting site document and all subcollections.`
         );
 
-        const [eventRefs] = await Promise.all([
-          admin
-            .firestore()
-            .collection(firebaseSiteEventsPath(appPathSegment, siteId))
-            .listDocuments(),
-        ]);
-
-        logger.info(`cleanUp: Found ${eventRefs.length} events to delete.`);
-
-        // Queue deletions in the batch
-        eventRefs.forEach((doc) => batch.delete(doc));
-
-        deletions += eventRefs.length;
-
-        // Ensure Firestore batch limit (500 writes per commit)
-        if (deletions >= 450) {
-          await batch.commit();
-          logger.info(`cleanUp: Committed batch after ${deletions} deletions.`);
-          deletions = 0;
-          batch = admin.firestore().batch();
-        }
-      }
-
-      // Final commit if any deletions remain
-      if (deletions > 0) {
-        await batch.commit();
-        logger.info(
-          `cleanUp: Final batch committed. Deleted ${deletions} documents.`
-        );
-      } else {
-        logger.info("cleanUp: No orphaned site events to delete.");
+        // Recursively delete the site document and all its subcollections
+        // (site_events, site_users, and any future subcollections)
+        const siteDocRef = admin
+          .firestore()
+          .doc(`${firebaseSitesPath(appPathSegment)}/${siteId}`);
+        await admin.firestore().recursiveDelete(siteDocRef);
+        logger.info(`cleanUp: Recursively deleted site ${siteId} and all subcollections.`);
       }
 
       // Now delete all the photos for orphaned sites
