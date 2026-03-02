@@ -74,4 +74,16 @@ class HydratedHyttaHubStorage extends InMemoryHyttaHubStorage {
     await super.runBatch(action);
     await _persist();
   }
+
+  @override
+  Future<void> deleteDocument(String path, String docId) async {
+    await super.deleteDocument(path, docId);
+    await _persist();
+  }
+
+  @override
+  Future<void> deleteCollection(String path) async {
+    await super.deleteCollection(path);
+    await _persist();
+  }
 }

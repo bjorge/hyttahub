@@ -189,6 +189,20 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     return await internalStorage.listFiles(prefix);
   }
+
+  /// Deletes a single document from a collection.
+  /// This is NOT part of BaseHyttaHubStorage — it's internal to in-memory/local storage.
+  Future<void> deleteDocument(String path, String docId) async {
+    data[path]?.remove(docId);
+    updateController.add({'path': path, 'docId': docId});
+  }
+
+  /// Deletes an entire collection and all its documents.
+  /// This is NOT part of BaseHyttaHubStorage — it's internal to in-memory/local storage.
+  Future<void> deleteCollection(String path) async {
+    data.remove(path);
+    updateController.add({'path': path});
+  }
 }
 
 class InMemoryHyttaHubBatch implements HyttaHubBatch {

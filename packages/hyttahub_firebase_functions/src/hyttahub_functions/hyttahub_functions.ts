@@ -1,6 +1,6 @@
 import { admin } from "../shared/firebase";
 import * as logger from "firebase-functions/logger";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { onRequest } from "firebase-functions/v2/https";
 import { SiteEvent } from "../ts/site_events";
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
@@ -220,7 +220,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
           const siteDocRef = admin
             .firestore()
             .doc(`${firebaseSitesPath(appPathSegment)}/${event.params.siteId}`);
-          await siteDocRef.set({ [fbSiteMarkedForDeletion]: true }, { merge: true });
+          await siteDocRef.set({ [fbSiteMarkedForDeletion]: FieldValue.serverTimestamp() }, { merge: true });
           logger.info(
             `Site ${event.params.siteId} has no remaining users. Marked for cleanup.`
           );
@@ -264,7 +264,8 @@ async function cleanUp() {
       const orphanedSitesSnapshot = await admin
         .firestore()
         .collection(firebaseSitesPath(appPathSegment))
-        .where(fbSiteMarkedForDeletion, "==", true)
+        .where(fbSiteMarkedForDeletion, ">", new Timestamp(0, 0))
+        .orderBy(fbSiteMarkedForDeletion, "asc")
         .get();
 
       if (orphanedSitesSnapshot.empty) {

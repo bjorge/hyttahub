@@ -5,11 +5,14 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/functions/site_cleanup.dart';
 import 'package:hyttahub/hyttahub_options.dart';
+import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/site_email.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:bloc/bloc.dart';
 
 
@@ -133,6 +136,70 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         },
       );
     });
+
+    // In-memory/local storage: perform inline cleanup that the Firebase
+    // cloud function (processMarkForDeleteRecords) would normally handle.
+    if (storage is InMemoryHyttaHubStorage) {
+      final memStorage = storage as InMemoryHyttaHubStorage;
+
+      if (submitSiteEvent.event.hasRemoveMember()) {
+        final removedEmail = submitSiteEvent.removeMemberEmail;
+
+        // 1. Delete the site_user document (cloud function does this)
+        await memStorage.deleteDocument(
+          firebaseSiteUsersPath(siteId),
+          removedEmail,
+        );
+
+        // 2. Add a RemoveSite account event for the removed member
+        final accountPath = firebaseAccountEventsPath(removedEmail);
+        final accountEvents = await storage.getCollection(
+          accountPath,
+          orderBy: fbVersion,
+          descending: true,
+        );
+        final nextVersion = accountEvents.isEmpty
+            ? 1
+            : (accountEvents.first[fbVersion] as int) + 1;
+
+        final accountEvent = AccountEvent(
+          version: nextVersion,
+          removeSite: siteId,
+        );
+        await storage.setDocument(
+          accountPath,
+          nextVersion.toString(),
+          {
+            fbPayload: base64Encode(accountEvent.writeToBuffer()),
+            fbVersion: nextVersion,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+
+        // 3. Check if site has no remaining members; if so, clean up
+        final remainingMembers = await storage.getCollection(
+          firebaseSiteUsersPath(siteId),
+        );
+        if (remainingMembers.isEmpty) {
+          await cleanUpOrphanedSite(
+            storage: memStorage,
+            siteId: siteId,
+          );
+        }
+      }
+
+      if (submitSiteEvent.event.hasUpdateMember()) {
+        final originalEmail = submitSiteEvent.updateMemberOriginalEmail;
+        final newEmail = submitSiteEvent.updateMemberNewEmail;
+        if (originalEmail != newEmail) {
+          // Delete the old member doc (cloud function does this)
+          await memStorage.deleteDocument(
+            firebaseSiteUsersPath(siteId),
+            originalEmail,
+          );
+        }
+      }
+    }
 
     final successState = state.submissionState.deepCopy();
     successState.state = CommonSubmitBlocState_State.success;

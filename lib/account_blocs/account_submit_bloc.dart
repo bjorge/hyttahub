@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/functions/site_cleanup.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/site_email.pb.dart';
@@ -12,6 +13,7 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/utilities/ids.dart';
 
@@ -157,6 +159,66 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           },
         );
       });
+
+      // In-memory/local storage: perform inline cleanup that the Firebase
+      // cloud function (processMarkForDeleteRecords) would normally handle.
+      if (storage is InMemoryHyttaHubStorage &&
+          submitAccountEvent.event.hasLeaveSite()) {
+        final memStorage = storage;
+        final siteId = submitAccountEvent.event.leaveSite;
+
+        // 1. Get the user's memberId before deleting the doc
+        final userDoc = await storage.getDocument(
+          firebaseSiteUsersPath(siteId),
+          email,
+        );
+        final memberId = userDoc?[fbUserId] as int?;
+
+        // 2. Add a LeaveSite event to the site's event log
+        if (memberId != null) {
+          final siteEventsPath = firebaseSiteEventsPath(siteId);
+          final siteEvents = await storage.getCollection(
+            siteEventsPath,
+            orderBy: fbVersion,
+            descending: true,
+          );
+          final nextSiteVersion = siteEvents.isEmpty
+              ? 1
+              : (siteEvents.first[fbVersion] as int) + 1;
+
+          final leaveSiteEvent = SiteEvent(
+            version: nextSiteVersion,
+            author: memberId,
+            leaveSite: SiteEvent_LeaveSite(memberId: memberId),
+          );
+          await storage.setDocument(
+            siteEventsPath,
+            nextSiteVersion.toString(),
+            {
+              fbPayload: base64Encode(leaveSiteEvent.writeToBuffer()),
+              fbVersion: nextSiteVersion,
+              fbTimeStamp: storage.serverTimestamp,
+            },
+          );
+        }
+
+        // 3. Delete the site_user document
+        await memStorage.deleteDocument(
+          firebaseSiteUsersPath(siteId),
+          email,
+        );
+
+        // 4. Check if site has no remaining members; if so, clean up
+        final remainingMembers = await storage.getCollection(
+          firebaseSiteUsersPath(siteId),
+        );
+        if (remainingMembers.isEmpty) {
+          await cleanUpOrphanedSite(
+            storage: memStorage,
+            siteId: siteId,
+          );
+        }
+      }
     }
 
     final successState = state.submissionState.deepCopy();
