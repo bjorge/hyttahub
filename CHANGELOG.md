@@ -1,3 +1,18 @@
+## 0.1.52
+
+*   **Account Removal Improvements**:
+    *   Fixed a navigation crash in `RemoveAccountScreen` by using absolute navigation instead of multiple back-pops.
+    *   Restored account events cleanup during account removal; users' personal event logs are now properly deleted in all storage modes.
+    *   Added `deleteCollection` method to `BaseHyttaHubStorage` to enable thorough data cleanup across storage implementations.
+*   **In-Memory and Local Data Cleanup**:
+    *   Implemented inline cleanup logic for `InMemoryHyttaHubStorage` and `HydratedHyttaHubStorage`.
+    *   Added `cleanUpOrphanedSite` utility to ensure data consistency when members leave or are removed from a site in non-cloud modes.
+    *   Improved GDPR compliance by ensuring site archive files and orphaned records are deleted during cleanup.
+*   **Cloud & Firebase Functions**:
+    *   Optimized Firebase Cloud Functions to reduce costs by introducing manual cleanup triggers for orphaned sites.
+    *   Updated functions to use `admin.firestore().recursiveDelete()` for more reliable data clearing.
+    *   Consolidated and simplified Firebase path constants and configuration.
+
 ## 0.1.51
 
 * Prevent members from changing their own email on the Update Member screen; only another admin can change a member's email.
