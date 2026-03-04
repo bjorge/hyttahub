@@ -198,7 +198,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   }
 
   /// Deletes an entire collection and all its documents.
-  /// This is NOT part of BaseHyttaHubStorage — it's internal to in-memory/local storage.
+  @override
   Future<void> deleteCollection(String path) async {
     data.remove(path);
     updateController.add({'path': path});

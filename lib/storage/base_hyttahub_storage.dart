@@ -53,6 +53,8 @@ abstract class BaseHyttaHubStorage {
     int? expirationDays,
   });
   Future<List<String>> listFiles(String prefix);
+
+  Future<void> deleteCollection(String path);
 }
 
 abstract class HyttaHubBatch {

@@ -2,6 +2,7 @@
 
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
+import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -54,11 +55,9 @@ class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
     final submitAuthEvent = state.payload!;
 
     if (submitAuthEvent.hasRemoveAccount()) {
-      // NOTE: Unifying delete is tricky because storage doesn't support listing yet.
-      // For now, let's keep it as is or add delete to storage.
-      // But we want to support In-Memory too.
-      // For Account removal, we might need more metadata in the store.
-      
+      // Delete all documents in the account events collection.
+      await storage.deleteCollection(firebaseAccountEventsPath(email));
+
       // Handle remove account event
       authBloc.add(
         AuthBlocEvent(removeAccount: AuthBlocEvent_RemoveAccount()),

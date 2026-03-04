@@ -192,6 +192,15 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
   Future<List<String>> listFiles(String prefix) async {
     throw UnsupportedError('listFiles is not implemented for FirestoreHyttaHubStorage');
   }
+
+  @override
+  Future<void> deleteCollection(String path) async {
+    final collectionRef = _firestore.collection(path);
+    final snapshot = await collectionRef.get();
+    for (final doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
 }
 
 class FirestoreHyttaHubBatch implements HyttaHubBatch {
