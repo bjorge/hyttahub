@@ -11,6 +11,7 @@ import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
+import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,10 +43,9 @@ class _RemoveAccountScreenState extends State<RemoveAccountScreen> {
         listener: (context, state) {
           if (state.submissionState.state ==
               CommonSubmitBlocState_State.success) {
-            // Pop this screen, then the account screen to go back to login.
-            // The AuthBloc will handle the actual logout and state change.
-            context.pop();
-            context.pop();
+            // Navigate back to login. The AuthBloc will handle the actual
+            // logout and state change.
+            context.go(LoginScreenRoute.fullPath);
           }
         },
         builder: (context, state) {
