@@ -1,0 +1,106 @@
+# PocketBase Local Emulator
+
+Runs a local PocketBase instance in a container for development and testing.
+
+PocketBase v0.36.5 is downloaded into a minimal Alpine image. The binary
+auto-detects the host CPU architecture (amd64 / arm64).
+
+The Admin UI is available at http://localhost:8090/_/ once the container starts.
+
+---
+
+## Build
+
+### Podman (ChromeOS / Linux)
+```
+sudo podman build -t localhost/hyttahub-pocketbase-emulator -f Podmanfile .
+```
+
+### Docker (macOS M1/M2 or Linux)
+```
+docker build -t hyttahub-pocketbase-emulator -f Podmanfile .
+```
+
+---
+
+## Run
+
+Data, hooks, migrations, and public files are mounted as volumes so they
+persist across container restarts.
+
+### Podman (ChromeOS / Linux)
+```
+sudo podman run --rm -it \
+  --name hyttahub-pocketbase-emulator-container \
+  -p 8090:8090 \
+  -v "$(pwd)/pb_data":/app/pb_data \
+  -v "$(pwd)/pb_hooks":/app/pb_hooks \
+  -v "$(pwd)/pb_migrations":/app/pb_migrations \
+  -v "$(pwd)/pb_public":/app/pb_public \
+  localhost/hyttahub-pocketbase-emulator
+```
+
+### Docker (macOS M1/M2 or Linux)
+```
+docker run --rm -it \
+  --name hyttahub-pocketbase-emulator-container \
+  -p 8090:8090 \
+  -v "$(pwd)/pb_data":/app/pb_data \
+  -v "$(pwd)/pb_hooks":/app/pb_hooks \
+  -v "$(pwd)/pb_migrations":/app/pb_migrations \
+  -v "$(pwd)/pb_public":/app/pb_public \
+  hyttahub-pocketbase-emulator
+```
+
+---
+
+## Admin UI
+
+Open http://localhost:8090/_/ in a browser after starting the container.
+On first run you will be prompted to create a superuser account.
+
+---
+
+## Shell into the container
+
+### Podman
+```
+sudo podman exec -it hyttahub-pocketbase-emulator-container /bin/sh
+```
+
+### Docker
+```
+docker exec -it hyttahub-pocketbase-emulator-container /bin/sh
+```
+
+---
+
+## Mounted directories
+
+| Host path (relative to this folder) | Container path      | Purpose |
+|--------------------------------------|---------------------|---------|
+| `pb_data/`                           | `/app/pb_data`      | SQLite database and PocketBase internal state |
+| `pb_hooks/`                          | `/app/pb_hooks`     | Server-side JS hooks (`*.pb.js` files) |
+| `pb_migrations/`                     | `/app/pb_migrations`| Schema migration files |
+| `pb_public/`                         | `/app/pb_public`    | Static files served at the root URL |
+
+---
+
+## Connecting from the Flutter app
+
+In your `PocketBase` client, point to `http://10.0.2.2:8090` (Android emulator)
+or `http://localhost:8090` (web / desktop / iOS simulator):
+
+```dart
+final pb = PocketBase('http://localhost:8090');
+```
+
+---
+
+## Change the PocketBase version
+
+Pass `--build-arg PB_VERSION=<version>` when building:
+
+```
+docker build --build-arg PB_VERSION=0.36.5 -t hyttahub-pocketbase-emulator -f Podmanfile .
+```

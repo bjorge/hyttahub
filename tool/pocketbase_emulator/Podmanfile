@@ -1,0 +1,43 @@
+FROM alpine:3.21
+
+# PocketBase version to install
+ARG PB_VERSION=0.36.5
+
+# Install required packages
+RUN apk add --no-cache \
+    ca-certificates \
+    unzip \
+    wget
+
+# Download and install PocketBase
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then PB_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then PB_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    wget -q "https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_${PB_ARCH}.zip" \
+         -O /tmp/pb.zip && \
+    unzip /tmp/pb.zip pocketbase -d /usr/local/bin/ && \
+    rm /tmp/pb.zip && \
+    chmod +x /usr/local/bin/pocketbase
+
+# Working directory for data and hooks
+WORKDIR /app
+
+# Create directories for persistent data and server-side JS hooks
+RUN mkdir -p /app/pb_data /app/pb_hooks /app/pb_migrations /app/pb_public
+
+# Expose PocketBase ports
+# 8090 = HTTP API + Admin UI
+EXPOSE 8090
+
+# Start PocketBase
+# --dev enables the admin UI without HTTPS, --http binds to 0.0.0.0 so the
+# host can reach it, --origins '*' allows all CORS origins for local dev.
+CMD ["/usr/local/bin/pocketbase", "serve", \
+     "--http=0.0.0.0:8090", \
+     "--dir=/app/pb_data", \
+     "--hooksDir=/app/pb_hooks", \
+     "--migrationsDir=/app/pb_migrations", \
+     "--publicDir=/app/pb_public", \
+     "--origins=*", \
+     "--dev"]
