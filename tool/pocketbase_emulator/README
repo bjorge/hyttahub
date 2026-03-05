@@ -9,6 +9,53 @@ The Admin UI is available at http://localhost:8090/_/ once the container starts.
 
 ---
 
+## Quick start
+
+```
+docker build -t hyttahub-pocketbase-emulator -f Podmanfile .
+docker run --rm -it \
+  --name hyttahub-pocketbase-emulator-container \
+  -p 8090:8090 \
+  -v "$(pwd)/pb_data":/app/pb_data \
+  -v "$(pwd)/pb_hooks":/app/pb_hooks \
+  -v "$(pwd)/pb_migrations":/app/pb_migrations \
+  hyttahub-pocketbase-emulator
+```
+
+Open the Admin UI at http://localhost:8090/_/ and create a superuser on first run.
+
+---
+
+## What happens on startup
+
+1. **Migrations** (`pb_migrations/`) run automatically at startup via
+   PocketBase's built-in migration system:
+   - Creates the `users` auth collection (required by `PocketbaseHyttaHubAuth`)
+   - Creates the known static tictactoe service collections:
+     - `hyttahub/tictactoe/services/status/service_events`
+     - `hyttahub/tictactoe/services/status/service_users`
+     - `hyttahub/tictactoe/services`
+
+2. **Auto-collection hook** (`pb_hooks/main.pb.js`) registers a global
+   middleware using `routerUse`. Every request to
+   `/api/collections/<name>/records` is intercepted before PocketBase resolves
+   the collection. If the collection does not exist it is created on the fly
+   with the correct field schema for its path suffix:
+
+   | Path suffix          | Fields created                          |
+   |----------------------|-----------------------------------------|
+   | `**/site_events`     | `p` (text), `v` (number), `t` (text)   |
+   | `**/account_events`  | `p` (text), `v` (number), `t` (text)   |
+   | `**/service_events`  | `p` (text), `v` (number), `t` (text)   |
+   | `**/site_users`      | `u` (number), `t` (text), `m` (text)   |
+   | `**/service_users`   | `u` (number), `t` (text), `m` (text)   |
+   | anything else        | no fields (open schema)                 |
+
+   This means a developer never has to manually create collections in the
+   Admin UI — they appear automatically the first time the app writes to them.
+
+---
+
 ## Build
 
 ### Podman (ChromeOS / Linux)
@@ -24,9 +71,6 @@ docker build -t hyttahub-pocketbase-emulator -f Podmanfile .
 ---
 
 ## Run
-
-Data, hooks, migrations, and public files are mounted as volumes so they
-persist across container restarts.
 
 ### Podman (ChromeOS / Linux)
 ```
@@ -77,29 +121,26 @@ docker exec -it hyttahub-pocketbase-emulator-container /bin/sh
 
 ## Mounted directories
 
-| Host path (relative to this folder) | Container path      | Purpose |
-|--------------------------------------|---------------------|---------|
-| `pb_data/`                           | `/app/pb_data`      | SQLite database and PocketBase internal state |
-| `pb_hooks/`                          | `/app/pb_hooks`     | Server-side JS hooks (`*.pb.js` files) |
-| `pb_migrations/`                     | `/app/pb_migrations`| Schema migration files |
-| `pb_public/`                         | `/app/pb_public`    | Static files served at the root URL |
+| Host path (relative to this folder) | Container path       | Purpose |
+|--------------------------------------|----------------------|---------|
+| `pb_data/`                           | `/app/pb_data`       | SQLite database and PocketBase internal state |
+| `pb_hooks/`                          | `/app/pb_hooks`      | Server-side JS hooks (`*.pb.js`) — auto-collection middleware lives here |
+| `pb_migrations/`                     | `/app/pb_migrations` | Schema migration files — initial collections created here |
+| `pb_public/`                         | `/app/pb_public`     | Static files served at the root URL |
 
 ---
 
 ## Connecting from the Flutter app
 
-In your `PocketBase` client, point to `http://10.0.2.2:8090` (Android emulator)
-or `http://localhost:8090` (web / desktop / iOS simulator):
-
 ```dart
 final pb = PocketBase('http://localhost:8090');
 ```
 
+Use `http://10.0.2.2:8090` for Android emulator, `http://localhost:8090` for web/desktop/iOS simulator.
+
 ---
 
 ## Change the PocketBase version
-
-Pass `--build-arg PB_VERSION=<version>` when building:
 
 ```
 docker build --build-arg PB_VERSION=0.36.5 -t hyttahub-pocketbase-emulator -f Podmanfile .

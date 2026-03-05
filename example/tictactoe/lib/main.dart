@@ -12,6 +12,10 @@ import 'package:hyttahub_firebase/firebase_hyttahub_auth.dart';
 import 'package:hyttahub_firebase/firebase_hyttahub_functions.dart';
 import 'package:hyttahub_firebase/firestore_hyttahub_storage.dart';
 import 'package:hyttahub_firebase/firebase_hyttahub_internal_storage.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_auth.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_functions.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_internal_storage.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 import 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:tictactoe/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +23,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -29,6 +34,14 @@ String appVersion = "2.0.5";
 int appBuildNumber = 79;
 
 
+/// Returns the base URL for the local PocketBase emulator,
+/// adapting to web, Android emulator, and native platforms.
+String _pocketbaseEmulatorUrl() {
+  if (kIsWeb) return 'http://localhost:8090';
+  if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:8090';
+  return 'http://127.0.0.1:8090';
+}
+
 void registerPersistence() {
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
     id: 'firebase',
@@ -38,6 +51,21 @@ void registerPersistence() {
     authBuilder: () => FirebaseHyttaHubAuth(),
     functionsBuilder: () => FirebaseHyttaHubFunctions(),
     internalStorageBuilder: () => FirebaseHyttaHubInternalStorage(),
+  ));
+
+  // PocketBase local emulator — connects to http://localhost:8090 (or the
+  // Android emulator equivalent). Start the emulator with:
+  //   cd tool/pocketbase_emulator
+  //   docker run --rm -it -p 8090:8090 ... hyttahub-pocketbase-emulator
+  final pb = PocketBase(_pocketbaseEmulatorUrl());
+  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
+    id: 'pocketbase',
+    name: 'PocketBase (local)',
+    type: StorageEnum.cloud,
+    storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
+    authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
+    functionsBuilder: () => PocketbaseHyttaHubFunctions(),
+    internalStorageBuilder: () => PocketbaseHyttaHubInternalStorage(),
   ));
 
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
@@ -53,7 +81,14 @@ void registerPersistence() {
   ));
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
-    if (storage == StorageEnum.cloud) {
+    // Retrieve the saved implementationId to distinguish cloud backends.
+    const firebaseRootCollection = 'tictactoe';
+    final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$firebaseRootCollection');
+    final implementationId = savedPlatform != null
+        ? savedPlatform['implementationId'] as String? ?? 'memory'
+        : 'memory';
+
+    if (implementationId == 'firebase') {
       if (Firebase.apps.isEmpty) {
         if (kDebugMode) {
           print('PersistenceRegistry: Initializing Firebase for firestore');
@@ -72,6 +107,8 @@ void registerPersistence() {
         }
       }
     }
+    // PocketBase needs no async platform initialization — the PocketBase
+    // client is ready as soon as it is constructed.
   };
 }
 

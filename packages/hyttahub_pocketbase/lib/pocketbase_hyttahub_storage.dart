@@ -6,10 +6,23 @@ import 'dart:typed_data';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
+/// Encodes a hyttahub path string into a valid PocketBase collection name.
+///
+/// PocketBase collection names must match `[a-zA-Z0-9_]+` and cannot start
+/// with a digit. The hyttahub framework uses slash-separated paths like
+/// `hyttahub/tictactoe/sites/<siteId>/site_events`, so slashes are replaced
+/// with double-underscores (`__`).
+///
+/// Example:
+///   `hyttahub/tictactoe/sites/abc/site_events`
+///   → `hyttahub__tictactoe__sites__abc__site_events`
+String encodePath(String path) => path.replaceAll('/', '__');
+
 /// A [BaseHyttaHubStorage] implementation backed by PocketBase.
 ///
-/// PocketBase collections act as the document store. The [path] argument used
-/// throughout this class must match an existing PocketBase collection name.
+/// PocketBase collections are used as the document store. The hyttahub `path`
+/// argument (a slash-separated string) is automatically encoded into a valid
+/// PocketBase collection name using [encodePath] (`/` → `__`).
 ///
 /// **Real-time**: [listenCollection] and [listenEvents] use PocketBase's
 /// Server-Sent Events (SSE) subscription API.
@@ -17,15 +30,11 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 /// **Batching**: PocketBase has no native batch/transaction API. [runBatch]
 /// executes operations sequentially.
 ///
-/// **Server timestamp**: PocketBase automatically manages `created` and
-/// `updated` fields. [serverTimestamp] returns the literal string
-/// `@now` which PocketBase accepts on write; consumers should use the
-/// `updated` field when reading timestamps back.
+/// **Server timestamp**: [serverTimestamp] returns `'@now'`, which PocketBase
+/// accepts as a placeholder on write.
 ///
 /// **File operations** (uploadFile, getFileBytes, deleteFiles, getFileUrl,
-/// listFiles) throw [UnimplementedError]. Consumer apps that need these must
-/// either extend this class or use PocketBase's own file handling with a
-/// dedicated collection that holds file records.
+/// listFiles) throw [UnimplementedError]. Extend this class to implement them.
 class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   PocketbaseHyttaHubStorage({required PocketBase client}) : _client = client;
 
@@ -36,7 +45,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   @override
   Future<Map<String, dynamic>?> getDocument(String path, String docId) async {
     try {
-      final record = await _client.collection(path).getOne(docId);
+      final record = await _client.collection(encodePath(path)).getOne(docId);
       return record.toJson();
     } on ClientException catch (e) {
       if (e.statusCode == 404) return null;
@@ -52,7 +61,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   }) async {
     final sort =
         orderBy != null ? '${descending ? '-' : '+'}$orderBy' : null;
-    final records = await _client.collection(path).getFullList(
+    final records = await _client.collection(encodePath(path)).getFullList(
           sort: sort,
         );
     return records.map((r) => r.toJson()).toList();
@@ -64,12 +73,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     String docId,
     Map<String, dynamic> data,
   ) async {
+    final col = encodePath(path);
     try {
       // Attempt to update; fall back to create with explicit id if not found.
-      await _client.collection(path).update(docId, body: data);
+      await _client.collection(col).update(docId, body: data);
     } on ClientException catch (e) {
       if (e.statusCode == 404) {
-        await _client.collection(path).create(body: {'id': docId, ...data});
+        await _client.collection(col).create(body: {'id': docId, ...data});
       } else {
         rethrow;
       }
@@ -82,14 +92,15 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     String docId,
     Map<String, dynamic> data,
   ) async {
-    await _client.collection(path).update(docId, body: data);
+    await _client.collection(encodePath(path)).update(docId, body: data);
   }
 
   @override
   Future<void> deleteCollection(String path) async {
-    final records = await _client.collection(path).getFullList();
+    final col = encodePath(path);
+    final records = await _client.collection(col).getFullList();
     for (final record in records) {
-      await _client.collection(path).delete(record.id);
+      await _client.collection(col).delete(record.id);
     }
   }
 
@@ -97,6 +108,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
+    final col = encodePath(path);
     final controller = StreamController<Map<String, Map<String, dynamic>>>();
 
     Future<void> setup() async {
@@ -108,9 +120,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       };
       if (!controller.isClosed) controller.add(map);
 
-      await _client.collection(path).subscribe('*', (event) async {
+      await _client.collection(col).subscribe('*', (event) async {
         if (controller.isClosed) return;
-        // Re-fetch the full collection on every change for consistency.
         final updated = await getCollection(path);
         final updatedMap = <String, Map<String, dynamic>>{
           for (final doc in updated)
@@ -121,11 +132,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     setup().catchError(controller.addError);
-
     controller.onCancel = () async {
-      await _client.collection(path).unsubscribe('*');
+      await _client.collection(col).unsubscribe('*');
     };
-
     return controller.stream;
   }
 
@@ -136,15 +145,15 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     required String versionField,
     required String payloadField,
   }) {
+    final col = encodePath(path);
     final controller = StreamController<Map<int, String>>();
 
     Future<void> setup() async {
-      // Seed with any existing events newer than lastVersion.
       final initial = await getCollection(path);
       final seed = _buildEventMap(initial, lastVersion, versionField, payloadField);
       if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
 
-      await _client.collection(path).subscribe('*', (event) async {
+      await _client.collection(col).subscribe('*', (event) async {
         if (controller.isClosed) return;
         final all = await getCollection(path);
         final events = _buildEventMap(all, lastVersion, versionField, payloadField);
@@ -153,11 +162,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     setup().catchError(controller.addError);
-
     controller.onCancel = () async {
-      await _client.collection(path).unsubscribe('*');
+      await _client.collection(col).unsubscribe('*');
     };
-
     return controller.stream;
   }
 
@@ -270,7 +277,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 /// A [HyttaHubBatch] implementation for PocketBase.
 ///
 /// PocketBase has no native batch/transaction API, so operations are
-/// accumulated and committed sequentially on [commit].
+/// accumulated and committed sequentially on [executeAll].
 class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   PocketbaseHyttaHubBatch(this._client);
 
@@ -279,12 +286,13 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
 
   @override
   void setDocument(String path, String docId, Map<String, dynamic> data) {
+    final col = encodePath(path);
     _operations.add(() async {
       try {
-        await _client.collection(path).update(docId, body: data);
+        await _client.collection(col).update(docId, body: data);
       } on ClientException catch (e) {
         if (e.statusCode == 404) {
-          await _client.collection(path).create(body: {'id': docId, ...data});
+          await _client.collection(col).create(body: {'id': docId, ...data});
         } else {
           rethrow;
         }
@@ -294,8 +302,9 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
 
   @override
   void updateDocument(String path, String docId, Map<String, dynamic> data) {
+    final col = encodePath(path);
     _operations.add(() async {
-      await _client.collection(path).update(docId, body: data);
+      await _client.collection(col).update(docId, body: data);
     });
   }
 
