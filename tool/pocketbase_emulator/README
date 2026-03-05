@@ -22,7 +22,16 @@ docker run --rm -it \
   hyttahub-pocketbase-emulator
 ```
 
-Open the Admin UI at http://localhost:8090/_/ and create a superuser on first run.
+Open the Admin UI at http://localhost:8090/_/ and log in with the default dev credentials created by the migration:
+
+```
+Email:    admin@dev.local
+Password: Admin1234!
+```
+
+> ⚠️ These credentials are for LOCAL DEVELOPMENT ONLY.
+
+
 
 ---
 

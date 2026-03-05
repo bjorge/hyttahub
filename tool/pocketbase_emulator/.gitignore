@@ -1,0 +1,8 @@
+# Ignore PocketBase runtime database files — these are local dev state and
+# should never be committed.
+pb_data/*.db
+pb_data/*.db-shm
+pb_data/*.db-wal
+
+# pb_data/types.d.ts IS intentionally kept — it provides JS autocompletion
+# for pb_hooks/*.pb.js files in editors that support TypeScript definitions.

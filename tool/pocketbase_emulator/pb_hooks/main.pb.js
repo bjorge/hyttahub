@@ -9,24 +9,36 @@
 //   "hyttahub/tictactoe/sites/<siteId>/site_events"
 //   → "hyttahub__tictactoe__sites__<siteId>__site_events"
 //
-// Because site IDs are runtime-generated, we cannot pre-create every possible
-// collection in a migration. This middleware intercepts every request to
-// /api/collections/<name>/records before PocketBase resolves the collection,
-// and auto-creates it with the appropriate schema if it doesn't exist yet.
+// This middleware intercepts record API requests and auto-creates the
+// collection (with the correct schema) if it doesn't exist yet.
 //
-// Schema mapping (by name suffix after __ encoding):
-//
-//   __site_events     → p (text), v (number), t (text)
-//   __account_events  → p (text), v (number), t (text)
-//   __service_events  → p (text), v (number), t (text)
-//   __site_users      → u (number), t (text), m (text)
-//   __service_users   → u (number), t (text), m (text)
+// Only collections whose names start with "hyttahub__" are auto-created;
+// internal PocketBase and Admin UI collections are skipped.
 // ---------------------------------------------------------------------------
 
-function ensureCollection(name) {
-  try {
-    $app.findCollectionByNameOrId(name);
-  } catch (_) {
+routerUse((e) => {
+  const reqPath = e.request.url.path;
+
+  // Only intercept /api/collections/<name>/records[/...] requests.
+  const m = reqPath.match(/^\/api\/collections\/(.+?)\/records/);
+  if (!m) return e.next();
+
+  const collectionName = decodeURIComponent(m[1]);
+
+  // Only auto-create hyttahub-owned collections; skip internal PocketBase
+  // collections (e.g. _superusers, _pb_users_auth_, pbc_* IDs).
+  if (!collectionName.startsWith("hyttahub__")) return e.next();
+
+  // ensureCollection is defined here (inside the callback) to avoid
+  // the "not defined" ReferenceError that occurs when PocketBase's JSVM
+  // calls the routerUse callback in a scope that doesn't have access to
+  // top-level function declarations.
+  function ensureCollection(name) {
+    try {
+      $app.findCollectionByNameOrId(name);
+      return; // already exists
+    } catch (_) {}
+
     console.log("[hyttahub] auto-creating collection: " + name);
 
     const col = new Collection({
@@ -42,8 +54,8 @@ function ensureCollection(name) {
     });
 
     const eventFields = [
-      new Field({ name: "p", type: "text"   }), // payload  (base64 proto)
-      new Field({ name: "v", type: "number" }), // version  (int)
+      new Field({ name: "p", type: "text"   }), // payload (base64 proto)
+      new Field({ name: "v", type: "number" }), // version (int)
       new Field({ name: "t", type: "text"   }), // timestamp
     ];
     const memberFields = [
@@ -66,17 +78,7 @@ function ensureCollection(name) {
     $app.save(col);
     console.log("[hyttahub] created collection '" + name + "' with " + fields.length + " fields");
   }
-}
 
-// Register a global middleware that runs before ALL routes.
-// For any request targeting /api/collections/<name>/records[/...],
-// we pre-create the collection before PocketBase resolves it.
-routerUse((e) => {
-  const path = e.request.url.path;
-  const m = path.match(/^\/api\/collections\/(.+?)\/records/);
-  if (m) {
-    const collectionName = decodeURIComponent(m[1]);
-    ensureCollection(collectionName);
-  }
+  ensureCollection(collectionName);
   return e.next();
 });
