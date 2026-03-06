@@ -7,8 +7,10 @@ migrate((app) => {
   // HyttaHub uses slash-separated paths, encoded by the Dart client as:
   //   path.replaceAll('/', '__')
   //
-  // e.g. "hyttahub/tictactoe/services/status/service_events"
-  //   →  "hyttahub__tictactoe__services__status__service_events"
+  // PocketBase record IDs must be 15 alphanumeric chars. HyttaHub uses
+  // emails and version numbers as document IDs, so every collection has a
+  // "doc_id" text field that stores the application-level ID. Lookups use
+  // filter queries on doc_id rather than the PocketBase primary key.
   //
   // This migration creates:
   //   - A default dev superuser  (admin@dev.local / Admin1234!)
@@ -20,11 +22,8 @@ migrate((app) => {
   // =========================================================================
 
   // ---------------------------------------------------------------------------
-  // Default dev superuser
-  // Email:    admin@dev.local
-  // Password: Admin1234!
-  //
-  // LOCAL DEVELOPMENT ONLY — never use in production.
+  // Default dev superuser — LOCAL DEVELOPMENT ONLY
+  // Email: admin@dev.local  |  Password: Admin1234!
   // ---------------------------------------------------------------------------
   const superuserExists = (() => {
     try { app.findAuthRecordByEmail("_superusers", "admin@dev.local"); return true; } catch(_) { return false; }
@@ -53,7 +52,7 @@ migrate((app) => {
       name:       "users",
       listRule:   "@request.auth.id != ''",
       viewRule:   "@request.auth.id != ''",
-      createRule: "",   // allow self-registration
+      createRule: "",
       updateRule: "@request.auth.id = id",
       deleteRule: "@request.auth.id = id",
       authRule:   "",
@@ -83,13 +82,16 @@ migrate((app) => {
       updateRule: "",
       deleteRule: "",
     });
+    // doc_id is added to every collection so the Dart client can look
+    // up records by application-level ID without the 15-char PB constraint.
+    c.fields.add(new Field({ name: "doc_id", type: "text" }));
     for (const f of fields) {
       c.fields.add(new Field(f));
     }
     app.save(c);
   }
 
-  // Common field sets
+  // Common schema field sets
   const eventFields = [
     { name: "p", type: "text"   }, // payload  (base64 proto)
     { name: "v", type: "number" }, // version  (int)
@@ -105,21 +107,10 @@ migrate((app) => {
     { name: "t", type: "text" }, // timestamp
   ];
 
-  // ---------------------------------------------------------------------------
   // Static tictactoe service collections
-  // ---------------------------------------------------------------------------
   ensureBaseCollection("hyttahub__tictactoe__services__status__service_events", eventFields);
   ensureBaseCollection("hyttahub__tictactoe__services__status__service_users",  userFields);
   ensureBaseCollection("hyttahub__tictactoe__services",                          betaUsersFields);
-
-  // Dynamic site/account collections are NOT pre-created here because their
-  // paths contain runtime-generated IDs. The auto-collection middleware in
-  // pb_hooks/main.pb.js creates them on first access.
-  //
-  // Examples of auto-created collection names:
-  //   hyttahub__tictactoe__sites__<siteId>__site_events
-  //   hyttahub__tictactoe__sites__<siteId>__site_users
-  //   hyttahub__tictactoe__accounts__<userId>__account_events
 
 }, (app) => {
   // Rollback
@@ -131,7 +122,5 @@ migrate((app) => {
   ]) {
     try { app.delete(app.findCollectionByNameOrId(name)); } catch (_) {}
   }
-  try {
-    app.delete(app.findAuthRecordByEmail("_superusers", "admin@dev.local"));
-  } catch (_) {}
+  try { app.delete(app.findAuthRecordByEmail("_superusers", "admin@dev.local")); } catch (_) {}
 });

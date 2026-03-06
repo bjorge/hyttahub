@@ -50,16 +50,19 @@ class PocketbaseHyttaHubAuth implements BaseHyttaHubAuth {
     String email,
     String password,
   ) async {
-    final record = await _client.collection(_collectionName).create(body: {
+    // Create the user record.
+    await _client.collection(_collectionName).create(body: {
       'email': email,
       'password': password,
       'passwordConfirm': password,
     });
-    // Sign in immediately after creation so the auth store is populated.
-    await _client
+    // Sign in and return the auth result. Critically, the auth response
+    // reflects the true verified state (set by the server after creation),
+    // whereas the create response always returns verified=false.
+    final auth = await _client
         .collection(_collectionName)
         .authWithPassword(email, password);
-    return _mapRecord(record);
+    return _mapRecord(auth.record);
   }
 
   @override
