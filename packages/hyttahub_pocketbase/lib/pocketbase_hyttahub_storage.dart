@@ -1,20 +1,43 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pocketbase/pocketbase.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
-/// Encodes a hyttahub path string into a valid PocketBase collection name.
+/// Returns true if [s] is already a valid PocketBase collection name segment
+/// (only letters, digits, underscores — no encoding needed).
+bool _isSafeSegment(String s) => RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(s);
+
+/// Encodes a single path segment into a valid PocketBase identifier.
 ///
-/// PocketBase collection names must match `[a-zA-Z0-9_]+`. The hyttahub
-/// framework uses slash-separated paths, so slashes are replaced with `__`.
+/// Safe segments (e.g. `hyttahub`, `site_events`) are returned unchanged.
+/// Others (e.g. email addresses like `user@example.com`) are base64url-encoded
+/// (RFC 4648 §5), with `=` padding stripped and `-` replaced by `_`. An `e`
+/// prefix is added to mark encoded segments and guarantee a letter start.
+String _encodeSegment(String segment) {
+  if (_isSafeSegment(segment)) return segment;
+  final b64 = base64Url
+      .encode(utf8.encode(segment))
+      .replaceAll('=', '')
+      .replaceAll('-', '_');
+  return 'e$b64';
+}
+
+/// Encodes a hyttahub path into a valid PocketBase collection name.
+///
+/// Splits on `/` and encodes each segment with [_encodeSegment]. Safe segments
+/// pass through unchanged; segments with special chars (emails, etc.) are
+/// base64url-encoded. Segments are joined with `__`.
 ///
 /// Example:
-///   `hyttahub/tictactoe/sites/abc/site_events`
-///   → `hyttahub__tictactoe__sites__abc__site_events`
-String encodePath(String path) => path.replaceAll('/', '__');
+///   `hyttahub/tictactoe/accounts/user@example.com/account_events`
+///   → `hyttahub__tictactoe__accounts__edXNlckBleGFtcGxlLmNvbQ__account_events`
+String encodePath(String path) =>
+    path.split('/').map(_encodeSegment).join('__');
+
 
 /// A [BaseHyttaHubStorage] implementation backed by PocketBase.
 ///
