@@ -102,6 +102,39 @@ docker run --rm -it \
 
 ---
 
+## Deployment (Hetzner)
+
+To deploy this custom PocketBase emulator to a Hetzner Cloud VPS:
+
+1. **Prerequisites**: Ensure Docker is installed on your Hetzner instance.
+2. **Transfer files**: Copy this folder (including `main.go`, `migrations/`, `Podmanfile`, etc.) to your server using `scp` or `git clone`.
+3. **Build on server**:
+   ```bash
+   docker build -t hyttahub-pocketbase -f Podmanfile .
+   ```
+4. **Run with persistence**:
+   Run the container with a restart policy and a persistent volume for the database. Note that we remove `--dev` for production-like environments to ensure more restrictive default behaviors, and we bind to `127.0.0.1:8090` if using a reverse proxy.
+   ```bash
+   docker run -d \
+     --name pocketbase \
+     --restart unless-stopped \
+     -p 127.0.0.1:8090:8090 \
+     -v /var/lib/pocketbase/pb_data:/app/pb_data \
+     hyttahub-pocketbase
+   ```
+5. **SSL & Reverse Proxy**:
+   Use **Caddy** or **Nginx** as a reverse proxy to handle SSL (HTTPS). 
+   
+   **Example Caddyfile**:
+   ```caddy
+   pb.yourdomain.com {
+       reverse_proxy localhost:8090
+   }
+   ```
+   *PocketBase will automatically handle the `X-Forwarded-For` and `X-Real-IP` headers if properly configured in the proxy.*
+
+---
+
 ## Admin UI
 
 Open http://localhost:8090/_/ in a browser after starting the container.
