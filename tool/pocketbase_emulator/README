@@ -2,8 +2,9 @@
 
 Runs a local PocketBase instance in a container for development and testing.
 
-PocketBase v0.36.5 is downloaded into a minimal Alpine image. The binary
-auto-detects the host CPU architecture (amd64 / arm64).
+PocketBase v0.36 uses a custom Go-based implementation (`main.go`) extending the 
+core framework. The container builds the customized binary on the fly using
+`golang:1.24-alpine`.
 
 The Admin UI is available at http://localhost:8090/_/ once the container starts.
 
@@ -17,8 +18,6 @@ docker run --rm -it \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \
-  -v "$(pwd)/pb_hooks":/app/pb_hooks \
-  -v "$(pwd)/pb_migrations":/app/pb_migrations \
   hyttahub-pocketbase-emulator
 ```
 
@@ -45,9 +44,9 @@ Password: Admin1234!
      - `hyttahub/tictactoe/services/status/service_users`
      - `hyttahub/tictactoe/services`
 
-2. **Auto-collection hook** (`pb_hooks/main.pb.js`) registers a global
-   middleware using `routerUse`. Every request to
-   `/api/collections/<name>/records` is intercepted before PocketBase resolves
+2. **Auto-collection middleware** (`main.go`) registers a global
+   Go route interceptor using `app.OnServe().BindFunc()`. Every request to
+   `/api/collections/<name>/*` is intercepted before PocketBase resolves
    the collection. If the collection does not exist it is created on the fly
    with the correct field schema for its path suffix:
 
@@ -87,8 +86,6 @@ sudo podman run --rm -it \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \
-  -v "$(pwd)/pb_hooks":/app/pb_hooks \
-  -v "$(pwd)/pb_migrations":/app/pb_migrations \
   -v "$(pwd)/pb_public":/app/pb_public \
   localhost/hyttahub-pocketbase-emulator
 ```
@@ -99,8 +96,6 @@ docker run --rm -it \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \
-  -v "$(pwd)/pb_hooks":/app/pb_hooks \
-  -v "$(pwd)/pb_migrations":/app/pb_migrations \
   -v "$(pwd)/pb_public":/app/pb_public \
   hyttahub-pocketbase-emulator
 ```
@@ -133,8 +128,6 @@ docker exec -it hyttahub-pocketbase-emulator-container /bin/sh
 | Host path (relative to this folder) | Container path       | Purpose |
 |--------------------------------------|----------------------|---------|
 | `pb_data/`                           | `/app/pb_data`       | SQLite database and PocketBase internal state |
-| `pb_hooks/`                          | `/app/pb_hooks`      | Server-side JS hooks (`*.pb.js`) — auto-collection middleware lives here |
-| `pb_migrations/`                     | `/app/pb_migrations` | Schema migration files — initial collections created here |
 | `pb_public/`                         | `/app/pb_public`     | Static files served at the root URL |
 
 ---
@@ -149,8 +142,6 @@ Use `http://10.0.2.2:8090` for Android emulator, `http://localhost:8090` for web
 
 ---
 
-## Change the PocketBase version
+## Note on PocketBase version
 
-```
-docker build --build-arg PB_VERSION=0.36.5 -t hyttahub-pocketbase-emulator -f Podmanfile .
-```
+To upgrade the PocketBase version (e.g. from v0.36 to newer), update the `go.mod` file to require the newer version of `github.com/pocketbase/pocketbase` and rebuild.

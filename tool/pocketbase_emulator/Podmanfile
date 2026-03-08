@@ -1,30 +1,32 @@
-FROM alpine:3.21
-
-# PocketBase version to install
-ARG PB_VERSION=0.36.5
+FROM golang:1.24-alpine
 
 # Install required packages
 RUN apk add --no-cache \
     ca-certificates \
     unzip \
-    wget
+    wget \
+    gcc \
+    musl-dev
 
-# Download and install PocketBase
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then PB_ARCH="amd64"; \
-    elif [ "$ARCH" = "aarch64" ]; then PB_ARCH="arm64"; \
-    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
-    wget -q "https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_${PB_ARCH}.zip" \
-         -O /tmp/pb.zip && \
-    unzip /tmp/pb.zip pocketbase -d /usr/local/bin/ && \
-    rm /tmp/pb.zip && \
-    chmod +x /usr/local/bin/pocketbase
+# Working directory for the builder
+WORKDIR /src
+
+# Copy go files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the source code
+COPY main.go ./
+COPY migrations/ ./migrations/
+
+# Build custom PocketBase
+RUN CGO_ENABLED=0 go build -o /usr/local/bin/pocketbase main.go
 
 # Working directory for data and hooks
 WORKDIR /app
 
-# Create directories for persistent data and server-side JS hooks
-RUN mkdir -p /app/pb_data /app/pb_hooks /app/pb_migrations /app/pb_public
+# Create directories for persistent data
+RUN mkdir -p /app/pb_data /app/pb_public
 
 # Expose PocketBase ports
 # 8090 = HTTP API + Admin UI
@@ -36,8 +38,5 @@ EXPOSE 8090
 CMD ["/usr/local/bin/pocketbase", "serve", \
      "--http=0.0.0.0:8090", \
      "--dir=/app/pb_data", \
-     "--hooksDir=/app/pb_hooks", \
-     "--migrationsDir=/app/pb_migrations", \
-     "--publicDir=/app/pb_public", \
      "--origins=*", \
      "--dev"]

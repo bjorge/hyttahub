@@ -61,8 +61,24 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   // ── Internal helpers ─────────────────────────────────────────────────────
 
+  /// Returns true when the PocketBase error indicates a collection does not
+  /// exist. PocketBase returns 400 "Missing collection context" (not 404) when
+  /// a collection name is valid but the table hasn't been created yet. We also
+  /// treat a plain 404 as missing, which covers deleted/typo'd names.
+  bool _isCollectionNotFound(ClientException e) {
+    if (e.statusCode == 404) return true;
+    if (e.statusCode == 400) {
+      final msg = (e.response['message'] as String? ?? '').toLowerCase();
+      return msg.contains('missing collection') || 
+             msg.contains('collection context') ||
+             msg.contains('missing or invalid collection context');
+    }
+    return false;
+  }
+
   /// Finds the PocketBase record for a given application [docId].
-  /// Returns `null` if no record with `doc_id = docId` exists.
+  /// Returns `null` if no record with `doc_id = docId` exists, or if the
+  /// collection itself does not exist yet.
   Future<RecordModel?> _findRecord(String col, String docId) async {
     try {
       final results = await _client.collection(col).getFullList(
@@ -70,7 +86,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       );
       return results.isEmpty ? null : results.first;
     } on ClientException catch (e) {
-      if (e.statusCode == 404) return null;
+      if (_isCollectionNotFound(e)) return null;
       rethrow;
     }
   }
@@ -100,7 +116,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       );
       return records.map((r) => r.toJson()).toList();
     } on ClientException catch (e) {
-      if (e.statusCode == 404) return [];
+      if (_isCollectionNotFound(e)) return [];
       rethrow;
     }
   }
@@ -143,7 +159,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
         await _client.collection(col).delete(record.id);
       }
     } on ClientException catch (e) {
-      if (e.statusCode == 404) return; // collection doesn't exist — nothing to delete
+      if (_isCollectionNotFound(e)) return; // collection doesn't exist — nothing to delete
       rethrow;
     }
   }
@@ -156,20 +172,39 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     final controller = StreamController<Map<String, Map<String, dynamic>>>();
 
     Future<void> setup() async {
-      final initial = await getCollection(path);
-      final map = _toDocIdMap(initial);
-      if (!controller.isClosed) controller.add(map);
+      while (!controller.isClosed) {
+        try {
+          final initial = await getCollection(path);
+          final map = _toDocIdMap(initial);
+          if (!controller.isClosed) controller.add(map);
 
-      await _client.collection(col).subscribe('*', (event) async {
-        if (controller.isClosed) return;
-        final updated = await getCollection(path);
-        controller.add(_toDocIdMap(updated));
-      });
+          await _client.collection(col).subscribe('*', (event) async {
+            if (controller.isClosed) return;
+            final updated = await getCollection(path);
+            controller.add(_toDocIdMap(updated));
+          });
+          
+          // Successfully subscribed, break out of the retry loop
+          break;
+        } on ClientException catch (e) {
+          if (_isCollectionNotFound(e)) {
+            // Collection does not exist yet. Wait a bit and retry.
+            // The collection will be created on the first write.
+            await Future.delayed(const Duration(milliseconds: 500));
+            continue;
+          }
+          rethrow;
+        }
+      }
     }
 
     setup().catchError(controller.addError);
     controller.onCancel = () async {
-      await _client.collection(col).unsubscribe('*');
+      try {
+        await _client.collection(col).unsubscribe('*');
+      } catch (_) {
+        // Ignore unsubscribe errors for collections that were never subscribed.
+      }
     };
     return controller.stream;
   }
@@ -195,21 +230,40 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     final controller = StreamController<Map<int, String>>();
 
     Future<void> setup() async {
-      final initial = await getCollection(path);
-      final seed = _buildEventMap(initial, lastVersion, versionField, payloadField);
-      if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
+      while (!controller.isClosed) {
+        try {
+          final initial = await getCollection(path);
+          final seed = _buildEventMap(initial, lastVersion, versionField, payloadField);
+          if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
 
-      await _client.collection(col).subscribe('*', (event) async {
-        if (controller.isClosed) return;
-        final all = await getCollection(path);
-        final events = _buildEventMap(all, lastVersion, versionField, payloadField);
-        if (events.isNotEmpty) controller.add(events);
-      });
+          await _client.collection(col).subscribe('*', (event) async {
+            if (controller.isClosed) return;
+            final all = await getCollection(path);
+            final events = _buildEventMap(all, lastVersion, versionField, payloadField);
+            if (events.isNotEmpty) controller.add(events);
+          });
+          
+          // Successfully subscribed, break out of the retry loop
+          break;
+        } on ClientException catch (e) {
+          if (_isCollectionNotFound(e)) {
+            // Collection does not exist yet. Wait a bit and retry.
+            // The collection is created on the first write.
+            await Future.delayed(const Duration(milliseconds: 500));
+            continue;
+          }
+          rethrow;
+        }
+      }
     }
 
     setup().catchError(controller.addError);
     controller.onCancel = () async {
-      await _client.collection(col).unsubscribe('*');
+      try {
+        await _client.collection(col).unsubscribe('*');
+      } catch (_) {
+        // Ignore unsubscribe errors for collections that were never subscribed.
+      }
     };
     return controller.stream;
   }
@@ -244,7 +298,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action) async {
-    final batch = PocketbaseHyttaHubBatch(_client);
+    final batch = PocketbaseHyttaHubBatch(this);
     await action(batch);
     await batch.executeAll();
   }
@@ -309,24 +363,21 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 ///
 /// Operations are accumulated and executed sequentially by [executeAll].
 class PocketbaseHyttaHubBatch implements HyttaHubBatch {
-  PocketbaseHyttaHubBatch(this._client);
+  PocketbaseHyttaHubBatch(this._storage);
 
-  final PocketBase _client;
+  final PocketbaseHyttaHubStorage _storage;
   final List<Future<void> Function()> _operations = [];
 
-  String _esc(String value) => value.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
 
   @override
   void setDocument(String path, String docId, Map<String, dynamic> data) {
     final col = encodePath(path);
     _operations.add(() async {
-      final existing = await _client.collection(col).getFullList(
-        filter: 'doc_id = "${_esc(docId)}"',
-      );
-      if (existing.isNotEmpty) {
-        await _client.collection(col).update(existing.first.id, body: data);
+      final existing = await _storage._findRecord(col, docId);
+      if (existing != null) {
+        await _storage._client.collection(col).update(existing.id, body: data);
       } else {
-        await _client.collection(col).create(body: {'doc_id': docId, ...data});
+        await _storage._client.collection(col).create(body: {'doc_id': docId, ...data});
       }
     });
   }
@@ -335,13 +386,11 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   void updateDocument(String path, String docId, Map<String, dynamic> data) {
     final col = encodePath(path);
     _operations.add(() async {
-      final existing = await _client.collection(col).getFullList(
-        filter: 'doc_id = "${_esc(docId)}"',
-      );
-      if (existing.isEmpty) {
+      final existing = await _storage._findRecord(col, docId);
+      if (existing == null) {
         throw Exception('Document not found for updateDocument: $path/$docId');
       }
-      await _client.collection(col).update(existing.first.id, body: data);
+      await _storage._client.collection(col).update(existing.id, body: data);
     });
   }
 
