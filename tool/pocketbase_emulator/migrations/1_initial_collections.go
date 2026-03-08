@@ -65,18 +65,18 @@ if err := app.Save(su); err != nil {
 		// ---------------------------------------------------------------------------
 		// Helper: create a base collection if it doesn't already exist.
 // ---------------------------------------------------------------------------
-		ensureBaseCollection := func(name string, fields []core.Field) error {
+		ensureBaseCollection := func(name string, fields []core.Field, listRule, viewRule, createRule, updateRule, deleteRule *string) error {
 			_, err := app.FindCollectionByNameOrId(name)
 			if err == nil {
 				return nil
 			}
 
 			c := core.NewBaseCollection(name)
-			c.ListRule = types.Pointer("")
-			c.ViewRule = types.Pointer("")
-			c.CreateRule = types.Pointer("")
-			c.UpdateRule = types.Pointer("")
-			c.DeleteRule = types.Pointer("")
+			c.ListRule = listRule
+			c.ViewRule = viewRule
+			c.CreateRule = createRule
+			c.UpdateRule = updateRule
+			c.DeleteRule = deleteRule
 
 			c.Fields.Add(&core.TextField{Name: "doc_id"})
 for _, f := range fields {
@@ -100,15 +100,41 @@ betaUsersFields := []core.Field{
 &core.TextField{Name: "t"},
 }
 
-if err := ensureBaseCollection("hyttahub__tictactoe__services__status__service_events", eventFields); err != nil {
-return err
-}
-if err := ensureBaseCollection("hyttahub__tictactoe__services__status__service_users", userFields); err != nil {
-return err
-}
-if err := ensureBaseCollection("hyttahub__tictactoe__services", betaUsersFields); err != nil {
-return err
-}
+		isServiceUserRule := types.Pointer("@request.auth.id != '' && @collection.hyttahub__tictactoe__services__status__service_users.doc_id ?= @request.auth.email")
+
+		if err := ensureBaseCollection(
+			"hyttahub__tictactoe__services__status__service_events",
+			eventFields,
+			types.Pointer(""), // read public
+			types.Pointer(""), // read public
+			types.Pointer(""), // create public (filtered in Go hook)
+			nil, // no update
+			nil, // no delete
+		); err != nil {
+			return err
+		}
+		if err := ensureBaseCollection(
+			"hyttahub__tictactoe__services__status__service_users",
+			userFields,
+			isServiceUserRule, // list
+			isServiceUserRule, // view
+			types.Pointer(""), // create public (filtered in Go hook)
+			isServiceUserRule, // update
+			isServiceUserRule, // delete
+		); err != nil {
+			return err
+		}
+		if err := ensureBaseCollection(
+			"hyttahub__tictactoe__services",
+			betaUsersFields,
+			isServiceUserRule, // list
+			isServiceUserRule, // view
+			isServiceUserRule, // create
+			isServiceUserRule, // update
+			isServiceUserRule, // delete
+		); err != nil {
+			return err
+		}
 
 return nil
 }, func(app core.App) error {
