@@ -37,6 +37,7 @@ func decodeSegment(segment string) string {
 
 func main() {
 	app := pocketbase.New()
+	log.Printf("[hyttahub] Starting PocketBase Emulator v1.1 (with auto-delete hooks)...")
 
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true, // auto creates migration files when making collection changes
@@ -45,7 +46,7 @@ func main() {
 	// -------------------------------------------------------------------------
 	// Firestore Rules Emulation: Complex Create Logic
 	// -------------------------------------------------------------------------
-	app.OnRecordCreateRequest("").BindFunc(func(e *core.RecordRequestEvent) error {
+	app.OnRecordCreateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
 		colName := e.Record.Collection().Name
 
 		// Verify new users (dev emulator only)
@@ -120,6 +121,102 @@ func main() {
 				return apis.NewForbiddenError("Only service members can create events", nil)
 			}
 			return e.Next()
+		}
+
+		return e.Next()
+	})
+
+	// -------------------------------------------------------------------------
+	// Firestore Rules Emulation: Auto-Delete Empty Sites
+	// -------------------------------------------------------------------------
+	app.OnRecordAfterDeleteSuccess().BindFunc(func(e *core.RecordEvent) error {
+		colName := e.Record.Collection().Name
+		log.Printf("[hyttahub] DEBUG: OnRecordAfterDeleteSuccess triggered for collection: %s", colName)
+
+		// We only care if the last user leaves a site
+		if !strings.HasSuffix(colName, "__site_users") {
+			return e.Next()
+		}
+
+		count, err := app.CountRecords(colName)
+		if err != nil {
+			log.Printf("[hyttahub] ERROR counting %s after delete: %v", colName, err)
+			return e.Next()
+		}
+
+		if count == 0 {
+			sitePrefix := strings.TrimSuffix(colName, "__site_users")
+			log.Printf("[hyttahub] Site %s is empty. Auto-deleting all related collections...", sitePrefix)
+
+			collections, err := app.FindAllCollections()
+			if err != nil {
+				log.Printf("[hyttahub] ERROR querying collections for deletion: %v", err)
+				return e.Next()
+			}
+
+			for _, c := range collections {
+				if strings.HasPrefix(c.Name, sitePrefix) {
+					log.Printf("[hyttahub] Auto-deleting collection: %s", c.Name)
+					if err := app.Delete(c); err != nil {
+						log.Printf("[hyttahub] ERROR deleting %s: %v", c.Name, err)
+					}
+				}
+			}
+		}
+
+		return e.Next()
+	})
+
+	app.OnRecordAfterUpdateSuccess().BindFunc(func(e *core.RecordEvent) error {
+		colName := e.Record.Collection().Name
+		mValue := e.Record.GetString("m")
+		log.Printf("[hyttahub] DEBUG: OnRecordAfterUpdateSuccess triggered: col=%s, m=%s", colName, mValue)
+
+		// We only care if a user is soft-deleted from a site
+		if !strings.HasSuffix(colName, "__site_users") {
+			return e.Next()
+		}
+
+		// Check if it was just marked for deletion ('m' field is set)
+		if mValue == "" {
+			return e.Next()
+		}
+
+		log.Printf("[hyttahub] DEBUG: User marked for deletion in %s (m=%s)", colName, mValue)
+
+		// Count users that are NOT marked for deletion
+		records, err := app.FindRecordsByFilter(
+			colName,
+			"m = ''",
+			"",
+			1,
+			0,
+			nil,
+		)
+		if err != nil {
+			log.Printf("[hyttahub] ERROR querying active users in %s: %v", colName, err)
+			return e.Next()
+		}
+
+		// If no active users remain, drop the site
+		if len(records) == 0 {
+			sitePrefix := strings.TrimSuffix(colName, "__site_users")
+			log.Printf("[hyttahub] Site %s has no active users remaining. Auto-deleting all related collections...", sitePrefix)
+
+			collections, err := app.FindAllCollections()
+			if err != nil {
+				log.Printf("[hyttahub] ERROR querying collections for deletion: %v", err)
+				return e.Next()
+			}
+
+			for _, c := range collections {
+				if strings.HasPrefix(c.Name, sitePrefix) {
+					log.Printf("[hyttahub] Auto-deleting collection: %s", c.Name)
+					if err := app.Delete(c); err != nil {
+						log.Printf("[hyttahub] ERROR deleting %s: %v", c.Name, err)
+					}
+				}
+			}
 		}
 
 		return e.Next()
