@@ -1,29 +1,29 @@
 package migrations
 
 import (
-"log"
+	"log"
 
-"github.com/pocketbase/pocketbase/core"
-m "github.com/pocketbase/pocketbase/migrations"
-"github.com/pocketbase/pocketbase/tools/types"
+	"github.com/pocketbase/pocketbase/core"
+	m "github.com/pocketbase/pocketbase/migrations"
+	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 func init() {
 	m.Register(func(app core.App) error {
-// ---------------------------------------------------------------------------
-// Default dev superuser — LOCAL DEVELOPMENT ONLY
-// Email: admin@dev.local  |  Password: Admin1234!
-// ---------------------------------------------------------------------------
-_, err := app.FindAuthRecordByEmail("_superusers", "admin@dev.local")
-if err != nil {
-superusers, err := app.FindCollectionByNameOrId("_superusers")
-if err != nil {
-return err
-}
-su := core.NewRecord(superusers)
-su.Set("email", "admin@dev.local")
-su.SetPassword("Admin1234!")
-if err := app.Save(su); err != nil {
+		// ---------------------------------------------------------------------------
+		// Default dev superuser — LOCAL DEVELOPMENT ONLY
+		// Email: admin@dev.local  |  Password: Admin1234!
+		// ---------------------------------------------------------------------------
+		_, err := app.FindAuthRecordByEmail("_superusers", "admin@dev.local")
+		if err != nil {
+			superusers, err := app.FindCollectionByNameOrId("_superusers")
+			if err != nil {
+				return err
+			}
+			su := core.NewRecord(superusers)
+			su.Set("email", "admin@dev.local")
+			su.SetPassword("Admin1234!")
+			if err := app.Save(su); err != nil {
 				return err
 			}
 			log.Println("[hyttahub] created default dev superuser: admin@dev.local")
@@ -31,6 +31,8 @@ if err := app.Save(su); err != nil {
 
 		// ---------------------------------------------------------------------------
 		// users — auth collection (required by PocketbaseHyttaHubAuth)
+		// All app-specific hyttahub__ collections are created on-demand by the
+		// auto-collection middleware in main.go — no hardcoded app names here.
 		// ---------------------------------------------------------------------------
 		_, err = app.FindCollectionByNameOrId("users")
 		if err != nil {
@@ -40,13 +42,12 @@ if err := app.Save(su); err != nil {
 			users.CreateRule = types.Pointer("")
 			users.UpdateRule = types.Pointer("@request.auth.id = id")
 			users.DeleteRule = types.Pointer("@request.auth.id = id")
-			
-			// Auth specifics
+
 			users.AuthRule = types.Pointer("")
 			users.ManageRule = nil
-			
+
 			users.Fields.Add(&core.EmailField{
-				Name: "email",
+				Name:     "email",
 				Required: true,
 			})
 
@@ -58,99 +59,15 @@ if err := app.Save(su); err != nil {
 			}
 		}
 
-		// ---------------------------------------------------------------------------
-		// Helper: create a base collection if it doesn't already exist.
-// ---------------------------------------------------------------------------
-		ensureBaseCollection := func(name string, fields []core.Field, listRule, viewRule, createRule, updateRule, deleteRule *string) error {
-			_, err := app.FindCollectionByNameOrId(name)
-			if err == nil {
-				return nil
-			}
-
-			c := core.NewBaseCollection(name)
-			c.ListRule = listRule
-			c.ViewRule = viewRule
-			c.CreateRule = createRule
-			c.UpdateRule = updateRule
-			c.DeleteRule = deleteRule
-
-			c.Fields.Add(&core.TextField{Name: "doc_id"})
-for _, f := range fields {
-c.Fields.Add(f)
-}
-return app.Save(c)
-}
-
-eventFields := []core.Field{
-&core.TextField{Name: "p"},
-&core.NumberField{Name: "v"},
-&core.TextField{Name: "t"},
-}
-userFields := []core.Field{
-&core.NumberField{Name: "u"},
-&core.TextField{Name: "t"},
-&core.TextField{Name: "m"},
-}
-betaUsersFields := []core.Field{
-&core.TextField{Name: "b"},
-&core.TextField{Name: "t"},
-}
-
-		isServiceUserRule := types.Pointer("@request.auth.id != '' && @collection.hyttahub__tictactoe__services__status__service_users.doc_id ?= @request.auth.email")
-
-		if err := ensureBaseCollection(
-			"hyttahub__tictactoe__services__status__service_events",
-			eventFields,
-			types.Pointer(""), // read public
-			types.Pointer(""), // read public
-			types.Pointer(""), // create public (filtered in Go hook)
-			nil, // no update
-			nil, // no delete
-		); err != nil {
-			return err
+		return nil
+	}, func(app core.App) error {
+		// Rollback: remove users collection and dev superuser
+		if c, err := app.FindCollectionByNameOrId("users"); err == nil {
+			app.Delete(c)
 		}
-		if err := ensureBaseCollection(
-			"hyttahub__tictactoe__services__status__service_users",
-			userFields,
-			isServiceUserRule, // list
-			isServiceUserRule, // view
-			types.Pointer(""), // create public (filtered in Go hook)
-			isServiceUserRule, // update
-			isServiceUserRule, // delete
-		); err != nil {
-			return err
+		if su, err := app.FindAuthRecordByEmail("_superusers", "admin@dev.local"); err == nil {
+			app.Delete(su)
 		}
-		if err := ensureBaseCollection(
-			"hyttahub__tictactoe__services",
-			betaUsersFields,
-			isServiceUserRule, // list
-			isServiceUserRule, // view
-			isServiceUserRule, // create
-			isServiceUserRule, // update
-			isServiceUserRule, // delete
-		); err != nil {
-			return err
-		}
-
-return nil
-}, func(app core.App) error {
-// Rollback
-collections := []string{
-"hyttahub__tictactoe__services__status__service_events",
-"hyttahub__tictactoe__services__status__service_users",
-"hyttahub__tictactoe__services",
-"users",
-}
-for _, name := range collections {
-c, err := app.FindCollectionByNameOrId(name)
-if err == nil {
-app.Delete(c)
-}
-}
-su, err := app.FindAuthRecordByEmail("_superusers", "admin@dev.local")
-if err == nil {
-app.Delete(su)
-}
-return nil
-})
+		return nil
+	})
 }
