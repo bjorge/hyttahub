@@ -147,21 +147,6 @@ func main() {
 	})
 
 	// -------------------------------------------------------------------------
-	// Auto-verify new users (dev emulator only)
-	// Must be done post-save — setting the built-in auth "verified" field in
-	// OnRecordCreateRequest is rejected by PocketBase's internal validation.
-	// -------------------------------------------------------------------------
-	app.OnRecordAfterCreateSuccess("users").BindFunc(func(e *core.RecordEvent) error {
-		e.Record.Set("verified", true)
-		if err := app.Save(e.Record); err != nil {
-			log.Printf("[hyttahub] ERROR auto-verifying user %s: %v\n", e.Record.GetString("email"), err)
-		} else {
-			log.Printf("[hyttahub] auto-verified new user: %s\n", e.Record.GetString("email"))
-		}
-		return e.Next()
-	})
-
-	// -------------------------------------------------------------------------
 	// Firestore Rules Emulation: Auto-Delete Empty Sites
 	// -------------------------------------------------------------------------
 	app.OnRecordAfterDeleteSuccess().BindFunc(func(e *core.RecordEvent) error {
