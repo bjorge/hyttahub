@@ -66,31 +66,35 @@ func main() {
 			return e.Next()
 		}
 
-		authEmail := ""
-		if e.Auth != nil {
-			authEmail = e.Auth.GetString("email")
-		}
-		if authEmail == "" {
-			return apis.NewUnauthorizedError("Unauthorized", nil)
-		}
-
-		// Service Users and Site Users creation logic
-		// allow create: if firstSiteUser(...) || isSiteEmailListed(...)
+		// ── Service Users / Site Users ────────────────────────────────────────
+		// Mirror Firestore: allow create if firstServiceUser(app) || isEmailListed
+		// The empty-collection check MUST come before the auth guard so that an
+		// unauthenticated first-time initializer is not rejected with 401.
 		if strings.HasSuffix(colName, "__site_users") || strings.HasSuffix(colName, "__service_users") {
 			count, err := app.CountRecords(colName)
 			if err != nil {
 				return err
 			}
 			if count == 0 {
+				// First user — no auth required (mirrors Firestore firstServiceUser / firstSiteUser)
 				log.Printf("[hyttahub] allowing first user creation in %s\n", colName)
-				return e.Next() // first user gets a free pass!
+				return e.Next()
 			}
 
-			// Not the first user. Are they already a member?
+			// Not the first user — now require auth.
+			authEmail := ""
+			if e.Auth != nil {
+				authEmail = e.Auth.GetString("email")
+			}
+			if authEmail == "" {
+				return apis.NewUnauthorizedError("Unauthorized", nil)
+			}
+
+			// Are they already a member?
 			records, err := app.FindRecordsByFilter(
 				colName,
 				"doc_id = {:email}",
-				"-created",
+				"",
 				1,
 				0,
 				dbx.Params{"email": authEmail},
@@ -101,18 +105,32 @@ func main() {
 			return e.Next()
 		}
 
-		// Service Events creation logic
+		// ── Service Events ────────────────────────────────────────────────────
+		// Empty-collection check MUST come before the auth guard (mirrors Firestore
+		// firstServiceUser — the very first event is written before any user record).
 		if strings.HasSuffix(colName, "__service_events") {
-			usersColName := strings.ReplaceAll(colName, "__service_events", "__service_users")
-			count, _ := app.CountRecords(usersColName)
+			count, err := app.CountRecords(colName)
+			if err != nil {
+				return err
+			}
 			if count == 0 {
-				return e.Next() // first service user can create events before their generic record is fully created
+				log.Printf("[hyttahub] allowing first event creation in %s\n", colName)
+				return e.Next()
 			}
 
+			// Not the first event — require auth and check membership.
+			authEmail := ""
+			if e.Auth != nil {
+				authEmail = e.Auth.GetString("email")
+			}
+			if authEmail == "" {
+				return apis.NewUnauthorizedError("Unauthorized", nil)
+			}
+			usersColName := strings.ReplaceAll(colName, "__service_events", "__service_users")
 			records, err := app.FindRecordsByFilter(
 				usersColName,
 				"doc_id = {:email}",
-				"created",
+				"",
 				1,
 				0,
 				dbx.Params{"email": authEmail},
@@ -121,6 +139,15 @@ func main() {
 				return apis.NewForbiddenError("Only service members can create events", nil)
 			}
 			return e.Next()
+		}
+
+		// ── All other hyttahub__ collections require auth ─────────────────────
+		authEmail := ""
+		if e.Auth != nil {
+			authEmail = e.Auth.GetString("email")
+		}
+		if authEmail == "" {
+			return apis.NewUnauthorizedError("Unauthorized", nil)
 		}
 
 		return e.Next()
