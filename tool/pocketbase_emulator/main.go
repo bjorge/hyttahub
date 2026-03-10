@@ -49,13 +49,6 @@ func main() {
 	app.OnRecordCreateRequest().BindFunc(func(e *core.RecordRequestEvent) error {
 		colName := e.Record.Collection().Name
 
-		// Verify new users (dev emulator only)
-		if colName == "users" {
-			e.Record.Set("verified", true)
-			log.Printf("[hyttahub] auto-verifying new user: %s\n", e.Record.GetString("email"))
-			return e.Next()
-		}
-
 		// Require auth for creating records in any hyttahub collection
 		if !strings.HasPrefix(colName, "hyttahub__") {
 			return e.Next()
@@ -150,6 +143,21 @@ func main() {
 			return apis.NewUnauthorizedError("Unauthorized", nil)
 		}
 
+		return e.Next()
+	})
+
+	// -------------------------------------------------------------------------
+	// Auto-verify new users (dev emulator only)
+	// Must be done post-save — setting the built-in auth "verified" field in
+	// OnRecordCreateRequest is rejected by PocketBase's internal validation.
+	// -------------------------------------------------------------------------
+	app.OnRecordAfterCreateSuccess("users").BindFunc(func(e *core.RecordEvent) error {
+		e.Record.Set("verified", true)
+		if err := app.Save(e.Record); err != nil {
+			log.Printf("[hyttahub] ERROR auto-verifying user %s: %v\n", e.Record.GetString("email"), err)
+		} else {
+			log.Printf("[hyttahub] auto-verified new user: %s\n", e.Record.GetString("email"))
+		}
 		return e.Next()
 	})
 

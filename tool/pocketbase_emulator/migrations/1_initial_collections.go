@@ -49,11 +49,7 @@ if err := app.Save(su); err != nil {
 				Name: "email",
 				Required: true,
 			})
-			users.Fields.Add(&core.BoolField{
-				Name: "verified",
-				Required: false,
-			})
-			
+
 			users.PasswordAuth.Enabled = true
 			users.PasswordAuth.IdentityFields = []string{"email"}
 
