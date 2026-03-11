@@ -64,7 +64,7 @@ void registerPersistence() {
     type: StorageEnum.cloud,
     storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
     authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
-    functionsBuilder: () => PocketbaseHyttaHubFunctions(),
+    functionsBuilder: () => PocketbaseHyttaHubFunctions(client: pb),
     internalStorageBuilder: () => PocketbaseHyttaHubInternalStorage(),
   ));
 
