@@ -467,11 +467,18 @@ packages:
       path: "../.."
       relative: true
     source: path
-    version: "0.1.51"
+    version: "0.1.52"
   hyttahub_firebase:
     dependency: "direct main"
     description:
       path: "../../packages/hyttahub_firebase"
+      relative: true
+    source: path
+    version: "0.1.1"
+  hyttahub_pocketbase:
+    dependency: "direct main"
+    description:
+      path: "../../packages/hyttahub_pocketbase"
       relative: true
     source: path
     version: "0.1.0"
@@ -675,6 +682,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pocketbase:
+    dependency: "direct main"
+    description:
+      name: pocketbase
+      sha256: b94e63f00ce29c5f465e8122ae63cdf4e3c37f9b3dc6d04f0dfe6625bcdb8839
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.23.2"
   pool:
     dependency: transitive
     description:

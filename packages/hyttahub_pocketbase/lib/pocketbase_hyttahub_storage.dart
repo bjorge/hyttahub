@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pocketbase/pocketbase.dart';
+import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
 /// Returns true if [s] is already a valid PocketBase collection name segment
@@ -303,7 +304,21 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     await batch.executeAll();
   }
 
-  // ── File operations (not implemented) ────────────────────────────────────
+  // ── File operations ───────────────────────────────────────────────────────
+  //
+  // Files are stored in a dedicated `__site_files` PocketBase collection.
+  // Each file is one record: doc_id = fileName,  file = binary attachment.
+  // The collection is auto-created by the Go emulator middleware.
+  //
+  // PocketBase file URLs are public (no auth needed to view) — matching the
+  // design decision to use public read / member-only write.
+
+  /// Returns the encoded collection name for the site files collection.
+  String _filesCol(String appName, String siteId) =>
+      encodePath('hyttahub/$appName/sites/$siteId/site_files');
+
+  /// Returns the PocketBase file field name used in the site_files collection.
+  static const String _fileField = 'file';
 
   @override
   Future<void> uploadFile({
@@ -311,52 +326,100 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
     required String base64Data,
-  }) =>
-      throw UnimplementedError(
-        'uploadFile: extend PocketbaseHyttaHubStorage and implement '
-        'file uploads using your PocketBase file collection schema.',
-      );
+  }) async {
+    final col = _filesCol(appName, siteId);
+
+    // Decode base64 → raw bytes.
+    final bytes = base64Decode(base64Data);
+
+    // If a record already exists for this fileName, delete it first so we
+    // can replace the file attachment (PocketBase file fields can't be
+    // patched with a fresh file via update in a simple way).
+    final existing = await _findRecord(col, fileName);
+    if (existing != null) {
+      await _client.collection(col).delete(existing.id);
+    }
+
+    // Upload via multipart form.
+    await _client.collection(col).create(
+      body: {'doc_id': fileName},
+      files: [
+        http.MultipartFile.fromBytes(
+          _fileField,
+          bytes,
+          filename: fileName,
+        ),
+      ],
+    );
+  }
 
   @override
   Future<Uint8List> getFileBytes({
     required String appName,
     required String siteId,
     required String fileName,
-  }) =>
-      throw UnimplementedError(
-        'getFileBytes: extend PocketbaseHyttaHubStorage and implement '
-        'file downloads using your PocketBase file collection schema.',
-      );
-
-  @override
-  Future<void> deleteFiles({
-    required String appName,
-    required String siteId,
-    required List<String> fileNames,
-  }) =>
-      throw UnimplementedError(
-        'deleteFiles: extend PocketbaseHyttaHubStorage and implement '
-        'file deletion using your PocketBase file collection schema.',
-      );
+  }) async {
+    final url = await getFileUrl(appName: appName, siteId: siteId, fileName: fileName);
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) return response.bodyBytes;
+    throw Exception('Failed to download file "$fileName": HTTP ${response.statusCode}');
+  }
 
   @override
   Future<String> getFileUrl({
     required String appName,
     required String siteId,
     required String fileName,
-    int? expirationDays,
-  }) =>
-      throw UnimplementedError(
-        'getFileUrl: extend PocketbaseHyttaHubStorage and implement '
-        'URL generation using your PocketBase file collection schema.',
-      );
+    int? expirationDays, // Not supported by PocketBase — ignored for now.
+  }) async {
+    final col = _filesCol(appName, siteId);
+    final record = await _findRecord(col, fileName);
+    if (record == null) throw Exception('File not found: $fileName');
+
+    // PocketBase file URL: {baseUrl}/api/files/{collectionId}/{recordId}/{filename}
+    // The attachment filename stored by PocketBase may have a random suffix
+    // appended for uniqueness — use the value from the file field.
+    final storedFiles = record.getListValue<String>(_fileField);
+    if (storedFiles.isEmpty) throw Exception('File field empty for record: $fileName');
+    final storedName = storedFiles.first;
+
+    return _client
+        .files
+        .getUrl(record, storedName)
+        .toString();
+  }
 
   @override
-  Future<List<String>> listFiles(String prefix) =>
-      throw UnimplementedError(
-        'listFiles: extend PocketbaseHyttaHubStorage and implement '
-        'file listing using your PocketBase file collection schema.',
-      );
+  Future<void> deleteFiles({
+    required String appName,
+    required String siteId,
+    required List<String> fileNames,
+  }) async {
+    final col = _filesCol(appName, siteId);
+    for (final fileName in fileNames) {
+      final record = await _findRecord(col, fileName);
+      if (record != null) {
+        await _client.collection(col).delete(record.id);
+      }
+    }
+  }
+
+  @override
+  Future<List<String>> listFiles(String prefix) async {
+    // prefix is expected to be "appName/siteId" — derive the collection name
+    // using the same hyttahub/{appName}/sites/{siteId}/site_files pattern.
+    final col = encodePath('hyttahub/$prefix/site_files');
+    try {
+      final records = await _client.collection(col).getFullList();
+      return records
+          .map((r) => r.getStringValue('doc_id'))
+          .where((id) => id.isNotEmpty)
+          .toList();
+    } on ClientException catch (e) {
+      if (_isCollectionNotFound(e)) return [];
+      rethrow;
+    }
+  }
 }
 
 /// A [HyttaHubBatch] implementation for PocketBase.

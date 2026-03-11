@@ -40,6 +40,7 @@ class LandingPage extends StatelessWidget {
               'memory',
               'firebase',
               'local',
+              'pocketbase',
             ],
           ),
         ],

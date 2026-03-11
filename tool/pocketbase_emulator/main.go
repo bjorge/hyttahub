@@ -134,6 +134,31 @@ func main() {
 			return e.Next()
 		}
 
+		// ── Site Files ────────────────────────────────────────────────────────
+		// Only authenticated site members can upload/delete files.
+		if strings.HasSuffix(colName, "__site_files") {
+			authEmail := ""
+			if e.Auth != nil {
+				authEmail = e.Auth.GetString("email")
+			}
+			if authEmail == "" {
+				return apis.NewUnauthorizedError("Unauthorized", nil)
+			}
+			usersColName := strings.ReplaceAll(colName, "__site_files", "__site_users")
+			records, err := app.FindRecordsByFilter(
+				usersColName,
+				"doc_id = {:email}",
+				"",
+				1,
+				0,
+				dbx.Params{"email": authEmail},
+			)
+			if err != nil || len(records) == 0 {
+				return apis.NewForbiddenError("Only site members can upload files", nil)
+			}
+			return e.Next()
+		}
+
 		// ── All other hyttahub__ collections require auth ─────────────────────
 		authEmail := ""
 		if e.Auth != nil {
@@ -323,6 +348,17 @@ func main() {
 				listRule = types.Pointer("") // public read
 				viewRule = types.Pointer("") // public read
 				createRule = types.Pointer("") // handled via Go hook (allows firstServiceUser)
+			} else if strings.HasSuffix(collectionName, "__site_files") {
+				// Public read; require auth for writes.
+				// Full site-membership enforcement is done in the OnRecordCreateRequest hook
+				// (same pattern as __site_users) — using @collection here would fail if the
+				// site_users collection hasn't been created yet when site_files is first accessed.
+				authRule := "@request.auth.id != ''"
+				listRule = types.Pointer("")         // public
+				viewRule = types.Pointer("")         // public
+				createRule = types.Pointer(authRule) // hooks enforce membership
+				updateRule = types.Pointer(authRule)
+				deleteRule = types.Pointer(authRule)
 			} else if strings.Contains(collectionName, "__accounts__") {
 				parts := strings.Split(collectionName, "__")
 				emailChunk := ""
@@ -374,6 +410,15 @@ func main() {
 			if strings.HasSuffix(collectionName, "__site_users") ||
 				strings.HasSuffix(collectionName, "__service_users") {
 				schemaFields = memberFields
+			}
+			if strings.HasSuffix(collectionName, "__site_files") {
+				schemaFields = []core.Field{
+					&core.FileField{
+						Name:      "file",
+						MaxSelect: 1,
+						MaxSize:   10 * 1024 * 1024, // 10 MB
+					},
+				}
 			}
 
 			for _, f := range schemaFields {
