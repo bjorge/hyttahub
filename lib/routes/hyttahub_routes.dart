@@ -1,5 +1,6 @@
 // Copyright (c) 2025 bjorge
 
+import 'package:flutter/foundation.dart';
 import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/account_widgets/account_events_display.dart';
@@ -81,7 +82,7 @@ class OpenSourceLicensesRoute extends GoRoute {
 
 class LandingInfoPageRoute extends GoRoute {
   /// Creates a [LandingInfoPageRoute].
-  LandingInfoPageRoute()
+  LandingInfoPageRoute({required super.routes})
     : super(
         path: pathSegment,
         builder: (BuildContext context, GoRouterState state) {
@@ -140,7 +141,7 @@ class ServiceLoginScreenRoute extends GoRoute {
   static const String pathSegment = 'servicelogin';
 
   /// The full path to this route.
-  static const String fullPath = '/$pathSegment';
+  static const String fullPath = '/info/$pathSegment';
 }
 
 /// A route for the account screen.
@@ -944,6 +945,12 @@ final serviceAdminProviderShellRoute = ShellRoute(
           ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
       child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
         builder: (context, serviceState) {
+          if (kDebugMode) {
+            print(
+              'BlocProvider<ServiceReplayBloc> in serviceAdminProviderShellRoute',
+            );
+          }
+
           final errorWidget = handleServiceReplayState(context, serviceState);
           if (errorWidget != null) {
             return errorWidget;
@@ -985,10 +992,7 @@ final serviceAdminProviderShellRoute = ShellRoute(
       ),
     );
   },
-  routes: [
-    serviceLoginScreenRoute,
-    serviceUnimplementedRoute,
-  ],
+  routes: [serviceLoginScreenRoute, serviceUnimplementedRoute],
 );
 final serviceUserProviderShellRoute = ShellRoute(
   builder: (context, state, child) {
@@ -1001,6 +1005,12 @@ final serviceUserProviderShellRoute = ShellRoute(
           final errorWidget = handleServiceReplayState(context, serviceState);
           if (errorWidget != null) {
             return errorWidget;
+          }
+
+          if (kDebugMode) {
+            print(
+              'BlocProvider<ServiceReplayBloc> in serviceUserProviderShellRoute',
+            );
           }
 
           if (serviceState.state ==
@@ -1099,9 +1109,13 @@ final standardSiteScreenRoutes = [
   siteInfoRoute,
 ];
 
+final landingInfoPageRoute = LandingInfoPageRoute(
+  routes: [serviceAdminProviderShellRoute],
+);
+
 class HyttaHubRoutes {
   static final openSourceLicensesRoute = OpenSourceLicensesRoute();
-  static final landingInfoPageRoute = LandingInfoPageRoute();
+  static final landingInfoPageRoute = LandingInfoPageRoute(
+    routes: [serviceAdminProviderShellRoute],
+  );
 }
-
-final landingInfoPageRoute = HyttaHubRoutes.landingInfoPageRoute;

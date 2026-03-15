@@ -135,7 +135,6 @@ class LandingScreenRoute extends GoRoute {
 
 final landingScreenRoute = LandingScreenRoute(
   routes: [
-    serviceAdminProviderShellRoute,
     serviceUserProviderShellRoute,
     openSourceLicensesRoute,
     landingInfoPageRoute,
