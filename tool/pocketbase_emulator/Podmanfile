@@ -28,8 +28,11 @@ RUN mkdir -p protos models && \
     protoc --proto_path=protos --go_out=models --go_opt=paths=source_relative protos/*.proto
 
 # Copy the source code
-COPY main.go ./
+COPY main.go main_test.go ./
 COPY migrations/ ./migrations/
+
+# Run tests
+RUN CGO_ENABLED=0 go test -v ./...
 
 # Build custom PocketBase
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/pocketbase main.go
