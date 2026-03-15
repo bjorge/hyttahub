@@ -939,10 +939,10 @@ final accountShellRoute = ShellRoute(
 final loginTermsDisplayRoute = CreateAccountTermsDisplayRoute();
 final loginPrivacyDisplayRoute = CreateAccountPrivacyDisplayRoute();
 
-final serviceShellRoute = ShellRoute(
+final serviceAdminProviderShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceReplayBloc>(
-      key: const Key('ServiceShellServiceReplayBlocProvider'),
+      key: const Key('ServiceAdminProviderShellRoute'),
       create:
           (context) =>
               ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
@@ -976,21 +976,60 @@ final serviceShellRoute = ShellRoute(
             return ServiceUninitializedPage(event: encodedEvent);
           }
 
-          final fullPath = state.fullPath ?? '';
-          final isExempt =
-              fullPath == '/' ||
-              fullPath.startsWith(ServiceLoginScreenRoute.fullPath) ||
-              fullPath.startsWith(LandingInfoPageRoute.fullPath) ||
-              fullPath.startsWith(OpenSourceLicensesRoute.fullPath);
+          return child;
+        },
+      ),
+    );
+  },
+  routes: [
+    serviceLoginScreenRoute,
+    landingInfoPageRoute,
+    serviceUnimplementedRoute,
+  ],
+);
+final serviceUserProviderShellRoute = ShellRoute(
+  builder: (context, state, child) {
+    return BlocProvider<ServiceReplayBloc>(
+      key: const Key('ServiceUserProviderShellRoute'),
+      create:
+          (context) =>
+              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+      child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
+        builder: (context, serviceState) {
+          final errorWidget = handleServiceReplayState(context, serviceState);
+          if (errorWidget != null) {
+            return errorWidget;
+          }
 
-          if (!isExempt &&
-              serviceState.state == CommonReplayStateEnum.listening &&
+          if (serviceState.state ==
+              CommonReplayStateEnum.uninitializedListening) {
+            final submitServiceEvent = SubmitServiceEvent(
+              email: '',
+              event: ServiceEvent(
+                version: 1,
+                author: 1,
+                initialEvent: ServiceEvent_InitialEvent(
+                  instance: generateId(),
+                  alias: 'Admin',
+                  filter: BloomFilter(),
+                  appName:
+                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      '',
+                  appId: HyttaHubOptions.implementation?.appId ?? '',
+                ),
+              ),
+            );
+
+            final encodedEvent = base64Encode(submitServiceEvent.writeToBuffer());
+            return ServiceUninitializedPage(event: encodedEvent);
+          }
+
+          if (serviceState.state == CommonReplayStateEnum.listening &&
               serviceState.serviceUnavailable == true) {
             return ServiceDownPage();
           }
 
-          if (!isExempt &&
-              serviceState.state == CommonReplayStateEnum.listening &&
+          if (serviceState.state == CommonReplayStateEnum.listening &&
               serviceState.minVersion >
                   (HyttaHubOptions.implementation?.appBuildNumber ?? 0)) {
             return ServiceNewVersionPage();
@@ -1003,8 +1042,6 @@ final serviceShellRoute = ShellRoute(
   },
   routes: [
     loginScreenRoute,
-    serviceLoginScreenRoute,
-    landingInfoPageRoute,
     landingUnimplementedRoute,
   ],
 );
