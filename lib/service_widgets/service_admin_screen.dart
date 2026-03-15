@@ -148,11 +148,9 @@ class ServiceBetaUsersOption extends StatelessWidget {
           }
         } catch (e) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              commonSnackBar(
-                context,
-                Text(HyttaHubLocalizations.of(context)!.errorFetchingBetaUsers),
-              ),
+            showCommonSnackBar(
+              context,
+              Text(HyttaHubLocalizations.of(context)!.errorFetchingBetaUsers),
             );
           }
         }

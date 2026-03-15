@@ -68,14 +68,12 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                               Clipboard.setData(
                                 ClipboardData(text: widget.siteId),
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                commonSnackBar(
-                                  context,
-                                  Text(
-                                    HyttaHubLocalizations.of(
-                                      context,
-                                    )!.siteIdCopied,
-                                  ),
+                              showCommonSnackBar(
+                                context,
+                                Text(
+                                  HyttaHubLocalizations.of(
+                                    context,
+                                  )!.siteIdCopied,
                                 ),
                               );
                             },

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 bjorge
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
@@ -18,6 +18,9 @@ typedef BaseSiteRoutePath = String Function(String siteId);
 
 /// A class to hold global options for the HyttaHub library.
 class HyttaHubOptions {
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   static BaseSiteRoutePath? siteScreenRoute;
 
   static HyttaHubImplementation? implementation;

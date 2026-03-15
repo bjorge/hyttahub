@@ -36,9 +36,7 @@ class SiteInfoScreen extends StatelessWidget {
                 tooltip: loc.copySiteIdTooltip,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: siteId));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    commonSnackBar(context, Text(loc.siteIdCopied)),
-                  );
+                  showCommonSnackBar(context, Text(loc.siteIdCopied));
                 },
               ),
             ],

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utilities/pattern_utils.dart';
 import 'package:protobuf/protobuf.dart' as pb;
+import 'package:hyttahub/hyttahub_options.dart';
 
 abstract class BaseTextFormField<
   B extends BaseSubmitBloc<T>,
@@ -733,6 +734,17 @@ class _BaseReorderableFormFieldState<
   }
 }
 
+void showCommonSnackBar(
+  BuildContext context,
+  Text content, {
+  int durationSeconds = 1,
+}) {
+  HyttaHubOptions.scaffoldMessengerKey.currentState?.clearSnackBars();
+  HyttaHubOptions.scaffoldMessengerKey.currentState?.showSnackBar(
+    commonSnackBar(context, content, durationSeconds: durationSeconds),
+  );
+}
+
 SnackBar commonSnackBar(
   BuildContext context,
   Text content, {
@@ -752,10 +764,29 @@ SnackBar commonSnackBar(
     action: SnackBarAction(
       label: localizations.loginDismissSnackbar,
       onPressed: () {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        HyttaHubOptions.scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
       },
     ),
   );
+}
+
+/// A NavigatorObserver that clears snackbars when the route changes.
+/// This ensures that snackbars don't 'follow' the user across screens.
+class ClearSnackBarsObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    HyttaHubOptions.scaffoldMessengerKey.currentState?.clearSnackBars();
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    HyttaHubOptions.scaffoldMessengerKey.currentState?.clearSnackBars();
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    HyttaHubOptions.scaffoldMessengerKey.currentState?.clearSnackBars();
+  }
 }
 
 abstract class BaseDropdownFormField<

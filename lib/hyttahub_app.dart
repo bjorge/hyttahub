@@ -82,6 +82,7 @@ class HyttaHubApp extends StatelessWidget {
                 return BlocBuilder<LanguageCubit, AppLanguage>(
                   builder: (context, language) {
                     return MaterialApp.router(
+                      scaffoldMessengerKey: HyttaHubOptions.scaffoldMessengerKey,
                       debugShowCheckedModeBanner: false,
                       themeMode: mode,
                       theme: lightTheme ?? _defaultLightTheme,

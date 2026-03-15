@@ -55,35 +55,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                 } else if (authState.authState ==
                     AuthState.forgottenPasswordEmailSent) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    commonSnackBar(
-                      context,
-                      Text(localizations.loginGoToEmailResetPasswordMessage),
-                      durationSeconds: 20,
-                    ),
+                  showCommonSnackBar(
+                    context,
+                    Text(localizations.loginGoToEmailResetPasswordMessage),
+                    durationSeconds: 20,
                   );
                 } else if (authState.authState ==
                     AuthState.emailVerificationSent) {
                   createAccountCubit.setCreateAccount(false);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    commonSnackBar(
-                      context,
-                      Text(localizations.loginGoToEmailVerifyEmailMessage),
-                      durationSeconds: 20,
-                    ),
+                  showCommonSnackBar(
+                    context,
+                    Text(localizations.loginGoToEmailVerifyEmailMessage),
+                    durationSeconds: 20,
                   );
                 } else if (authState.authState ==
                     AuthState.authenticationError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    commonSnackBar(
-                      context,
-                      Text(
-                        localizations.authenticationErrorWithDetails(
-                          authState.errorMessage,
-                        ),
+                  showCommonSnackBar(
+                    context,
+                    Text(
+                      localizations.authenticationErrorWithDetails(
+                        authState.errorMessage,
                       ),
-                      durationSeconds: 15,
                     ),
+                    durationSeconds: 15,
                   );
                 }
               },
