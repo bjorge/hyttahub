@@ -647,12 +647,14 @@ func createHyttahubCollection(app *pocketbase.PocketBase, collectionName string)
 		viewRule = types.Pointer("")   // public read
 		createRule = types.Pointer("") // handled via Go hook (allows firstServiceUser)
 	} else if strings.HasSuffix(collectionName, "__site_files") {
-		authRule := "@request.auth.id != ''"
-		listRule = types.Pointer("") // public
-		viewRule = types.Pointer("") // public
-		createRule = types.Pointer(authRule)
-		updateRule = types.Pointer(authRule)
-		deleteRule = types.Pointer(authRule)
+		usersColName := strings.Split(collectionName, "__site_files")[0] + "__site_users"
+		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
+
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer(rule)
+		updateRule = types.Pointer(rule)
+		deleteRule = types.Pointer(rule)
 	} else if strings.Contains(collectionName, "__accounts__") {
 		parts := strings.Split(collectionName, "__")
 		emailChunk := ""
