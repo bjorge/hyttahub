@@ -269,7 +269,7 @@ final siteShellRoute = ShellRoute(
 
           return BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
             builder: (context, siteState) {
-              final errorWidget = handleSiteReplayState(context, siteState);
+              final errorWidget = handleSiteReplayState(context, siteState, siteId);
               if (errorWidget != null) {
                 return errorWidget;
               }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/account_widgets/account_screen.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pbenum.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
@@ -11,7 +11,7 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
 Widget? handleSiteReplayState(
   BuildContext context,
-  SiteReplayBlocState siteState,
+  SiteReplayBlocState siteState, String siteId,
 ) {
   Widget? errorWidget;
   final inScaffold = Scaffold.maybeOf(context) != null;
@@ -38,6 +38,14 @@ Widget? handleSiteReplayState(
     default:
       errorWidget = Center(child: Text(l10n.unexpectedError));
       break;
+  }
+
+  if (errorWidget == null) {
+    final accountState = context.read<AccountReplayBloc>().state;
+    final siteIds = accountState.sitesIds.toList();
+    if (!siteIds.contains(siteId)) {
+      errorWidget = Center(child: Text("You have been removed from this site."));
+    }
   }
 
   if (errorWidget != null) {
