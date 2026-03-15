@@ -138,5 +138,6 @@ final landingScreenRoute = LandingScreenRoute(
     serviceAdminProviderShellRoute,
     serviceUserProviderShellRoute,
     openSourceLicensesRoute,
+    landingInfoPageRoute,
   ],
 );

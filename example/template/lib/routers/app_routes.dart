@@ -310,5 +310,6 @@ final landingScreenRoute = LandingScreenRoute(
     serviceAdminProviderShellRoute,
     serviceUserProviderShellRoute,
     HyttaHubRoutes.openSourceLicensesRoute,
+    landingInfoPageRoute,
   ],
 );

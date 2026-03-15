@@ -35,6 +35,12 @@ class PlatformCubit extends HydratedCubit<String> {
     emit(implementationId);
   }
 
+  Future<void> reset() async {
+    await setImplementation(
+      HyttaHubOptions.implementation?.implementationId ?? 'memory',
+    );
+  }
+
   // Backward compatibility method
   Future<void> setPlatform(StorageEnum storage, {AuthBloc? authBloc}) async {
     // Find the first implementation of this type

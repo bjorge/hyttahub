@@ -7,7 +7,6 @@ import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 
-import 'package:hyttahub/utils/refresh_helper.dart';
 
 class HyttaHubAppBarActions extends StatelessWidget {
   final List<AppLanguage>? supportedLanguages;
@@ -25,13 +24,7 @@ class HyttaHubAppBarActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: l10n.refresh,
-          onPressed: () async {
-            await RefreshHelper.refresh();
-          },
-        ),
+
         IconButton(
           icon: const Icon(Icons.info_outline),
           tooltip: l10n.info,

@@ -10,6 +10,8 @@ class ThemeCubit extends HydratedCubit<ThemeMode> {
 
   void setTheme(ThemeMode mode) => emit(mode);
 
+  void reset() => emit(ThemeMode.system);
+
   // for hydrated storage
   @override
   String get id => ':$storageKey';

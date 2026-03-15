@@ -11,6 +11,8 @@ class LanguageCubit extends HydratedCubit<AppLanguage> {
 
   void setLanguage(AppLanguage mode) => emit(mode);
 
+  void reset() => emit(AppLanguage.en);
+
   // for hydrated storage
   @override
   String get id => ':$storageKey';

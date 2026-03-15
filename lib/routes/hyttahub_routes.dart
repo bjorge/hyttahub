@@ -987,7 +987,6 @@ final serviceAdminProviderShellRoute = ShellRoute(
   },
   routes: [
     serviceLoginScreenRoute,
-    landingInfoPageRoute,
     serviceUnimplementedRoute,
   ],
 );
