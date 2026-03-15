@@ -6,3 +6,7 @@ pb_data/*.db-wal
 
 # pb_data/types.d.ts IS intentionally kept — it provides JS autocompletion
 # for pb_hooks/*.pb.js files in editors that support TypeScript definitions.
+
+# Ignore compiled protobuf models and source protos
+models/
+protos/
