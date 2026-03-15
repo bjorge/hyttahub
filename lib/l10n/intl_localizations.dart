@@ -628,6 +628,7 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to perform this action.'**
   String get permissionDenied;
+  String get removedFromSite;
 
   /// No description provided for @addMemberTitle.
   ///

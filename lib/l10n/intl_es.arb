@@ -97,6 +97,7 @@
   "errorTitle": "Error",
   "unexpectedError": "Error inesperado, verifica la conexión a internet, regresa e inténtalo de nuevo",
   "permissionDenied": "No tienes permiso para realizar esta acción.",
+  "removedFromSite": "Has sido eliminado de este sitio.",
   "addMemberTitle": "Agregar miembro",
   "memberNameLabel": "Nombre del miembro",
   "memberNameEmptyError": "El nombre del miembro no puede estar vacío",

@@ -97,6 +97,7 @@
   "errorTitle": "Error",
   "unexpectedError": "Unexpected error, check internet, go back and try again",
   "permissionDenied": "You do not have permission to perform this action.",
+  "removedFromSite": "You have been removed from this site.",
   "addMemberTitle": "Add Member",
   "memberNameLabel": "Member Name",
   "memberNameEmptyError": "Member name cannot be empty",

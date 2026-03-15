@@ -64,7 +64,7 @@ class _SiteScreenState extends State<SiteScreen> {
             builder: (context, siteState) {
               return Scaffold(
                 appBar: AppBar(
-                  leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
+                  leading: context.canPop() ? BackButton(onPressed: () => Navigator.of(context).pop()) : null,
                   title: const ScreenTitle(),
                   actions: [
                     SiteSettingsButton(

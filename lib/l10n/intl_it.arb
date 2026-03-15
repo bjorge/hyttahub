@@ -97,6 +97,7 @@
   "errorTitle": "Errore",
   "unexpectedError": "Errore imprevisto, controlla la connessione internet, torna indietro e riprova",
   "permissionDenied": "Non hai il permesso di eseguire questa azione.",
+  "removedFromSite": "Sei stato rimosso da questo sito.",
   "addMemberTitle": "Aggiungi Membro",
   "memberNameLabel": "Nome Membro",
   "memberNameEmptyError": "Il nome del membro non può essere vuoto",
@@ -200,7 +201,6 @@
   "passwordTooShortError": "La password è troppo corta.",
   "passwordTooLongError": "La password è troppo lunga.",
   "noEventsFound": "Nessun evento trovato.",
-
   "selectLanguage": "Seleziona lingua",
   "nightMode": "Modalità notte",
   "platform": "Piattaforma",

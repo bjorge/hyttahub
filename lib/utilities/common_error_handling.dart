@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hyttahub/account_blocs/account_replay_bloc.dart';
 import 'package:hyttahub/account_widgets/account_screen.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
@@ -11,7 +12,8 @@ import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 
 Widget? handleSiteReplayState(
   BuildContext context,
-  SiteReplayBlocState siteState, String siteId,
+  SiteReplayBlocState siteState,
+  String siteId,
 ) {
   Widget? errorWidget;
   final inScaffold = Scaffold.maybeOf(context) != null;
@@ -44,13 +46,20 @@ Widget? handleSiteReplayState(
     final accountState = context.read<AccountReplayBloc>().state;
     final siteIds = accountState.sitesIds.toList();
     if (!siteIds.contains(siteId)) {
-      errorWidget = Center(child: Text("You have been removed from this site."));
+      errorWidget = Center(child: Text(l10n.removedFromSite));
     }
   }
 
   if (errorWidget != null) {
     if (!inScaffold) {
-      return Scaffold(body: Center(child: errorWidget));
+      return Scaffold(
+        body: Center(child: errorWidget),
+        appBar: AppBar(
+          leading: context.canPop()
+              ? BackButton(onPressed: () => Navigator.of(context).pop())
+              : null,
+        ),
+      );
     } else {
       return errorWidget;
     }
@@ -96,7 +105,14 @@ Widget? handleAccountReplayState(
 
   if (errorWidget != null) {
     if (!inScaffold) {
-      return Scaffold(body: Center(child: errorWidget));
+      return Scaffold(
+        body: Center(child: errorWidget),
+        appBar: AppBar(
+          leading: context.canPop()
+              ? BackButton(onPressed: () => Navigator.of(context).pop())
+              : null,
+        ),
+      );
     } else {
       return errorWidget;
     }
@@ -141,7 +157,14 @@ Widget? handleServiceReplayState(
 
   if (errorWidget != null) {
     if (!inScaffold) {
-      return Scaffold(body: Center(child: errorWidget));
+      return Scaffold(
+        body: Center(child: errorWidget),
+        appBar: AppBar(
+          leading: context.canPop()
+              ? BackButton(onPressed: () => Navigator.of(context).pop())
+              : null,
+        ),
+      );
     } else {
       return errorWidget;
     }
@@ -170,7 +193,12 @@ Widget? handleAllowedEmailsState(
   if (errorWidget != null) {
     if (!inScaffold) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.errorTitle)),
+        appBar: AppBar(
+          title: Text(l10n.errorTitle),
+          leading: context.canPop()
+              ? BackButton(onPressed: () => Navigator.of(context).pop())
+              : null,
+        ),
         body: Center(child: errorWidget),
       );
     } else {

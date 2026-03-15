@@ -72,7 +72,7 @@ class _SiteScreenState extends State<SiteScreen> {
                 if (isAdmin && editModeState == null) {
                   return Scaffold(
                     appBar: AppBar(
-                      leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
+                      leading: context.canPop() ? BackButton(onPressed: () => Navigator.of(context).pop()) : null,
                       title: Text(
                         AppLocalizations.of(context)!.app_editModeTitle,
                       ),
@@ -127,7 +127,7 @@ class _SiteScreenState extends State<SiteScreen> {
 
                 return Scaffold(
                   appBar: AppBar(
-                    leading: context.canPop() ? BackButton(onPressed: () => context.pop()) : null,
+                    leading: context.canPop() ? BackButton(onPressed: () => Navigator.of(context).pop()) : null,
                     title: const ScreenTitle(),
                     actions:
                         isEditModeOn

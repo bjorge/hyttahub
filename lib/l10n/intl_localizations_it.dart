@@ -293,6 +293,9 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
       'Non hai il permesso di eseguire questa azione.';
 
   @override
+  String get removedFromSite => 'Sei stato rimosso da questo sito.';
+
+  @override
   String get addMemberTitle => 'Aggiungi Membro';
 
   @override

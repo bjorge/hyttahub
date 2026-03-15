@@ -286,6 +286,9 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   @override
   String get permissionDenied =>
       'Du har ikke tillatelse til å utføre denne handlingen.';
+ 
+  @override
+  String get removedFromSite => 'Du har blitt fjernet fra dette nettstedet.';
 
   @override
   String get addMemberTitle => 'Legg til medlem';
