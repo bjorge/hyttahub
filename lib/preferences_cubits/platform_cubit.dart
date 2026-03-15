@@ -9,7 +9,6 @@ import 'package:hyttahub/auth_bloc/hyttahub_auth_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
-import 'package:hyttahub/proto/auth_bloc.pb.dart';
 
 class PlatformCubit extends HydratedCubit<String> {
   PlatformCubit(this.storageKey)
@@ -17,7 +16,7 @@ class PlatformCubit extends HydratedCubit<String> {
 
   final String storageKey;
 
-  Future<void> setImplementation(String implementationId, {AuthBloc? authBloc}) async {
+  Future<void> setImplementation(String implementationId) async {
     final descriptor = PersistenceRegistry.getImplementation(implementationId);
     if (descriptor == null) return;
 
@@ -33,11 +32,6 @@ class PlatformCubit extends HydratedCubit<String> {
     HyttaHubInternalStorageFactory.clear();
     HyttaHubFunctionsFactory.clear();
 
-    // Refresh AuthBloc to ensure it connects to the new platform.
-    if (authBloc != null) {
-      authBloc.add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup()));
-    }
-
     emit(implementationId);
   }
 
@@ -47,7 +41,7 @@ class PlatformCubit extends HydratedCubit<String> {
     final impls = PersistenceRegistry.registeredImplementations
         .where((i) => i.type == storage);
     if (impls.isNotEmpty) {
-      await setImplementation(impls.first.id, authBloc: authBloc);
+      await setImplementation(impls.first.id);
     } else {
       // Fallback for memory/local if not explicitly registered
       if (HyttaHubOptions.implementation != null) {

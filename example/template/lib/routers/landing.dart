@@ -1,11 +1,8 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:template/l10n/app_localizations.dart';
-import 'package:hyttahub/auth_bloc/auth_bloc.dart';
-import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/common_widgets/hyttahub_app_bar_actions.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
@@ -64,9 +61,6 @@ class LandingPage extends StatelessWidget {
                 textStyle: Theme.of(context).textTheme.titleLarge,
               ),
               onPressed: () {
-                context.read<AuthBloc>().add(
-                  AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
-                );
 
                 // This navigates to the login screen.
                 context.push(LoginScreenRoute.fullPath);

@@ -104,7 +104,7 @@ class LandingPage extends StatelessWidget {
                   label: Text(l10n.app_platformLabel),
                   onSelected: (String? newValue) {
                     if (newValue != null) {
-                      context.read<PlatformCubit>().setImplementation(newValue, authBloc: context.read<AuthBloc>());
+                      context.read<PlatformCubit>().setImplementation(newValue);
                     }
                   },
                   dropdownMenuEntries: PersistenceRegistry.registeredImplementations.map((impl) {
@@ -133,9 +133,9 @@ class LandingPage extends StatelessWidget {
                 textStyle: Theme.of(context).textTheme.titleLarge,
               ),
               onPressed: () {
-                context.read<AuthBloc>().add(
-                  AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
-                );
+                // context.read<AuthBloc>().add(
+                //   AuthBlocEvent(startup: AuthBlocEvent_AppStartup()),
+                // );
 
                 // This navigates to the login screen.
                 context.push(LoginScreenRoute.fullPath);

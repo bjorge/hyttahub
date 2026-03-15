@@ -143,7 +143,6 @@ class ServiceLoginScreenRoute extends GoRoute {
   static const String fullPath = '/$pathSegment';
 }
 
-
 /// A route for the account screen.
 class AccountScreenRoute extends GoRoute {
   /// Creates an [AccountScreenRoute].
@@ -219,8 +218,6 @@ class AddSiteRoute extends GoRoute {
   /// The full path to this route.
   static final String fullPath = '${AccountScreenRoute.fullPath}/$pathSegment';
 }
-
-
 
 class SiteMembersRoute extends GoRoute {
   /// Creates an [SiteMembersRoute].
@@ -477,7 +474,8 @@ class CopySiteConfirmRoute extends GoRoute {
   static const String pathSegment = 'copysiteconfirm/:siteId';
 
   /// The full path to this route.
-  static String fullPath({required String siteId}) => '${CopySiteRoute.fullPath}/copysiteconfirm/$siteId';
+  static String fullPath({required String siteId}) =>
+      '${CopySiteRoute.fullPath}/copysiteconfirm/$siteId';
 }
 
 class ReorderSitesRoute extends GoRoute {
@@ -918,10 +916,9 @@ final accountShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<AccountReplayBloc>(
       key: const Key('AccountShellBlocProvider'),
-      create:
-          (context) => AccountReplayBloc(
-            context.read<AuthBloc>().state.email,
-          )..add(CommonReplayBlocEvent(listen: true)),
+      create: (context) =>
+          AccountReplayBloc(context.read<AuthBloc>().state.email)
+            ..add(CommonReplayBlocEvent(listen: true)),
       child: BlocBuilder<AccountReplayBloc, AccountReplayBlocState>(
         builder: (context, accountState) {
           final errorWidget = handleAccountReplayState(context, accountState);
@@ -943,9 +940,8 @@ final serviceAdminProviderShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceReplayBloc>(
       key: const Key('ServiceAdminProviderShellRoute'),
-      create:
-          (context) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+      create: (context) =>
+          ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
       child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
         builder: (context, serviceState) {
           final errorWidget = handleServiceReplayState(context, serviceState);
@@ -972,11 +968,19 @@ final serviceAdminProviderShellRoute = ShellRoute(
               ),
             );
 
-            final encodedEvent = base64Encode(submitServiceEvent.writeToBuffer());
+            final encodedEvent = base64Encode(
+              submitServiceEvent.writeToBuffer(),
+            );
             return ServiceUninitializedPage(event: encodedEvent);
           }
 
-          return child;
+          return BlocProvider<AuthBloc>(
+            key: const Key('ServiceAdminAuthBlocProvider'),
+            create: (_) =>
+                AuthBloc()
+                  ..add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup())),
+            child: child,
+          );
         },
       ),
     );
@@ -991,9 +995,8 @@ final serviceUserProviderShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceReplayBloc>(
       key: const Key('ServiceUserProviderShellRoute'),
-      create:
-          (context) =>
-              ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
+      create: (context) =>
+          ServiceReplayBloc()..add(CommonReplayBlocEvent(listen: true)),
       child: BlocBuilder<ServiceReplayBloc, ServiceReplayBlocState>(
         builder: (context, serviceState) {
           final errorWidget = handleServiceReplayState(context, serviceState);
@@ -1020,7 +1023,9 @@ final serviceUserProviderShellRoute = ShellRoute(
               ),
             );
 
-            final encodedEvent = base64Encode(submitServiceEvent.writeToBuffer());
+            final encodedEvent = base64Encode(
+              submitServiceEvent.writeToBuffer(),
+            );
             return ServiceUninitializedPage(event: encodedEvent);
           }
 
@@ -1035,38 +1040,36 @@ final serviceUserProviderShellRoute = ShellRoute(
             return ServiceNewVersionPage();
           }
 
-          return child;
+          return BlocProvider<AuthBloc>(
+            key: const Key('ServiceUserAuthBlocProvider'),
+            create: (_) =>
+                AuthBloc()
+                  ..add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup())),
+            child: child,
+          );
         },
       ),
     );
   },
-  routes: [
-    loginScreenRoute,
-    landingUnimplementedRoute,
-  ],
+  routes: [loginScreenRoute, landingUnimplementedRoute],
 );
 
 final loginScreenRoute = LoginScreenRoute(
-  routes: [
-    accountShellRoute,
-    loginTermsDisplayRoute,
-    loginPrivacyDisplayRoute,
-  ],
+  routes: [accountShellRoute, loginTermsDisplayRoute, loginPrivacyDisplayRoute],
 );
 
 final serviceAdminShellRoute = ShellRoute(
   builder: (context, state, child) {
     return BlocProvider<ServiceAllowedEmailsBloc>(
       key: const Key('ServiceAllowedEmailsBlocProvider'),
-      create:
-          (context) =>
-              ServiceAllowedEmailsBloc(
-                firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
-              )..add(
-                AllowedEmailsBlocEvent(
-                  fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
-                ),
-              ),
+      create: (context) =>
+          ServiceAllowedEmailsBloc(
+            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          )..add(
+            AllowedEmailsBlocEvent(
+              fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
+            ),
+          ),
       child: BlocBuilder<ServiceAllowedEmailsBloc, AllowedEmailsBlocState>(
         builder: (context, allowedEmailsState) {
           final allowedEmailsErrorWidget = handleAllowedEmailsState(

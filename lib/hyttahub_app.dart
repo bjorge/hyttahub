@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
@@ -65,7 +64,6 @@ class HyttaHubApp extends StatelessWidget {
         BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(rootCollection)),
         BlocProvider<LanguageCubit>(create: (_) => LanguageCubit(rootCollection)),
         BlocProvider<PlatformCubit>(create: (_) => PlatformCubit(rootCollection)),
-        BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         ...additionalOuterProviders,
       ],
       child: BlocBuilder<PlatformCubit, String>(
