@@ -2,8 +2,8 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
@@ -39,7 +39,6 @@ String _encodeSegment(String segment) {
 String encodePath(String path) =>
     path.split('/').map(_encodeSegment).join('__');
 
-
 /// A [BaseHyttaHubStorage] implementation backed by PocketBase.
 ///
 /// **ID mapping**: PocketBase requires record IDs to be exactly 15 alphanumeric
@@ -70,9 +69,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     if (e.statusCode == 404) return true;
     if (e.statusCode == 400) {
       final msg = (e.response['message'] as String? ?? '').toLowerCase();
-      return msg.contains('missing collection') || 
-             msg.contains('collection context') ||
-             msg.contains('missing or invalid collection context');
+      return msg.contains('missing collection') ||
+          msg.contains('collection context') ||
+          msg.contains('missing or invalid collection context');
     }
     return false;
   }
@@ -82,19 +81,25 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   /// collection itself does not exist yet.
   Future<RecordModel?> _findRecord(String col, String docId) async {
     try {
-      final results = await _client.collection(col).getFullList(
-        filter: 'doc_id = "${_esc(docId)}"',
-      );
+      final results = await _client
+          .collection(col)
+          .getFullList(filter: 'doc_id = "${_esc(docId)}"');
       return results.isEmpty ? null : results.first;
     } on ClientException catch (e) {
-      if (_isCollectionNotFound(e)) return null;
+      if (_isCollectionNotFound(e)) {
+        if (kDebugMode) {
+          print('[PB] _findRecord col=$col not found (${e.statusCode})');
+        }
+        return null;
+      }
       rethrow;
     }
   }
 
   /// Minimal escaping for PocketBase filter string values.
   /// Escapes backslashes and double-quotes to prevent injection.
-  String _esc(String value) => value.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
+  String _esc(String value) =>
+      value.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
 
   // ── Document access ──────────────────────────────────────────────────────
 
@@ -112,9 +117,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   }) async {
     final sort = orderBy != null ? '${descending ? '-' : '+'}$orderBy' : null;
     try {
-      final records = await _client.collection(encodePath(path)).getFullList(
-        sort: sort,
-      );
+      final records = await _client
+          .collection(encodePath(path))
+          .getFullList(sort: sort);
       return records.map((r) => r.toJson()).toList();
     } on ClientException catch (e) {
       if (_isCollectionNotFound(e)) return [];
@@ -129,11 +134,26 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     Map<String, dynamic> data,
   ) async {
     final col = encodePath(path);
+    if (kDebugMode) {
+      print('[PB] setDocument path=$path col=$col docId=$docId data=$data');
+    }
     final existing = await _findRecord(col, docId);
-    if (existing != null) {
-      await _client.collection(col).update(existing.id, body: data);
-    } else {
-      await _client.collection(col).create(body: {'doc_id': docId, ...data});
+    try {
+      if (existing != null) {
+        if (kDebugMode) print('[PB] setDocument → update id=${existing.id}');
+        await _client.collection(col).update(existing.id, body: data);
+      } else {
+        if (kDebugMode) print('[PB] setDocument → create');
+        await _client.collection(col).create(body: {'doc_id': docId, ...data});
+      }
+      if (kDebugMode) print('[PB] setDocument ✓ col=$col docId=$docId');
+    } on ClientException catch (e) {
+      if (kDebugMode) {
+        print(
+          '[PB] setDocument ✗ col=$col docId=$docId status=${e.statusCode} msg=${e.response}',
+        );
+      }
+      rethrow;
     }
   }
 
@@ -160,7 +180,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
         await _client.collection(col).delete(record.id);
       }
     } on ClientException catch (e) {
-      if (_isCollectionNotFound(e)) return; // collection doesn't exist — nothing to delete
+      if (_isCollectionNotFound(e)) {
+        return; // collection doesn't exist — nothing to delete
+      }
       rethrow;
     }
   }
@@ -184,7 +206,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             final updated = await getCollection(path);
             controller.add(_toDocIdMap(updated));
           });
-          
+
           // Successfully subscribed, break out of the retry loop
           break;
         } on ClientException catch (e) {
@@ -212,7 +234,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   /// Converts a list of records into a map keyed by `doc_id`
   /// (falling back to the PocketBase `id` if `doc_id` is absent).
-  Map<String, Map<String, dynamic>> _toDocIdMap(List<Map<String, dynamic>> docs) {
+  Map<String, Map<String, dynamic>> _toDocIdMap(
+    List<Map<String, dynamic>> docs,
+  ) {
     return {
       for (final doc in docs)
         if ((doc['doc_id'] ?? doc['id']) != null)
@@ -234,16 +258,36 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       while (!controller.isClosed) {
         try {
           final initial = await getCollection(path);
-          final seed = _buildEventMap(initial, lastVersion, versionField, payloadField);
+          final seed = _buildEventMap(
+            initial,
+            lastVersion,
+            versionField,
+            payloadField,
+          );
+          if (kDebugMode) {
+            print(
+              '[PB] listenEvents col=$col seed=${seed.keys.toList()} lastVersion=$lastVersion',
+            );
+          }
           if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
 
           await _client.collection(col).subscribe('*', (event) async {
             if (controller.isClosed) return;
             final all = await getCollection(path);
-            final events = _buildEventMap(all, lastVersion, versionField, payloadField);
+            final events = _buildEventMap(
+              all,
+              lastVersion,
+              versionField,
+              payloadField,
+            );
+            if (kDebugMode) {
+              print(
+                '[PB] listenEvents update col=$col events=${events.keys.toList()}',
+              );
+            }
             if (events.isNotEmpty) controller.add(events);
           });
-          
+
           // Successfully subscribed, break out of the retry loop
           break;
         } on ClientException catch (e) {
@@ -298,7 +342,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       error is ClientException && error.statusCode == 403;
 
   @override
-  Future<void> runBatch(Future<void> Function(HyttaHubBatch batch) action) async {
+  Future<void> runBatch(
+    Future<void> Function(HyttaHubBatch batch) action,
+  ) async {
     final batch = PocketbaseHyttaHubBatch(this);
     await action(batch);
     await batch.executeAll();
@@ -341,16 +387,14 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     // Upload via multipart form.
-    await _client.collection(col).create(
-      body: {'doc_id': fileName},
-      files: [
-        http.MultipartFile.fromBytes(
-          _fileField,
-          bytes,
-          filename: fileName,
-        ),
-      ],
-    );
+    await _client
+        .collection(col)
+        .create(
+          body: {'doc_id': fileName},
+          files: [
+            http.MultipartFile.fromBytes(_fileField, bytes, filename: fileName),
+          ],
+        );
   }
 
   @override
@@ -359,10 +403,16 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     required String siteId,
     required String fileName,
   }) async {
-    final url = await getFileUrl(appName: appName, siteId: siteId, fileName: fileName);
+    final url = await getFileUrl(
+      appName: appName,
+      siteId: siteId,
+      fileName: fileName,
+    );
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) return response.bodyBytes;
-    throw Exception('Failed to download file "$fileName": HTTP ${response.statusCode}');
+    throw Exception(
+      'Failed to download file "$fileName": HTTP ${response.statusCode}',
+    );
   }
 
   @override
@@ -380,13 +430,12 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     // The attachment filename stored by PocketBase may have a random suffix
     // appended for uniqueness — use the value from the file field.
     final storedFiles = record.getListValue<String>(_fileField);
-    if (storedFiles.isEmpty) throw Exception('File field empty for record: $fileName');
+    if (storedFiles.isEmpty) {
+      throw Exception('File field empty for record: $fileName');
+    }
     final storedName = storedFiles.first;
 
-    return _client
-        .files
-        .getUrl(record, storedName)
-        .toString();
+    return _client.files.getUrl(record, storedName).toString();
   }
 
   @override
@@ -431,7 +480,6 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   final PocketbaseHyttaHubStorage _storage;
   final List<Future<void> Function()> _operations = [];
 
-
   @override
   void setDocument(String path, String docId, Map<String, dynamic> data) {
     final col = encodePath(path);
@@ -440,7 +488,9 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
       if (existing != null) {
         await _storage._client.collection(col).update(existing.id, body: data);
       } else {
-        await _storage._client.collection(col).create(body: {'doc_id': docId, ...data});
+        await _storage._client
+            .collection(col)
+            .create(body: {'doc_id': docId, ...data});
       }
     });
   }
