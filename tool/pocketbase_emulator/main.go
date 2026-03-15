@@ -69,6 +69,14 @@ func main() {
 			return e.Next()
 		}
 
+		// --- Auto-Timestamp Resolution ---
+		// If the client sends "@now" or leave it empty, resolve it to a real timestamp.
+		// Since 't' is a DateField, PocketBase might have discarded "@now" as invalid.
+		if e.Record.GetString("t") == "" || e.Record.GetString("t") == "@now" {
+			e.Record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+		}
+		// ---------------------------------
+
 		// ── Service Users / Site Users ────────────────────────────────────────
 		// Mirror Firestore: allow create if firstServiceUser(app) || isEmailListed
 		// The empty-collection check MUST come before the auth guard so that an
@@ -302,9 +310,10 @@ func main() {
 							col, _ := app.FindCollectionByNameOrId(eventsCol)
 							if col != nil {
 								record := core.NewRecord(col)
+								record.Set("doc_id", fmt.Sprintf("%d", newVersion))
 								record.Set("v", newVersion)
 								record.Set("p", eBase64)
-								record.Set("t", time.Now().Format(time.RFC3339))
+								record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
 								if err := app.Save(record); err != nil {
 									log.Printf("[hyttahub] ERROR saving SiteEvent for %s: %v", email, err)
 								} else {
@@ -342,9 +351,10 @@ func main() {
 							col, _ := app.FindCollectionByNameOrId(accountEventsCol)
 							if col != nil {
 								record := core.NewRecord(col)
+								record.Set("doc_id", fmt.Sprintf("%d", newVersion))
 								record.Set("v", newVersion)
 								record.Set("p", eBase64)
-								record.Set("t", time.Now().Format(time.RFC3339))
+								record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
 								if err := app.Save(record); err != nil {
 									log.Printf("[hyttahub] ERROR saving AccountEvent for %s: %v", email, err)
 								} else {
@@ -572,15 +582,19 @@ func createHyttahubCollection(app *pocketbase.PocketBase, collectionName string)
 	})
 
 	eventFields := []core.Field{
-		&core.TextField{Name: "p"},   // payload
+		&core.TextField{Name: "p"}, // payload
 		&core.NumberField{Name: "v"}, // version
-		&core.TextField{Name: "t"},   // timestamp
+		&core.DateField{
+			Name: "t",
+		}, // timestamp
 	}
 
 	memberFields := []core.Field{
 		&core.NumberField{Name: "u"}, // member id
-		&core.TextField{Name: "t"},   // timestamp
-		&core.TextField{Name: "m"},   // markedForDeletion
+		&core.DateField{
+			Name: "t",
+		}, // timestamp
+		&core.TextField{Name: "m"}, // markedForDeletion
 	}
 
 	var schemaFields []core.Field
