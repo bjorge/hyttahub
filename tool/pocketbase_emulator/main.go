@@ -4,7 +4,9 @@ import (
 	"encoding/base64"
 	"log"
 	"os"
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
@@ -12,7 +14,9 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/types"
+	"google.golang.org/protobuf/proto"
 
+	"pocketbase_emulator/models"
 	_ "pocketbase_emulator/migrations"
 )
 
@@ -33,6 +37,12 @@ func decodeSegment(segment string) string {
 		return segment
 	}
 	return string(decoded)
+}
+
+func encodeSegment(email string) string {
+	b64 := base64.URLEncoding.EncodeToString([]byte(email))
+	b64 = strings.ReplaceAll(b64, "=", "")
+	return "e" + b64
 }
 
 func main() {
@@ -199,12 +209,26 @@ func main() {
 				return e.Next()
 			}
 
+			var usersCol *core.Collection
 			for _, c := range collections {
 				if strings.HasPrefix(c.Name, sitePrefix) {
+					// We delete the users collection last to avoid breaking API rules 
+					// in other collections that depend on it during deletion.
+					if strings.HasSuffix(c.Name, "__site_users") {
+						usersCol = c
+						continue
+					}
 					log.Printf("[hyttahub] Auto-deleting collection: %s", c.Name)
 					if err := app.Delete(c); err != nil {
 						log.Printf("[hyttahub] ERROR deleting %s: %v", c.Name, err)
 					}
+				}
+			}
+
+			if usersCol != nil {
+				log.Printf("[hyttahub] Auto-deleting collection: %s (final step)", usersCol.Name)
+				if err := app.Delete(usersCol); err != nil {
+					log.Printf("[hyttahub] ERROR deleting %s: %v", usersCol.Name, err)
 				}
 			}
 		}
@@ -229,39 +253,121 @@ func main() {
 
 		log.Printf("[hyttahub] DEBUG: User marked for deletion in %s (m=%s)", colName, mValue)
 
-		// Count users that are NOT marked for deletion
-		records, err := app.FindRecordsByFilter(
-			colName,
-			"m = ''",
-			"",
-			1,
-			0,
-			nil,
-		)
+		// 1. Decode MarkForDeletion proto
+		mBytes, err := base64.StdEncoding.DecodeString(mValue)
 		if err != nil {
-			log.Printf("[hyttahub] ERROR querying active users in %s: %v", colName, err)
-			return e.Next()
-		}
+			log.Printf("[hyttahub] ERROR decoding m base64: %v", err)
+		} else {
+			mInfo := &models.MarkForDeletion{}
+			if err := proto.Unmarshal(mBytes, mInfo); err != nil {
+				log.Printf("[hyttahub] ERROR unmarshaling MarkForDeletion: %v", err)
+			} else {
+				log.Printf("[hyttahub] DEBUG: DeleteReason: %v", mInfo.DeleteReason)
 
-		// If no active users remain, drop the site
-		if len(records) == 0 {
-			sitePrefix := strings.TrimSuffix(colName, "__site_users")
-			log.Printf("[hyttahub] Site %s has no active users remaining. Auto-deleting all related collections...", sitePrefix)
+				// Extract app, site, email
+				parts := strings.Split(colName, "__")
+				// expected: hyttahub__app__sites__siteid__site_users
+				if len(parts) >= 5 {
+					appName := parts[1]
+					siteId := parts[3]
+					email := e.Record.GetString("doc_id")
+					memberId := e.Record.GetInt("u")
 
-			collections, err := app.FindAllCollections()
-			if err != nil {
-				log.Printf("[hyttahub] ERROR querying collections for deletion: %v", err)
-				return e.Next()
-			}
+					if mInfo.DeleteReason == models.MarkForDeletion_memberLeftSite {
+						// Add SiteEvent: LeaveSite
+						eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
+						log.Printf("[hyttahub] DeleteReason: memberLeftSite. Targeting collection: %s", eventsCol)
 
-			for _, c := range collections {
-				if strings.HasPrefix(c.Name, sitePrefix) {
-					log.Printf("[hyttahub] Auto-deleting collection: %s", c.Name)
-					if err := app.Delete(c); err != nil {
-						log.Printf("[hyttahub] ERROR deleting %s: %v", c.Name, err)
+						// Get latest version
+						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
+						newVersion := 1
+						if len(lastRecords) > 0 {
+							newVersion = lastRecords[0].GetInt("v") + 1
+						}
+
+						if newVersion > 1 {
+							siteEvent := &models.SiteEvent{
+								Version: int32(newVersion),
+								Author:  int32(memberId),
+								EventType: &models.SiteEvent_LeaveSite_{
+									LeaveSite: &models.SiteEvent_LeaveSite{
+										MemberId: int32(memberId),
+									},
+								},
+							}
+
+							eBytes, _ := proto.Marshal(siteEvent)
+							eBase64 := base64.StdEncoding.EncodeToString(eBytes)
+
+							col, _ := app.FindCollectionByNameOrId(eventsCol)
+							if col != nil {
+								record := core.NewRecord(col)
+								record.Set("v", newVersion)
+								record.Set("p", eBase64)
+								record.Set("t", time.Now().Format(time.RFC3339))
+								if err := app.Save(record); err != nil {
+									log.Printf("[hyttahub] ERROR saving SiteEvent for %s: %v", email, err)
+								} else {
+									log.Printf("[hyttahub] Created LeaveSite event for %s (version %d) in %s", email, newVersion, eventsCol)
+								}
+							}
+						} else {
+							log.Printf("[hyttahub] No previous site events found for site %s, skipping LeaveSite event", siteId)
+						}
+
+					} else if mInfo.DeleteReason == models.MarkForDeletion_memberRemovedFromSite {
+						// Add AccountEvent: RemoveSite
+						encodedEmail := encodeSegment(email)
+						accountEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
+						log.Printf("[hyttahub] DeleteReason: memberRemovedFromSite. Targeting collection: %s", accountEventsCol)
+
+						// Get latest version
+						lastRecords, _ := app.FindRecordsByFilter(accountEventsCol, "", "-v", 1, 0)
+						newVersion := 1
+						if len(lastRecords) > 0 {
+							newVersion = lastRecords[0].GetInt("v") + 1
+						}
+
+						if newVersion > 1 {
+							accountEvent := &models.AccountEvent{
+								Version: int32(newVersion),
+								EventType: &models.AccountEvent_RemoveSite{
+									RemoveSite: siteId,
+								},
+							}
+
+							eBytes, _ := proto.Marshal(accountEvent)
+							eBase64 := base64.StdEncoding.EncodeToString(eBytes)
+
+							col, _ := app.FindCollectionByNameOrId(accountEventsCol)
+							if col != nil {
+								record := core.NewRecord(col)
+								record.Set("v", newVersion)
+								record.Set("p", eBase64)
+								record.Set("t", time.Now().Format(time.RFC3339))
+								if err := app.Save(record); err != nil {
+									log.Printf("[hyttahub] ERROR saving AccountEvent for %s: %v", email, err)
+								} else {
+									log.Printf("[hyttahub] Created RemoveSite event for %s (version %d) in %s", email, newVersion, accountEventsCol)
+								}
+							}
+						} else {
+							log.Printf("[hyttahub] No previous account events found for user %s, skipping RemoveSite event", email)
+						}
+					} else {
+						log.Printf("[hyttahub] DeleteReason %v (email updating) - no event creation needed", mInfo.DeleteReason)
 					}
 				}
 			}
+		}
+
+		// Now delete this record.
+		// Note: We are using app.Delete here. This will trigger OnRecordAfterDeleteSuccess.
+		log.Printf("[hyttahub] Finalizing: Deleting site user record for %s from %s", e.Record.GetString("doc_id"), colName)
+		if err := app.Delete(e.Record); err != nil {
+			log.Printf("[hyttahub] ERROR deleting site user record: %v", err)
+		} else {
+			log.Printf("[hyttahub] Successfully deleted user document for %s", e.Record.GetString("doc_id"))
 		}
 
 		return e.Next()
@@ -293,144 +399,48 @@ func main() {
 			}
 			collectionName := parts[3]
 
-			// Skip internal PocketBase collections
-			if !strings.HasPrefix(collectionName, "hyttahub__") {
-				return e.Next()
-			}
-
 			// Check if it already exists
 			_, err := app.FindCollectionByNameOrId(collectionName)
 			if err == nil {
 				return e.Next() // exists
 			}
 
-			log.Printf("[hyttahub] auto-creating collection: %s\n", collectionName)
+			// --- Refined Auto-Creation Logic ---
+			isSiteSub := strings.HasSuffix(collectionName, "__site_events") ||
+				strings.HasSuffix(collectionName, "__site_emails") ||
+				strings.HasSuffix(collectionName, "__site_files") ||
+				strings.HasSuffix(collectionName, "__site_exports__export_request")
 
-			// Doesn't exist, create it dynamically
-			col := core.NewBaseCollection(collectionName)
-			
-			var listRule, viewRule, createRule, updateRule, deleteRule *string
-
-			if strings.HasSuffix(collectionName, "__site_users") {
-				rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
-				listRule = types.Pointer(rule)
-				viewRule = types.Pointer(rule)
-				createRule = types.Pointer("") // filtered in Go hook
-				updateRule = types.Pointer(rule)
-				deleteRule = types.Pointer(rule)
-			} else if strings.HasSuffix(collectionName, "__site_events") || strings.HasSuffix(collectionName, "__site_emails") {
-				usersColName := strings.Split(collectionName, "__site_events")[0]
-				if strings.HasSuffix(collectionName, "__site_emails") {
-					usersColName = strings.Split(collectionName, "__site_emails")[0]
-				}
-				usersColName += "__site_users"
-				rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
-				
-				listRule = types.Pointer(rule)
-				viewRule = types.Pointer(rule)
-				createRule = types.Pointer(rule)
-			} else if strings.HasSuffix(collectionName, "__site_exports__export_request") {
-				usersColName := strings.Split(collectionName, "__site_exports")[0] + "__site_users"
-				rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
-				
-				listRule = types.Pointer(rule)
-				viewRule = types.Pointer(rule)
-				createRule = types.Pointer(rule)
-				updateRule = types.Pointer(rule)
-			} else if strings.HasSuffix(collectionName, "__service_users") {
-				rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
-				listRule = types.Pointer(rule)
-				viewRule = types.Pointer(rule)
-				createRule = types.Pointer("") // filtered in Go hook
-				updateRule = types.Pointer(rule)
-				deleteRule = types.Pointer(rule)
-			} else if strings.HasSuffix(collectionName, "__service_events") {
-				listRule = types.Pointer("") // public read
-				viewRule = types.Pointer("") // public read
-				createRule = types.Pointer("") // handled via Go hook (allows firstServiceUser)
-			} else if strings.HasSuffix(collectionName, "__site_files") {
-				// Public read; require auth for writes.
-				// Full site-membership enforcement is done in the OnRecordCreateRequest hook
-				// (same pattern as __site_users) — using @collection here would fail if the
-				// site_users collection hasn't been created yet when site_files is first accessed.
-				authRule := "@request.auth.id != ''"
-				listRule = types.Pointer("")         // public
-				viewRule = types.Pointer("")         // public
-				createRule = types.Pointer(authRule) // hooks enforce membership
-				updateRule = types.Pointer(authRule)
-				deleteRule = types.Pointer(authRule)
-			} else if strings.Contains(collectionName, "__accounts__") {
-				parts := strings.Split(collectionName, "__")
-				emailChunk := ""
-				for i, part := range parts {
-					if part == "accounts" && i+1 < len(parts) {
-						emailChunk = parts[i+1]
-						break
+			// 1. Identify parent for site-related collections
+			parentColName := ""
+			if isSiteSub {
+				if strings.HasSuffix(collectionName, "__site_exports__export_request") {
+					parentColName = strings.Split(collectionName, "__site_exports")[0] + "__site_users"
+				} else {
+					suffix := "__site_events"
+					if strings.HasSuffix(collectionName, "__site_emails") {
+						suffix = "__site_emails"
+					} else if strings.HasSuffix(collectionName, "__site_files") {
+						suffix = "__site_files"
 					}
-				}
-				decoded := decodeSegment(emailChunk)
-				rule := "@request.auth.email = '" + decoded + "'"
-				listRule = types.Pointer(rule)
-				viewRule = types.Pointer(rule)
-				createRule = types.Pointer(rule)
-				deleteRule = types.Pointer(rule)
-				if !strings.HasSuffix(collectionName, "__account_events") {
-					updateRule = types.Pointer(rule)
+					parentColName = strings.Split(collectionName, suffix)[0] + "__site_users"
 				}
 			}
 
-			col.ListRule = listRule
-			col.ViewRule = viewRule
-			col.CreateRule = createRule
-			col.UpdateRule = updateRule
-			col.DeleteRule = deleteRule
-
-			col.Fields.Add(&core.TextField{
-				Name: "doc_id",
-			})
-
-			eventFields := []core.Field{
-				&core.TextField{Name: "p"}, // payload
-				&core.NumberField{Name: "v"}, // version
-				&core.TextField{Name: "t"}, // timestamp
-			}
-
-			memberFields := []core.Field{
-				&core.NumberField{Name: "u"}, // member id
-				&core.TextField{Name: "t"}, // timestamp
-				&core.TextField{Name: "m"}, // markedForDeletion
-			}
-
-			var schemaFields []core.Field
-			if strings.HasSuffix(collectionName, "__site_events") ||
-				strings.HasSuffix(collectionName, "__account_events") ||
-				strings.HasSuffix(collectionName, "__service_events") {
-				schemaFields = eventFields
-			}
-			if strings.HasSuffix(collectionName, "__site_users") ||
-				strings.HasSuffix(collectionName, "__service_users") {
-				schemaFields = memberFields
-			}
-			if strings.HasSuffix(collectionName, "__site_files") {
-				schemaFields = []core.Field{
-					&core.FileField{
-						Name:      "file",
-						MaxSelect: 1,
-						MaxSize:   10 * 1024 * 1024, // 10 MB
-					},
+			// 2. Defensive check for GET requests: don't resurrect deleted/missing sites
+			if e.Request.Method == "GET" && isSiteSub {
+				if _, err := app.FindCollectionByNameOrId(parentColName); err != nil {
+					// Parent is gone, this site is likely deleted/abandoned.
+					// Let the GET request 404 rather than recreating a zombie collection.
+					return e.Next()
 				}
 			}
 
-			for _, f := range schemaFields {
-				col.Fields.Add(f)
-			}
-
-			if err := app.Save(col); err != nil {
-				log.Printf("[hyttahub] ERROR creating collection '%s': %v\n", collectionName, err)
+			// 3. Create it
+			if err := createHyttahubCollection(app, collectionName); err != nil {
+				log.Printf("[hyttahub] ERROR auto-creating collection '%s': %v\n", collectionName, err)
 				return apis.NewBadRequestError("Failed to auto-create collection", err)
 			}
-
-			log.Printf("[hyttahub] created '%s'\n", collectionName)
 
 			return e.Next()
 		})
@@ -441,4 +451,166 @@ func main() {
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// createHyttahubCollection defines the schema and rules for dynamic hyttahub collections.
+func createHyttahubCollection(app *pocketbase.PocketBase, collectionName string) error {
+	// Skip internal PocketBase collections
+	if !strings.HasPrefix(collectionName, "hyttahub__") {
+		return nil
+	}
+
+	// Check if it already exists
+	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
+		return nil // exists
+	}
+
+	// Ensure parent exists for sub-collections to avoid broken rules
+	if strings.HasSuffix(collectionName, "__site_events") ||
+		strings.HasSuffix(collectionName, "__site_emails") ||
+		strings.HasSuffix(collectionName, "__site_files") ||
+		strings.HasSuffix(collectionName, "__site_exports__export_request") {
+
+		parent := ""
+		if strings.HasSuffix(collectionName, "__site_exports__export_request") {
+			parent = strings.Split(collectionName, "__site_exports")[0] + "__site_users"
+		} else {
+			suffix := "__site_events"
+			if strings.HasSuffix(collectionName, "__site_emails") {
+				suffix = "__site_emails"
+			} else if strings.HasSuffix(collectionName, "__site_files") {
+				suffix = "__site_files"
+			}
+			parent = strings.Split(collectionName, suffix)[0] + "__site_users"
+		}
+
+		if parent != "" {
+			if err := createHyttahubCollection(app, parent); err != nil {
+				return err
+			}
+		}
+	}
+
+	log.Printf("[hyttahub] auto-creating collection: %s\n", collectionName)
+
+	col := core.NewBaseCollection(collectionName)
+
+	var listRule, viewRule, createRule, updateRule, deleteRule *string
+
+	if strings.HasSuffix(collectionName, "__site_users") {
+		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer("") // filtered in Go hook
+		updateRule = types.Pointer(rule)
+		deleteRule = types.Pointer(rule)
+	} else if strings.HasSuffix(collectionName, "__site_events") || strings.HasSuffix(collectionName, "__site_emails") {
+		usersColName := strings.Split(collectionName, "__site_events")[0]
+		if strings.HasSuffix(collectionName, "__site_emails") {
+			usersColName = strings.Split(collectionName, "__site_emails")[0]
+		}
+		usersColName += "__site_users"
+		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
+
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer(rule)
+	} else if strings.HasSuffix(collectionName, "__site_exports__export_request") {
+		usersColName := strings.Split(collectionName, "__site_exports")[0] + "__site_users"
+		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
+
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer(rule)
+		updateRule = types.Pointer(rule)
+	} else if strings.HasSuffix(collectionName, "__service_users") {
+		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer("") // filtered in Go hook
+		updateRule = types.Pointer(rule)
+		deleteRule = types.Pointer(rule)
+	} else if strings.HasSuffix(collectionName, "__service_events") {
+		listRule = types.Pointer("")   // public read
+		viewRule = types.Pointer("")   // public read
+		createRule = types.Pointer("") // handled via Go hook (allows firstServiceUser)
+	} else if strings.HasSuffix(collectionName, "__site_files") {
+		authRule := "@request.auth.id != ''"
+		listRule = types.Pointer("") // public
+		viewRule = types.Pointer("") // public
+		createRule = types.Pointer(authRule)
+		updateRule = types.Pointer(authRule)
+		deleteRule = types.Pointer(authRule)
+	} else if strings.Contains(collectionName, "__accounts__") {
+		parts := strings.Split(collectionName, "__")
+		emailChunk := ""
+		for i, part := range parts {
+			if part == "accounts" && i+1 < len(parts) {
+				emailChunk = parts[i+1]
+				break
+			}
+		}
+		decoded := decodeSegment(emailChunk)
+		rule := "@request.auth.email = '" + decoded + "'"
+		listRule = types.Pointer(rule)
+		viewRule = types.Pointer(rule)
+		createRule = types.Pointer(rule)
+		deleteRule = types.Pointer(rule)
+		if !strings.HasSuffix(collectionName, "__account_events") {
+			updateRule = types.Pointer(rule)
+		}
+	}
+
+	col.ListRule = listRule
+	col.ViewRule = viewRule
+	col.CreateRule = createRule
+	col.UpdateRule = updateRule
+	col.DeleteRule = deleteRule
+
+	col.Fields.Add(&core.TextField{
+		Name: "doc_id",
+	})
+
+	eventFields := []core.Field{
+		&core.TextField{Name: "p"},   // payload
+		&core.NumberField{Name: "v"}, // version
+		&core.TextField{Name: "t"},   // timestamp
+	}
+
+	memberFields := []core.Field{
+		&core.NumberField{Name: "u"}, // member id
+		&core.TextField{Name: "t"},   // timestamp
+		&core.TextField{Name: "m"},   // markedForDeletion
+	}
+
+	var schemaFields []core.Field
+	if strings.HasSuffix(collectionName, "__site_events") ||
+		strings.HasSuffix(collectionName, "__account_events") ||
+		strings.HasSuffix(collectionName, "__service_events") {
+		schemaFields = eventFields
+	}
+	if strings.HasSuffix(collectionName, "__site_users") ||
+		strings.HasSuffix(collectionName, "__service_users") {
+		schemaFields = memberFields
+	}
+	if strings.HasSuffix(collectionName, "__site_files") {
+		schemaFields = []core.Field{
+			&core.FileField{
+				Name:      "file",
+				MaxSelect: 1,
+				MaxSize:   10 * 1024 * 1024, // 10 MB
+			},
+		}
+	}
+
+	for _, f := range schemaFields {
+		col.Fields.Add(f)
+	}
+
+	if err := app.Save(col); err != nil {
+		return err
+	}
+
+	log.Printf("[hyttahub] created '%s'\n", collectionName)
+	return nil
 }
