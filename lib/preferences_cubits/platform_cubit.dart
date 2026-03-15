@@ -36,9 +36,21 @@ class PlatformCubit extends HydratedCubit<String> {
   }
 
   Future<void> reset() async {
-    await setImplementation(
-      HyttaHubOptions.implementation?.implementationId ?? 'memory',
-    );
+    String targetId = '';
+    if (PersistenceRegistry.isImplementationRegistered('memory')) {
+      targetId = 'memory';
+    } else if (PersistenceRegistry.registeredImplementations.isNotEmpty) {
+      targetId = PersistenceRegistry.registeredImplementations.first.id;
+    }
+
+    if (targetId.isNotEmpty) {
+      // If we are already on the target, emit a temporary state to force
+      // a rebuild of the keyed MultiBlocProvider in HyttaHubApp.
+      if (state == targetId) {
+        emit('');
+      }
+      await setImplementation(targetId);
+    }
   }
 
   // Backward compatibility method
