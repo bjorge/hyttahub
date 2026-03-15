@@ -194,50 +194,13 @@ func main() {
 	// -------------------------------------------------------------------------
 	app.OnRecordAfterDeleteSuccess().BindFunc(func(e *core.RecordEvent) error {
 		colName := e.Record.Collection().Name
-		log.Printf("[hyttahub] DEBUG: OnRecordAfterDeleteSuccess triggered for collection: %s", colName)
+		log.Printf("[hyttahub] DEBUG: OnRecordAfterDeleteSuccess triggered: col=%s", colName)
 
-		// We only care if the last user leaves a site
-		if !strings.HasSuffix(colName, "__site_users") {
-			return e.Next()
-		}
-
-		count, err := app.CountRecords(colName)
-		if err != nil {
-			log.Printf("[hyttahub] ERROR counting %s after delete: %v", colName, err)
-			return e.Next()
-		}
-
-		if count == 0 {
-			sitePrefix := strings.TrimSuffix(colName, "__site_users")
-			log.Printf("[hyttahub] Site %s is empty. Auto-deleting all related collections...", sitePrefix)
-
-			collections, err := app.FindAllCollections()
-			if err != nil {
-				log.Printf("[hyttahub] ERROR querying collections for deletion: %v", err)
-				return e.Next()
-			}
-
-			var usersCol *core.Collection
-			for _, c := range collections {
-				if strings.HasPrefix(c.Name, sitePrefix) {
-					// We delete the users collection last to avoid breaking API rules 
-					// in other collections that depend on it during deletion.
-					if strings.HasSuffix(c.Name, "__site_users") {
-						usersCol = c
-						continue
-					}
-					log.Printf("[hyttahub] Auto-deleting collection: %s", c.Name)
-					if err := app.Delete(c); err != nil {
-						log.Printf("[hyttahub] ERROR deleting %s: %v", c.Name, err)
-					}
-				}
-			}
-
-			if usersCol != nil {
-				log.Printf("[hyttahub] Auto-deleting collection: %s (final step)", usersCol.Name)
-				if err := app.Delete(usersCol); err != nil {
-					log.Printf("[hyttahub] ERROR deleting %s: %v", usersCol.Name, err)
-				}
+		// 1. Wipe account data immediately if the auth user is deleted
+		if colName == "users" {
+			email := e.Record.GetString("email")
+			if email != "" {
+				log.Printf("[hyttahub] Auth user deleted (%s). Cleanup will be handled by cron.", email)
 			}
 		}
 
@@ -393,8 +356,118 @@ func main() {
 		// Serve static files from pb_public
 		se.Router.GET("/{path...}", apis.Static(os.DirFS(app.DataDir()+"/../pb_public"), false))
 
+		// --- Orphan Cleanup Cron ---
+		// Runs every minute to purge empty sites and abandoned account collections.
+		app.Cron().Add("hyttahub_cleanup", "*/1 * * * *", func() {
+			log.Printf("[hyttahub] Running orphaned collection cleanup...")
+
+			collections, err := app.FindAllCollections()
+			if err != nil {
+				log.Printf("[hyttahub] CRON ERROR: failed to list collections: %v", err)
+				return
+			}
+
+			// 1. Identify "Parent" status
+			// sitePrefix -> exists?
+			siteStatus := make(map[string]bool)
+			// email -> exists?
+			userStatus := make(map[string]bool)
+
+			// Fast pass to find roots
+			for _, c := range collections {
+				if strings.HasSuffix(c.Name, "__site_users") {
+					prefix := strings.TrimSuffix(c.Name, "__site_users")
+					count, _ := app.CountRecords(c.Name)
+					siteStatus[prefix] = count > 0
+				}
+			}
+
+			for _, c := range collections {
+				// skip internal and non-hyttahub collections
+				if !strings.HasPrefix(c.Name, "hyttahub__") {
+					continue
+				}
+
+				// --- Grace Period Check ---
+				// If a collection was created very recently, don't delete it.
+				// This prevents race conditions where the cron runs mid-initialization.
+				if time.Since(c.Created.Time()) < 2*time.Minute {
+					continue
+				}
+
+				// A. Empty Site Cleanup
+				isDel := false
+				for prefix, active := range siteStatus {
+					if !active && strings.HasPrefix(c.Name, prefix) {
+						log.Printf("[hyttahub] CRON: Deleting collection for empty site: %s", c.Name)
+						if err := app.Delete(c); err != nil {
+							log.Printf("[hyttahub] CRON ERROR deleting %s: %v", c.Name, err)
+						}
+						isDel = true
+						break
+					}
+				}
+				if isDel {
+					continue
+				}
+
+				// B. Orphaned Site Data (Parent site_users missing entirely)
+				if strings.Contains(c.Name, "__site_") && !strings.HasSuffix(c.Name, "__site_users") {
+					parts := strings.Split(c.Name, "__site_")
+					prefix := parts[0]
+					if _, exists := siteStatus[prefix]; !exists {
+						log.Printf("[hyttahub] CRON: Deleting orphaned sub-collection %s (site root missing)", c.Name)
+						if err := app.Delete(c); err != nil {
+							log.Printf("[hyttahub] CRON ERROR deleting %s: %v", c.Name, err)
+						}
+						continue
+					}
+				}
+
+				// C. Orphaned Account Data
+				if strings.Contains(c.Name, "__accounts__") {
+					parts := strings.Split(c.Name, "__")
+					emailChunk := ""
+					for i, part := range parts {
+						if part == "accounts" && i+1 < len(parts) {
+							emailChunk = parts[i+1]
+							break
+						}
+					}
+					email := decodeSegment(emailChunk)
+					active, exists := userStatus[email]
+					if !exists {
+						user, _ := app.FindAuthRecordByEmail("users", email)
+						active = (user != nil)
+						userStatus[email] = active
+					}
+
+					if !active {
+						log.Printf("[hyttahub] CRON: Deleting collection for missing user %s: %s", email, c.Name)
+						if err := app.Delete(c); err != nil {
+							log.Printf("[hyttahub] CRON ERROR deleting %s: %v", c.Name, err)
+						}
+						continue
+					}
+
+					// Special case: empty account_events is also a sign of a wiped account
+					if strings.HasSuffix(c.Name, "__account_events") {
+						count, _ := app.CountRecords(c.Name)
+						if count == 0 {
+							log.Printf("[hyttahub] CRON: Deleting wiped account collection: %s", c.Name)
+							if err := app.Delete(c); err != nil {
+								log.Printf("[hyttahub] CRON ERROR deleting %s: %v", c.Name, err)
+							}
+						}
+					}
+				}
+			}
+			log.Printf("[hyttahub] Orphaned collection cleanup finished.")
+		})
+
 		se.Router.BindFunc(func(e *core.RequestEvent) error {
 			reqPath := e.Request.URL.Path
+			reqMethod := e.Request.Method
 
 			// We only care about /api/collections/... requests
 			if !strings.HasPrefix(reqPath, "/api/collections/") {
@@ -409,44 +482,73 @@ func main() {
 			}
 			collectionName := parts[3]
 
+			// --- Strict Prefix Check ---
+			// We only manage collections starting with "hyttahub__"
+			if !strings.HasPrefix(collectionName, "hyttahub__") {
+				return e.Next()
+			}
+
 			// Check if it already exists
 			_, err := app.FindCollectionByNameOrId(collectionName)
 			if err == nil {
 				return e.Next() // exists
 			}
 
+			log.Printf("[hyttahub] Middleware: %s %s (processing)", reqMethod, reqPath)
+
 			// --- Refined Auto-Creation Logic ---
+			// Identify the type of collection
 			isSiteSub := strings.HasSuffix(collectionName, "__site_events") ||
 				strings.HasSuffix(collectionName, "__site_emails") ||
 				strings.HasSuffix(collectionName, "__site_files") ||
 				strings.HasSuffix(collectionName, "__site_exports__export_request")
 
-			// 1. Identify parent for site-related collections
-			parentColName := ""
-			if isSiteSub {
-				if strings.HasSuffix(collectionName, "__site_exports__export_request") {
-					parentColName = strings.Split(collectionName, "__site_exports")[0] + "__site_users"
-				} else {
+			isAccountSub := strings.Contains(collectionName, "__accounts__") &&
+				(strings.HasSuffix(collectionName, "__account_events") ||
+					strings.HasSuffix(collectionName, "__account_settings"))
+
+			// 2. Defensive check for GET requests: don't resurrect deleted/missing entities
+			if reqMethod == "GET" || reqMethod == "HEAD" {
+				if isSiteSub {
 					suffix := "__site_events"
 					if strings.HasSuffix(collectionName, "__site_emails") {
 						suffix = "__site_emails"
 					} else if strings.HasSuffix(collectionName, "__site_files") {
 						suffix = "__site_files"
+					} else if strings.HasSuffix(collectionName, "__site_exports__export_request") {
+						suffix = "__site_exports__export_request"
 					}
-					parentColName = strings.Split(collectionName, suffix)[0] + "__site_users"
-				}
-			}
+					parentColName := strings.Split(collectionName, suffix)[0] + "__site_users"
 
-			// 2. Defensive check for GET requests: don't resurrect deleted/missing sites
-			if e.Request.Method == "GET" && isSiteSub {
-				if _, err := app.FindCollectionByNameOrId(parentColName); err != nil {
-					// Parent is gone, this site is likely deleted/abandoned.
-					// Let the GET request 404 rather than recreating a zombie collection.
-					return e.Next()
+					if _, err := app.FindCollectionByNameOrId(parentColName); err != nil {
+						// Parent site_users is missing -> site is deleted. Don't resurrect.
+						log.Printf("[hyttahub] Blocking resurrection of sub-collection %s (parent %s missing)", collectionName, parentColName)
+						return e.Next()
+					}
+				} else if isAccountSub {
+					// Extract user email and check if auth record exists
+					parts := strings.Split(collectionName, "__")
+					emailChunk := ""
+					for i, part := range parts {
+						if part == "accounts" && i+1 < len(parts) {
+							emailChunk = parts[i+1]
+							break
+						}
+					}
+					email := decodeSegment(emailChunk)
+					user, _ := app.FindAuthRecordByEmail("users", email)
+					if user == nil {
+						// User is gone -> account deleted. Don't resurrect.
+						log.Printf("[hyttahub] Blocking resurrection of %s for deleted user %s", collectionName, email)
+						return e.Next()
+					}
 				}
+				// NOTICE: We and isRoot (site_users) fall through here and ARE allowed to be created on GET.
+				// This allows the app to initialize listeners for new sites.
 			}
 
 			// 3. Create it
+			log.Printf("[hyttahub] Auto-creating missing collection: %s", collectionName)
 			if err := createHyttahubCollection(app, collectionName); err != nil {
 				log.Printf("[hyttahub] ERROR auto-creating collection '%s': %v\n", collectionName, err)
 				return apis.NewBadRequestError("Failed to auto-create collection", err)
@@ -622,9 +724,10 @@ func createHyttahubCollection(app *pocketbase.PocketBase, collectionName string)
 	}
 
 	if err := app.Save(col); err != nil {
+		log.Printf("[hyttahub] ERROR saving new collection %s: %v", collectionName, err)
 		return err
 	}
 
-	log.Printf("[hyttahub] created '%s'\n", collectionName)
+	log.Printf("[hyttahub] SUCCESSFULLY created collection '%s'\n", collectionName)
 	return nil
 }
