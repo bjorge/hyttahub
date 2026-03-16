@@ -604,6 +604,12 @@ class HyttaHubLocalizationsIt extends HyttaHubLocalizations {
   String get openSourceLicensesButton => 'Pacchetti open source';
 
   @override
+  String get clearLocalStorageButton => 'Cancella tutta la memoria locale';
+
+  @override
+  String get refreshBrowserButton => 'Aggiorna il browser';
+
+  @override
   String get openSourceLicensesTitle => 'Pacchetti open source';
 
   @override

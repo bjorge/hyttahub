@@ -628,6 +628,11 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to perform this action.'**
   String get permissionDenied;
+
+  /// No description provided for @removedFromSite.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been removed from this site.'**
   String get removedFromSite;
 
   /// No description provided for @addMemberTitle.
@@ -1193,6 +1198,18 @@ abstract class HyttaHubLocalizations {
   /// In en, this message translates to:
   /// **'Open Source Packages'**
   String get openSourceLicensesButton;
+
+  /// Button label to clear all local hydrated bloc storage.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all local storage'**
+  String get clearLocalStorageButton;
+
+  /// Button label to refresh the browser page.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh browser'**
+  String get refreshBrowserButton;
 
   /// No description provided for @openSourceLicensesTitle.
   ///

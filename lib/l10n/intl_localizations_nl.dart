@@ -596,6 +596,12 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get openSourceLicensesButton => 'Open-source pakketten';
 
   @override
+  String get clearLocalStorageButton => 'Wis alle lokale opslag';
+
+  @override
+  String get refreshBrowserButton => 'Vernieuw browser';
+
+  @override
   String get openSourceLicensesTitle => 'Open-source pakketten';
 
   @override

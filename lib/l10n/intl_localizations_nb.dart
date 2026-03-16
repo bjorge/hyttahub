@@ -286,7 +286,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   @override
   String get permissionDenied =>
       'Du har ikke tillatelse til å utføre denne handlingen.';
- 
+
   @override
   String get removedFromSite => 'Du har blitt fjernet fra dette nettstedet.';
 
@@ -595,6 +595,12 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get openSourceLicensesButton => 'Open Source-pakker';
+
+  @override
+  String get clearLocalStorageButton => 'Tøm all lokal lagring';
+
+  @override
+  String get refreshBrowserButton => 'Last inn siden på nytt';
 
   @override
   String get openSourceLicensesTitle => 'Open Source-pakker';

@@ -10,3 +10,4 @@ pb_data/*.db-wal
 # Ignore compiled protobuf models and source protos
 models/
 protos/
+storage/

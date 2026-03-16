@@ -275,6 +275,8 @@
   "themeSettingsAlwaysOff": "Altijd uit",
   "themeSettingsAlwaysOn": "Altijd aan",
   "openSourceLicensesButton": "Open-source pakketten",
+  "clearLocalStorageButton": "Wis alle lokale opslag",
+  "refreshBrowserButton": "Vernieuw browser",
   "openSourceLicensesTitle": "Open-source pakketten",
   "siteInfoTitle": "Site-informatie",
   "siteEventCount": "Aantal gebeurtenissen",

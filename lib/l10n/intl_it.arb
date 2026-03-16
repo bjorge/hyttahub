@@ -215,6 +215,8 @@
   "themeSettingsAlwaysOff": "Sempre disattivato",
   "themeSettingsAlwaysOn": "Sempre attivato",
   "openSourceLicensesButton": "Pacchetti open source",
+  "clearLocalStorageButton": "Cancella tutta la memoria locale",
+  "refreshBrowserButton": "Aggiorna il browser",
   "openSourceLicensesTitle": "Pacchetti open source",
   "siteInfoTitle": "Informazioni sul sito",
   "siteEventCount": "Numero di eventi",

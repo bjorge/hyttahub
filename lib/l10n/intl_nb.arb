@@ -215,6 +215,8 @@
   "themeSettingsAlwaysOff": "Alltid av",
   "themeSettingsAlwaysOn": "Alltid på",
   "openSourceLicensesButton": "Open Source-pakker",
+  "clearLocalStorageButton": "Tøm all lokal lagring",
+  "refreshBrowserButton": "Last inn siden på nytt",
   "openSourceLicensesTitle": "Open Source-pakker",
   "siteInfoTitle": "Sideinformasjon",
   "siteEventCount": "Antall hendelser",

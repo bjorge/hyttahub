@@ -240,6 +240,14 @@
   "themeSettingsAlwaysOff": "Always Off",
   "themeSettingsAlwaysOn": "Always On",
   "openSourceLicensesButton": "Open Source Packages",
+  "clearLocalStorageButton": "Clear all local storage",
+  "@clearLocalStorageButton": {
+    "description": "Button label to clear all local hydrated bloc storage."
+  },
+  "refreshBrowserButton": "Refresh browser",
+  "@refreshBrowserButton": {
+    "description": "Button label to refresh the browser page."
+  },
   "openSourceLicensesTitle": "Open Source Packages",
   "siteInfoTitle": "Site Info",
   "siteEventCount": "Event Count",

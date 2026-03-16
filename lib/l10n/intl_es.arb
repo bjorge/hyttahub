@@ -216,6 +216,8 @@
   "themeSettingsAlwaysOff": "Siempre desactivado",
   "themeSettingsAlwaysOn": "Siempre activado",
   "openSourceLicensesButton": "Paquetes de código abierto",
+  "clearLocalStorageButton": "Limpiar todo el almacenamiento local",
+  "refreshBrowserButton": "Refrescar navegador",
   "openSourceLicensesTitle": "Paquetes de código abierto",
   "siteInfoTitle": "Información del sitio",
   "siteEventCount": "Cantidad de eventos",

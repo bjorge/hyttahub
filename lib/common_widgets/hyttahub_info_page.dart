@@ -56,7 +56,7 @@ class HyttaHubInfoPage extends StatelessWidget {
           Center(
             child: TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: Text("Clear all local storage"),
+              label: Text(l10n.clearLocalStorageButton),
               onPressed: () async {
                 await HydratedBloc.storage.clear();
                 if (context.mounted) {
@@ -75,7 +75,7 @@ class HyttaHubInfoPage extends StatelessWidget {
             Center(
               child: TextButton.icon(
                 icon: const Icon(Icons.refresh),
-                label: Text("Refresh browser"),
+                label: Text(l10n.refreshBrowserButton),
                 onPressed: () async {
                   await RefreshHelper.refresh();
                 },
