@@ -7,12 +7,17 @@ import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 
 /// A [BaseHyttaHubInternalStorage] stub for PocketBase.
 ///
-/// PocketBase stores files as fields on records rather than in a dedicated
-/// blob store. Because the collection/record layout depends on the consumer's
-/// schema, all methods in this class throw [UnimplementedError] by default.
+/// **Note**: Standard HyttaHub "Site Files" (like photos uploaded to a site)
+/// are handled by `PocketbaseHyttaHubStorage`. This class is for low-level,
+/// app-wide blob storage that does not belong to a specific site.
 ///
-/// **How to use**: Extend this class, inject a [PocketBase] client, and
-/// override the methods below to match your file collection schema:
+/// Because PocketBase requires files to be fields on records, generic path
+/// mapping is app-specific. Most apps using the standard Site features
+/// **do not need to implement this**.
+///
+/// **How to use**: If your app requires custom app-wide blob storage, extend
+/// this class, inject a [PocketBase] client, and override the methods
+/// below to match your file collection schema:
 ///
 /// ```dart
 /// class MyPocketbaseStorage extends PocketbaseHyttaHubInternalStorage {

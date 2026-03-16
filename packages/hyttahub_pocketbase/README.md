@@ -6,9 +6,10 @@ PocketBase persistence implementations for the `hyttahub` package.
 
 Provides PocketBase-specific implementations for:
 *   Authentication (`PocketbaseHyttaHubAuth`)
-*   Cloud Functions stub (`PocketbaseHyttaHubFunctions`)
-*   Internal Storage stub (`PocketbaseHyttaHubInternalStorage`)
 *   Document Storage (`PocketbaseHyttaHubStorage`)
+*   File Storage (implemented in `PocketbaseHyttaHubStorage`)
+*   Server-side Functions (partially implemented in `PocketbaseHyttaHubFunctions`)
+*   Internal Storage stub (`PocketbaseHyttaHubInternalStorage`)
 
 ## Usage
 
@@ -38,70 +39,51 @@ void registerPersistence() {
       type: StorageEnum.cloud,
       storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
       authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
-      functionsBuilder: () => PocketbaseHyttaHubFunctions(),
+      functionsBuilder: () => PocketbaseHyttaHubFunctions(client: pb),
       internalStorageBuilder: () => PocketbaseHyttaHubInternalStorage(),
     ),
   );
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // 1. Register the PocketBase implementation
-  registerPersistence();
-
-  // 2. Initialize the core Hyttahub framework
-  await initializeHyttaHub(
-    implementation: HyttaHubImplementation(
-      appBuildNumber: 1,
-      firebaseRootCollection: 'my_app',
-      appId: 'com.example.myapp',
-      storage: StorageEnum.cloud,
-      implementationId: 'pocketbase',
-    ),
-    siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
-  );
-
-  runApp(const MyApp());
+  // ... standard Flutter/HyttaHub initialization
 }
 ```
 
-## File Storage
+## File Storage (Site Files)
 
-PocketBase stores files as fields on records, not in a separate blob store.
-The default `PocketbaseHyttaHubStorage` and `PocketbaseHyttaHubInternalStorage`
-throw `UnimplementedError` for all file-related methods.
+`PocketbaseHyttaHubStorage` implements the core "Site Files" API. This is used for
+assets that belong to a site (like photos) and are shared among members.
 
-To enable file support, extend the relevant class and implement the methods
-against your own PocketBase file collection schema:
+*   **Implementation**: Uses a naming convention: `hyttahub__{appName}__sites__{siteId}__site_files`.
+*   **Storage**: Each file is one PocketBase record; `doc_id` is the filename, and `file` is the binary field.
 
-```dart
-class MyPocketbaseStorage extends PocketbaseHyttaHubStorage {
-  MyPocketbaseStorage({required super.client});
+## Internal Storage (Generic Blobs)
 
-  @override
-  Future<void> uploadFile({
-    required String appName,
-    required String siteId,
-    required String fileName,
-    required String base64Data,
-  }) async {
-    // Implement using your PocketBase file collection.
-  }
-}
-```
+`PocketbaseHyttaHubInternalStorage` is a separate, low-level interface for
+generic blob storage (similar to S3/Firebase Storage).
+
+*   **When to implement**: Only if your app needs to store arbitrary data blobs
+    that don't belong to a specific HyttaHub site.
+*   **Why it's a stub**: PocketBase requires every file to be a field on a record.
+    Since we can't guess your schema for generic paths, this is left for you to
+    override if needed.
+*   **Is it needed?**: For standard HyttaHub site features (sharing photos/events),
+    **no**. You only need `PocketbaseHyttaHubStorage`.
 
 ## Server-side Functions
 
-PocketBase has no built-in equivalent of Firebase Cloud Functions.
-`PocketbaseHyttaHubFunctions` throws `UnimplementedError` for `copySite` and
-`listSiteFiles`. Extend the class and call your PocketBase hooks or a custom
-backend instead:
+`PocketbaseHyttaHubFunctions` provides a client-side implementation for:
+*   `listSiteFiles`: Fetches file metadata from the `site_files` collection.
+
+`copySite` throws `UnimplementedError` by default as it typically requires
+a custom backend or PocketBase hook to handle recursive collection cloning.
+
+To implement custom function logic:
 
 ```dart
 class MyPocketbaseFunctions extends PocketbaseHyttaHubFunctions {
-  MyPocketbaseFunctions(this._pb);
-  final PocketBase _pb;
+  MyPocketbaseFunctions({required super.client});
 
   @override
   Future<Map<String, dynamic>> copySite({
@@ -110,7 +92,7 @@ class MyPocketbaseFunctions extends PocketbaseHyttaHubFunctions {
     int? upToVersion,
     String? mockUserEmail,
   }) async {
-    final result = await _pb.send(
+    final result = await client.send(
       '/api/my-hooks/copy-site',
       method: 'POST',
       body: {'siteId': siteId, 'appName': appName},
