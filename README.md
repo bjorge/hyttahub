@@ -1,30 +1,18 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tool/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
 A serverless Flutter framework designed to be a solid starting point for new casual applications, demonstrated with an example app.
 
 --  **Note:** Under construction; breaking changes may occur.
 
-## Features
+## Built-in Features
 
--   **GDPR and App Store Compliance**
-    -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
-    -   **Account Deletion:** A clear, user-accessible path for account deletion.
-    -   **Data Access:** Users can copy and export their complete event streams.
+
 -   **Service Management**
     -   **Service Status & Forced Upgrades:** The ability to set a minimum required application version or disable the service for maintenance, and smoothly communicate this to users.
     -   **Service Administrators:** Manage the users who can maintain policies and service status.
     -   **Beta/Authorized Users:** Limit application access to a predefined set of regular users.
+-   **GDPR and App Store Compliance**
+    -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
+    -   **Account Deletion:** A clear, user-accessible path for account deletion.
+    -   **User Data Access:** Since all the event source data is cached on the client, the user can export their data at any time. The application just needs to provide an export feature (example copy events to the clipboard). If the application supports media, then it can provide a way to export the media as well (according to its terms of service).
 -   **App Appearance & Personalization**
     -   **Localization:** Support for multiple languages.
     -   **Theming:** Dynamic light and dark mode support.
@@ -32,8 +20,8 @@ A serverless Flutter framework designed to be a solid starting point for new cas
     -   **Shared Site (Resource) Management:** Supports the common application use case of members sharing a common resource, or "site" (such as a set of photo albums, a calendar, etc.). The framework manages adding and removing site members, as well as self-removal. Site members can be assigned administrative roles. Firebase rules ensure site data privacy.
 -   **Clean Architecture**
     -   **Event Source Framework Replayed in the Client:** The common practice of having separate models for UI forms, network marshalling, database storage, and business logic is eliminated. This reduces boilerplate code and removes the need for app logic on the server side. Events are persisted on the client, significantly reducing service queries. Note: Some cloud functions are included to assist with cleanup upon account deletion.
-    -   **Event and Replay Views:** Service, account, and site events (and their resulting replays) can be viewed directly in the UI, assisting with debugging.
-    -   **Persistence-Agnostic:** The framework is designed to support various storage providers (e.g., Firebase, Supabase) and allows switching between them at runtime. Built-in memory and local file storage are also supported out of the box.
+    -   **Event and Replay Views:** Service, account, and site events (and their resulting replays) can be viewed directly in the UI, assisting with debugging without needing to access the backend services.
+    -   **Persistence-Agnostic:** The framework is designed to support various storage providers (e.g., Firebase, Pocketbase) and allows switching between them at runtime. Built-in memory and local file storage are also supported out of the box.
 
 ## Usage
 
@@ -103,8 +91,8 @@ The project requires no long-running server-side code. As far as Cloud Functions
 
 **How is shared member data kept private?**
 
-Firebase rules, defined in [`firestore.rules`](tool/firebase_emulator/firestore.rules) and [`storage.rules`](tool/firebase_emulator/storage.rules), are designed to ensure member data privacy. Only site members are permitted to access site data, and only site administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the global service status.
+Firebase rules, defined in [`firestore.rules`](tool/firebase_emulator/firestore.rules) and [`storage.rules`](tool/firebase_emulator/storage.rules), are designed to ensure member data privacy. Only site members are permitted to access site data, and only site administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the global service status. In the case of Pocketbase, these same rules are coded into the go code that runs on the server.
 
 **Can I add social authentication, such as Google or Apple logins?**
 
-The current implementation strictly uses email addresses as keys in Firebase rules and site-member management. Any Firebase Auth options that reliably retain the user's email will work natively. For Apple sign-ins, since users can choose to anonymize their email via a relay, changes would need to be made to the framework to accommodate that specific case.
+The current implementation uses email addresses as keys in Firebase rules and site-member management. Any Firebase Auth options that reliably retain the user's email will work natively. For Apple sign-ins, since users can choose to anonymize their email via a relay, changes would need to be made to the framework to accommodate that specific case.
