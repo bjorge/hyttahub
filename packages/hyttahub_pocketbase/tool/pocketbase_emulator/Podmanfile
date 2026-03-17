@@ -28,7 +28,7 @@ RUN mkdir -p protos models && \
     protoc --proto_path=protos --go_out=models --go_opt=paths=source_relative protos/*.proto
 
 # Copy the source code
-COPY main.go main_test.go ./
+COPY *.go ./
 COPY migrations/ ./migrations/
 
 # Run tests
