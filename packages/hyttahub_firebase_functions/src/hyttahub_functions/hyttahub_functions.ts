@@ -8,7 +8,7 @@ import { AccountEvent } from "../ts/account_events";
 import {
   MarkForDeletion,
   MarkForDeletion_DeleteReason,
-} from "../ts/site_email";
+} from "../ts/site_util";
 import { onSchedule } from "firebase-functions/scheduler";
 import { getArchiveBucketName } from "../shared/config";
 import {
@@ -94,50 +94,83 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
           }
           const memberId = afterData[fbUserId];
 
+          // 1. Add LeaveSite to Site Events
           const siteEventsRef = admin
             .firestore()
             .collection(firebaseSiteEventsPath(appPathSegment, siteId));
 
-          // Get the latest event version to increment it.
-          const lastEventSnapshot = await siteEventsRef
+          const lastSiteEventSnapshot = await siteEventsRef
             .orderBy(fbVersion, "desc")
             .limit(1)
             .get();
           let newVersion = 1;
-          if (!lastEventSnapshot.empty) {
-            const lastEventData = lastEventSnapshot.docs[0].data();
+          if (!lastSiteEventSnapshot.empty) {
+            const lastEventData = lastSiteEventSnapshot.docs[0].data();
             if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
               newVersion = lastEventData[fbVersion] + 1;
             }
           }
 
-          if (newVersion <= 1) {
-            logger.info(
-              `No site events exist for site ${siteId}, perhaps an admin has removed this site...`
-            );
-          } else {
-            // A member leaving is effectively removing themselves.
+          if (newVersion > 1) {
             const siteEvent: SiteEvent = {
               version: newVersion,
-              author: memberId,
+              author: markForDeletionInfo.author || memberId,
               leaveSite: {
                 memberId: memberId,
               },
             };
 
-            const buffer = SiteEvent.encode(siteEvent).finish();
-            const base64Event = Buffer.from(buffer).toString("base64");
+            const siteBuffer = SiteEvent.encode(siteEvent).finish();
+            const base64SiteEvent = Buffer.from(siteBuffer).toString("base64");
 
             await siteEventsRef.doc(String(newVersion)).set({
-              [fbPayload]: base64Event,
+              [fbPayload]: base64SiteEvent,
               [fbVersion]: newVersion,
               [fbTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
-              `Added LeaveSite event for member ${memberId} in site ${siteId} with version ${newVersion}.`
+              `Added LeaveSite site event for member ${memberId} in site ${siteId} with version ${newVersion}.`
             );
           }
+
+          // 2. Add LeaveSite to Account Events
+          const accountEventsRef = admin
+            .firestore()
+            .collection(firebaseAccountEventsPath(appPathSegment, email));
+
+          const lastAccEventSnapshot = await accountEventsRef
+            .orderBy(fbVersion, "desc")
+            .limit(1)
+            .get();
+          let newAccVersion = 1;
+          if (!lastAccEventSnapshot.empty) {
+            const lastAccEventData = lastAccEventSnapshot.docs[0].data();
+            if (lastAccEventData[fbVersion] && typeof lastAccEventData[fbVersion] === "number") {
+              newAccVersion = lastAccEventData[fbVersion] + 1;
+            }
+          }
+
+          if (newAccVersion > 1) {
+            const accountEvent: AccountEvent = {
+              version: newAccVersion,
+              leaveSite: siteId,
+            };
+
+            const accBuffer = AccountEvent.encode(accountEvent).finish();
+            const base64AccEvent = Buffer.from(accBuffer).toString("base64");
+
+            await accountEventsRef.doc(String(newAccVersion)).set({
+              [fbPayload]: base64AccEvent,
+              [fbVersion]: newAccVersion,
+              [fbTimeStamp]: FieldValue.serverTimestamp(),
+            });
+
+            logger.info(
+              `Added LeaveSite account event for user ${email} in site ${siteId} with version ${newAccVersion}.`
+            );
+          }
+
         } else if (
           markForDeletionInfo.deleteReason ===
           MarkForDeletion_DeleteReason.memberEmailUpdated
@@ -155,44 +188,82 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
 
           const siteId = event.params.siteId;
           const email = event.params.email;
+          const memberId = afterData[fbUserId];
 
-          const accountEventsRef = admin
+          // 1. Add RemoveMember to Site Events
+          const siteEventsRef = admin
             .firestore()
-            .collection(firebaseAccountEventsPath(appPathSegment, email));
+            .collection(firebaseSiteEventsPath(appPathSegment, siteId));
 
-          // Get the latest event version to increment it.
-          const lastEventSnapshot = await accountEventsRef
+          const lastSiteEventSnapshot = await siteEventsRef
             .orderBy(fbVersion, "desc")
             .limit(1)
             .get();
           let newVersion = 1;
-          if (!lastEventSnapshot.empty) {
-            const lastEventData = lastEventSnapshot.docs[0].data();
+          if (!lastSiteEventSnapshot.empty) {
+            const lastEventData = lastSiteEventSnapshot.docs[0].data();
             if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
               newVersion = lastEventData[fbVersion] + 1;
             }
           }
 
-          if (newVersion <= 1) {
-            logger.info(`No account document exists for ${email}, this is ok.`);
-          } else {
-            // Create an AccountEvent to signify the user has been removed from the site.
-            const accountEvent: AccountEvent = {
+          if (newVersion > 1) {
+            const siteEvent: SiteEvent = {
               version: newVersion,
-              removeSite: siteId,
+              author: markForDeletionInfo.author,
+              removeMember: {
+                memberId: memberId,
+              },
             };
 
-            const buffer = AccountEvent.encode(accountEvent).finish();
-            const base64Event = Buffer.from(buffer).toString("base64");
+            const siteBuffer = SiteEvent.encode(siteEvent).finish();
+            const base64SiteEvent = Buffer.from(siteBuffer).toString("base64");
 
-            await accountEventsRef.add({
-              [fbPayload]: base64Event,
+            await siteEventsRef.doc(String(newVersion)).set({
+              [fbPayload]: base64SiteEvent,
               [fbVersion]: newVersion,
               [fbTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
-              `Added remove account event for user ${email} from site ${siteId} with version ${newVersion}.`
+              `Added RemoveMember site event for member ${memberId} in site ${siteId} with version ${newVersion}.`
+            );
+          }
+
+          // 2. Add RemoveSite to Account Events
+          const accountEventsRef = admin
+            .firestore()
+            .collection(firebaseAccountEventsPath(appPathSegment, email));
+
+          const lastAccEventSnapshot = await accountEventsRef
+            .orderBy(fbVersion, "desc")
+            .limit(1)
+            .get();
+          let newAccVersion = 1;
+          if (!lastAccEventSnapshot.empty) {
+            const lastAccEventData = lastAccEventSnapshot.docs[0].data();
+            if (lastAccEventData[fbVersion] && typeof lastAccEventData[fbVersion] === "number") {
+              newAccVersion = lastAccEventData[fbVersion] + 1;
+            }
+          }
+
+          if (newAccVersion > 1) {
+            const accountEvent: AccountEvent = {
+              version: newAccVersion,
+              removeSite: siteId,
+            };
+
+            const accBuffer = AccountEvent.encode(accountEvent).finish();
+            const base64AccEvent = Buffer.from(accBuffer).toString("base64");
+
+            await accountEventsRef.doc(String(newAccVersion)).set({
+              [fbPayload]: base64AccEvent,
+              [fbVersion]: newAccVersion,
+              [fbTimeStamp]: FieldValue.serverTimestamp(),
+            });
+
+            logger.info(
+              `Added removeSite account event for user ${email} from site ${siteId} with version ${newAccVersion}.`
             );
           }
         } else {

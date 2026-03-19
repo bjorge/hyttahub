@@ -248,7 +248,8 @@ func registerAppHooks(app core.App) {
 						}
 					}
 
-					if mInfo.DeleteReason == models.MarkForDeletion_memberLeftSite {
+					switch mInfo.DeleteReason {
+					case models.MarkForDeletion_memberLeftSite:
 						log.Printf("[hyttahub] DEBUG: Processing Member Left Site (%s) for user %s", siteId, email)
 
 						// 1. Add LeaveSite to Site Events
@@ -260,7 +261,7 @@ func registerAppHooks(app core.App) {
 						}
 						siteEvent := &models.SiteEvent{
 							Version: int32(newVersion),
-							Author:  int32(memberId),
+							Author:  int32(mInfo.Author),
 							EventType: &models.SiteEvent_LeaveSite_{
 								LeaveSite: &models.SiteEvent_LeaveSite{
 									MemberId: int32(memberId),
@@ -287,7 +288,7 @@ func registerAppHooks(app core.App) {
 						aeBytes, _ := proto.Marshal(accEvent)
 						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
 
-					} else if mInfo.DeleteReason == models.MarkForDeletion_memberRemovedFromSite {
+					case models.MarkForDeletion_memberRemovedFromSite:
 						log.Printf("[hyttahub] DEBUG: Processing Member Removed From Site (%s) for user %s", siteId, email)
 
 						// 1. Add RemoveMember to Site Events
@@ -299,7 +300,7 @@ func registerAppHooks(app core.App) {
 						}
 						siteEvent := &models.SiteEvent{
 							Version: int32(newVersion),
-							Author:  0, // System/Admin perform the removal
+							Author:  int32(mInfo.Author),
 							EventType: &models.SiteEvent_RemoveMember_{
 								RemoveMember: &models.SiteEvent_RemoveMember{
 									MemberId: int32(memberId),

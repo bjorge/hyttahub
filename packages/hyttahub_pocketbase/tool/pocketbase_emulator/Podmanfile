@@ -22,8 +22,8 @@ RUN go mod download
 
 # Download and compile protos
 RUN mkdir -p protos models && \
-    wget -qO- https://github.com/bjorge/hyttahub/archive/refs/tags/v0.1.52.tar.gz | \
-    tar xz -C protos --strip-components=3 "hyttahub-0.1.52/lib/models" && \
+    wget -qO- https://github.com/bjorge/hyttahub/archive/refs/heads/pocketbase_tests.tar.gz | \
+    tar xz -C protos --strip-components=3 "hyttahub-pocketbase_tests/lib/models" && \
     sed -i '/syntax = "proto3";/a option go_package = "pocketbase_emulator/models";' protos/*.proto && \
     protoc --proto_path=protos --go_out=models --go_opt=paths=source_relative protos/*.proto
 

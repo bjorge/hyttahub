@@ -125,7 +125,8 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
       await storage.runBatch((batch) async {
         if (submitAccountEvent.event.hasJoinSite()) {
           final siteId = submitAccountEvent.event.joinSite;
-          final userDoc = await storage.getDocument(firebaseSiteUsersPath(siteId), email);
+          final userDoc =
+              await storage.getDocument(firebaseSiteUsersPath(siteId), email);
           if (userDoc == null) {
             throw Exception('Error: Cannot join site, user does not exist.');
           }
@@ -133,9 +134,13 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
         if (submitAccountEvent.event.hasLeaveSite()) {
           final siteId = submitAccountEvent.event.leaveSite;
+          final userDoc =
+              await storage.getDocument(firebaseSiteUsersPath(siteId), email);
+          final authorId = (userDoc?[fbUserId] as int?) ?? 0;
           final markForDeletionInfo = base64Encode(
             MarkForDeletion(
               deleteReason: MarkForDeletion_DeleteReason.memberLeftSite,
+              author: authorId,
             ).writeToBuffer(),
           );
 
@@ -149,15 +154,17 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           );
         }
 
-        batch.setDocument(
-          firebaseAccountEventsPath(email),
-          submitAccountEvent.event.version.toString(),
-          {
-            fbPayload: encodedAccountEvent,
-            fbVersion: submitAccountEvent.event.version,
-            fbTimeStamp: storage.serverTimestamp,
-          },
-        );
+        if (!submitAccountEvent.event.hasLeaveSite()) {
+          batch.setDocument(
+            firebaseAccountEventsPath(email),
+            submitAccountEvent.event.version.toString(),
+            {
+              fbPayload: encodedAccountEvent,
+              fbVersion: submitAccountEvent.event.version,
+              fbTimeStamp: storage.serverTimestamp,
+            },
+          );
+        }
       });
 
       // In-memory/local storage: perform inline cleanup that the Firebase

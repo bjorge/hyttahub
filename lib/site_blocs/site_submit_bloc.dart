@@ -61,6 +61,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         final markForDeletionInfo = base64Encode(
           MarkForDeletion(
             deleteReason: MarkForDeletion_DeleteReason.memberRemovedFromSite,
+            author: submitSiteEvent.event.author,
           ).writeToBuffer(),
         );
 
@@ -93,6 +94,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           final markForDeletionInfo = base64Encode(
             MarkForDeletion(
               deleteReason: MarkForDeletion_DeleteReason.memberEmailUpdated,
+              author: submitSiteEvent.event.author,
             ).writeToBuffer(),
           );
           batch.updateDocument(
@@ -126,15 +128,19 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
       }
 
       // update the events immutable collection with the event
-      batch.setDocument(
-        firebaseSiteEventsPath(siteId),
-        submitSiteEvent.event.version.toString(),
-        {
-          fbPayload: encodedEvent,
-          fbVersion: submitSiteEvent.event.version,
-          fbTimeStamp: storage.serverTimestamp,
-        },
-      );
+      // skipping for events handled by server cascading effects
+      if (!submitSiteEvent.event.hasRemoveMember() &&
+          !submitSiteEvent.event.hasLeaveSite()) {
+        batch.setDocument(
+          firebaseSiteEventsPath(siteId),
+          submitSiteEvent.event.version.toString(),
+          {
+            fbPayload: encodedEvent,
+            fbVersion: submitSiteEvent.event.version,
+            fbTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
     });
 
     // In-memory/local storage: perform inline cleanup that the Firebase
