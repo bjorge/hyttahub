@@ -9,4 +9,5 @@ message MarkForDeletion {
   }
 
   DeleteReason deleteReason = 1; // the reason for deletion
+  int32 author =2;
 }

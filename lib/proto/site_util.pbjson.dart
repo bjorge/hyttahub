@@ -1,6 +1,6 @@
 // This is a generated file - do not edit.
 //
-// Generated from site_email.proto.
+// Generated from site_util.proto.
 
 // @dart = 3.3
 
@@ -27,6 +27,7 @@ const MarkForDeletion$json = {
       '6': '.MarkForDeletion.DeleteReason',
       '10': 'deleteReason'
     },
+    {'1': 'author', '3': 2, '4': 1, '5': 5, '10': 'author'},
   ],
   '4': [MarkForDeletion_DeleteReason$json],
 };
@@ -44,6 +45,6 @@ const MarkForDeletion_DeleteReason$json = {
 /// Descriptor for `MarkForDeletion`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List markForDeletionDescriptor = $convert.base64Decode(
     'Cg9NYXJrRm9yRGVsZXRpb24SQQoMZGVsZXRlUmVhc29uGAEgASgOMh0uTWFya0ZvckRlbGV0aW'
-    '9uLkRlbGV0ZVJlYXNvblIMZGVsZXRlUmVhc29uIlUKDERlbGV0ZVJlYXNvbhISCg5tZW1iZXJM'
-    'ZWZ0U2l0ZRAAEhkKFW1lbWJlclJlbW92ZWRGcm9tU2l0ZRABEhYKEm1lbWJlckVtYWlsVXBkYX'
-    'RlZBAC');
+    '9uLkRlbGV0ZVJlYXNvblIMZGVsZXRlUmVhc29uEhYKBmF1dGhvchgCIAEoBVIGYXV0aG9yIlUK'
+    'DERlbGV0ZVJlYXNvbhISCg5tZW1iZXJMZWZ0U2l0ZRAAEhkKFW1lbWJlclJlbW92ZWRGcm9tU2'
+    'l0ZRABEhYKEm1lbWJlckVtYWlsVXBkYXRlZBAC');

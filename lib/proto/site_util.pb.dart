@@ -1,6 +1,6 @@
 // This is a generated file - do not edit.
 //
-// Generated from site_email.proto.
+// Generated from site_util.proto.
 
 // @dart = 3.3
 
@@ -14,19 +14,21 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'site_email.pbenum.dart';
+import 'site_util.pbenum.dart';
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
-export 'site_email.pbenum.dart';
+export 'site_util.pbenum.dart';
 
 /// The SiteEmail is persisted in the email collection for each site
 class MarkForDeletion extends $pb.GeneratedMessage {
   factory MarkForDeletion({
     MarkForDeletion_DeleteReason? deleteReason,
+    $core.int? author,
   }) {
     final result = create();
     if (deleteReason != null) result.deleteReason = deleteReason;
+    if (author != null) result.author = author;
     return result;
   }
 
@@ -45,6 +47,7 @@ class MarkForDeletion extends $pb.GeneratedMessage {
     ..aE<MarkForDeletion_DeleteReason>(1, _omitFieldNames ? '' : 'deleteReason',
         protoName: 'deleteReason',
         enumValues: MarkForDeletion_DeleteReason.values)
+    ..aI(2, _omitFieldNames ? '' : 'author')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -74,6 +77,15 @@ class MarkForDeletion extends $pb.GeneratedMessage {
   $core.bool hasDeleteReason() => $_has(0);
   @$pb.TagNumber(1)
   void clearDeleteReason() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get author => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set author($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasAuthor() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAuthor() => $_clearField(2);
 }
 
 const $core.bool _omitFieldNames =

@@ -8,7 +8,7 @@ import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/functions/site_cleanup.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
-import 'package:hyttahub/proto/site_email.pb.dart';
+import 'package:hyttahub/proto/site_util.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';

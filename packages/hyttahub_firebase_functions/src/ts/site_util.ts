@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v1.180.0
 //   protoc               v3.21.12
-// source: site_email.proto
+// source: site_util.proto
 
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
@@ -13,6 +13,7 @@ export const protobufPackage = "";
 export interface MarkForDeletion {
   /** the reason for deletion */
   deleteReason: MarkForDeletion_DeleteReason;
+  author: number;
 }
 
 export enum MarkForDeletion_DeleteReason {
@@ -58,13 +59,16 @@ export function markForDeletion_DeleteReasonToJSON(object: MarkForDeletion_Delet
 }
 
 function createBaseMarkForDeletion(): MarkForDeletion {
-  return { deleteReason: 0 };
+  return { deleteReason: 0, author: 0 };
 }
 
 export const MarkForDeletion = {
   encode(message: MarkForDeletion, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.deleteReason !== 0) {
       writer.uint32(8).int32(message.deleteReason);
+    }
+    if (message.author !== 0) {
+      writer.uint32(16).int32(message.author);
     }
     return writer;
   },
@@ -83,6 +87,13 @@ export const MarkForDeletion = {
 
           message.deleteReason = reader.int32() as any;
           continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.author = reader.int32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -93,13 +104,19 @@ export const MarkForDeletion = {
   },
 
   fromJSON(object: any): MarkForDeletion {
-    return { deleteReason: isSet(object.deleteReason) ? markForDeletion_DeleteReasonFromJSON(object.deleteReason) : 0 };
+    return {
+      deleteReason: isSet(object.deleteReason) ? markForDeletion_DeleteReasonFromJSON(object.deleteReason) : 0,
+      author: isSet(object.author) ? globalThis.Number(object.author) : 0,
+    };
   },
 
   toJSON(message: MarkForDeletion): unknown {
     const obj: any = {};
     if (message.deleteReason !== 0) {
       obj.deleteReason = markForDeletion_DeleteReasonToJSON(message.deleteReason);
+    }
+    if (message.author !== 0) {
+      obj.author = Math.round(message.author);
     }
     return obj;
   },
@@ -110,6 +127,7 @@ export const MarkForDeletion = {
   fromPartial<I extends Exact<DeepPartial<MarkForDeletion>, I>>(object: I): MarkForDeletion {
     const message = createBaseMarkForDeletion();
     message.deleteReason = object.deleteReason ?? 0;
+    message.author = object.author ?? 0;
     return message;
   },
 };

@@ -194,7 +194,7 @@ func registerAppHooks(app core.App) {
 	})
 
 	// -------------------------------------------------------------------------
-	// Firestore Rules Emulation: Auto-Delete Empty Sites
+	// Firestore Rules Emulation: Auto-Delete Empty Sites (Cleanup Logic)
 	// -------------------------------------------------------------------------
 	app.OnRecordAfterDeleteSuccess().BindFunc(func(e *core.RecordEvent) error {
 		colName := e.Record.Collection().Name
@@ -214,10 +214,13 @@ func registerAppHooks(app core.App) {
 			return e.Next()
 		}
 
+		log.Printf("[hyttahub] DEBUG: Cascading hook triggered for %s (id=%s), mValue=%s", colName, e.Record.Id, mValue)
+
 		mBytes, err := base64.StdEncoding.DecodeString(mValue)
 		if err == nil {
 			mInfo := &models.MarkForDeletion{}
 			if err := proto.Unmarshal(mBytes, mInfo); err == nil {
+				log.Printf("[hyttahub] DEBUG: MarkForDeletion reason received: %v", mInfo.DeleteReason)
 				parts := strings.Split(colName, "__")
 				if len(parts) >= 5 {
 					appName := parts[1]
@@ -225,68 +228,117 @@ func registerAppHooks(app core.App) {
 					email := e.Record.GetString("doc_id")
 					memberId := e.Record.GetInt("u")
 
+					// Common helper to save an event (Site or Account)
+					saveGenericEvent := func(targetColName string, version int, base64Payload string, eventType string) {
+						log.Printf("[hyttahub] DEBUG:   -> Creating %s event (v=%d) in collection: %s", eventType, version, targetColName)
+						col, _ := app.FindCollectionByNameOrId(targetColName)
+						if col != nil {
+							record := core.NewRecord(col)
+							record.Set("doc_id", fmt.Sprintf("%d", version))
+							record.Set("v", version)
+							record.Set("p", base64Payload)
+							record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+							if err := app.Save(record); err != nil {
+								log.Printf("[hyttahub] ERROR:     Failed to save event record: %v", err)
+							} else {
+								log.Printf("[hyttahub] DEBUG:     Event successfully saved.")
+							}
+						} else {
+							log.Printf("[hyttahub] WARNING:   Collection %s not found. Event creation skipped.", targetColName)
+						}
+					}
+
 					if mInfo.DeleteReason == models.MarkForDeletion_memberLeftSite {
+						log.Printf("[hyttahub] DEBUG: Processing Member Left Site (%s) for user %s", siteId, email)
+
+						// 1. Add LeaveSite to Site Events
 						eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
 						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
 						newVersion := 1
 						if len(lastRecords) > 0 {
 							newVersion = lastRecords[0].GetInt("v") + 1
 						}
-						if newVersion > 1 {
-							siteEvent := &models.SiteEvent{
-								Version: int32(newVersion),
-								Author:  int32(memberId),
-								EventType: &models.SiteEvent_LeaveSite_{
-									LeaveSite: &models.SiteEvent_LeaveSite{
-										MemberId: int32(memberId),
-									},
+						siteEvent := &models.SiteEvent{
+							Version: int32(newVersion),
+							Author:  int32(memberId),
+							EventType: &models.SiteEvent_LeaveSite_{
+								LeaveSite: &models.SiteEvent_LeaveSite{
+									MemberId: int32(memberId),
 								},
-							}
-							eBytes, _ := proto.Marshal(siteEvent)
-							eBase64 := base64.StdEncoding.EncodeToString(eBytes)
-							col, _ := app.FindCollectionByNameOrId(eventsCol)
-							if col != nil {
-								record := core.NewRecord(col)
-								record.Set("doc_id", fmt.Sprintf("%d", newVersion))
-								record.Set("v", newVersion)
-								record.Set("p", eBase64)
-								record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-								app.Save(record)
-							}
+							},
 						}
-					} else if mInfo.DeleteReason == models.MarkForDeletion_memberRemovedFromSite {
+						eBytes, _ := proto.Marshal(siteEvent)
+						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Leave")
+
+						// 2. Add LeaveSite to Account Events
 						encodedEmail := encodeSegment(email)
-						accountEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-						lastRecords, _ := app.FindRecordsByFilter(accountEventsCol, "", "-v", 1, 0)
+						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
+						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+						newAccVersion := 1
+						if len(lastAccRecords) > 0 {
+							newAccVersion = lastAccRecords[0].GetInt("v") + 1
+						}
+						accEvent := &models.AccountEvent{
+							Version: int32(newAccVersion),
+							EventType: &models.AccountEvent_LeaveSite{
+								LeaveSite: siteId,
+							},
+						}
+						aeBytes, _ := proto.Marshal(accEvent)
+						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
+
+					} else if mInfo.DeleteReason == models.MarkForDeletion_memberRemovedFromSite {
+						log.Printf("[hyttahub] DEBUG: Processing Member Removed From Site (%s) for user %s", siteId, email)
+
+						// 1. Add RemoveMember to Site Events
+						eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
+						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
 						newVersion := 1
 						if len(lastRecords) > 0 {
 							newVersion = lastRecords[0].GetInt("v") + 1
 						}
-						if newVersion > 1 {
-							accountEvent := &models.AccountEvent{
-								Version: int32(newVersion),
-								EventType: &models.AccountEvent_RemoveSite{
-									RemoveSite: siteId,
+						siteEvent := &models.SiteEvent{
+							Version: int32(newVersion),
+							Author:  0, // System/Admin perform the removal
+							EventType: &models.SiteEvent_RemoveMember_{
+								RemoveMember: &models.SiteEvent_RemoveMember{
+									MemberId: int32(memberId),
 								},
-							}
-							eBytes, _ := proto.Marshal(accountEvent)
-							eBase64 := base64.StdEncoding.EncodeToString(eBytes)
-							col, _ := app.FindCollectionByNameOrId(accountEventsCol)
-							if col != nil {
-								record := core.NewRecord(col)
-								record.Set("doc_id", fmt.Sprintf("%d", newVersion))
-								record.Set("v", newVersion)
-								record.Set("p", eBase64)
-								record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-								app.Save(record)
-							}
+							},
 						}
+						eBytes, _ := proto.Marshal(siteEvent)
+						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Remove")
+
+						// 2. Add RemoveSite to Account Events
+						encodedEmail := encodeSegment(email)
+						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
+						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+						newAccVersion := 1
+						if len(lastAccRecords) > 0 {
+							newAccVersion = lastAccRecords[0].GetInt("v") + 1
+						}
+						accEvent := &models.AccountEvent{
+							Version: int32(newAccVersion),
+							EventType: &models.AccountEvent_RemoveSite{
+								RemoveSite: siteId,
+							},
+						}
+						aeBytes, _ := proto.Marshal(accEvent)
+						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Remove")
 					}
 				}
+			} else {
+				log.Printf("[hyttahub] ERROR: Failed to unmarshal MarkForDeletion proto: %v", err)
 			}
+		} else {
+			log.Printf("[hyttahub] ERROR: Failed to decode m field base64: %v", err)
 		}
 
-		app.Delete(e.Record)
+		log.Printf("[hyttahub] DEBUG: Deleting original user-site linkage record (id=%s)", e.Record.Id)
+		if err := app.Delete(e.Record); err != nil {
+			log.Printf("[hyttahub] ERROR: Failed to delete site user record: %v", err)
+			return err
+		}
 		return e.Next()
 	})
 
@@ -518,7 +570,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		emailChunk := ""
 		for i, part := range parts { if part == "accounts" && i+1 < len(parts) { emailChunk = parts[i+1]; break } }
 		email := decodeSegment(emailChunk)
-		rule := "@request.auth.email = '" + email + "'"
+		rule := "@request.auth.id != '' && @request.auth.email = \"" + email + "\""
 		listRule, viewRule, createRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
 		if !strings.HasSuffix(collectionName, "__account_events") { updateRule = types.Pointer(rule) }
 	}
