@@ -88,6 +88,71 @@ class MarkForDeletion extends $pb.GeneratedMessage {
   void clearAuthor() => $_clearField(2);
 }
 
+class MarkForCopy extends $pb.GeneratedMessage {
+  factory MarkForCopy({
+    $core.int? author,
+    $core.int? upToVersion,
+  }) {
+    final result = create();
+    if (author != null) result.author = author;
+    if (upToVersion != null) result.upToVersion = upToVersion;
+    return result;
+  }
+
+  MarkForCopy._();
+
+  factory MarkForCopy.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory MarkForCopy.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'MarkForCopy',
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'author')
+    ..aI(2, _omitFieldNames ? '' : 'upToVersion', protoName: 'upToVersion')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  MarkForCopy clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  MarkForCopy copyWith(void Function(MarkForCopy) updates) =>
+      super.copyWith((message) => updates(message as MarkForCopy))
+          as MarkForCopy;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static MarkForCopy create() => MarkForCopy._();
+  @$core.override
+  MarkForCopy createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static MarkForCopy getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<MarkForCopy>(create);
+  static MarkForCopy? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get author => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set author($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasAuthor() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAuthor() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get upToVersion => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set upToVersion($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasUpToVersion() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearUpToVersion() => $_clearField(2);
+}
+
 const $core.bool _omitFieldNames =
     $core.bool.fromEnvironment('protobuf.omit_field_names');
 const $core.bool _omitMessageNames =
