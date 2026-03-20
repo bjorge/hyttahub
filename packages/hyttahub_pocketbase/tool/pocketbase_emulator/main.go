@@ -412,14 +412,23 @@ func registerAppHooks(app core.App) {
 
 					log.Printf("[hyttahub] Middleware: %s %s (processing missing collection %s)", reqMethod, reqPath, collectionName)
 
-					// Defensive checks: block "leaf" collections on GET if their dependencies aren't met.
-					if reqMethod == "GET" || reqMethod == "HEAD" {
+					// Defensive checks: block "leaf" collections on GET/HEAD/OPTIONS if their dependencies aren't met.
+					// We only want to auto-create "leaf" collections during WRITES (POST/PATCH/DELETE) 
+					// because writes correctly trigger parent creation first if needed (via Forward Cascade).
+					if reqMethod == "GET" || reqMethod == "HEAD" || reqMethod == "OPTIONS" {
 						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
 							// Determine parent (site_users)
 							prefix := strings.Split(collectionName, "__site_")[0]
 							parent := prefix + "__site_users"
 							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-								log.Printf("[hyttahub] Blocking resurrection of sub-collection %s (parent %s not found)", collectionName, parent)
+								log.Printf("[hyttahub] Blocking access to leaf collection %s (parent %s not found)", collectionName, parent)
+								return e.Next()
+							}
+						} else if strings.HasSuffix(collectionName, "__service_events") {
+							prefix := strings.TrimSuffix(collectionName, "__service_events")
+							parent := prefix + "__service_users"
+							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+								log.Printf("[hyttahub] Blocking access to leaf collection %s (parent %s not found)", collectionName, parent)
 								return e.Next()
 							}
 						} else if strings.Contains(collectionName, "__accounts__") {
