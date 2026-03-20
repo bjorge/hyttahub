@@ -529,8 +529,18 @@ func registerAppHooks(app core.App) {
 					}
 
 					// Check if it already exists
-					_, err := app.FindCollectionByNameOrId(collectionName)
+					col, err := app.FindCollectionByNameOrId(collectionName)
 					if err == nil {
+						// Existing collection — ensure MarkForCopy field exists for _users collections
+						if strings.HasSuffix(collectionName, "_users") {
+							if col.Fields.GetByName("MarkForCopy") == nil {
+								log.Printf("[hyttahub] Syncing MarkForCopy field to existing collection: %s", collectionName)
+								col.Fields.Add(&core.TextField{Name: "MarkForCopy"})
+								if err := app.Save(col); err != nil {
+									log.Printf("[hyttahub] ERROR syncing MarkForCopy field: %v", err)
+								}
+							}
+						}
 						return e.Next() // exists
 					}
 
