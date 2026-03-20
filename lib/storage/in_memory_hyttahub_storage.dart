@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
@@ -138,11 +138,11 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String base64Data,
   }) async {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
-    final path = firebaseFilesPath(siteId, fileName);
+    final path = collectionFilesPath(siteId, fileName);
     final bytes = base64Decode(base64Data);
     await internalStorage.uploadFile(path, bytes);
     // Also write to the archive (append-only, never deleted)
-    final archivePath = firebaseArchiveFilePath(siteId, fileName);
+    final archivePath = collectionArchiveFilePath(siteId, fileName);
     await internalStorage.uploadFile(archivePath, bytes);
     updateController.add({'path': '_files/$siteId', 'docId': fileName});
   }
@@ -154,7 +154,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     required String fileName,
   }) async {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
-    final path = firebaseFilesPath(siteId, fileName);
+    final path = collectionFilesPath(siteId, fileName);
     return await internalStorage.downloadFile(path);
   }
 
@@ -166,7 +166,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   }) async {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
     for (final fileName in fileNames) {
-      final path = firebaseFilesPath(siteId, fileName);
+      final path = collectionFilesPath(siteId, fileName);
       await internalStorage.deleteFile(path);
     }
     updateController.add({'path': '_files/$siteId'});
@@ -180,7 +180,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     int? expirationDays,
   }) async {
     final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
-    final path = firebaseFilesPath(siteId, fileName);
+    final path = collectionFilesPath(siteId, fileName);
     return await internalStorage.getDownloadUrl(path);
   }
 

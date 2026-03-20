@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 
 import 'package:hyttahub/hyttahub_options.dart';

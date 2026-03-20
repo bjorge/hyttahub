@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';

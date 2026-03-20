@@ -1,7 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:flutter/foundation.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 
@@ -19,13 +19,13 @@ Future<void> cleanUpOrphanedSite({
   }
 
   // 1. Delete site_events collection
-  await storage.deleteCollection(firebaseSiteEventsPath(siteId));
+  await storage.deleteCollection(collectionSiteEventsPath(siteId));
 
   // 2. Delete site_users collection (should already be empty, but be thorough)
-  await storage.deleteCollection(firebaseSiteUsersPath(siteId));
+  await storage.deleteCollection(collectionSiteUsersPath(siteId));
 
   // 3. Delete active files for this site
-  final filesPrefix = firebaseFilesPath(siteId, '');
+  final filesPrefix = collectionFilesPath(siteId, '');
   final files = await storage.listFiles(filesPrefix);
   if (files.isNotEmpty) {
     final internalStorage =
@@ -36,7 +36,7 @@ Future<void> cleanUpOrphanedSite({
   }
 
   // 4. Delete archive files for this site
-  final archivePrefix = firebaseArchiveFilePath(siteId, '');
+  final archivePrefix = collectionArchiveFilePath(siteId, '');
   final archiveFiles = await storage.listFiles(archivePrefix);
   if (archiveFiles.isNotEmpty) {
     final internalStorage =

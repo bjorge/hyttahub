@@ -12,7 +12,7 @@ abstract class AllowedEmailsDisplayConfig {
   String get screenTitle;
 }
 
-/// A generic screen for displaying a list of allowed emails from Firestore.
+/// A generic screen for displaying a list of allowed emails from Cloud Backend.
 class AllowedEmailsDisplay<T extends AllowedEmailsBloc> extends StatefulWidget {
   const AllowedEmailsDisplay({
     super.key,

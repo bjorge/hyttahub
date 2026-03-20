@@ -17,7 +17,7 @@ class CloudFunctionsBloc extends Cubit<CloudFunctionsState> {
       HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud;
 
   String get _appName =>
-      HyttaHubOptions.implementation?.firebaseRootCollection ?? '';
+      HyttaHubOptions.implementation?.cloudRootCollection ?? '';
 
 
   Future<Map<String, dynamic>> copySite(String siteId, {int? upToVersion, String? email}) async {

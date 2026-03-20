@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:hyttahub/account_blocs/acount_replay.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ class AccountEventsConfig
   final String email;
 
   @override
-  String get collectionPath => firebaseAccountEventsPath(email);
+  String get collectionPath => collectionAccountEventsPath(email);
 
   @override
   final String screenTitle;

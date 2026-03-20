@@ -52,8 +52,8 @@ export interface HyttaHubImplementation {
   storage: StorageEnum;
   appBuildNumber: number;
   appId: string;
-  firebaseRootCollection: string;
-  disableFirestoreCache: boolean;
+  cloudRootCollection: string;
+  disableCloudCache: boolean;
   implementationId: string;
 }
 
@@ -62,8 +62,8 @@ function createBaseHyttaHubImplementation(): HyttaHubImplementation {
     storage: 0,
     appBuildNumber: 0,
     appId: "",
-    firebaseRootCollection: "",
-    disableFirestoreCache: false,
+    cloudRootCollection: "",
+    disableCloudCache: false,
     implementationId: "",
   };
 }
@@ -79,11 +79,11 @@ export const HyttaHubImplementation = {
     if (message.appId !== "") {
       writer.uint32(26).string(message.appId);
     }
-    if (message.firebaseRootCollection !== "") {
-      writer.uint32(34).string(message.firebaseRootCollection);
+    if (message.cloudRootCollection !== "") {
+      writer.uint32(34).string(message.cloudRootCollection);
     }
-    if (message.disableFirestoreCache !== false) {
-      writer.uint32(40).bool(message.disableFirestoreCache);
+    if (message.disableCloudCache !== false) {
+      writer.uint32(40).bool(message.disableCloudCache);
     }
     if (message.implementationId !== "") {
       writer.uint32(50).string(message.implementationId);
@@ -124,14 +124,14 @@ export const HyttaHubImplementation = {
             break;
           }
 
-          message.firebaseRootCollection = reader.string();
+          message.cloudRootCollection = reader.string();
           continue;
         case 5:
           if (tag !== 40) {
             break;
           }
 
-          message.disableFirestoreCache = reader.bool();
+          message.disableCloudCache = reader.bool();
           continue;
         case 6:
           if (tag !== 50) {
@@ -154,12 +154,8 @@ export const HyttaHubImplementation = {
       storage: isSet(object.storage) ? storageEnumFromJSON(object.storage) : 0,
       appBuildNumber: isSet(object.appBuildNumber) ? globalThis.Number(object.appBuildNumber) : 0,
       appId: isSet(object.appId) ? globalThis.String(object.appId) : "",
-      firebaseRootCollection: isSet(object.firebaseRootCollection)
-        ? globalThis.String(object.firebaseRootCollection)
-        : "",
-      disableFirestoreCache: isSet(object.disableFirestoreCache)
-        ? globalThis.Boolean(object.disableFirestoreCache)
-        : false,
+      cloudRootCollection: isSet(object.cloudRootCollection) ? globalThis.String(object.cloudRootCollection) : "",
+      disableCloudCache: isSet(object.disableCloudCache) ? globalThis.Boolean(object.disableCloudCache) : false,
       implementationId: isSet(object.implementationId) ? globalThis.String(object.implementationId) : "",
     };
   },
@@ -175,11 +171,11 @@ export const HyttaHubImplementation = {
     if (message.appId !== "") {
       obj.appId = message.appId;
     }
-    if (message.firebaseRootCollection !== "") {
-      obj.firebaseRootCollection = message.firebaseRootCollection;
+    if (message.cloudRootCollection !== "") {
+      obj.cloudRootCollection = message.cloudRootCollection;
     }
-    if (message.disableFirestoreCache !== false) {
-      obj.disableFirestoreCache = message.disableFirestoreCache;
+    if (message.disableCloudCache !== false) {
+      obj.disableCloudCache = message.disableCloudCache;
     }
     if (message.implementationId !== "") {
       obj.implementationId = message.implementationId;
@@ -195,8 +191,8 @@ export const HyttaHubImplementation = {
     message.storage = object.storage ?? 0;
     message.appBuildNumber = object.appBuildNumber ?? 0;
     message.appId = object.appId ?? "";
-    message.firebaseRootCollection = object.firebaseRootCollection ?? "";
-    message.disableFirestoreCache = object.disableFirestoreCache ?? false;
+    message.cloudRootCollection = object.cloudRootCollection ?? "";
+    message.disableCloudCache = object.disableCloudCache ?? false;
     message.implementationId = object.implementationId ?? "";
     return message;
   },

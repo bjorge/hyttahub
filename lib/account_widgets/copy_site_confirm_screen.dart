@@ -11,7 +11,7 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:intl/intl.dart';
 
@@ -47,7 +47,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     
     try {
       final docs = await storage.getCollection(
-        firebaseSiteEventsPath(widget.siteId),
+        collectionSiteEventsPath(widget.siteId),
       );
 
       final dates = <int, DateTime>{};
@@ -84,7 +84,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     final storage = HyttaHubStorageFactory.getStorage(storageType);
     
     try {
-      final userDoc = await storage.getDocument(firebaseSiteUsersPath(widget.siteId), email);
+      final userDoc = await storage.getDocument(collectionSiteUsersPath(widget.siteId), email);
       if (userDoc != null && mounted) {
         setState(() {
           _authorId = userDoc[fbUserId] as int?;

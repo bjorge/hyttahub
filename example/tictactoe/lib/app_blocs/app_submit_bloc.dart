@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -56,7 +56,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     var encodedEvent = base64Encode(siteEvent.writeToBuffer());
 
     await storage.setDocument(
-      firebaseSiteEventsPath(siteId),
+      collectionSiteEventsPath(siteId),
       siteEvent.version.toString(),
       {
         fbPayload: encodedEvent,
@@ -86,7 +86,7 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
     // The author must be an existing site user.
     // We look up their ID from the site's users collection.
     final userDoc = await storage.getDocument(
-      firebaseSiteUsersPath(siteId),
+      collectionSiteUsersPath(siteId),
       email,
     );
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';

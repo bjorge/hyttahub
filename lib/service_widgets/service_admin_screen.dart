@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/bloom_filter.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
@@ -138,7 +138,7 @@ class ServiceBetaUsersOption extends StatelessWidget {
           final storage = HyttaHubStorageFactory.getStorage(
             HyttaHubOptions.implementation!.storage,
           );
-          final path = firebaseServiceBetaUsersPath();
+          final path = collectionServiceBetaUsersPath();
           final lastSlashIndex = path.lastIndexOf('/');
           final parentPath = path.substring(0, lastSlashIndex);
           final docId = path.substring(lastSlashIndex + 1);

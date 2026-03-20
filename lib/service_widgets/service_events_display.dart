@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/common_widgets/events_display.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/proto/service_replay_bloc.pb.dart';
 import 'package:hyttahub/service_blocs/service_replay.dart';
@@ -27,7 +27,7 @@ class ServiceEventsConfig
   final HyttaHubLocalizations localizations;
   @override
   String get collectionPath =>
-      firebaseServiceEventsPath(firebaseServiceCollectionName);
+      collectionServiceEventsPath(collectionServiceCollectionName);
 
   @override
   String get screenTitle => localizations.serviceEventsTitle;

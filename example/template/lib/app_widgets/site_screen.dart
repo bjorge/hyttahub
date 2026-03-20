@@ -43,7 +43,7 @@ class _SiteScreenState extends State<SiteScreen> {
         HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
       );
       return storage.getFileBytes(
-        appName: HyttaHubOptions.implementation?.firebaseRootCollection ?? '',
+        appName: HyttaHubOptions.implementation?.cloudRootCollection ?? '',
         siteId: widget.siteId,
         fileName: fileName,
       );

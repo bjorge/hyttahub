@@ -15,7 +15,7 @@ import 'package:hyttahub/utilities/common_error_handling.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:template/routers/landing.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:template/app_blocs/app_replay_bloc.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
@@ -251,7 +251,7 @@ final siteShellRoute = ShellRoute(
         ),
         BlocProvider<SiteAllowedEmailsBloc>(
           key: Key('SiteAllowedEmailsBloc-site-shell-$siteId'),
-          create: (_) => SiteAllowedEmailsBloc(firebaseSiteUsersPath(siteId))..add(
+          create: (_) => SiteAllowedEmailsBloc(collectionSiteUsersPath(siteId))..add(
             AllowedEmailsBlocEvent(
               fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
             ),

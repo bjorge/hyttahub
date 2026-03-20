@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/functions/site_cleanup.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
@@ -16,7 +16,7 @@ import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 import 'package:bloc/bloc.dart';
 
 
-const Duration firebaseTimeout = Duration(seconds: 15);
+const Duration submitTimeout = Duration(seconds: 15);
 
 class SiteEventSubmission extends BaseSubmitEvent<SubmitSiteEvent> {
   SiteEventSubmission({super.updatedPayload, required super.submission});
@@ -66,7 +66,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         );
 
         batch.updateDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           submitSiteEvent.removeMemberEmail,
           {
             fbSiteMemberMarkedForDeletion: markForDeletionInfo,
@@ -77,7 +77,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
 
       if (submitSiteEvent.event.hasAddMember()) {
         batch.setDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           submitSiteEvent.addMemberEmail,
           {
             'u': submitSiteEvent.event.version,
@@ -98,7 +98,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
             ).writeToBuffer(),
           );
           batch.updateDocument(
-            firebaseSiteUsersPath(siteId),
+            collectionSiteUsersPath(siteId),
             originalEmail,
             {
               fbSiteMemberMarkedForDeletion: markForDeletionInfo,
@@ -106,7 +106,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
             },
           );
           batch.setDocument(
-            firebaseSiteUsersPath(siteId),
+            collectionSiteUsersPath(siteId),
             newEmail,
             {
               'u': submitSiteEvent.event.updateMember.memberId,
@@ -118,7 +118,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
 
       if (submitSiteEvent.event.hasRestoreMember()) {
         batch.setDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           submitSiteEvent.addMemberEmail,
           {
             'u': submitSiteEvent.event.restoreMember.memberId,
@@ -132,7 +132,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
       if (!submitSiteEvent.event.hasRemoveMember() &&
           !submitSiteEvent.event.hasLeaveSite()) {
         batch.setDocument(
-          firebaseSiteEventsPath(siteId),
+          collectionSiteEventsPath(siteId),
           submitSiteEvent.event.version.toString(),
           {
             fbPayload: encodedEvent,
@@ -153,12 +153,12 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
 
         // 1. Delete the site_user document (cloud function does this)
         await memStorage.deleteDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           removedEmail,
         );
 
         // 2. Add a RemoveSite account event for the removed member
-        final accountPath = firebaseAccountEventsPath(removedEmail);
+        final accountPath = collectionAccountEventsPath(removedEmail);
         final accountEvents = await storage.getCollection(
           accountPath,
           orderBy: fbVersion,
@@ -184,7 +184,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
 
         // 3. Check if site has no remaining members; if so, clean up
         final remainingMembers = await storage.getCollection(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
         );
         if (remainingMembers.isEmpty) {
           await cleanUpOrphanedSite(
@@ -200,7 +200,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         if (originalEmail != newEmail) {
           // Delete the old member doc (cloud function does this)
           await memStorage.deleteDocument(
-            firebaseSiteUsersPath(siteId),
+            collectionSiteUsersPath(siteId),
             originalEmail,
           );
         }
@@ -228,7 +228,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
     // The author must be an existing site user.
     // We look up their ID from the site's users collection.
     final userDoc = await storage.getDocument(
-      firebaseSiteUsersPath(siteId),
+      collectionSiteUsersPath(siteId),
       email,
     );
 

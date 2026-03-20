@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
@@ -32,7 +32,7 @@ class SiteEventsConfig
   final String siteId;
 
   @override
-  String get collectionPath => firebaseSiteEventsPath(siteId);
+  String get collectionPath => collectionSiteEventsPath(siteId);
 
   @override
   final String screenTitle;

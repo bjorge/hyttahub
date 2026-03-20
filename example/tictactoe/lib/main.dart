@@ -11,10 +11,8 @@ import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:hyttahub_firebase/firebase_hyttahub_auth.dart';
 import 'package:hyttahub_firebase/firebase_hyttahub_functions.dart';
 import 'package:hyttahub_firebase/firestore_hyttahub_storage.dart';
-import 'package:hyttahub_firebase/firebase_hyttahub_internal_storage.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_auth.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_functions.dart';
-import 'package:hyttahub_pocketbase/pocketbase_hyttahub_internal_storage.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 import 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:tictactoe/l10n/app_localizations.dart';
@@ -50,7 +48,6 @@ void registerPersistence() {
     storageBuilder: () => FirestoreHyttaHubStorage(),
     authBuilder: () => FirebaseHyttaHubAuth(),
     functionsBuilder: () => FirebaseHyttaHubFunctions(),
-    internalStorageBuilder: () => FirebaseHyttaHubInternalStorage(),
   ));
 
   // PocketBase local emulator — connects to http://localhost:8090 (or the
@@ -65,7 +62,6 @@ void registerPersistence() {
     storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
     authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
     functionsBuilder: () => PocketbaseHyttaHubFunctions(client: pb),
-    internalStorageBuilder: () => PocketbaseHyttaHubInternalStorage(),
   ));
 
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
@@ -82,8 +78,8 @@ void registerPersistence() {
 
   PersistenceRegistry.onInitializePlatform = (storage) async {
     // Retrieve the saved implementationId to distinguish cloud backends.
-    const firebaseRootCollection = 'tictactoe';
-    final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$firebaseRootCollection');
+    const cloudRootCollection = 'tictactoe';
+    final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$cloudRootCollection');
     final implementationId = savedPlatform != null
         ? savedPlatform['implementationId'] as String? ?? 'memory'
         : 'memory';
@@ -116,8 +112,8 @@ Future<void> main() async {
             : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
 
-  const firebaseRootCollection = 'tictactoe';
-  final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$firebaseRootCollection');
+  const cloudRootCollection = 'tictactoe';
+  final savedPlatform = HydratedBloc.storage.read('PlatformCubit:persistence:$cloudRootCollection');
   final implementationId = savedPlatform != null 
     ? savedPlatform['implementationId'] as String? ?? 'memory'
     : 'memory';
@@ -151,7 +147,7 @@ Future<void> main() async {
       implementationId: implementationId,
       appBuildNumber: appBuildNumber,
       appId: 'hyttahub.example.tictactoe',
-      firebaseRootCollection: firebaseRootCollection,
+      cloudRootCollection: cloudRootCollection,
     ),
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
   );

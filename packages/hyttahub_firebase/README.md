@@ -67,7 +67,7 @@ Future<void> main() async {
   await initializeHyttaHub(
     implementation: HyttaHubImplementation(
       appBuildNumber: 1,
-      firebaseRootCollection: 'my_app',
+      cloudRootCollection: 'my_app',
       appId: 'com.example.myapp',
       storage: StorageEnum.cloud,
       implementationId: 'firebase',

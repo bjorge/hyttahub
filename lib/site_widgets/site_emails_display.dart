@@ -3,7 +3,7 @@
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/allowed_emails_display.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:flutter/material.dart';
 
 class SiteEmailsDisplayScreen extends StatelessWidget {
@@ -27,7 +27,7 @@ class SiteEmailsConfig extends AllowedEmailsDisplayConfig {
   final String siteId;
 
   @override
-  String get collectionPath => firebaseSiteUsersPath(siteId);
+  String get collectionPath => collectionSiteUsersPath(siteId);
 
   @override
   final String screenTitle;

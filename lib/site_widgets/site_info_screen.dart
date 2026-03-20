@@ -92,7 +92,7 @@ class SiteInfoScreen extends StatelessWidget {
                 ).listSiteFiles(
                   siteId: siteId,
                   appName:
-                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      HyttaHubOptions.implementation?.cloudRootCollection ??
                       '',
                 ),
                 builder: (context, snapshot) {

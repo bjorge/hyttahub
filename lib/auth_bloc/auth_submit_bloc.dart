@@ -2,7 +2,7 @@
 
 import 'package:hyttahub/auth_bloc/auth_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/auth_bloc.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -11,7 +11,7 @@ import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 
-const Duration firebaseTimeout = Duration(seconds: 15);
+const Duration submitTimeout = Duration(seconds: 15);
 
 class AuthEventSubmission extends BaseSubmitEvent<AuthBlocEvent> {
   AuthEventSubmission({super.updatedPayload, required super.submission});
@@ -56,7 +56,7 @@ class AuthSubmitBloc extends BaseSubmitBloc<AuthBlocEvent> {
 
     if (submitAuthEvent.hasRemoveAccount()) {
       // Delete all documents in the account events collection.
-      await storage.deleteCollection(firebaseAccountEventsPath(email));
+      await storage.deleteCollection(collectionAccountEventsPath(email));
 
       // Handle remove account event
       authBloc.add(

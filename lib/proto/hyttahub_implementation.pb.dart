@@ -25,18 +25,17 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     StorageEnum? storage,
     $core.int? appBuildNumber,
     $core.String? appId,
-    $core.String? firebaseRootCollection,
-    $core.bool? disableFirestoreCache,
+    $core.String? cloudRootCollection,
+    $core.bool? disableCloudCache,
     $core.String? implementationId,
   }) {
     final result = create();
     if (storage != null) result.storage = storage;
     if (appBuildNumber != null) result.appBuildNumber = appBuildNumber;
     if (appId != null) result.appId = appId;
-    if (firebaseRootCollection != null)
-      result.firebaseRootCollection = firebaseRootCollection;
-    if (disableFirestoreCache != null)
-      result.disableFirestoreCache = disableFirestoreCache;
+    if (cloudRootCollection != null)
+      result.cloudRootCollection = cloudRootCollection;
+    if (disableCloudCache != null) result.disableCloudCache = disableCloudCache;
     if (implementationId != null) result.implementationId = implementationId;
     return result;
   }
@@ -58,9 +57,9 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     ..aI(2, _omitFieldNames ? '' : 'appBuildNumber',
         protoName: 'appBuildNumber')
     ..aOS(3, _omitFieldNames ? '' : 'appId', protoName: 'appId')
-    ..aOS(4, _omitFieldNames ? '' : 'firebaseRootCollection',
-        protoName: 'firebaseRootCollection')
-    ..aOB(5, _omitFieldNames ? '' : 'disableFirestoreCache')
+    ..aOS(4, _omitFieldNames ? '' : 'cloudRootCollection',
+        protoName: 'cloudRootCollection')
+    ..aOB(5, _omitFieldNames ? '' : 'disableCloudCache')
     ..aOS(6, _omitFieldNames ? '' : 'implementationId')
     ..hasRequiredFields = false;
 
@@ -112,22 +111,22 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
   void clearAppId() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.String get firebaseRootCollection => $_getSZ(3);
+  $core.String get cloudRootCollection => $_getSZ(3);
   @$pb.TagNumber(4)
-  set firebaseRootCollection($core.String value) => $_setString(3, value);
+  set cloudRootCollection($core.String value) => $_setString(3, value);
   @$pb.TagNumber(4)
-  $core.bool hasFirebaseRootCollection() => $_has(3);
+  $core.bool hasCloudRootCollection() => $_has(3);
   @$pb.TagNumber(4)
-  void clearFirebaseRootCollection() => $_clearField(4);
+  void clearCloudRootCollection() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $core.bool get disableFirestoreCache => $_getBF(4);
+  $core.bool get disableCloudCache => $_getBF(4);
   @$pb.TagNumber(5)
-  set disableFirestoreCache($core.bool value) => $_setBool(4, value);
+  set disableCloudCache($core.bool value) => $_setBool(4, value);
   @$pb.TagNumber(5)
-  $core.bool hasDisableFirestoreCache() => $_has(4);
+  $core.bool hasDisableCloudCache() => $_has(4);
   @$pb.TagNumber(5)
-  void clearDisableFirestoreCache() => $_clearField(5);
+  void clearDisableCloudCache() => $_clearField(5);
 
   @$pb.TagNumber(6)
   $core.String get implementationId => $_getSZ(5);

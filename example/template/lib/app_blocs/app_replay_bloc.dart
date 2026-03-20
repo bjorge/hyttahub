@@ -10,7 +10,7 @@ import 'package:template/proto/app_replay_bloc.pb.dart';
 export 'package:template/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -57,7 +57,7 @@ class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
 
   @override
   Future<String?> getCollectionPath() async {
-    return firebaseSiteEventsPath(collectionName);
+    return collectionSiteEventsPath(collectionName);
   }
 
   @override

@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/functions/site_cleanup.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
@@ -18,7 +18,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/utilities/ids.dart';
 
 
-const Duration firebaseTimeout = Duration(seconds: 15);
+const Duration submitTimeout = Duration(seconds: 15);
 
 class AccountEventSubmission extends BaseSubmitEvent<SubmitAccountEvent> {
   AccountEventSubmission({super.updatedPayload, required super.submission});
@@ -83,7 +83,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         print("write site user has version: ${siteEvent.version}");
       }
       await storage.setDocument(
-        firebaseSiteUsersPath(siteId),
+        collectionSiteUsersPath(siteId),
         email,
         {
           'u': siteEvent.version,
@@ -96,7 +96,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         print("write site event has version: ${siteEvent.version}");
       }
       await storage.setDocument(
-        firebaseSiteEventsPath(siteId),
+        collectionSiteEventsPath(siteId),
         siteEvent.version.toString(),
         {
           fbPayload: encodedSiteEvent,
@@ -110,7 +110,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         print("write account event version: ${submitAccountEvent.event.version}");
       }
       await storage.setDocument(
-        firebaseAccountEventsPath(email),
+        collectionAccountEventsPath(email),
         submitAccountEvent.event.version.toString(),
         {
           fbPayload: encodedAccountEvent,
@@ -126,7 +126,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         if (submitAccountEvent.event.hasJoinSite()) {
           final siteId = submitAccountEvent.event.joinSite;
           final userDoc =
-              await storage.getDocument(firebaseSiteUsersPath(siteId), email);
+              await storage.getDocument(collectionSiteUsersPath(siteId), email);
           if (userDoc == null) {
             throw Exception('Error: Cannot join site, user does not exist.');
           }
@@ -135,7 +135,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         if (submitAccountEvent.event.hasLeaveSite()) {
           final siteId = submitAccountEvent.event.leaveSite;
           final userDoc =
-              await storage.getDocument(firebaseSiteUsersPath(siteId), email);
+              await storage.getDocument(collectionSiteUsersPath(siteId), email);
           final authorId = (userDoc?[fbUserId] as int?) ?? 0;
           final markForDeletionInfo = base64Encode(
             MarkForDeletion(
@@ -145,7 +145,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           );
 
           batch.updateDocument(
-            firebaseSiteUsersPath(siteId),
+            collectionSiteUsersPath(siteId),
             email,
             {
               fbSiteMemberMarkedForDeletion: markForDeletionInfo,
@@ -156,7 +156,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
         if (!submitAccountEvent.event.hasLeaveSite()) {
           batch.setDocument(
-            firebaseAccountEventsPath(email),
+            collectionAccountEventsPath(email),
             submitAccountEvent.event.version.toString(),
             {
               fbPayload: encodedAccountEvent,
@@ -176,14 +176,14 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
         // 1. Get the user's memberId before deleting the doc
         final userDoc = await storage.getDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           email,
         );
         final memberId = userDoc?[fbUserId] as int?;
 
         // 2. Add a LeaveSite event to the site's event log
         if (memberId != null) {
-          final siteEventsPath = firebaseSiteEventsPath(siteId);
+          final siteEventsPath = collectionSiteEventsPath(siteId);
           final siteEvents = await storage.getCollection(
             siteEventsPath,
             orderBy: fbVersion,
@@ -211,13 +211,13 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
 
         // 3. Delete the site_user document
         await memStorage.deleteDocument(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
           email,
         );
 
         // 4. Check if site has no remaining members; if so, clean up
         final remainingMembers = await storage.getCollection(
-          firebaseSiteUsersPath(siteId),
+          collectionSiteUsersPath(siteId),
         );
         if (remainingMembers.isEmpty) {
           await cleanUpOrphanedSite(

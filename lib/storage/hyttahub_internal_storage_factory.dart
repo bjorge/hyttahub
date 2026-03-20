@@ -3,7 +3,6 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_internal_storage.dart';
 import 'package:hyttahub/storage/hydrated_hyttahub_internal_storage.dart';
-import 'package:hyttahub/utilities/persistence_registries.dart';
 
 class HyttaHubInternalStorageFactory {
   static final Map<String, BaseHyttaHubInternalStorage> _instances = {};
@@ -25,25 +24,20 @@ class HyttaHubInternalStorageFactory {
     }
 
     BaseHyttaHubInternalStorage? storage;
-    if (implementationId != null ||
-        PersistenceRegistry.isImplementationRegistered(id)) {
-      storage = PersistenceRegistry.createInternalStorage(id);
+
+    switch (type) {
+      case StorageEnum.memory:
+        storage = InMemoryHyttaHubInternalStorage();
+        break;
+      case StorageEnum.local:
+        storage = HydratedHyttaHubInternalStorage(
+            storageKey: 'hyttahub:internal_local_storage');
+        break;
+      default:
+        storage = InMemoryHyttaHubInternalStorage();
+        break;
     }
 
-    if (storage == null) {
-      switch (type) {
-        case StorageEnum.memory:
-          storage = InMemoryHyttaHubInternalStorage();
-          break;
-        case StorageEnum.local:
-          storage = HydratedHyttaHubInternalStorage(storageKey: 'hyttahub:internal_local_storage');
-          break;
-        default:
-          break;
-      }
-    }
-
-    storage ??= InMemoryHyttaHubInternalStorage();
     _instances[id] = storage;
     return storage;
   }

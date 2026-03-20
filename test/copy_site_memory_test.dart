@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/functions/in_memory_hyttahub_functions.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
@@ -14,7 +14,7 @@ void main() {
   test('InMemoryHyttaHubFunctions site copy data trigger test', () async {
     final appName = 'testapp';
     HyttaHubOptions.implementation = HyttaHubImplementation(
-      firebaseRootCollection: appName,
+      cloudRootCollection: appName,
       storage: StorageEnum.memory,
     );
 
@@ -26,13 +26,13 @@ void main() {
     final userId = 101;
 
     // 1. Seed the source site
-    final usersPath = firebaseSiteUsersPath(siteId);
+    final usersPath = collectionSiteUsersPath(siteId);
     await storage.setDocument(usersPath, email, {
       fbUserId: userId,
       fbTimeStamp: storage.serverTimestamp,
     });
 
-    final eventsPath = firebaseSiteEventsPath(siteId);
+    final eventsPath = collectionSiteEventsPath(siteId);
     final event1 = SiteEvent(
       version: 1,
       author: userId,
@@ -62,7 +62,7 @@ void main() {
     expect(updatedUserDoc![fbSiteMemberMarkedForCopy], isNull);
 
     // Get the account events to find the NEW site ID
-    final accountPath = firebaseAccountEventsPath(email);
+    final accountPath = collectionAccountEventsPath(email);
     final accountEvents = await storage.getCollection(accountPath);
     expect(accountEvents.length, 1);
     

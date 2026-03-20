@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -200,14 +200,14 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     );
 
     // 6. Copy storage items — prefer archive source, fall back to main
-    final archivePrefix = firebaseArchiveFilePath(siteId, '');
+    final archivePrefix = collectionArchiveFilePath(siteId, '');
     var sourceFilePaths = await storage.listFiles(archivePrefix);
     String sourcePrefix;
 
     if (sourceFilePaths.isNotEmpty) {
       sourcePrefix = archivePrefix;
     } else {
-      sourcePrefix = firebaseFilesPath(siteId, '');
+      sourcePrefix = collectionFilesPath(siteId, '');
       sourceFilePaths = await storage.listFiles(sourcePrefix);
     }
 
@@ -236,7 +236,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String appName,
   }) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
-    final prefix = firebaseFilesPath(siteId, '');
+    final prefix = collectionFilesPath(siteId, '');
     final files = await storage.listFiles(prefix);
     
     final result = <Map<String, dynamic>>[];

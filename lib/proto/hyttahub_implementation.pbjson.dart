@@ -44,18 +44,18 @@ const HyttaHubImplementation$json = {
     {'1': 'appBuildNumber', '3': 2, '4': 1, '5': 5, '10': 'appBuildNumber'},
     {'1': 'appId', '3': 3, '4': 1, '5': 9, '10': 'appId'},
     {
-      '1': 'firebaseRootCollection',
+      '1': 'cloudRootCollection',
       '3': 4,
       '4': 1,
       '5': 9,
-      '10': 'firebaseRootCollection'
+      '10': 'cloudRootCollection'
     },
     {
-      '1': 'disable_firestore_cache',
+      '1': 'disable_cloud_cache',
       '3': 5,
       '4': 1,
       '5': 8,
-      '10': 'disableFirestoreCache'
+      '10': 'disableCloudCache'
     },
     {
       '1': 'implementation_id',
@@ -71,7 +71,6 @@ const HyttaHubImplementation$json = {
 final $typed_data.Uint8List hyttaHubImplementationDescriptor = $convert.base64Decode(
     'ChZIeXR0YUh1YkltcGxlbWVudGF0aW9uEiYKB3N0b3JhZ2UYASABKA4yDC5TdG9yYWdlRW51bV'
     'IHc3RvcmFnZRImCg5hcHBCdWlsZE51bWJlchgCIAEoBVIOYXBwQnVpbGROdW1iZXISFAoFYXBw'
-    'SWQYAyABKAlSBWFwcElkEjYKFmZpcmViYXNlUm9vdENvbGxlY3Rpb24YBCABKAlSFmZpcmViYX'
-    'NlUm9vdENvbGxlY3Rpb24SNgoXZGlzYWJsZV9maXJlc3RvcmVfY2FjaGUYBSABKAhSFWRpc2Fi'
-    'bGVGaXJlc3RvcmVDYWNoZRIrChFpbXBsZW1lbnRhdGlvbl9pZBgGIAEoCVIQaW1wbGVtZW50YX'
-    'Rpb25JZA==');
+    'SWQYAyABKAlSBWFwcElkEjAKE2Nsb3VkUm9vdENvbGxlY3Rpb24YBCABKAlSE2Nsb3VkUm9vdE'
+    'NvbGxlY3Rpb24SLgoTZGlzYWJsZV9jbG91ZF9jYWNoZRgFIAEoCFIRZGlzYWJsZUNsb3VkQ2Fj'
+    'aGUSKwoRaW1wbGVtZW50YXRpb25faWQYBiABKAlSEGltcGxlbWVudGF0aW9uSWQ=');

@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:convert'; // For base64Encode/Decode
 
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -61,7 +61,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   /// Provides the storage type to use for this BLoC.
   StorageEnum get storageType;
 
-  /// Provides the Firestore collection path.
+  /// Provides the Cloud collection path.
   Future<String?> getCollectionPath();
 
   // for the firebase collection name (i.e. after the path)
@@ -69,12 +69,12 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   // for hydrated storage
   @override
-  String get id => ':$storageType:$collectionName:${HyttaHubOptions.implementation?.firebaseRootCollection}';
+  String get id => ':$storageType:$collectionName:${HyttaHubOptions.implementation?.cloudRootCollection}';
 
-  /// Field name for the version in Firestore documents (e.g., 'v' or 'fbVersion').
+  /// Field name for the version in Cloud documents (e.g., 'v' or 'fbVersion').
   String get versionField => fbVersion;
 
-  /// Field name for the payload in Firestore documents (e.g., 'p' or 'fbPayload').
+  /// Field name for the payload in Cloud documents (e.g., 'p' or 'fbPayload').
   String get payloadField => fbPayload;
 
   /// Replays new events onto the current state and returns the new state.

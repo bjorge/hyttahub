@@ -6,7 +6,7 @@ import 'package:tictactoe/app_blocs/app_replay.dart';
 import 'package:tictactoe/proto/app_events.pb.dart';
 import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:flutter/material.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
@@ -31,7 +31,7 @@ class AppEventsConfig
   final String siteId;
 
   @override
-  String get collectionPath => firebaseSiteEventsPath(siteId);
+  String get collectionPath => collectionSiteEventsPath(siteId);
 
   @override
   final String screenTitle;

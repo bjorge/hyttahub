@@ -57,7 +57,7 @@ class HyttaHubApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rootCollection = HyttaHubOptions.implementation?.firebaseRootCollection ?? '';
+    final rootCollection = HyttaHubOptions.implementation?.cloudRootCollection ?? '';
 
     return MultiBlocProvider(
       providers: [

@@ -11,7 +11,7 @@ message HyttaHubImplementation {
   StorageEnum storage = 1;
   int32 appBuildNumber = 2;
   string appId = 3;
-  string firebaseRootCollection = 4;
-  bool disable_firestore_cache = 5;
+  string cloudRootCollection = 4;
+  bool disable_cloud_cache = 5;
   string implementation_id = 6;
 }

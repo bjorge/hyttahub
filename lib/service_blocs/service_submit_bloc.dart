@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -46,7 +46,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
     await storage.runBatch((batch) async {
       if (submitServiceEvent.event.hasInitialEvent()) {
         batch.setDocument(
-          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          collectionServiceAdminsPath(collectionServiceCollectionName),
           submitServiceEvent.email,
           {
             'u': submitServiceEvent.event.version,
@@ -57,7 +57,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
 
       if (submitServiceEvent.event.hasAddServiceAdmin()) {
         batch.setDocument(
-          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          collectionServiceAdminsPath(collectionServiceCollectionName),
           submitServiceEvent.addServiceAdminEmail,
           {
             'u': submitServiceEvent.event.version,
@@ -78,9 +78,9 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
         if (submitServiceEvent.updateServiceAdminOriginalEmail !=
             submitServiceEvent.updateServiceAdminNewEmail) {
           // email changed
-          // batch.deleteDocument(firebaseServiceServiceAdminsPath(firebaseServiceCollectionName), submitServiceEvent.updateServiceAdminOriginalEmail);
+          // batch.deleteDocument(collectionServiceAdminsPath(collectionServiceCollectionName), submitServiceEvent.updateServiceAdminOriginalEmail);
           batch.setDocument(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+            collectionServiceAdminsPath(collectionServiceCollectionName),
             submitServiceEvent.updateServiceAdminNewEmail,
             {
               'u': submitServiceEvent.event.updateServiceAdmin.id,
@@ -92,7 +92,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
 
       if (submitServiceEvent.event.hasRestoreServiceAdmin()) {
         batch.setDocument(
-          firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+          collectionServiceAdminsPath(collectionServiceCollectionName),
           submitServiceEvent.addServiceAdminEmail,
           {
             'u': submitServiceEvent.event.restoreServiceAdmin.id,
@@ -102,7 +102,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
       }
 
       if (state.payload!.event.hasBetaUsersFilter()) {
-        final path = firebaseServiceBetaUsersPath();
+        final path = collectionServiceBetaUsersPath();
         final lastSlashIndex = path.lastIndexOf('/');
         final parentPath = path.substring(0, lastSlashIndex);
         final docId = path.substring(lastSlashIndex + 1);
@@ -113,7 +113,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
       }
 
       batch.setDocument(
-        firebaseServiceEventsPath(firebaseServiceCollectionName),
+        collectionServiceEventsPath(collectionServiceCollectionName),
         submitServiceEvent.event.version.toString(),
         {
           fbPayload: encodedEvent,
@@ -151,7 +151,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
 
     // For other events, the author must be an existing service admin.
     final userDoc = await storage.getDocument(
-      firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+      collectionServiceAdminsPath(collectionServiceCollectionName),
       email,
     );
 

@@ -46,7 +46,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
-import 'package:hyttahub/firebase_paths.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/allowed_emails_bloc.pb.dart';
 import 'package:hyttahub/site_widgets/add_member_screen.dart';
 import 'package:hyttahub/site_widgets/remove_member_screen.dart';
@@ -971,7 +971,7 @@ final serviceAdminProviderShellRoute = ShellRoute(
                   alias: 'Admin',
                   filter: BloomFilter(),
                   appName:
-                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      HyttaHubOptions.implementation?.cloudRootCollection ??
                       '',
                   appId: HyttaHubOptions.implementation?.appId ?? '',
                 ),
@@ -1028,7 +1028,7 @@ final serviceUserProviderShellRoute = ShellRoute(
                   alias: 'Admin',
                   filter: BloomFilter(),
                   appName:
-                      HyttaHubOptions.implementation?.firebaseRootCollection ??
+                      HyttaHubOptions.implementation?.cloudRootCollection ??
                       '',
                   appId: HyttaHubOptions.implementation?.appId ?? '',
                 ),
@@ -1076,7 +1076,7 @@ final serviceAdminShellRoute = ShellRoute(
       key: const Key('ServiceAllowedEmailsBlocProvider'),
       create: (context) =>
           ServiceAllowedEmailsBloc(
-            firebaseServiceServiceAdminsPath(firebaseServiceCollectionName),
+            collectionServiceAdminsPath(collectionServiceCollectionName),
           )..add(
             AllowedEmailsBlocEvent(
               fetchNow: AllowedEmailsBlocEvent_FetchedAllowedEmails(),
