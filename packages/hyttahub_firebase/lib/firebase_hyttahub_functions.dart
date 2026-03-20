@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/site_util.pb.dart';
+import 'package:hyttahub/collection_paths.dart';
 
 class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   @override
@@ -14,7 +15,7 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     int? upToVersion,
     String? mockUserEmail,
   }) async {
-    final path = 'hyttahub/$appName/sites/$siteId/site_users';
+    final path = collectionSiteUsersPath(siteId, cloudRoot: appName);
     final docRef = FirebaseFirestore.instance.collection(path).doc(mockUserEmail);
     
     final doc = await docRef.get();
@@ -22,14 +23,14 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
       throw Exception('Site user record not found: $mockUserEmail');
     }
     
-    final authorId = doc.data()?['u'] as int? ?? 0;
+    final authorId = doc.data()?[docUserId] as int? ?? 0;
     final mark = MarkForCopy(
       author: authorId,
       upToVersion: upToVersion ?? 0,
     );
     
     final mValue = base64Encode(mark.writeToBuffer());
-    await docRef.update({'MarkForCopy': mValue});
+    await docRef.update({docSiteMemberMarkedForCopy: mValue});
     
     return {'message': 'Site copy requested via data trigger'};
   }

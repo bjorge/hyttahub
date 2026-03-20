@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
+import 'package:hyttahub/collection_paths.dart';
 
 /// Returns true if [s] is already a valid PocketBase collection name segment
 /// (only letters, digits, underscores — no encoding needed).
@@ -361,7 +362,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   /// Returns the encoded collection name for the site files collection.
   String _filesCol(String appName, String siteId) =>
-      encodePath('hyttahub/$appName/sites/$siteId/site_files');
+      encodePath(collectionSiteFilesPath(siteId, cloudRoot: appName));
 
   /// Returns the PocketBase file field name used in the site_files collection.
   static const String _fileField = 'file';

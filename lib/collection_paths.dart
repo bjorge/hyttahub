@@ -9,32 +9,36 @@ String collectionServiceCollectionName = 'status';
 
 String _root() => HyttaHubOptions.implementation?.cloudRootCollection ?? '';
 
-String collectionSiteEventsPath(String siteId) {
-  return 'hyttahub/${_root()}/sites/$siteId/site_events';
+String collectionSiteEventsPath(String siteId, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/sites/$siteId/site_events';
 }
 
-String collectionSiteUsersPath(String siteId) {
-  return 'hyttahub/${_root()}/sites/$siteId/site_users';
+String collectionSiteUsersPath(String siteId, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/sites/$siteId/site_users';
 }
 
-String collectionServiceEventsPath(String serviceCollectionName) {
-  return 'hyttahub/${_root()}/services/$serviceCollectionName/service_events';
+String collectionSiteFilesPath(String siteId, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/sites/$siteId/site_files';
 }
 
-String collectionServiceAdminsPath(String serviceCollectionName) {
-  return 'hyttahub/${_root()}/services/$serviceCollectionName/service_admins';
+String collectionServiceEventsPath(String serviceCollectionName, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/services/$serviceCollectionName/service_events';
 }
 
-String collectionServiceBetaUsersPath() {
-  return 'hyttahub/${_root()}/services/status/beta_users';
+String collectionServiceAdminsPath(String serviceCollectionName, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/services/$serviceCollectionName/service_admins';
 }
 
-String collectionServiceAlphaUsersPath() {
-  return 'hyttahub/${_root()}/services/status/alpha_users';
+String collectionServiceBetaUsersPath({String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/services/status/beta_users';
 }
 
-String collectionAccountEventsPath(String accountEmail) {
-  return 'hyttahub/${_root()}/accounts/$accountEmail/account_events';
+String collectionServiceAlphaUsersPath({String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/services/status/alpha_users';
+}
+
+String collectionAccountEventsPath(String accountEmail, {String? cloudRoot}) {
+  return 'hyttahub/${cloudRoot ?? _root()}/accounts/$accountEmail/account_events';
 }
 
 String collectionFilesPath(String siteId, String fileName) {

@@ -24,7 +24,7 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     required String siteId,
     required String appName,
   }) async {
-    final colName = encodePath('hyttahub/$appName/sites/$siteId/site_files');
+    final colName = encodePath(collectionSiteFilesPath(siteId, cloudRoot: appName));
 
     try {
       final records = await _client.collection(colName).getFullList();
@@ -63,7 +63,7 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     int? upToVersion,
     String? mockUserEmail,
   }) async {
-    final usersCol = encodePath('hyttahub/$appName/sites/$siteId/site_users');
+    final usersCol = encodePath(collectionSiteUsersPath(siteId, cloudRoot: appName));
 
     try {
       // 1. Find the site user record for this member
@@ -76,7 +76,7 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
       }
 
       final record = results.first;
-      final authorId = record.getIntValue('u');
+      final authorId = record.getIntValue(docUserId);
 
       // 2. Create the MarkForCopy proto
       final mark = MarkForCopy(
