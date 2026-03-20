@@ -83,9 +83,9 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
         upToVersion: upToVersion ?? 0,
       );
 
-      // 3. Update the record with the mark in field 'm'
+      // 3. Update the record with the mark in field 'MarkForCopy'
       final mValue = base64Encode(mark.writeToBuffer());
-      await _client.collection(usersCol).update(record.id, body: {'m': mValue});
+      await _client.collection(usersCol).update(record.id, body: {'MarkForCopy': mValue});
 
       return {'message': 'Site copy requested'};
     } on ClientException catch (e) {

@@ -58,6 +58,12 @@ export function markForDeletion_DeleteReasonToJSON(object: MarkForDeletion_Delet
   }
 }
 
+export interface MarkForCopy {
+  author: number;
+  /** optional, 0 or null means latest */
+  upToVersion: number;
+}
+
 function createBaseMarkForDeletion(): MarkForDeletion {
   return { deleteReason: 0, author: 0 };
 }
@@ -128,6 +134,80 @@ export const MarkForDeletion = {
     const message = createBaseMarkForDeletion();
     message.deleteReason = object.deleteReason ?? 0;
     message.author = object.author ?? 0;
+    return message;
+  },
+};
+
+function createBaseMarkForCopy(): MarkForCopy {
+  return { author: 0, upToVersion: 0 };
+}
+
+export const MarkForCopy = {
+  encode(message: MarkForCopy, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.author !== 0) {
+      writer.uint32(8).int32(message.author);
+    }
+    if (message.upToVersion !== 0) {
+      writer.uint32(16).int32(message.upToVersion);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MarkForCopy {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMarkForCopy();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.author = reader.int32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.upToVersion = reader.int32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MarkForCopy {
+    return {
+      author: isSet(object.author) ? globalThis.Number(object.author) : 0,
+      upToVersion: isSet(object.upToVersion) ? globalThis.Number(object.upToVersion) : 0,
+    };
+  },
+
+  toJSON(message: MarkForCopy): unknown {
+    const obj: any = {};
+    if (message.author !== 0) {
+      obj.author = Math.round(message.author);
+    }
+    if (message.upToVersion !== 0) {
+      obj.upToVersion = Math.round(message.upToVersion);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MarkForCopy>, I>>(base?: I): MarkForCopy {
+    return MarkForCopy.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MarkForCopy>, I>>(object: I): MarkForCopy {
+    const message = createBaseMarkForCopy();
+    message.author = object.author ?? 0;
+    message.upToVersion = object.upToVersion ?? 0;
     return message;
   },
 };

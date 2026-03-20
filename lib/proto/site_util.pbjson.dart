@@ -48,3 +48,17 @@ final $typed_data.Uint8List markForDeletionDescriptor = $convert.base64Decode(
     '9uLkRlbGV0ZVJlYXNvblIMZGVsZXRlUmVhc29uEhYKBmF1dGhvchgCIAEoBVIGYXV0aG9yIlUK'
     'DERlbGV0ZVJlYXNvbhISCg5tZW1iZXJMZWZ0U2l0ZRAAEhkKFW1lbWJlclJlbW92ZWRGcm9tU2'
     'l0ZRABEhYKEm1lbWJlckVtYWlsVXBkYXRlZBAC');
+
+@$core.Deprecated('Use markForCopyDescriptor instead')
+const MarkForCopy$json = {
+  '1': 'MarkForCopy',
+  '2': [
+    {'1': 'author', '3': 1, '4': 1, '5': 5, '10': 'author'},
+    {'1': 'upToVersion', '3': 2, '4': 1, '5': 5, '10': 'upToVersion'},
+  ],
+};
+
+/// Descriptor for `MarkForCopy`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List markForCopyDescriptor = $convert.base64Decode(
+    'CgtNYXJrRm9yQ29weRIWCgZhdXRob3IYASABKAVSBmF1dGhvchIgCgt1cFRvVmVyc2lvbhgCIA'
+    'EoBVILdXBUb1ZlcnNpb24=');

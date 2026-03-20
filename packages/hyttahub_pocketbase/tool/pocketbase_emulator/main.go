@@ -448,13 +448,13 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		prefix := strings.Split(collectionName, "__site_")[0]
 		parent := prefix + "__site_users"
 		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-			return fmt.Errorf("missing prerequisite %s", parent)
+			return fmt.Errorf("missing prerequisite collection %s", parent)
 		}
 	} else if strings.HasSuffix(collectionName, "__service_events") {
 		prefix := strings.TrimSuffix(collectionName, "__service_events")
 		parent := prefix + "__service_users"
 		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-			return fmt.Errorf("missing prerequisite %s", parent)
+			return fmt.Errorf("missing prerequisite collection %s", parent)
 		}
 	}
 
