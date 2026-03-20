@@ -23,6 +23,7 @@ func TestAccountSecurity(t *testing.T) {
 	encodedEmail1 := encodeSegment(email1)
 	
 	accountEventsCol1 := fmt.Sprintf("hyttahub__app__accounts__%s__account_events", encodedEmail1)
+	createHyttahubCollection(testApp, accountEventsCol1)
 
 	// Create users
 	user1, _ := testApp.FindAuthRecordByEmail("users", email1)
@@ -85,6 +86,7 @@ func TestAccountEventsImmutability(t *testing.T) {
 	email := "test@example.com"
 	encodedEmail := encodeSegment(email)
 	accountEventsCol := fmt.Sprintf("hyttahub__app__accounts__%s__account_events", encodedEmail)
+	createHyttahubCollection(testApp, accountEventsCol)
 
 	user, _ := testApp.FindAuthRecordByEmail("users", email)
 	if user == nil {

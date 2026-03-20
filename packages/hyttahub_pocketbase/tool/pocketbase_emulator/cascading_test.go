@@ -4,9 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"testing"
-	"time"
 
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/tests"
 	"google.golang.org/protobuf/proto"
@@ -14,36 +12,7 @@ import (
 	"pocketbase_emulator/models"
 )
 
-func TestOrphanCleanup(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	registerAppHooks(testApp)
-
-	// 1. Create a "dead site" (empty site_users and over 2 mins old)
-	siteRoot := "hyttahub__test__sites__DEAD__site_users"
-	siteSub := "hyttahub__test__sites__DEAD__site_events"
-	createHyttahubCollection(testApp, siteRoot)
-	createHyttahubCollection(testApp, siteSub)
-
-	// Force age them to bypass grace period
-	oldTime := time.Now().Add(-10 * time.Minute).Format("2006-01-02 15:04:05.000Z")
-	testApp.DB().Update("_collections", dbx.Params{"created": oldTime}, dbx.HashExp{"name": siteRoot}).Execute()
-	testApp.DB().Update("_collections", dbx.Params{"created": oldTime}, dbx.HashExp{"name": siteSub}).Execute()
-
-	// 2. Run cleanup
-	runOrphanCleanup(testApp)
-
-	// 3. Verify they are gone
-	if _, err := testApp.FindCollectionByNameOrId(siteRoot); err == nil {
-		t.Errorf("Collection %s should have been purged", siteRoot)
-	}
-	if _, err := testApp.FindCollectionByNameOrId(siteSub); err == nil {
-		t.Errorf("Collection %s should have been purged", siteSub)
-	}
-}
 
 func TestMemberRemovedCascadingEffect(t *testing.T) {
 	testApp, err := tests.NewTestApp(t.TempDir())
@@ -115,7 +84,7 @@ func TestMemberRemovedCascadingEffect(t *testing.T) {
 		t.Logf("Site user record was successfully deleted")
 	}
 
-	// 5. Verify that an account event was created
+	// 6. Verify that an account event was created
 	events, err := testApp.FindRecordsByFilter(accountEventsCol, "v > 0", "-v", 1, 0)
 	if err != nil || len(events) == 0 {
 		t.Errorf("Account event should have been created for removed user")
@@ -123,12 +92,16 @@ func TestMemberRemovedCascadingEffect(t *testing.T) {
 		t.Logf("Successfully verified account event creation: removeSite")
 	}
 
-	// 6. Verify that a site event was created (RemoveMember)
-	sEvents, err := testApp.FindRecordsByFilter(siteEventsCol, "v >= 1", "-v", 1, 0)
-	if err != nil || len(sEvents) == 0 {
-		t.Errorf("Site event should have been created for removed member in %s", siteEventsCol)
+	// 7. Verify that site collections were deleted (because it was the last user)
+	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err == nil {
+		t.Errorf("Site users collection %s should have been deleted (last user removed)", siteUsersCol)
 	} else {
-		t.Logf("Successfully verified site event creation: removeMember")
+		t.Logf("Verified site users collection was deleted")
+	}
+	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err == nil {
+		t.Errorf("Site events collection %s should have been deleted (last user removed)", siteEventsCol)
+	} else {
+		t.Logf("Verified site events collection was deleted")
 	}
 }
 
@@ -207,20 +180,93 @@ func TestMemberLeftCascadingEffect(t *testing.T) {
 		t.Logf("Site user record was successfully deleted")
 	}
 
-	// 5. Verify that a site event was created (LeaveSite)
-	events, err := testApp.FindRecordsByFilter(siteEventsCol, "v > 0", "-v", 1, 0)
-	if err != nil || len(events) == 0 {
-		t.Errorf("Site event should have been created for leaving user")
-	} else {
-		t.Logf("Successfully verified site event creation: leaveSite")
-	}
-
-	// 6. Verify that an account event was created (LeaveSite)
+	// 6. Verify that account event was created
 	accEvents, err := testApp.FindRecordsByFilter(accountEventsCol, "v >= 1", "-v", 1, 0)
 	if err != nil || len(accEvents) == 0 {
 		t.Errorf("Account event should have been created for leaving user in %s", accountEventsCol)
 	} else {
 		t.Logf("Successfully verified account event creation: leaveSite")
+	}
+
+	// 7. Verify that site collections were deleted
+	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err == nil {
+		t.Errorf("Site users collection %s should have been deleted (last user left)", siteUsersCol)
+	} else {
+		t.Logf("Verified site users collection was deleted")
+	}
+	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err == nil {
+		t.Errorf("Site events collection %s should have been deleted (last user left)", siteEventsCol)
+	} else {
+		t.Logf("Verified site events collection was deleted")
+	}
+}
+
+func TestMemberLeavesWithOthersRemaining(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	email1 := "user1@example.com"
+	email2 := "user2@example.com"
+	appName := "testapp_others"
+	siteId := "SOTHERS"
+
+	siteUsersCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_users", appName, siteId)
+	siteEventsCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_events", appName, siteId)
+
+	// Create collections
+	createHyttahubCollection(testApp, siteUsersCol)
+	createHyttahubCollection(testApp, siteEventsCol)
+
+	// Add both users
+	col, _ := testApp.FindCollectionByNameOrId(siteUsersCol)
+	record1 := core.NewRecord(col)
+	record1.Set("doc_id", email1)
+	record1.Set("u", 1)
+	testApp.Save(record1)
+
+	record2 := core.NewRecord(col)
+	record2.Set("doc_id", email2)
+	record2.Set("u", 2)
+	testApp.Save(record2)
+
+	// Prepare leave mark for user1
+	mBase64 := base64.StdEncoding.EncodeToString([]byte{0x08, 0x00})
+	record1.Set("m", mBase64)
+	
+	// Create account event collection for user1
+	accountEventsCol1 := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodeSegment(email1))
+	createHyttahubCollection(testApp, accountEventsCol1)
+
+	// Trigger leave
+	if err := testApp.Save(record1); err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify user1 is gone from site_users
+	_, err = testApp.FindRecordById(siteUsersCol, record1.Id)
+	if err == nil {
+		t.Errorf("User1 record should have been deleted")
+	}
+
+	// Verify user2 STILL EXISTS
+	_, err = testApp.FindRecordById(siteUsersCol, record2.Id)
+	if err != nil {
+		t.Errorf("User2 record should STILL exist")
+	}
+
+	// Verify site collections STILL EXIST
+	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err != nil {
+		t.Errorf("Site users collection should still exist")
+	}
+
+	// Verify site event (LeaveSite) was created
+	events, err := testApp.FindRecordsByFilter(siteEventsCol, "v > 0", "-v", 1, 0)
+	if err != nil || len(events) == 0 {
+		t.Errorf("Site event should have been created")
 	}
 }
 

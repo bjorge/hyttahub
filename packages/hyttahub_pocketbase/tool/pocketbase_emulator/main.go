@@ -201,7 +201,17 @@ func registerAppHooks(app core.App) {
 		if colName == "users" {
 			email := e.Record.GetString("email")
 			if email != "" {
-				log.Printf("[hyttahub] Auth user deleted (%s). Cleanup will be handled by cron.", email)
+				log.Printf("[hyttahub] Auth user deleted (%s). Cleaning up account collections...", email)
+				encodedEmail := encodeSegment(email)
+				prefix := "hyttahub__"
+				suffix := "__accounts__" + encodedEmail + "__"
+				collections, _ := app.FindAllCollections()
+				for _, c := range collections {
+					if strings.HasPrefix(c.Name, prefix) && strings.Contains(c.Name, suffix) {
+						log.Printf("[hyttahub] CASCADE: Deleting user collection: %s", c.Name)
+						app.Delete(c)
+					}
+				}
 			}
 		}
 		return e.Next()
@@ -340,95 +350,34 @@ func registerAppHooks(app core.App) {
 			log.Printf("[hyttahub] ERROR: Failed to delete site user record: %v", err)
 			return err
 		}
+
+		// Immediate Orphan Cleanup: If this was the last user, delete the site collections.
+		count, _ := app.CountRecords(colName)
+		if count == 0 {
+			log.Printf("[hyttahub] CASCADE: Last user removed from %s. Deleting site collections...", colName)
+			parts := strings.Split(colName, "__")
+			if len(parts) >= 4 {
+				prefix := strings.Join(parts[0:len(parts)-1], "__") + "__"
+				collections, _ := app.FindAllCollections()
+				for _, c := range collections {
+					if strings.HasPrefix(c.Name, prefix) {
+						log.Printf("[hyttahub] CASCADE: Deleting orphaned site collection: %s", c.Name)
+						app.Delete(c)
+					}
+				}
+			}
+		}
+
 		return e.Next()
 	})
 
 	// -------------------------------------------------------------------------
-	// Auto-collection middleware via explicit router intercept
+	// Static File Serving
 	// -------------------------------------------------------------------------
 	app.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
 		Func: func(se *core.ServeEvent) error {
 			// Serve static files from pb_public
 			se.Router.GET("/{path...}", apis.Static(os.DirFS(app.DataDir()+"/../pb_public"), false))
-
-			// Add a catch-all route for other methods to ensure middleware runs
-			se.Router.POST("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-			se.Router.DELETE("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-			se.Router.PATCH("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-
-			// --- Orphan Cleanup Cron ---
-			app.Cron().Add("hyttahub_cleanup", "*/1 * * * *", func() {
-				runOrphanCleanup(app)
-			})
-
-			se.Router.Bind(&hook.Handler[*core.RequestEvent]{
-				Func: func(e *core.RequestEvent) error {
-					reqPath := e.Request.URL.Path
-					reqMethod := e.Request.Method
-
-					// We only care about /api/collections/... requests
-					if !strings.HasPrefix(reqPath, "/api/collections/") {
-						return e.Next()
-					}
-
-					parts := strings.Split(reqPath, "/")
-					if len(parts) < 4 {
-						return e.Next()
-					}
-					collectionName := parts[3]
-
-					if !strings.HasPrefix(collectionName, "hyttahub__") {
-						return e.Next()
-					}
-
-					// Check if it already exists
-					_, err := app.FindCollectionByNameOrId(collectionName)
-					if err == nil {
-						return e.Next() // exists
-					}
-
-					log.Printf("[hyttahub] Middleware: %s %s (processing missing collection %s)", reqMethod, reqPath, collectionName)
-
-					// Defensive checks: block "leaf" collections on GET if their dependencies aren't met.
-					if reqMethod == "GET" || reqMethod == "HEAD" {
-						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-							// Determine parent (site_users)
-							prefix := strings.Split(collectionName, "__site_")[0]
-							parent := prefix + "__site_users"
-							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-								log.Printf("[hyttahub] Blocking resurrection of sub-collection %s (parent %s not found)", collectionName, parent)
-								return e.Next()
-							}
-						} else if strings.Contains(collectionName, "__accounts__") {
-							// For account sub-collections, ensure the auth user exists.
-							parts := strings.Split(collectionName, "__")
-							emailChunk := ""
-							for i, part := range parts {
-								if part == "accounts" && i+1 < len(parts) {
-									emailChunk = parts[i+1]
-									break
-								}
-							}
-							email := decodeSegment(emailChunk)
-							user, _ := app.FindAuthRecordByEmail("users", email)
-							if user == nil {
-								log.Printf("[hyttahub] Blocking resurrection for deleted user %s", email)
-								return e.Next()
-							}
-						}
-					}
-
-					// 3. Create it
-					log.Printf("[hyttahub] Auto-creating missing collection: %s", collectionName)
-					if err := createHyttahubCollection(app, collectionName); err != nil {
-						log.Printf("[hyttahub] ERROR auto-creating collection '%s': %v\n", collectionName, err)
-						return apis.NewBadRequestError("Failed to auto-create collection", err)
-					}
-
-					return e.Next()
-				},
-				Priority: -99999,
-			})
 
 			return se.Next()
 		},
@@ -436,85 +385,7 @@ func registerAppHooks(app core.App) {
 	})
 }
 
-func runOrphanCleanup(app core.App) {
-	log.Printf("[hyttahub] Running orphaned collection cleanup...")
 
-	collections, err := app.FindAllCollections()
-	if err != nil {
-		return
-	}
-
-	siteStatus := make(map[string]bool)
-	userStatus := make(map[string]bool)
-
-	for _, c := range collections {
-		if strings.HasSuffix(c.Name, "__site_users") {
-			prefix := strings.TrimSuffix(c.Name, "__site_users")
-			count, _ := app.CountRecords(c.Name)
-			siteStatus[prefix] = count > 0
-		}
-	}
-
-	for _, c := range collections {
-		if !strings.HasPrefix(c.Name, "hyttahub__") || time.Since(c.Created.Time()) < 2*time.Minute {
-			continue
-		}
-
-		isDel := false
-		for prefix, active := range siteStatus {
-			if !active && strings.HasPrefix(c.Name, prefix) {
-				log.Printf("[hyttahub] CRON: Deleting collection for empty site: %s", c.Name)
-				app.Delete(c)
-				isDel = true
-				break
-			}
-		}
-		if isDel {
-			continue
-		}
-
-		if strings.Contains(c.Name, "__site_") && !strings.HasSuffix(c.Name, "__site_users") {
-			parts := strings.Split(c.Name, "__site_")
-			prefix := parts[0]
-			if _, exists := siteStatus[prefix]; !exists {
-				log.Printf("[hyttahub] CRON: Deleting orphaned sub-collection %s", c.Name)
-				app.Delete(c)
-				continue
-			}
-		}
-
-		if strings.Contains(c.Name, "__accounts__") {
-			parts := strings.Split(c.Name, "__")
-			emailChunk := ""
-			for i, part := range parts {
-				if part == "accounts" && i+1 < len(parts) {
-					emailChunk = parts[i+1]
-					break
-				}
-			}
-			email := decodeSegment(emailChunk)
-			active, exists := userStatus[email]
-			if !exists {
-				user, _ := app.FindAuthRecordByEmail("users", email)
-				active = (user != nil)
-				userStatus[email] = active
-			}
-			if !active {
-				log.Printf("[hyttahub] CRON: Deleting collection for missing user %s: %s", email, c.Name)
-				app.Delete(c)
-				continue
-			}
-			if strings.HasSuffix(c.Name, "__account_events") {
-				count, _ := app.CountRecords(c.Name)
-				if count == 0 {
-					log.Printf("[hyttahub] CRON: Deleting wiped account collection: %s", c.Name)
-					app.Delete(c)
-				}
-			}
-		}
-	}
-	log.Printf("[hyttahub] Orphaned collection cleanup finished.")
-}
 
 func createHyttahubCollection(app core.App, collectionName string) error {
 	if !strings.HasPrefix(collectionName, "hyttahub__") {

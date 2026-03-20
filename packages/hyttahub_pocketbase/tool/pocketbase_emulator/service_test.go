@@ -22,6 +22,9 @@ func TestServiceSecurity(t *testing.T) {
 	serviceUsersCol := "hyttahub__app__service_users"
 	serviceEventsCol := "hyttahub__app__service_events"
 
+	createHyttahubCollection(testApp, serviceUsersCol)
+	createHyttahubCollection(testApp, serviceEventsCol)
+
 	// 1. Create first service user (no auth required)
 	scenario1 := tests.ApiScenario{
 		Name:            "Allow first service user creation",
@@ -121,6 +124,7 @@ func TestServiceEventsImmutability(t *testing.T) {
 	registerAppHooks(testApp)
 
 	serviceEventsCol := "hyttahub__app__service_events"
+	createHyttahubCollection(testApp, serviceEventsCol)
 
 	// 1. Create a service event
 	scenario1 := tests.ApiScenario{
