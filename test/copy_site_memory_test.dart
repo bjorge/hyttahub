@@ -28,8 +28,8 @@ void main() {
     // 1. Seed the source site
     final usersPath = collectionSiteUsersPath(siteId);
     await storage.setDocument(usersPath, email, {
-      fbUserId: userId,
-      fbTimeStamp: storage.serverTimestamp,
+      docUserId: userId,
+      docTimeStamp: storage.serverTimestamp,
     });
 
     final eventsPath = collectionSiteEventsPath(siteId);
@@ -39,9 +39,9 @@ void main() {
       newSite: SiteEvent_NewSite(siteName: 'My Source Site'),
     );
     await storage.setDocument(eventsPath, '1', {
-      fbPayload: base64Encode(event1.writeToBuffer()),
-      fbVersion: 1,
-      fbTimeStamp: storage.serverTimestamp,
+      docPayload: base64Encode(event1.writeToBuffer()),
+      docVersion: 1,
+      docTimeStamp: storage.serverTimestamp,
     });
 
     // 2. Add MarkForCopy field (The new pattern)
@@ -49,7 +49,7 @@ void main() {
     final markValue = base64Encode(mark.writeToBuffer());
 
     await storage.updateDocument(usersPath, email, {
-      fbSiteMemberMarkedForCopy: markValue,
+      docSiteMemberMarkedForCopy: markValue,
     });
 
     // 3. Wait for the background trigger to process
@@ -59,7 +59,7 @@ void main() {
     // 4. Verify results
     // Check if MarkForCopy is cleared
     final updatedUserDoc = await storage.getDocument(usersPath, email);
-    expect(updatedUserDoc![fbSiteMemberMarkedForCopy], isNull);
+    expect(updatedUserDoc![docSiteMemberMarkedForCopy], isNull);
 
     // Get the account events to find the NEW site ID
     final accountPath = collectionAccountEventsPath(email);
@@ -67,7 +67,7 @@ void main() {
     expect(accountEvents.length, 1);
     
     // The account event should contain the createSite new ID
-    final payload = base64Decode(accountEvents.first[fbPayload] as String);
+    final payload = base64Decode(accountEvents.first[docPayload] as String);
     final accountEvent = AccountEvent.fromBuffer(payload);
     expect(accountEvent.hasCreateSite(), isTrue);
     expect(accountEvent.createSite, isNotEmpty);

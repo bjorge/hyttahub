@@ -52,7 +52,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
 
       final dates = <int, DateTime>{};
       for (final data in docs) {
-        if (data case {fbVersion: int version, fbTimeStamp: dynamic timestampValue}) {
+        if (data case {docVersion: int version, docTimeStamp: dynamic timestampValue}) {
           try {
             if (timestampValue is DateTime) {
                dates[version] = timestampValue;
@@ -87,7 +87,7 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
       final userDoc = await storage.getDocument(collectionSiteUsersPath(widget.siteId), email);
       if (userDoc != null && mounted) {
         setState(() {
-          _authorId = userDoc[fbUserId] as int?;
+          _authorId = userDoc[docUserId] as int?;
         });
       }
     } catch (e) {

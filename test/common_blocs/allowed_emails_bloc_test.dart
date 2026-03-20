@@ -38,8 +38,8 @@ void main() {
         'emits [fetching, success] when snapshots stream emits data',
         setUp: () async {
           // Add initial data to the in-memory storage.
-          await inMemoryStorage.setDocument(collectionPath, 'test@email.com', {fbUserId: 123});
-          await inMemoryStorage.setDocument(collectionPath, 'another@email.com', {fbUserId: 456});
+          await inMemoryStorage.setDocument(collectionPath, 'test@email.com', {docUserId: 123});
+          await inMemoryStorage.setDocument(collectionPath, 'another@email.com', {docUserId: 456});
         },
         build: buildBloc,
         act: (bloc) => bloc.add(

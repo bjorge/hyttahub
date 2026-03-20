@@ -25,10 +25,10 @@ export {
 } from "./shared/app_payload";
 
 export {
-  fbPayload,
-  fbTimeStamp,
+  docPayload,
+  docTimeStamp,
   firebaseSiteEventsPath,
-  fbVersion,
+  docVersion,
   firebaseSitesPath,
 } from "./shared/constants";
 

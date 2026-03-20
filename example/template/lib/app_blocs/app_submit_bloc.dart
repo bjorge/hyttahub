@@ -102,9 +102,9 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
           collectionSiteEventsPath(siteId),
           version.toString(),
           {
-            fbPayload: encodedEvent,
-            fbVersion: version,
-            fbTimeStamp: storage.serverTimestamp,
+            docPayload: encodedEvent,
+            docVersion: version,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
 
@@ -139,9 +139,9 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
         collectionSiteEventsPath(siteId),
         siteEvent.version.toString(),
         {
-          fbPayload: encodedEvent,
-          fbVersion: siteEvent.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docPayload: encodedEvent,
+          docVersion: siteEvent.version,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
     } else {
@@ -149,9 +149,9 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
         collectionSiteEventsPath(siteId),
         siteEvent.version.toString(),
         {
-          fbPayload: encodedEvent,
-          fbVersion: siteEvent.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docPayload: encodedEvent,
+          docVersion: siteEvent.version,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
     }

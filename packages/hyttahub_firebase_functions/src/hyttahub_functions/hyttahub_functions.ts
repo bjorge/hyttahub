@@ -17,12 +17,12 @@ import {
   firebaseSitesPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
-  fbSiteMemberMarkedForDeletion,
-  fbSiteMemberMarkedForCopy,
-  fbUserId,
-  fbVersion,
-  fbPayload,
-  fbTimeStamp,
+  docSiteMemberMarkedForDeletion,
+  docSiteMemberMarkedForCopy,
+  docUserId,
+  docVersion,
+  docPayload,
+  docTimeStamp,
   firebaseFilesPath,
   firebaseEmulatorArchiveFilesPath,
 } from "../shared/constants";
@@ -54,11 +54,11 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
     const data = afterData;
     const appPathSegment = event.params.appPathSegment;
 
-    if (data[fbSiteMemberMarkedForDeletion] && typeof data[fbSiteMemberMarkedForDeletion] === "string") {
+    if (data[docSiteMemberMarkedForDeletion] && typeof data[docSiteMemberMarkedForDeletion] === "string") {
       try {
         // The 'm' field contains the base64-encoded protobuf data.
         // We first decode it into a buffer.
-        const buffer = Buffer.from(data[fbSiteMemberMarkedForDeletion], "base64");
+        const buffer = Buffer.from(data[docSiteMemberMarkedForDeletion], "base64");
 
         // Then, we use the MarkForDeletion definition to decode the buffer.
         const markForDeletionInfo = MarkForDeletion.decode(buffer);
@@ -74,14 +74,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
           const siteId = event.params.siteId;
           const email = event.params.email;
 
-          if (!afterData || typeof afterData[fbUserId] !== "number") {
+          if (!afterData || typeof afterData[docUserId] !== "number") {
             logger.error(
               `Could not find memberId for user ${email} in site ${siteId}. After data:`,
               afterData
             );
             return;
           }
-          const memberId = afterData[fbUserId];
+          const memberId = afterData[docUserId];
 
           // 1. Add LeaveSite to Site Events
           const siteEventsRef = admin
@@ -89,14 +89,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             .collection(firebaseSiteEventsPath(appPathSegment, siteId));
 
           const lastSiteEventSnapshot = await siteEventsRef
-            .orderBy(fbVersion, "desc")
+            .orderBy(docVersion, "desc")
             .limit(1)
             .get();
           let newVersion = 1;
           if (!lastSiteEventSnapshot.empty) {
             const lastEventData = lastSiteEventSnapshot.docs[0].data();
-            if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
-              newVersion = lastEventData[fbVersion] + 1;
+            if (lastEventData[docVersion] && typeof lastEventData[docVersion] === "number") {
+              newVersion = lastEventData[docVersion] + 1;
             }
           }
 
@@ -113,9 +113,9 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             const base64SiteEvent = Buffer.from(siteBuffer).toString("base64");
 
             await siteEventsRef.doc(String(newVersion)).set({
-              [fbPayload]: base64SiteEvent,
-              [fbVersion]: newVersion,
-              [fbTimeStamp]: FieldValue.serverTimestamp(),
+              [docPayload]: base64SiteEvent,
+              [docVersion]: newVersion,
+              [docTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
@@ -129,14 +129,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             .collection(firebaseAccountEventsPath(appPathSegment, email));
 
           const lastAccEventSnapshot = await accountEventsRef
-            .orderBy(fbVersion, "desc")
+            .orderBy(docVersion, "desc")
             .limit(1)
             .get();
           let newAccVersion = 1;
           if (!lastAccEventSnapshot.empty) {
             const lastAccEventData = lastAccEventSnapshot.docs[0].data();
-            if (lastAccEventData[fbVersion] && typeof lastAccEventData[fbVersion] === "number") {
-              newAccVersion = lastAccEventData[fbVersion] + 1;
+            if (lastAccEventData[docVersion] && typeof lastAccEventData[docVersion] === "number") {
+              newAccVersion = lastAccEventData[docVersion] + 1;
             }
           }
 
@@ -150,9 +150,9 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             const base64AccEvent = Buffer.from(accBuffer).toString("base64");
 
             await accountEventsRef.doc(String(newAccVersion)).set({
-              [fbPayload]: base64AccEvent,
-              [fbVersion]: newAccVersion,
-              [fbTimeStamp]: FieldValue.serverTimestamp(),
+              [docPayload]: base64AccEvent,
+              [docVersion]: newAccVersion,
+              [docTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
@@ -177,7 +177,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
 
           const siteId = event.params.siteId;
           const email = event.params.email;
-          const memberId = afterData[fbUserId];
+          const memberId = afterData[docUserId];
 
           // 1. Add RemoveMember to Site Events
           const siteEventsRef = admin
@@ -185,14 +185,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             .collection(firebaseSiteEventsPath(appPathSegment, siteId));
 
           const lastSiteEventSnapshot = await siteEventsRef
-            .orderBy(fbVersion, "desc")
+            .orderBy(docVersion, "desc")
             .limit(1)
             .get();
           let newVersion = 1;
           if (!lastSiteEventSnapshot.empty) {
             const lastEventData = lastSiteEventSnapshot.docs[0].data();
-            if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
-              newVersion = lastEventData[fbVersion] + 1;
+            if (lastEventData[docVersion] && typeof lastEventData[docVersion] === "number") {
+              newVersion = lastEventData[docVersion] + 1;
             }
           }
 
@@ -209,9 +209,9 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             const base64SiteEvent = Buffer.from(siteBuffer).toString("base64");
 
             await siteEventsRef.doc(String(newVersion)).set({
-              [fbPayload]: base64SiteEvent,
-              [fbVersion]: newVersion,
-              [fbTimeStamp]: FieldValue.serverTimestamp(),
+              [docPayload]: base64SiteEvent,
+              [docVersion]: newVersion,
+              [docTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
@@ -225,14 +225,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             .collection(firebaseAccountEventsPath(appPathSegment, email));
 
           const lastAccEventSnapshot = await accountEventsRef
-            .orderBy(fbVersion, "desc")
+            .orderBy(docVersion, "desc")
             .limit(1)
             .get();
           let newAccVersion = 1;
           if (!lastAccEventSnapshot.empty) {
             const lastAccEventData = lastAccEventSnapshot.docs[0].data();
-            if (lastAccEventData[fbVersion] && typeof lastAccEventData[fbVersion] === "number") {
-              newAccVersion = lastAccEventData[fbVersion] + 1;
+            if (lastAccEventData[docVersion] && typeof lastAccEventData[docVersion] === "number") {
+              newAccVersion = lastAccEventData[docVersion] + 1;
             }
           }
 
@@ -246,9 +246,9 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
             const base64AccEvent = Buffer.from(accBuffer).toString("base64");
 
             await accountEventsRef.doc(String(newAccVersion)).set({
-              [fbPayload]: base64AccEvent,
-              [fbVersion]: newAccVersion,
-              [fbTimeStamp]: FieldValue.serverTimestamp(),
+              [docPayload]: base64AccEvent,
+              [docVersion]: newAccVersion,
+              [docTimeStamp]: FieldValue.serverTimestamp(),
             });
 
             logger.info(
@@ -284,14 +284,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
       } catch (error) {
         logger.error("Failed to decode MarkForDeletion protobuf:", error);
       }
-    } else if (data[fbSiteMemberMarkedForCopy] && typeof data[fbSiteMemberMarkedForCopy] === "string") {
+    } else if (data[docSiteMemberMarkedForCopy] && typeof data[docSiteMemberMarkedForCopy] === "string") {
       try {
-        const buffer = Buffer.from(data[fbSiteMemberMarkedForCopy], "base64");
+        const buffer = Buffer.from(data[docSiteMemberMarkedForCopy], "base64");
         const copyInfo = MarkForCopy.decode(buffer);
         const appName = event.params.appPathSegment;
         const oldSiteId = event.params.siteId;
         const email = event.params.email;
-        const fbUserIdValue = data[fbUserId];
+        const docUserIdValue = data[docUserId];
 
         logger.info(`Copysite triggered for ${email} in site ${oldSiteId}`);
 
@@ -310,7 +310,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
 
         oldEventsSnapshot.docs.forEach((doc) => {
           const eventData = doc.data();
-          const version = eventData[fbVersion];
+          const version = eventData[docVersion];
           if (copyInfo.upToVersion !== 0 && typeof version === "number" && version > copyInfo.upToVersion) {
             return;
           }
@@ -328,14 +328,14 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
         const importSiteEvent = SiteEvent.create({
           importEvent: SiteEvent_ImportEvent.create({}),
           version: newSiteEventVersion,
-          author: Number(fbUserIdValue),
+          author: Number(docUserIdValue),
         });
         const batchIndexEvent = Math.floor(operationCounter / 400);
         if (batchArray.length <= batchIndexEvent) { batchArray.push(db.batch()); }
         batchArray[batchIndexEvent].set(newEventsRef.doc(newSiteEventVersion.toString()), {
-          [fbPayload]: Buffer.from(SiteEvent.encode(importSiteEvent).finish()).toString("base64"),
-          [fbTimeStamp]: FieldValue.serverTimestamp(),
-          [fbVersion]: newSiteEventVersion,
+          [docPayload]: Buffer.from(SiteEvent.encode(importSiteEvent).finish()).toString("base64"),
+          [docTimeStamp]: FieldValue.serverTimestamp(),
+          [docVersion]: newSiteEventVersion,
         });
         operationCounter++;
 
@@ -344,19 +344,19 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
         const batchIndexUser = Math.floor(operationCounter / 400);
         if (batchArray.length <= batchIndexUser) { batchArray.push(db.batch()); }
         batchArray[batchIndexUser].set(newUserRef, {
-          [fbUserId]: fbUserIdValue,
-          [fbTimeStamp]: FieldValue.serverTimestamp(),
+          [docUserId]: docUserIdValue,
+          [docTimeStamp]: FieldValue.serverTimestamp(),
         });
         operationCounter++;
 
         // 4. Add joinSite event to account events
         const accountEventsRef = db.collection(firebaseAccountEventsPath(appName, email));
-        const lastAccountEventSnapshot = await accountEventsRef.orderBy(fbVersion, "desc").limit(1).get();
+        const lastAccountEventSnapshot = await accountEventsRef.orderBy(docVersion, "desc").limit(1).get();
         let newAccountEventVersion = 1;
         if (!lastAccountEventSnapshot.empty) {
           const lastEventData = lastAccountEventSnapshot.docs[0].data();
-          if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
-            newAccountEventVersion = lastEventData[fbVersion] + 1;
+          if (lastEventData[docVersion] && typeof lastEventData[docVersion] === "number") {
+            newAccountEventVersion = lastEventData[docVersion] + 1;
           }
         }
         const joinSiteEvent = AccountEvent.create({
@@ -366,9 +366,9 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
         const batchIndexAccount = Math.floor(operationCounter / 400);
         if (batchArray.length <= batchIndexAccount) { batchArray.push(db.batch()); }
         batchArray[batchIndexAccount].set(accountEventsRef.doc(newAccountEventVersion.toString()), {
-          [fbPayload]: Buffer.from(AccountEvent.encode(joinSiteEvent).finish()).toString("base64"),
-          [fbTimeStamp]: FieldValue.serverTimestamp(),
-          [fbVersion]: newAccountEventVersion,
+          [docPayload]: Buffer.from(AccountEvent.encode(joinSiteEvent).finish()).toString("base64"),
+          [docTimeStamp]: FieldValue.serverTimestamp(),
+          [docVersion]: newAccountEventVersion,
         });
 
         for (const batch of batchArray) { await batch.commit(); }
@@ -418,7 +418,7 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
         logger.info(`Successfully completed site copy: ${oldSiteId} -> ${newSiteId}`);
 
         // Clear the MarkForCopy field
-        await after.ref.update({ [fbSiteMemberMarkedForCopy]: FieldValue.delete() });
+        await after.ref.update({ [docSiteMemberMarkedForCopy]: FieldValue.delete() });
 
       } catch (error) {
         logger.error("Failed to process MarkForCopy:", error);

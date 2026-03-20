@@ -84,14 +84,14 @@ class _EventsDisplayState<
       );
       final docs = await storage.getCollection(
         widget.config.collectionPath,
-        orderBy: fbVersion,
+        orderBy: docVersion,
         descending: _isDescending,
       );
 
       final records = <R>[];
       final base64Events = <int, String>{};
       for (final data in docs) {
-        if (data case {fbPayload: String payload, fbTimeStamp: dynamic timestampValue}) {
+        if (data case {docPayload: String payload, docTimeStamp: dynamic timestampValue}) {
           String isoDate;
           try {
             if (timestampValue is String) {

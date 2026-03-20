@@ -55,12 +55,11 @@ export const firebaseEmulatorArchiveFilesPath = (
 ): string => `emulator/${appPathSegment}/archive_files/${siteId}/${fileId}`;
 
 // Document keys
-export const fbUserId = "u";
-export const fbTimeStamp = "t";
-export const fbVersion = "v";
-export const fbPayload = "p";
-export const fbBetaUsers = "b";
-export const fbSiteMemberMarkedForDeletion = "m";
-export const fbSiteMemberMarkedForCopy = "MarkForCopy";
+export const docUserId = "u";
+export const docTimeStamp = "t";
+export const docVersion = "v";
+export const docPayload = "p";
+export const docBetaUsers = "b";
+export const docSiteMemberMarkedForDeletion = "m";
+export const docSiteMemberMarkedForCopy = "c";
 export const fbAppId = "a";
-export const fbSiteMarkedForDeletion = "sm";

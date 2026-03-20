@@ -48,8 +48,8 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   ) async {
     final storage = HyttaHubStorageFactory.getStorage(_type);
     final doc = await storage.getDocument(path, docId);
-    if (doc != null && doc[fbSiteMemberMarkedForCopy] != null) {
-      final mValue = doc[fbSiteMemberMarkedForCopy] as String;
+    if (doc != null && doc[docSiteMemberMarkedForCopy] != null) {
+      final mValue = doc[docSiteMemberMarkedForCopy] as String;
       final mark = MarkForCopy.fromBuffer(base64Decode(mValue));
 
       // Trigger the copy
@@ -62,7 +62,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
       // Clear the mark
       await storage.updateDocument(path, docId, {
-        fbSiteMemberMarkedForCopy: null, // Depending on storage implementation, this might need special handling
+        docSiteMemberMarkedForCopy: null, // Depending on storage implementation, this might need special handling
       });
       // In InMemoryHyttaHubStorage, we can just delete it from the map if we want,
       // but updateDocument with null should work.
@@ -87,7 +87,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
       throw Exception('User is not a member of the site to copy');
     }
 
-    final authorId = userDoc[fbUserId] as int? ?? 0;
+    final authorId = userDoc[docUserId] as int? ?? 0;
     final mark = MarkForCopy(
       author: authorId,
       upToVersion: upToVersion ?? 0,
@@ -95,7 +95,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
     final mValue = base64Encode(mark.writeToBuffer());
     await storage.updateDocument(path, email, {
-      fbSiteMemberMarkedForCopy: mValue,
+      docSiteMemberMarkedForCopy: mValue,
     });
 
     return {'message': 'Site copy requested via data trigger (In-Memory)'};
@@ -121,17 +121,17 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     if (oldUserDoc == null) {
       throw Exception('User is not a member of the site to copy');
     }
-    final userId = oldUserDoc[fbUserId] as int;
+    final userId = oldUserDoc[docUserId] as int;
 
     // 2. Copy events
     final oldSitePath = 'hyttahub/$appName/sites/$siteId/site_events';
     final newSitePath = 'hyttahub/$appName/sites/$newSiteId/site_events';
-    final oldEvents = await storage.getCollection(oldSitePath, orderBy: fbVersion);
+    final oldEvents = await storage.getCollection(oldSitePath, orderBy: docVersion);
 
     int lastVersion = 0;
     await storage.runBatch((batch) async {
       for (final event in oldEvents) {
-        final version = event[fbVersion] as int;
+        final version = event[docVersion] as int;
         
         // Skip events after upToVersion if specified
         if (upToVersion != null && version > upToVersion) {
@@ -159,9 +159,9 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
         newSitePath,
         newSiteEventVersion.toString(),
         {
-          fbPayload: base64Encode(importSiteEvent.writeToBuffer()),
-          fbTimeStamp: storage.serverTimestamp,
-          fbVersion: newSiteEventVersion,
+          docPayload: base64Encode(importSiteEvent.writeToBuffer()),
+          docTimeStamp: storage.serverTimestamp,
+          docVersion: newSiteEventVersion,
         },
       );
 
@@ -170,8 +170,8 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
         'hyttahub/$appName/sites/$newSiteId/site_users',
         email,
         {
-          fbUserId: userId,
-          fbTimeStamp: storage.serverTimestamp,
+          docUserId: userId,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
 
@@ -181,8 +181,8 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
 
     final accountPath = 'hyttahub/$appName/accounts/$email/account_events';
-    final accountEvents = await storage.getCollection(accountPath, orderBy: fbVersion, descending: true);
-    final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[fbVersion] as int) + 1;
+    final accountEvents = await storage.getCollection(accountPath, orderBy: docVersion, descending: true);
+    final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[docVersion] as int) + 1;
     
     final joinSiteEvent = AccountEvent(
       createSite: newSiteId,
@@ -193,9 +193,9 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
       accountPath,
       nextAccountVersion.toString(),
       {
-        fbPayload: base64Encode(joinSiteEvent.writeToBuffer()),
-        fbTimeStamp: storage.serverTimestamp,
-        fbVersion: nextAccountVersion,
+        docPayload: base64Encode(joinSiteEvent.writeToBuffer()),
+        docTimeStamp: storage.serverTimestamp,
+        docVersion: nextAccountVersion,
       },
     );
 

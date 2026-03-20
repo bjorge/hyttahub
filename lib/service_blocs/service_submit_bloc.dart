@@ -50,7 +50,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
           submitServiceEvent.email,
           {
             'u': submitServiceEvent.event.version,
-            fbTimeStamp: storage.serverTimestamp,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -61,7 +61,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
           submitServiceEvent.addServiceAdminEmail,
           {
             'u': submitServiceEvent.event.version,
-            fbTimeStamp: storage.serverTimestamp,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -84,7 +84,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
             submitServiceEvent.updateServiceAdminNewEmail,
             {
               'u': submitServiceEvent.event.updateServiceAdmin.id,
-              fbTimeStamp: storage.serverTimestamp,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
         }
@@ -96,7 +96,7 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
           submitServiceEvent.addServiceAdminEmail,
           {
             'u': submitServiceEvent.event.restoreServiceAdmin.id,
-            fbTimeStamp: storage.serverTimestamp,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -107,8 +107,8 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
         final parentPath = path.substring(0, lastSlashIndex);
         final docId = path.substring(lastSlashIndex + 1);
         batch.setDocument(parentPath, docId, {
-          fbBetaUsers: submitServiceEvent.betaUsers,
-          fbTimeStamp: storage.serverTimestamp,
+          docBetaUsers: submitServiceEvent.betaUsers,
+          docTimeStamp: storage.serverTimestamp,
         });
       }
 
@@ -116,9 +116,9 @@ class ServiceSubmitBloc extends BaseSubmitBloc<SubmitServiceEvent> {
         collectionServiceEventsPath(collectionServiceCollectionName),
         submitServiceEvent.event.version.toString(),
         {
-          fbPayload: encodedEvent,
-          fbVersion: submitServiceEvent.event.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docPayload: encodedEvent,
+          docVersion: submitServiceEvent.event.version,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
     });

@@ -7,10 +7,10 @@ import {
   firebaseAccountEventsPath,
   firebaseServiceBetaUsersPath,
   firebaseServiceEventsPath,
-  fbPayload,
-  fbVersion,
-  fbTimeStamp,
-  fbBetaUsers,
+  docPayload,
+  docVersion,
+  docTimeStamp,
+  docBetaUsers,
 } from "../shared/constants";
 import { BloomFilterProcessor, defaultBloomFilterSize, defaultBloomFilterHashCount } from "./bloom_filter";
 import { ServiceEvent } from "../ts/service_events";
@@ -34,7 +34,7 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
       const accountEventsRef = db.collection(firebaseAccountEventsPath(appPathSegment, email));
 
       // Fetch all account events to determine current state
-      const snapshot = await accountEventsRef.orderBy(fbVersion, "asc").get();
+      const snapshot = await accountEventsRef.orderBy(docVersion, "asc").get();
       
       let isJoined = false;
       let lastVersion = 0;
@@ -59,14 +59,14 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
       } else {
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
-          const version = data[fbVersion];
+          const version = data[docVersion];
           if (typeof version === "number" && version > lastVersion) {
             lastVersion = version;
           }
 
-          if (data[fbPayload] && typeof data[fbPayload] === "string") {
+          if (data[docPayload] && typeof data[docPayload] === "string") {
             try {
-              const buffer = Buffer.from(data[fbPayload], "base64");
+              const buffer = Buffer.from(data[docPayload], "base64");
               const accountEvent = AccountEvent.decode(buffer);
 
               if (accountEvent.joinSite === siteId || accountEvent.createSite === siteId) {
@@ -93,9 +93,9 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
           const base64Payload = Buffer.from(buffer).toString("base64");
 
           await accountEventsRef.doc(String(newVersion)).set({
-            [fbPayload]: base64Payload,
-            [fbVersion]: newVersion,
-            [fbTimeStamp]: FieldValue.serverTimestamp(),
+            [docPayload]: base64Payload,
+            [docVersion]: newVersion,
+            [docTimeStamp]: FieldValue.serverTimestamp(),
           });
 
           logger.info(`Successfully auto-joined ${email} to ${siteId} with version ${newVersion}`);
@@ -110,7 +110,7 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
 
       if (betaUsersDoc.exists) {
         const data = betaUsersDoc.data();
-        const betaUsersStr = data?.[fbBetaUsers] || "";
+        const betaUsersStr = data?.[docBetaUsers] || "";
         const rawList = betaUsersStr.split(/[,\n]/).map((s: string) => s.trim().toLowerCase()).filter((s: string) => s.length > 0);
         const betaUsersList: string[] = Array.from(new Set<string>(rawList));
 
@@ -120,8 +120,8 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
           const updatedBetaUsersStr = betaUsersList.join(",");
           
           await betaUsersRef.update({
-            [fbBetaUsers]: updatedBetaUsersStr,
-            [fbTimeStamp]: FieldValue.serverTimestamp(),
+            [docBetaUsers]: updatedBetaUsersStr,
+            [docTimeStamp]: FieldValue.serverTimestamp(),
           });
 
           // Update Bloom Filter in service events
@@ -129,8 +129,8 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
           bloomProcessor.addAll(betaUsersList);
 
           const serviceEventsRef = db.collection(firebaseServiceEventsPath(appPathSegment, "status"));
-          const serviceSnapshot = await serviceEventsRef.orderBy(fbVersion, "desc").limit(1).get();
-          const lastServiceVersion = serviceSnapshot.empty ? 0 : serviceSnapshot.docs[0].data()[fbVersion];
+          const serviceSnapshot = await serviceEventsRef.orderBy(docVersion, "desc").limit(1).get();
+          const lastServiceVersion = serviceSnapshot.empty ? 0 : serviceSnapshot.docs[0].data()[docVersion];
           const nextServiceVersion = lastServiceVersion + 1;
 
           const serviceEvent: ServiceEvent = {
@@ -147,9 +147,9 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
           const serviceBase64 = Buffer.from(serviceBuffer).toString("base64");
 
           await serviceEventsRef.doc(String(nextServiceVersion)).set({
-            [fbPayload]: serviceBase64,
-            [fbVersion]: nextServiceVersion,
-            [fbTimeStamp]: FieldValue.serverTimestamp(),
+            [docPayload]: serviceBase64,
+            [docVersion]: nextServiceVersion,
+            [docTimeStamp]: FieldValue.serverTimestamp(),
           });
 
           logger.info(`Updated bloom filter in service events version ${nextServiceVersion}`);
@@ -202,8 +202,8 @@ export const onAccountCreated = onDocumentCreated(
       logger.info(`Found ${sitesToJoin.length} site(s) to join for ${email}: ${sitesToJoin.join(", ")}`);
 
       const accountEventsRef = db.collection(firebaseAccountEventsPath(appPathSegment, email));
-      const accountSnapshot = await accountEventsRef.orderBy(fbVersion, "desc").limit(1).get();
-      let lastVersion = accountSnapshot.empty ? 0 : accountSnapshot.docs[0].data()[fbVersion];
+      const accountSnapshot = await accountEventsRef.orderBy(docVersion, "desc").limit(1).get();
+      let lastVersion = accountSnapshot.empty ? 0 : accountSnapshot.docs[0].data()[docVersion];
       logger.info(`Current last version for ${email} account events is ${lastVersion}`);
 
       for (const siteId of sitesToJoin) {
@@ -219,9 +219,9 @@ export const onAccountCreated = onDocumentCreated(
         const base64Payload = Buffer.from(buffer).toString("base64");
 
         await accountEventsRef.doc(String(lastVersion)).set({
-          [fbPayload]: base64Payload,
-          [fbVersion]: lastVersion,
-          [fbTimeStamp]: FieldValue.serverTimestamp(),
+          [docPayload]: base64Payload,
+          [docVersion]: lastVersion,
+          [docTimeStamp]: FieldValue.serverTimestamp(),
         });
         logger.info(`Successfully auto-joined ${email} to ${siteId} with version ${lastVersion}.`);
       }

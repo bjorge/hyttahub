@@ -59,9 +59,9 @@ class AppSubmitBloc extends BaseSubmitBloc<SubmitAppEvent> {
       collectionSiteEventsPath(siteId),
       siteEvent.version.toString(),
       {
-        fbPayload: encodedEvent,
-        fbVersion: siteEvent.version,
-        fbTimeStamp: storage.serverTimestamp,
+        docPayload: encodedEvent,
+        docVersion: siteEvent.version,
+        docTimeStamp: storage.serverTimestamp,
       },
     );
 

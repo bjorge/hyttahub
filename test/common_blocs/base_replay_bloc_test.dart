@@ -213,12 +213,12 @@ void main() {
         'emits ok with combined events when fetching initial data',
         setUp: () async {
           await inMemoryStorage.setDocument(collectionPath, '1', {
-            fbVersion: 1,
-            fbPayload: 'event1',
+            docVersion: 1,
+            docPayload: 'event1',
           });
           await inMemoryStorage.setDocument(collectionPath, '2', {
-            fbVersion: 2,
-            fbPayload: 'event2',
+            docVersion: 2,
+            docPayload: 'event2',
           });
         },
         build: buildBloc,
@@ -254,8 +254,8 @@ void main() {
         'correctly processes new events after initial fetch',
         setUp: () async {
           await inMemoryStorage.setDocument(collectionPath, '1', {
-            fbVersion: 1,
-            fbPayload: 'event1',
+            docVersion: 1,
+            docPayload: 'event1',
           });
         },
         build: buildBloc,
@@ -264,8 +264,8 @@ void main() {
           // Allow Firebase listener to initialize and apply the first event
           await Future.delayed(const Duration(milliseconds: 150));
           await inMemoryStorage.setDocument(collectionPath, '2', {
-            fbVersion: 2,
-            fbPayload: 'event2',
+            docVersion: 2,
+            docPayload: 'event2',
           });
         },
         wait: const Duration(milliseconds: 500),
@@ -288,8 +288,8 @@ void main() {
         'stops listening and clears state when listen is set to false',
         setUp: () async {
           await inMemoryStorage.setDocument(collectionPath, '1', {
-            fbVersion: 1,
-            fbPayload: 'event1',
+            docVersion: 1,
+            docPayload: 'event1',
           });
         },
         build: buildBloc,
@@ -429,8 +429,8 @@ void main() {
         act: (bloc) {
           // Add some data to firestore that should be fetched after clearing
           inMemoryStorage.setDocument(collectionPath, '2', {
-            fbVersion: 2,
-            fbPayload: 'fresh_event',
+            docVersion: 2,
+            docPayload: 'fresh_event',
           });
           bloc.add(CommonReplayBlocEvent(listen: true));
         },
@@ -492,12 +492,12 @@ void main() {
 
         // Add some events to in-memory storage
         await inMemoryStorage.setDocument(collectionPath, '1', {
-          fbVersion: 1,
-          fbPayload: 'event1',
+          docVersion: 1,
+          docPayload: 'event1',
         });
         await inMemoryStorage.setDocument(collectionPath, '2', {
-          fbVersion: 2,
-          fbPayload: 'event2',
+          docVersion: 2,
+          docPayload: 'event2',
         });
 
         // Listen and let it load events

@@ -143,8 +143,8 @@ class ServiceBetaUsersOption extends StatelessWidget {
           final parentPath = path.substring(0, lastSlashIndex);
           final docId = path.substring(lastSlashIndex + 1);
           final data = await storage.getDocument(parentPath, docId);
-          if (data != null && data.containsKey(fbBetaUsers) == true) {
-            currentBetaUsers = data[fbBetaUsers] as String;
+          if (data != null && data.containsKey(docBetaUsers) == true) {
+            currentBetaUsers = data[docBetaUsers] as String;
           }
         } catch (e) {
           if (context.mounted) {

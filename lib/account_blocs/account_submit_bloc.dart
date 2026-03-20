@@ -87,7 +87,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         email,
         {
           'u': siteEvent.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
 
@@ -99,9 +99,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         collectionSiteEventsPath(siteId),
         siteEvent.version.toString(),
         {
-          fbPayload: encodedSiteEvent,
-          fbVersion: siteEvent.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docPayload: encodedSiteEvent,
+          docVersion: siteEvent.version,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
 
@@ -113,9 +113,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
         collectionAccountEventsPath(email),
         submitAccountEvent.event.version.toString(),
         {
-          fbPayload: encodedAccountEvent,
-          fbVersion: submitAccountEvent.event.version,
-          fbTimeStamp: storage.serverTimestamp,
+          docPayload: encodedAccountEvent,
+          docVersion: submitAccountEvent.event.version,
+          docTimeStamp: storage.serverTimestamp,
         },
       );
     } else {
@@ -136,7 +136,7 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           final siteId = submitAccountEvent.event.leaveSite;
           final userDoc =
               await storage.getDocument(collectionSiteUsersPath(siteId), email);
-          final authorId = (userDoc?[fbUserId] as int?) ?? 0;
+          final authorId = (userDoc?[docUserId] as int?) ?? 0;
           final markForDeletionInfo = base64Encode(
             MarkForDeletion(
               deleteReason: MarkForDeletion_DeleteReason.memberLeftSite,
@@ -148,8 +148,8 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
             collectionSiteUsersPath(siteId),
             email,
             {
-              fbSiteMemberMarkedForDeletion: markForDeletionInfo,
-              fbTimeStamp: storage.serverTimestamp,
+              docSiteMemberMarkedForDeletion: markForDeletionInfo,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
         }
@@ -159,9 +159,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
             collectionAccountEventsPath(email),
             submitAccountEvent.event.version.toString(),
             {
-              fbPayload: encodedAccountEvent,
-              fbVersion: submitAccountEvent.event.version,
-              fbTimeStamp: storage.serverTimestamp,
+              docPayload: encodedAccountEvent,
+              docVersion: submitAccountEvent.event.version,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
         }
@@ -179,19 +179,19 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
           collectionSiteUsersPath(siteId),
           email,
         );
-        final memberId = userDoc?[fbUserId] as int?;
+        final memberId = userDoc?[docUserId] as int?;
 
         // 2. Add a LeaveSite event to the site's event log
         if (memberId != null) {
           final siteEventsPath = collectionSiteEventsPath(siteId);
           final siteEvents = await storage.getCollection(
             siteEventsPath,
-            orderBy: fbVersion,
+            orderBy: docVersion,
             descending: true,
           );
           final nextSiteVersion = siteEvents.isEmpty
               ? 1
-              : (siteEvents.first[fbVersion] as int) + 1;
+              : (siteEvents.first[docVersion] as int) + 1;
 
           final leaveSiteEvent = SiteEvent(
             version: nextSiteVersion,
@@ -202,9 +202,9 @@ class AccountSubmitBloc extends BaseSubmitBloc<SubmitAccountEvent> {
             siteEventsPath,
             nextSiteVersion.toString(),
             {
-              fbPayload: base64Encode(leaveSiteEvent.writeToBuffer()),
-              fbVersion: nextSiteVersion,
-              fbTimeStamp: storage.serverTimestamp,
+              docPayload: base64Encode(leaveSiteEvent.writeToBuffer()),
+              docVersion: nextSiteVersion,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
         }

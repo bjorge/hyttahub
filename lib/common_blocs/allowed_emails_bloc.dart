@@ -35,9 +35,9 @@ class AllowedEmailsBloc
           final Map<String, AllowedEmailsBlocState_UserInfo> emails = {};
           for (final entry in collection.entries) {
             final data = entry.value;
-            if (data.containsKey(fbUserId)) {
+            if (data.containsKey(docUserId)) {
               emails[entry.key] = AllowedEmailsBlocState_UserInfo(
-                userId: data[fbUserId] as int,
+                userId: data[docUserId] as int,
               );
             }
           }

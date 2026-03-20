@@ -69,8 +69,8 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           collectionSiteUsersPath(siteId),
           submitSiteEvent.removeMemberEmail,
           {
-            fbSiteMemberMarkedForDeletion: markForDeletionInfo,
-            fbTimeStamp: storage.serverTimestamp,
+            docSiteMemberMarkedForDeletion: markForDeletionInfo,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -81,7 +81,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           submitSiteEvent.addMemberEmail,
           {
             'u': submitSiteEvent.event.version,
-            fbTimeStamp: storage.serverTimestamp,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -101,8 +101,8 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
             collectionSiteUsersPath(siteId),
             originalEmail,
             {
-              fbSiteMemberMarkedForDeletion: markForDeletionInfo,
-              fbTimeStamp: storage.serverTimestamp,
+              docSiteMemberMarkedForDeletion: markForDeletionInfo,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
           batch.setDocument(
@@ -110,7 +110,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
             newEmail,
             {
               'u': submitSiteEvent.event.updateMember.memberId,
-              fbTimeStamp: storage.serverTimestamp,
+              docTimeStamp: storage.serverTimestamp,
             },
           );
         }
@@ -122,7 +122,7 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           submitSiteEvent.addMemberEmail,
           {
             'u': submitSiteEvent.event.restoreMember.memberId,
-            fbTimeStamp: storage.serverTimestamp,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -135,9 +135,9 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           collectionSiteEventsPath(siteId),
           submitSiteEvent.event.version.toString(),
           {
-            fbPayload: encodedEvent,
-            fbVersion: submitSiteEvent.event.version,
-            fbTimeStamp: storage.serverTimestamp,
+            docPayload: encodedEvent,
+            docVersion: submitSiteEvent.event.version,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
       }
@@ -161,12 +161,12 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         final accountPath = collectionAccountEventsPath(removedEmail);
         final accountEvents = await storage.getCollection(
           accountPath,
-          orderBy: fbVersion,
+          orderBy: docVersion,
           descending: true,
         );
         final nextVersion = accountEvents.isEmpty
             ? 1
-            : (accountEvents.first[fbVersion] as int) + 1;
+            : (accountEvents.first[docVersion] as int) + 1;
 
         final accountEvent = AccountEvent(
           version: nextVersion,
@@ -176,9 +176,9 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
           accountPath,
           nextVersion.toString(),
           {
-            fbPayload: base64Encode(accountEvent.writeToBuffer()),
-            fbVersion: nextVersion,
-            fbTimeStamp: storage.serverTimestamp,
+            docPayload: base64Encode(accountEvent.writeToBuffer()),
+            docVersion: nextVersion,
+            docTimeStamp: storage.serverTimestamp,
           },
         );
 

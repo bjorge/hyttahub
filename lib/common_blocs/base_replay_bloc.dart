@@ -71,11 +71,11 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   @override
   String get id => ':$storageType:$collectionName:${HyttaHubOptions.implementation?.cloudRootCollection}';
 
-  /// Field name for the version in Cloud documents (e.g., 'v' or 'fbVersion').
-  String get versionField => fbVersion;
+  /// Field name for the version in Cloud documents (e.g., 'v' or 'docVersion').
+  String get versionField => docVersion;
 
-  /// Field name for the payload in Cloud documents (e.g., 'p' or 'fbPayload').
-  String get payloadField => fbPayload;
+  /// Field name for the payload in Cloud documents (e.g., 'p' or 'docPayload').
+  String get payloadField => docPayload;
 
   /// Replays new events onto the current state and returns the new state.
   S replayEvents(S currentState, Map<int, String> newEventsData);

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/site_util.pb.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 
 /// A [BaseHyttaHubFunctions] implementation for PocketBase.
@@ -83,9 +84,9 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
         upToVersion: upToVersion ?? 0,
       );
 
-      // 3. Update the record with the mark in field 'MarkForCopy'
+      // 3. Update the record with the mark in field
       final mValue = base64Encode(mark.writeToBuffer());
-      await _client.collection(usersCol).update(record.id, body: {'MarkForCopy': mValue});
+      await _client.collection(usersCol).update(record.id, body: {docSiteMemberMarkedForCopy: mValue});
 
       return {'message': 'Site copy requested'};
     } on ClientException catch (e) {

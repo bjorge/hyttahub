@@ -59,13 +59,12 @@ String emulatorArchiveFilesPath(String siteId, String fileName) {
 }
 
 // Document keys
-const fbUserId = 'u';
-const fbTimeStamp = 't';
-const fbVersion = 'v';
-const fbPayload = 'p';
-const fbBetaUsers = 'b';
-const fbSiteMemberMarkedForDeletion = 'm';
-const fbSiteMemberMarkedForCopy = 'MarkForCopy';
-const fbSiteMarkedForDeletion = 'sm';
+const docUserId = 'u';
+const docTimeStamp = 't';
+const docVersion = 'v';
+const docPayload = 'p';
+const docBetaUsers = 'b';
+const docSiteMemberMarkedForDeletion = 'm';
+const docSiteMemberMarkedForCopy = 'c';
 
 const firstCollectionEventVersion = 1;
