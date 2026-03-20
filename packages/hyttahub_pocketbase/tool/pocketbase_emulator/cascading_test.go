@@ -223,3 +223,92 @@ func TestMemberLeftCascadingEffect(t *testing.T) {
 		t.Logf("Successfully verified account event creation: leaveSite")
 	}
 }
+
+func TestForwardCascading(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	siteUsersCol := "hyttahub__test__sites__CASC__site_users"
+
+	// 1. Create site_users
+	if err := createHyttahubCollection(testApp, siteUsersCol); err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. Verify related collections were created
+	related := []string{
+		"hyttahub__test__sites__CASC__site_events",
+		"hyttahub__test__sites__CASC__site_files",
+	}
+	for _, colName := range related {
+		if _, err := testApp.FindCollectionByNameOrId(colName); err != nil {
+			t.Errorf("Collection %s should have been forward-cascaded", colName)
+		}
+	}
+
+	// 3. Verify deprecated collections were NOT created
+	deprecated := []string{
+		"hyttahub__test__sites__CASC__site_emails",
+		"hyttahub__test__sites__CASC__site_exports",
+	}
+	for _, colName := range deprecated {
+		if _, err := testApp.FindCollectionByNameOrId(colName); err == nil {
+			t.Errorf("Deprecated collection %s should NOT have been created", colName)
+		}
+	}
+}
+
+func TestReverseCascading(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	siteEventsCol := "hyttahub__test__sites__REV__site_events"
+
+	// 1. Create site_events (should trigger creation of site_users)
+	if err := createHyttahubCollection(testApp, siteEventsCol); err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. Verify parent was created
+	parent := "hyttahub__test__sites__REV__site_users"
+	if _, err := testApp.FindCollectionByNameOrId(parent); err != nil {
+		t.Errorf("Collection %s should have been reverse-cascaded", parent)
+	}
+
+	// 3. Verify other children were also created (via site_users forward cascade)
+	child := "hyttahub__test__sites__REV__site_files"
+	if _, err := testApp.FindCollectionByNameOrId(child); err != nil {
+		t.Errorf("Collection %s should have been forward-cascaded from the reverse-cascaded parent", child)
+	}
+}
+
+func TestServiceCascading(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	serviceUsersCol := "hyttahub__app__service_users"
+
+	// 1. Create service_users
+	if err := createHyttahubCollection(testApp, serviceUsersCol); err != nil {
+		t.Fatal(err)
+	}
+
+	// 2. Verify service_events was created
+	serviceEventsCol := "hyttahub__app__service_events"
+	if _, err := testApp.FindCollectionByNameOrId(serviceEventsCol); err != nil {
+		t.Errorf("Collection %s should have been cascaded", serviceEventsCol)
+	}
+}
+

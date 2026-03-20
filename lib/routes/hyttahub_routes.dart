@@ -297,6 +297,7 @@ class SiteEmailsDisplayRoute extends GoRoute {
       '${HyttaHubOptions.siteScreenRoute!(siteId)}/$pathSegment';
 }
 
+
 class SiteInfoRoute extends GoRoute {
   /// Creates an [SiteInfoRoute].
   SiteInfoRoute()
@@ -715,6 +716,8 @@ class CreateAccountPrivacyDisplayRoute extends GoRoute {
   /// A builder for the full path to this route.
   static final String fullPath = '${LoginScreenRoute.fullPath}/$pathSegment';
 }
+
+
 
 Future<bool> showLogoutDialog(BuildContext context) async {
   final loc = HyttaHubLocalizations.of(context)!;

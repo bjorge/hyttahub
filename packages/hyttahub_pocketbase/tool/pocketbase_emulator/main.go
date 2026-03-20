@@ -389,27 +389,18 @@ func registerAppHooks(app core.App) {
 
 					log.Printf("[hyttahub] Middleware: %s %s (processing missing collection %s)", reqMethod, reqPath, collectionName)
 
-					// Defensive checks for GET requests
+					// Defensive checks: block "leaf" collections on GET if their dependencies aren't met.
 					if reqMethod == "GET" || reqMethod == "HEAD" {
-						isSiteSub := strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users")
-						isAccountSub := strings.Contains(collectionName, "__accounts__") &&
-							(strings.HasSuffix(collectionName, "__account_events") || strings.HasSuffix(collectionName, "__account_settings"))
-
-						if isSiteSub {
-							suffix := "__site_events"
-							if strings.HasSuffix(collectionName, "__site_emails") {
-								suffix = "__site_emails"
-							} else if strings.HasSuffix(collectionName, "__site_files") {
-								suffix = "__site_files"
-							} else if strings.HasSuffix(collectionName, "__site_exports__export_request") {
-								suffix = "__site_exports__export_request"
-							}
-							parentColName := strings.Split(collectionName, suffix)[0] + "__site_users"
-							if _, err := app.FindCollectionByNameOrId(parentColName); err != nil {
-								log.Printf("[hyttahub] Blocking resurrection of sub-collection %s", collectionName)
+						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
+							// Determine parent (site_users)
+							prefix := strings.Split(collectionName, "__site_")[0]
+							parent := prefix + "__site_users"
+							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+								log.Printf("[hyttahub] Blocking resurrection of sub-collection %s (parent %s not found)", collectionName, parent)
 								return e.Next()
 							}
-						} else if isAccountSub {
+						} else if strings.Contains(collectionName, "__accounts__") {
+							// For account sub-collections, ensure the auth user exists.
 							parts := strings.Split(collectionName, "__")
 							emailChunk := ""
 							for i, part := range parts {
@@ -532,17 +523,13 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
 		return nil
 	}
+	// Reverse Cascade: ensure parent exists before child.
 	if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-		suffix := "__site_events"
-		if strings.HasSuffix(collectionName, "__site_emails") {
-			suffix = "__site_emails"
-		} else if strings.HasSuffix(collectionName, "__site_files") {
-			suffix = "__site_files"
-		} else if strings.HasSuffix(collectionName, "__site_exports") {
-			suffix = "__site_exports"
-		}
-		parent := strings.Split(collectionName, suffix)[0] + "__site_users"
-		createHyttahubCollection(app, parent)
+		prefix := strings.Split(collectionName, "__site_")[0]
+		createHyttahubCollection(app, prefix+"__site_users")
+	} else if strings.HasSuffix(collectionName, "__service_events") {
+		prefix := strings.TrimSuffix(collectionName, "__service_events")
+		createHyttahubCollection(app, prefix+"__service_users")
 	}
 
 	col := core.NewBaseCollection(collectionName)
@@ -551,7 +538,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	if strings.HasSuffix(collectionName, "__site_users") {
 		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
 		listRule, viewRule, createRule, updateRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(""), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.HasSuffix(collectionName, "__site_events") || strings.HasSuffix(collectionName, "__site_emails") {
+	} else if strings.HasSuffix(collectionName, "__site_events") {
 		prefix := strings.Split(collectionName, "__site_")[0]
 		usersColName := prefix + "__site_users"
 		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
@@ -590,5 +577,24 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		col.Fields.Add(&core.FileField{Name: "file", MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 	}
 
-	return app.Save(col)
+	// Final check before save to avoid re-entrancy issues with cascading
+	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
+		return nil
+	}
+
+	if err := app.Save(col); err != nil {
+		return err
+	}
+
+	// Forward Cascade: create children when parent is created.
+	if strings.HasSuffix(collectionName, "__site_users") {
+		prefix := strings.TrimSuffix(collectionName, "__site_users")
+		createHyttahubCollection(app, prefix+"__site_events")
+		createHyttahubCollection(app, prefix+"__site_files")
+	} else if strings.HasSuffix(collectionName, "__service_users") {
+		prefix := strings.TrimSuffix(collectionName, "__service_users")
+		createHyttahubCollection(app, prefix+"__service_events")
+	}
+
+	return nil
 }
