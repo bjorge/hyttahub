@@ -15,6 +15,8 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
 	"github.com/pocketbase/pocketbase/tools/types"
+	"io"
+	"path/filepath"
 	"google.golang.org/protobuf/proto"
 
 	"pocketbase_emulator/models"
@@ -350,10 +352,33 @@ func registerAppHooks(app core.App) {
 					if fcol == nil { break }
 					newFile := core.NewRecord(fcol)
 					newFile.Set("doc_id", srcFile.GetString("doc_id"))
-					newFile.Set("file", srcFile.Get("file"))
-					app.Save(newFile)
+					filename := srcFile.GetString("file")
+					// Save record first without the file field to avoid validation errors for missing files
+					if err := app.Save(newFile); err == nil && filename != "" {
+						srcPath := filepath.Join(app.DataDir(), "storage", srcFile.BaseFilesPath(), filename)
+						dstPath := filepath.Join(app.DataDir(), "storage", newFile.BaseFilesPath(), filename)
+						
+						if err := os.MkdirAll(filepath.Dir(dstPath), 0755); err == nil {
+							if err := copyFileLocal(srcPath, dstPath); err == nil {
+								// Also copy .attrs if they exist
+								copyFileLocal(srcPath+".attrs", dstPath+".attrs")
+
+								// Use direct DB update to bypass PocketBase file field validation
+								_, dbErr := app.DB().Update(newFile.Collection().Name, dbx.Params{"file": filename}, dbx.HashExp{"id": newFile.Id}).Execute()
+								if dbErr != nil {
+									log.Printf("[hyttahub] COPY ERROR: Failed to update file metadata for %s: %v", filename, dbErr)
+								}
+							} else {
+								log.Printf("[hyttahub] COPY ERROR: Failed to copy physical file %s: %v", filename, err)
+							}
+						} else {
+							log.Printf("[hyttahub] COPY ERROR: Failed to create directories for %s: %v", filename, err)
+						}
+					} else if err != nil {
+						log.Printf("[hyttahub] COPY ERROR: Failed to create file record metadata for %s: %v", srcFile.GetString("doc_id"), err)
+					}
 				}
-				log.Printf("[hyttahub] COPY: %d files metadata entries duplicated.", len(srcFiles))
+				log.Printf("[hyttahub] COPY: %d files processed.", len(srcFiles))
 
 				encodedEmail := encodeSegment(email)
 				accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
@@ -517,4 +542,19 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	}
 
 	return nil
+}
+
+func copyFileLocal(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
 }
