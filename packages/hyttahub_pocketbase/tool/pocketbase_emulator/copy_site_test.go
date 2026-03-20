@@ -137,8 +137,8 @@ func TestSiteCopyLogic(t *testing.T) {
 		proto.Unmarshal(evPBytes, siteEv)
 		if siteEv.GetImportEvent() != nil {
 			foundImport = true
-			if siteEv.GetImportEvent().SiteName != "Source Site" {
-				t.Errorf("Expected site name 'Source Site' in ImportEvent, got '%s'", siteEv.GetImportEvent().SiteName)
+			if siteEv.GetImportEvent().SiteName != "" {
+				t.Errorf("Expected empty site name in ImportEvent, got '%s'", siteEv.GetImportEvent().SiteName)
 			}
 		}
 	}

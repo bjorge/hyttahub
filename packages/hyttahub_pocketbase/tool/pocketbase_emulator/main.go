@@ -326,7 +326,7 @@ func registerAppHooks(app core.App) {
 				log.Printf("[hyttahub] COPY: Site name detected as: %s. Creating ImportEvent (v=%d)", siteName, maxV)
 				importEvent := &models.SiteEvent{
 					Version: maxV, Author:  copyInfo.Author,
-					EventType: &models.SiteEvent_ImportEvent_{ ImportEvent: &models.SiteEvent_ImportEvent{ SiteName: siteName } },
+					EventType: &models.SiteEvent_ImportEvent_{ ImportEvent: &models.SiteEvent_ImportEvent{} },
 				}
 				ieBytes, _ := proto.Marshal(importEvent)
 				saveGenericEvent(dstEventsCol, int(maxV), base64.StdEncoding.EncodeToString(ieBytes), "Site-Import-Event")
