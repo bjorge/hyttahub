@@ -11,8 +11,6 @@ export {
 } from "./file_functions/file_functions";
 
 export {
-  executetask,
-  cleanupOrphanedSites,
   processMarkForDeleteRecords,
 } from "./hyttahub_functions/hyttahub_functions";
 

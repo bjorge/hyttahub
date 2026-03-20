@@ -27,23 +27,12 @@ import {
   uploadFile,
   deleteFiles,
   getFile,
-  copySite,
-  executetask,
-  cleanupOrphanedSites,
-  processMarkForDeleteRecords,
-  listSiteFiles,
-  autoJoinOnMemberAdded,
-  onAccountCreated,
-} from "@hyttahub/firebase-functions";
-
 // Re-export them for Firebase to discover and deploy
 export {
   uploadFile,
   deleteFiles,
   getFile,
   copySite,
-  executetask,
-  cleanupOrphanedSites,
   processMarkForDeleteRecords,
   listSiteFiles,
   autoJoinOnMemberAdded,
@@ -81,9 +70,7 @@ The following features can be enabled by exporting their respective functions in
 *   **`copySite`**: A memory-intensive callable function that duplicates an entire site. It copies all events (up to an optional specified version), site storage files, adds a join event to the creator's account, and creates an `ImportEvent` on the new site.
 
 ### Housekeeping & Data Integrity
-*   **`processMarkForDeleteRecords`**: A Firestore trigger that listens for users being marked for deletion/removal from a site. It processes the removal by adding `LeaveSite` or `RemoveSite` events to the site and account event logs, and then deletes the member record.
-*   **`cleanupOrphanedSites`**: A scheduled function (runs daily at UTC midnight) that scans for sites with zero users. It deletes the events, exports, archives, and all storage files associated with orphaned sites.
-*   **`executetask`**: An HTTP endpoint used primarily for manually triggering the cleanup process when running in the local emulator environment.
+*   **`processMarkForDeleteRecords`**: A Firestore trigger that listens for users being marked for deletion/removal from a site. It processes the removal by adding `LeaveSite` or `RemoveSite` events to the site and account event logs, and then deletes the member record. It also handles automatic cascading deletion of the site data and storage files immediately when the final member has left.
 
 ### Auto-Join Behavior
 *   **`autoJoinOnMemberAdded`**: A Firestore trigger that listens for new members being added to a site. If a user is added to a site by an admin, this function automatically creates a `joinSite` event in their account (and adds them to a service-level Bloom filter for beta access, if enabled). 
