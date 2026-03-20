@@ -219,153 +219,277 @@ func registerAppHooks(app core.App) {
 
 	app.OnRecordAfterUpdateSuccess().BindFunc(func(e *core.RecordEvent) error {
 		colName := e.Record.Collection().Name
-		mValue := e.Record.GetString("m")
-		if !strings.HasSuffix(colName, "__site_users") || mValue == "" {
+		if !strings.HasSuffix(colName, "__site_users") {
 			return e.Next()
 		}
 
-		log.Printf("[hyttahub] DEBUG: Cascading hook triggered for %s (id=%s), mValue=%s", colName, e.Record.Id, mValue)
+		mValue := e.Record.GetString("m")
+		copyValue := e.Record.GetString("MarkForCopy")
 
-		mBytes, err := base64.StdEncoding.DecodeString(mValue)
-		if err == nil {
-			mInfo := &models.MarkForDeletion{}
-			if err := proto.Unmarshal(mBytes, mInfo); err == nil {
-				log.Printf("[hyttahub] DEBUG: MarkForDeletion reason received: %v", mInfo.DeleteReason)
-				parts := strings.Split(colName, "__")
-				if len(parts) >= 5 {
-					appName := parts[1]
-					siteId := parts[3]
-					email := e.Record.GetString("doc_id")
-					memberId := e.Record.GetInt("u")
+		if mValue == "" && copyValue == "" {
+			return e.Next()
+		}
 
-					// Common helper to save an event (Site or Account)
-					saveGenericEvent := func(targetColName string, version int, base64Payload string, eventType string) {
-						log.Printf("[hyttahub] DEBUG:   -> Creating %s event (v=%d) in collection: %s", eventType, version, targetColName)
-						col, _ := app.FindCollectionByNameOrId(targetColName)
-						if col != nil {
-							record := core.NewRecord(col)
-							record.Set("doc_id", fmt.Sprintf("%d", version))
-							record.Set("v", version)
-							record.Set("p", base64Payload)
-							record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-							if err := app.Save(record); err != nil {
-								log.Printf("[hyttahub] ERROR:     Failed to save event record: %v", err)
+		// ---------------------------------------------------------------------
+		// Handle MarkForDeletion (m field)
+		// ---------------------------------------------------------------------
+		if mValue != "" {
+			log.Printf("[hyttahub] DEBUG: Cascading mark triggered for %s (id=%s), mValue=%s", colName, e.Record.Id, mValue)
+
+			mBytes, err := base64.StdEncoding.DecodeString(mValue)
+			if err == nil {
+				mInfo := &models.MarkForDeletion{}
+				if err := proto.Unmarshal(mBytes, mInfo); err == nil {
+					log.Printf("[hyttahub] DEBUG: MarkForDeletion reason received: %v", mInfo.DeleteReason)
+					parts := strings.Split(colName, "__")
+					if len(parts) >= 5 {
+						appName := parts[1]
+						siteId := parts[3]
+						email := e.Record.GetString("doc_id")
+						memberId := e.Record.GetInt("u")
+
+						// Common helper to save an event (Site or Account)
+						saveGenericEvent := func(targetColName string, version int, base64Payload string, eventType string) {
+							log.Printf("[hyttahub] DEBUG:   -> Creating %s event (v=%d) in collection: %s", eventType, version, targetColName)
+							col, _ := app.FindCollectionByNameOrId(targetColName)
+							if col != nil {
+								record := core.NewRecord(col)
+								record.Set("doc_id", fmt.Sprintf("%d", version))
+								record.Set("v", version)
+								record.Set("p", base64Payload)
+								record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+								if err := app.Save(record); err != nil {
+									log.Printf("[hyttahub] ERROR:     Failed to save event record: %v", err)
+								} else {
+									log.Printf("[hyttahub] DEBUG:     Event successfully saved.")
+								}
 							} else {
-								log.Printf("[hyttahub] DEBUG:     Event successfully saved.")
+								log.Printf("[hyttahub] WARNING:   Collection %s not found. Event creation skipped.", targetColName)
 							}
-						} else {
-							log.Printf("[hyttahub] WARNING:   Collection %s not found. Event creation skipped.", targetColName)
+						}
+
+						switch mInfo.DeleteReason {
+						case models.MarkForDeletion_memberLeftSite:
+							log.Printf("[hyttahub] DEBUG: Processing Member Left Site (%s) for user %s", siteId, email)
+
+							// 1. Add LeaveSite to Site Events
+							eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
+							lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
+							newVersion := 1
+							if len(lastRecords) > 0 {
+								newVersion = lastRecords[0].GetInt("v") + 1
+							}
+							siteEvent := &models.SiteEvent{
+								Version: int32(newVersion),
+								Author:  int32(mInfo.Author),
+								EventType: &models.SiteEvent_LeaveSite_{
+									LeaveSite: &models.SiteEvent_LeaveSite{
+										MemberId: int32(memberId),
+									},
+								},
+							}
+							eBytes, _ := proto.Marshal(siteEvent)
+							saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Leave")
+
+							// 2. Add LeaveSite to Account Events
+							encodedEmail := encodeSegment(email)
+							accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
+							lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+							newAccVersion := 1
+							if len(lastAccRecords) > 0 {
+								newAccVersion = lastAccRecords[0].GetInt("v") + 1
+							}
+							accEvent := &models.AccountEvent{
+								Version: int32(newAccVersion),
+								EventType: &models.AccountEvent_LeaveSite{
+									LeaveSite: siteId,
+								},
+							}
+							aeBytes, _ := proto.Marshal(accEvent)
+							saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
+
+						case models.MarkForDeletion_memberRemovedFromSite:
+							log.Printf("[hyttahub] DEBUG: Processing Member Removed From Site (%s) for user %s", siteId, email)
+
+							// 1. Add RemoveMember to Site Events
+							eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
+							lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
+							newVersion := 1
+							if len(lastRecords) > 0 {
+								newVersion = lastRecords[0].GetInt("v") + 1
+							}
+							siteEvent := &models.SiteEvent{
+								Version: int32(newVersion),
+								Author:  int32(mInfo.Author),
+								EventType: &models.SiteEvent_RemoveMember_{
+									RemoveMember: &models.SiteEvent_RemoveMember{
+										MemberId: int32(memberId),
+									},
+								},
+							}
+							eBytes, _ := proto.Marshal(siteEvent)
+							saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Remove")
+
+							// 2. Add RemoveSite to Account Events
+							encodedEmail := encodeSegment(email)
+							accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
+							lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+							newAccVersion := 1
+							if len(lastAccRecords) > 0 {
+								newAccVersion = lastAccRecords[0].GetInt("v") + 1
+							}
+							accEvent := &models.AccountEvent{
+								Version: int32(newAccVersion),
+								EventType: &models.AccountEvent_RemoveSite{
+									RemoveSite: siteId,
+								},
+							}
+							aeBytes, _ := proto.Marshal(accEvent)
+							saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Remove")
 						}
 					}
-
-					switch mInfo.DeleteReason {
-					case models.MarkForDeletion_memberLeftSite:
-						log.Printf("[hyttahub] DEBUG: Processing Member Left Site (%s) for user %s", siteId, email)
-
-						// 1. Add LeaveSite to Site Events
-						eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
-						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
-						newVersion := 1
-						if len(lastRecords) > 0 {
-							newVersion = lastRecords[0].GetInt("v") + 1
-						}
-						siteEvent := &models.SiteEvent{
-							Version: int32(newVersion),
-							Author:  int32(mInfo.Author),
-							EventType: &models.SiteEvent_LeaveSite_{
-								LeaveSite: &models.SiteEvent_LeaveSite{
-									MemberId: int32(memberId),
-								},
-							},
-						}
-						eBytes, _ := proto.Marshal(siteEvent)
-						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Leave")
-
-						// 2. Add LeaveSite to Account Events
-						encodedEmail := encodeSegment(email)
-						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
-						newAccVersion := 1
-						if len(lastAccRecords) > 0 {
-							newAccVersion = lastAccRecords[0].GetInt("v") + 1
-						}
-						accEvent := &models.AccountEvent{
-							Version: int32(newAccVersion),
-							EventType: &models.AccountEvent_LeaveSite{
-								LeaveSite: siteId,
-							},
-						}
-						aeBytes, _ := proto.Marshal(accEvent)
-						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
-
-					case models.MarkForDeletion_memberRemovedFromSite:
-						log.Printf("[hyttahub] DEBUG: Processing Member Removed From Site (%s) for user %s", siteId, email)
-
-						// 1. Add RemoveMember to Site Events
-						eventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
-						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
-						newVersion := 1
-						if len(lastRecords) > 0 {
-							newVersion = lastRecords[0].GetInt("v") + 1
-						}
-						siteEvent := &models.SiteEvent{
-							Version: int32(newVersion),
-							Author:  int32(mInfo.Author),
-							EventType: &models.SiteEvent_RemoveMember_{
-								RemoveMember: &models.SiteEvent_RemoveMember{
-									MemberId: int32(memberId),
-								},
-							},
-						}
-						eBytes, _ := proto.Marshal(siteEvent)
-						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Remove")
-
-						// 2. Add RemoveSite to Account Events
-						encodedEmail := encodeSegment(email)
-						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
-						newAccVersion := 1
-						if len(lastAccRecords) > 0 {
-							newAccVersion = lastAccRecords[0].GetInt("v") + 1
-						}
-						accEvent := &models.AccountEvent{
-							Version: int32(newAccVersion),
-							EventType: &models.AccountEvent_RemoveSite{
-								RemoveSite: siteId,
-							},
-						}
-						aeBytes, _ := proto.Marshal(accEvent)
-						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Remove")
-					}
+				} else {
+					log.Printf("[hyttahub] ERROR: Failed to unmarshal MarkForDeletion proto: %v", err)
 				}
 			} else {
-				log.Printf("[hyttahub] ERROR: Failed to unmarshal MarkForDeletion proto: %v", err)
+				log.Printf("[hyttahub] ERROR: Failed to decode m field base64: %v", err)
 			}
-		} else {
-			log.Printf("[hyttahub] ERROR: Failed to decode m field base64: %v", err)
-		}
 
-		log.Printf("[hyttahub] DEBUG: Deleting original user-site linkage record (id=%s)", e.Record.Id)
-		if err := app.Delete(e.Record); err != nil {
-			log.Printf("[hyttahub] ERROR: Failed to delete site user record: %v", err)
-			return err
-		}
+			log.Printf("[hyttahub] DEBUG: Deleting original user-site linkage record (id=%s)", e.Record.Id)
+			if err := app.Delete(e.Record); err != nil {
+				log.Printf("[hyttahub] ERROR: Failed to delete site user record: %v", err)
+				return err
+			}
 
-		// Immediate Orphan Cleanup: If this was the last user, delete the site collections.
-		count, _ := app.CountRecords(colName)
-		if count == 0 {
-			log.Printf("[hyttahub] CASCADE: Last user removed from %s. Deleting site collections...", colName)
-			parts := strings.Split(colName, "__")
-			if len(parts) >= 4 {
-				prefix := strings.Join(parts[0:len(parts)-1], "__") + "__"
-				collections, _ := app.FindAllCollections()
-				for _, c := range collections {
-					if strings.HasPrefix(c.Name, prefix) {
-						log.Printf("[hyttahub] CASCADE: Deleting orphaned site collection: %s", c.Name)
-						app.Delete(c)
+			// Immediate Orphan Cleanup: If this was the last user, delete the site collections.
+			count, _ := app.CountRecords(colName)
+			if count == 0 {
+				log.Printf("[hyttahub] CASCADE: Last user removed from %s. Deleting site collections...", colName)
+				parts := strings.Split(colName, "__")
+				if len(parts) >= 4 {
+					prefix := strings.Join(parts[0:len(parts)-1], "__") + "__"
+					collections, _ := app.FindAllCollections()
+					for _, c := range collections {
+						if strings.HasPrefix(c.Name, prefix) {
+							log.Printf("[hyttahub] CASCADE: Deleting orphaned site collection: %s", c.Name)
+							app.Delete(c)
+						}
 					}
 				}
 			}
+		}
+
+		// ---------------------------------------------------------------------
+		// Handle MarkForCopy
+		// ---------------------------------------------------------------------
+		if copyValue != "" {
+			log.Printf("[hyttahub] DEBUG: MarkForCopy triggered for %s (id=%s)", colName, e.Record.Id)
+			copyBytes, err := base64.StdEncoding.DecodeString(copyValue)
+			if err == nil {
+				copyInfo := &models.MarkForCopy{}
+				if err := proto.Unmarshal(copyBytes, copyInfo); err == nil {
+					parts := strings.Split(colName, "__")
+					if len(parts) >= 5 {
+						appName := parts[1]
+						sourceSiteId := parts[3]
+						email := e.Record.GetString("doc_id")
+
+						// 1. Generate a new Site ID
+						newSiteId := fmt.Sprintf("copy-%d", time.Now().Unix())
+						log.Printf("[hyttahub] COPY: Copying site %s to %s for user %s (upToVersion=%d)", sourceSiteId, newSiteId, email, copyInfo.UpToVersion)
+
+						// 2. Create the new site_users collection
+						newPrefix := fmt.Sprintf("hyttahub__%s__sites__%s", appName, newSiteId)
+						if err := createHyttahubCollection(app, newPrefix+"__site_users"); err != nil {
+							log.Printf("[hyttahub] ERROR: Failed to create new site_users: %v", err)
+						}
+
+						// 3. Copy Site Events (up to specified version)
+						srcEventsCol := strings.TrimSuffix(colName, "__site_users") + "__site_events"
+						dstEventsCol := newPrefix + "__site_events"
+
+						srcEvents, _ := app.FindRecordsByFilter(srcEventsCol, "", "v", 0, 0)
+						var siteName string
+						maxV := int32(0)
+
+						for _, srcEv := range srcEvents {
+							v := srcEv.GetInt("v")
+							if copyInfo.UpToVersion > 0 && int32(v) > copyInfo.UpToVersion {
+								continue
+							}
+
+							// Extract site name from the NewSite event if possible
+							pBase64 := srcEv.GetString("p")
+							pBytes, _ := base64.StdEncoding.DecodeString(pBase64)
+							event := &models.SiteEvent{}
+							if err := proto.Unmarshal(pBytes, event); err == nil {
+								if event.GetNewSite() != nil {
+									siteName = event.GetNewSite().SiteName
+								}
+								if int32(v) > maxV {
+									maxV = int32(v)
+								}
+							}
+
+							// Save to new destination site
+							col, _ := app.FindCollectionByNameOrId(dstEventsCol)
+							newEv := core.NewRecord(col)
+							newEv.Set("doc_id", srcEv.GetString("doc_id"))
+							newEv.Set("v", v)
+							newEv.Set("p", pBase64)
+							newEv.Set("t", srcEv.GetString("t"))
+							app.Save(newEv)
+						}
+
+						// 4. Create an ImportEvent in the new site
+						maxV++
+						importEvent := &models.SiteEvent{
+							Version: maxV,
+							Author:  copyInfo.Author,
+							EventType: &models.SiteEvent_ImportEvent_{
+								ImportEvent: &models.SiteEvent_ImportEvent{
+									SiteName: siteName,
+								},
+							},
+						}
+						ieBytes, _ := proto.Marshal(importEvent)
+						col, _ := app.FindCollectionByNameOrId(dstEventsCol)
+						ieRecord := core.NewRecord(col)
+						ieRecord.Set("doc_id", fmt.Sprintf("%d", maxV))
+						ieRecord.Set("v", maxV)
+						ieRecord.Set("p", base64.StdEncoding.EncodeToString(ieBytes))
+						ieRecord.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+						app.Save(ieRecord)
+
+						// 5. Add the copying user as a member to the new site
+						usersCol, _ := app.FindCollectionByNameOrId(newPrefix + "__site_users")
+						userRec := core.NewRecord(usersCol)
+						userRec.Set("doc_id", email)
+						userRec.Set("u", copyInfo.Author)
+						userRec.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+						app.Save(userRec)
+
+						// 6. Copy files
+						srcFilesCol := strings.TrimSuffix(colName, "__site_users") + "__site_files"
+						dstFilesCol := newPrefix + "__site_files"
+						srcFiles, _ := app.FindRecordsByFilter(srcFilesCol, "", "", 0, 0)
+						for _, srcFile := range srcFiles {
+							fcol, _ := app.FindCollectionByNameOrId(dstFilesCol)
+							newFile := core.NewRecord(fcol)
+							newFile.Set("doc_id", srcFile.GetString("doc_id"))
+							// Minimal file metadata copy — actual binary data shared in emulator
+							newFile.Set("file", srcFile.Get("file"))
+							app.Save(newFile)
+						}
+
+						log.Printf("[hyttahub] COPY: Site copy from %s to %s completed.", sourceSiteId, newSiteId)
+					}
+				}
+			}
+
+			// Clear the MarkForCopy field on the original record and save
+			e.Record.Set("MarkForCopy", "")
+			app.Save(e.Record)
 		}
 
 		return e.Next()
@@ -534,6 +658,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		col.Fields.Add(&core.NumberField{Name: "u"})
 		col.Fields.Add(&core.DateField{Name: "t"})
 		col.Fields.Add(&core.TextField{Name: "m"})
+		col.Fields.Add(&core.TextField{Name: "MarkForCopy"})
 	} else if strings.HasSuffix(collectionName, "__site_files") {
 		col.Fields.Add(&core.FileField{Name: "file", MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 	}
