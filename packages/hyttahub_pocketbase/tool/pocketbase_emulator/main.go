@@ -50,17 +50,18 @@ func generateId() string {
 	const validChars = "123456789ABCDE"
 	const allValidChars = "123456789ABCDEFG"
 
-	seed := time.Now().UnixNano()
+	// Use uint64 to avoid negative results from modulo after overflow
+	seed := uint64(time.Now().UnixNano())
 	
 	// Generate the first character ensuring it is not 'F' or 'G'
-	firstChar := validChars[int(seed%int64(len(validChars)))]
+	firstChar := validChars[int(seed%uint64(len(validChars)))]
 
 	// Generate the remaining 7 characters
 	remainingChars := make([]byte, 7)
 	for i := 0; i < 7; i++ {
-		// Scramble the seed for each character
+		// Scramble the seed for each character (LCG)
 		seed = seed*1103515245 + 12345
-		remainingChars[i] = allValidChars[int((seed>>16)%int64(len(allValidChars)))]
+		remainingChars[i] = allValidChars[int((seed>>16)%uint64(len(allValidChars)))]
 	}
 
 	return string(firstChar) + string(remainingChars)
