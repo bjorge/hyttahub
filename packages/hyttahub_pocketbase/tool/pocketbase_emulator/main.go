@@ -46,6 +46,26 @@ func encodeSegment(email string) string {
 	return "e" + b64
 }
 
+func generateId() string {
+	const validChars = "123456789ABCDE"
+	const allValidChars = "123456789ABCDEFG"
+
+	seed := time.Now().UnixNano()
+	
+	// Generate the first character ensuring it is not 'F' or 'G'
+	firstChar := validChars[int(seed%int64(len(validChars)))]
+
+	// Generate the remaining 7 characters
+	remainingChars := make([]byte, 7)
+	for i := 0; i < 7; i++ {
+		// Scramble the seed for each character
+		seed = seed*1103515245 + 12345
+		remainingChars[i] = allValidChars[int((seed>>16)%int64(len(allValidChars)))]
+	}
+
+	return string(firstChar) + string(remainingChars)
+}
+
 func main() {
 	app := pocketbase.New()
 	log.Printf("[hyttahub] Starting PocketBase Emulator v1.1 (with auto-delete hooks)...")
@@ -394,8 +414,8 @@ func registerAppHooks(app core.App) {
 						sourceSiteId := parts[3]
 						email := e.Record.GetString("doc_id")
 
-						// 1. Generate a new Site ID (using underscores, as PB doesn't support hyphens in collection names)
-						newSiteId := fmt.Sprintf("copy_%d", time.Now().Unix())
+						// 1. Generate a new Site ID compatible with the app's generateId()
+						newSiteId := generateId()
 						log.Printf("[hyttahub] COPY: Copying site %s to %s for user %s (upToVersion=%d)", sourceSiteId, newSiteId, email, copyInfo.UpToVersion)
 
 						// 2. Create the new site_users collection
