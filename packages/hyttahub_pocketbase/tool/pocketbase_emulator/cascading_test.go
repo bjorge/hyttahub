@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -308,7 +309,7 @@ func TestForwardCascading(t *testing.T) {
 	}
 }
 
-func TestReverseCascading(t *testing.T) {
+func TestReverseCascadingEnforcement(t *testing.T) {
 	testApp, err := tests.NewTestApp(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
@@ -318,21 +319,27 @@ func TestReverseCascading(t *testing.T) {
 
 	siteEventsCol := "hyttahub__test__sites__REV__site_events"
 
-	// 1. Create site_events (should trigger creation of site_users)
-	if err := createHyttahubCollection(testApp, siteEventsCol); err != nil {
+	// 1. Create site_events (should FAIL because parent doesn't exist)
+	if err := createHyttahubCollection(testApp, siteEventsCol); err == nil {
+		t.Fatalf("Expected error when creating child collection %s without parent", siteEventsCol)
+	} else if !strings.Contains(err.Error(), "missing prerequisite collection") {
+		t.Fatalf("Expected 'missing prerequisite' error, got: %v", err)
+	}
+
+	// 2. Now create parent
+	parent := "hyttahub__test__sites__REV__site_users"
+	if err := createHyttahubCollection(testApp, parent); err != nil {
 		t.Fatal(err)
 	}
 
-	// 2. Verify parent was created
-	parent := "hyttahub__test__sites__REV__site_users"
+	// 3. Verify it exists
 	if _, err := testApp.FindCollectionByNameOrId(parent); err != nil {
-		t.Errorf("Collection %s should have been reverse-cascaded", parent)
+		t.Errorf("Collection %s should exist after explicit creation", parent)
 	}
 
-	// 3. Verify other children were also created (via site_users forward cascade)
-	child := "hyttahub__test__sites__REV__site_files"
-	if _, err := testApp.FindCollectionByNameOrId(child); err != nil {
-		t.Errorf("Collection %s should have been forward-cascaded from the reverse-cascaded parent", child)
+	// 4. Verify child was created (via parent's forward cascade)
+	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err != nil {
+		t.Errorf("Collection %s should have been forward-cascaded from the parent", siteEventsCol)
 	}
 }
 

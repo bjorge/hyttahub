@@ -11,6 +11,35 @@ import (
 	"github.com/pocketbase/pocketbase/tests"
 )
 
+func TestAutoCollectionCreation(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	collectionName := "hyttahub__test__sites__T123__site_users"
+	
+	// Use the app we already configured
+	scenario := tests.ApiScenario{
+		Name:            "GET triggers auto-creation",
+		Method:          http.MethodGet,
+		URL:             "/api/collections/" + collectionName + "/records",
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusOK, 
+		ExpectedContent: []string{`"items":[]`},
+	}
+	scenario.Test(t)
+
+	// Verify it exists now
+	_, err = testApp.FindCollectionByNameOrId(collectionName)
+	if err != nil {
+		t.Fatalf("Collection %s should have been auto-created", collectionName)
+	}
+}
+
 func TestMembershipSecurity(t *testing.T) {
 	testApp, err := tests.NewTestApp(t.TempDir())
 	if err != nil {

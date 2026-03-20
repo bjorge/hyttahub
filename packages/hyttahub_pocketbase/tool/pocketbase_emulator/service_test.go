@@ -123,7 +123,9 @@ func TestServiceEventsImmutability(t *testing.T) {
 
 	registerAppHooks(testApp)
 
+	serviceUsersCol := "hyttahub__app__service_users"
 	serviceEventsCol := "hyttahub__app__service_events"
+	createHyttahubCollection(testApp, serviceUsersCol)
 	createHyttahubCollection(testApp, serviceEventsCol)
 
 	// 1. Create a service event

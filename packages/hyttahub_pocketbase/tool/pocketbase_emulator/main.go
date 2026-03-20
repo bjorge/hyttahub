@@ -372,12 +372,86 @@ func registerAppHooks(app core.App) {
 	})
 
 	// -------------------------------------------------------------------------
-	// Static File Serving
+	// Auto-collection middleware via explicit router intercept
 	// -------------------------------------------------------------------------
 	app.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
 		Func: func(se *core.ServeEvent) error {
 			// Serve static files from pb_public
 			se.Router.GET("/{path...}", apis.Static(os.DirFS(app.DataDir()+"/../pb_public"), false))
+
+			// Add a catch-all route for other methods to ensure middleware runs
+			se.Router.POST("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
+			se.Router.DELETE("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
+			se.Router.PATCH("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
+
+			se.Router.Bind(&hook.Handler[*core.RequestEvent]{
+				Func: func(e *core.RequestEvent) error {
+					reqPath := e.Request.URL.Path
+					reqMethod := e.Request.Method
+
+					// We only care about /api/collections/... requests
+					if !strings.HasPrefix(reqPath, "/api/collections/") {
+						return e.Next()
+					}
+
+					parts := strings.Split(reqPath, "/")
+					if len(parts) < 4 {
+						return e.Next()
+					}
+					collectionName := parts[3]
+
+					if !strings.HasPrefix(collectionName, "hyttahub__") {
+						return e.Next()
+					}
+
+					// Check if it already exists
+					_, err := app.FindCollectionByNameOrId(collectionName)
+					if err == nil {
+						return e.Next() // exists
+					}
+
+					log.Printf("[hyttahub] Middleware: %s %s (processing missing collection %s)", reqMethod, reqPath, collectionName)
+
+					// Defensive checks: block "leaf" collections on GET if their dependencies aren't met.
+					if reqMethod == "GET" || reqMethod == "HEAD" {
+						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
+							// Determine parent (site_users)
+							prefix := strings.Split(collectionName, "__site_")[0]
+							parent := prefix + "__site_users"
+							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+								log.Printf("[hyttahub] Blocking resurrection of sub-collection %s (parent %s not found)", collectionName, parent)
+								return e.Next()
+							}
+						} else if strings.Contains(collectionName, "__accounts__") {
+							// For account sub-collections, ensure the auth user exists.
+							parts := strings.Split(collectionName, "__")
+							emailChunk := ""
+							for i, part := range parts {
+								if part == "accounts" && i+1 < len(parts) {
+									emailChunk = parts[i+1]
+									break
+								}
+							}
+							email := decodeSegment(emailChunk)
+							user, _ := app.FindAuthRecordByEmail("users", email)
+							if user == nil {
+								log.Printf("[hyttahub] Blocking resurrection for deleted user %s", email)
+								return e.Next()
+							}
+						}
+					}
+
+					// 3. Create it
+					log.Printf("[hyttahub] Auto-creating missing collection: %s", collectionName)
+					if err := createHyttahubCollection(app, collectionName); err != nil {
+						log.Printf("[hyttahub] ERROR auto-creating collection '%s': %v\n", collectionName, err)
+						return apis.NewBadRequestError("Failed to auto-create collection", err)
+					}
+
+					return e.Next()
+				},
+				Priority: -99999,
+			})
 
 			return se.Next()
 		},
@@ -394,13 +468,20 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
 		return nil
 	}
-	// Reverse Cascade: ensure parent exists before child.
+	// Reverse Cascade Verification: Ensure parent exists before child.
+	// We no longer trigger auto-creation of the parent from the child to avoid dangling collections created by clients.
 	if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
 		prefix := strings.Split(collectionName, "__site_")[0]
-		createHyttahubCollection(app, prefix+"__site_users")
+		parent := prefix + "__site_users"
+		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+			return fmt.Errorf("missing prerequisite collection %s for %s", parent, collectionName)
+		}
 	} else if strings.HasSuffix(collectionName, "__service_events") {
 		prefix := strings.TrimSuffix(collectionName, "__service_events")
-		createHyttahubCollection(app, prefix+"__service_users")
+		parent := prefix + "__service_users"
+		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+			return fmt.Errorf("missing prerequisite collection %s for %s", parent, collectionName)
+		}
 	}
 
 	col := core.NewBaseCollection(collectionName)
