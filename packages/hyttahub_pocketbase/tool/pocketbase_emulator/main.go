@@ -394,8 +394,8 @@ func registerAppHooks(app core.App) {
 						sourceSiteId := parts[3]
 						email := e.Record.GetString("doc_id")
 
-						// 1. Generate a new Site ID
-						newSiteId := fmt.Sprintf("copy-%d", time.Now().Unix())
+						// 1. Generate a new Site ID (using underscores, as PB doesn't support hyphens in collection names)
+						newSiteId := fmt.Sprintf("copy_%d", time.Now().Unix())
 						log.Printf("[hyttahub] COPY: Copying site %s to %s for user %s (upToVersion=%d)", sourceSiteId, newSiteId, email, copyInfo.UpToVersion)
 
 						// 2. Create the new site_users collection
@@ -433,6 +433,10 @@ func registerAppHooks(app core.App) {
 
 							// Save to new destination site
 							col, _ := app.FindCollectionByNameOrId(dstEventsCol)
+							if col == nil {
+								log.Printf("[hyttahub] ERROR: Destination events collection %s missing. Skipping event copy.", dstEventsCol)
+								continue
+							}
 							newEv := core.NewRecord(col)
 							newEv.Set("doc_id", srcEv.GetString("doc_id"))
 							newEv.Set("v", v)
@@ -454,20 +458,24 @@ func registerAppHooks(app core.App) {
 						}
 						ieBytes, _ := proto.Marshal(importEvent)
 						col, _ := app.FindCollectionByNameOrId(dstEventsCol)
-						ieRecord := core.NewRecord(col)
-						ieRecord.Set("doc_id", fmt.Sprintf("%d", maxV))
-						ieRecord.Set("v", maxV)
-						ieRecord.Set("p", base64.StdEncoding.EncodeToString(ieBytes))
-						ieRecord.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-						app.Save(ieRecord)
+						if col != nil {
+							ieRecord := core.NewRecord(col)
+							ieRecord.Set("doc_id", fmt.Sprintf("%d", maxV))
+							ieRecord.Set("v", maxV)
+							ieRecord.Set("p", base64.StdEncoding.EncodeToString(ieBytes))
+							ieRecord.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+							app.Save(ieRecord)
+						}
 
 						// 5. Add the copying user as a member to the new site
 						usersCol, _ := app.FindCollectionByNameOrId(newPrefix + "__site_users")
-						userRec := core.NewRecord(usersCol)
-						userRec.Set("doc_id", email)
-						userRec.Set("u", copyInfo.Author)
-						userRec.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-						app.Save(userRec)
+						if usersCol != nil {
+							userRec := core.NewRecord(usersCol)
+							userRec.Set("doc_id", email)
+							userRec.Set("u", copyInfo.Author)
+							userRec.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+							app.Save(userRec)
+						}
 
 						// 6. Copy files
 						srcFilesCol := strings.TrimSuffix(colName, "__site_users") + "__site_files"
@@ -475,6 +483,9 @@ func registerAppHooks(app core.App) {
 						srcFiles, _ := app.FindRecordsByFilter(srcFilesCol, "", "", 0, 0)
 						for _, srcFile := range srcFiles {
 							fcol, _ := app.FindCollectionByNameOrId(dstFilesCol)
+							if fcol == nil {
+								break
+							}
 							newFile := core.NewRecord(fcol)
 							newFile.Set("doc_id", srcFile.GetString("doc_id"))
 							// Minimal file metadata copy — actual binary data shared in emulator
