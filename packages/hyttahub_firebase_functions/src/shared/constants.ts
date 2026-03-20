@@ -61,5 +61,6 @@ export const fbVersion = "v";
 export const fbPayload = "p";
 export const fbBetaUsers = "b";
 export const fbSiteMemberMarkedForDeletion = "m";
+export const fbSiteMemberMarkedForCopy = "MarkForCopy";
 export const fbAppId = "a";
 export const fbSiteMarkedForDeletion = "sm";

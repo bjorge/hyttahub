@@ -11,10 +11,6 @@ export {
 } from "./file_functions/file_functions";
 
 export {
-  copySite,
-} from "./backup_functions/backup_functions";
-
-export {
   executetask,
   cleanupOrphanedSites,
   processMarkForDeleteRecords,

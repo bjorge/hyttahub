@@ -2,6 +2,7 @@ name: hyttahub_firebase
 description: "Firebase implementations for hyttahub base functionality."
 repository: https://github.com/bjorge/hyttahub
 version: 0.1.1
+publish_to: none
 
 environment:
   sdk: ^3.7.2
@@ -10,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hyttahub: ^0.1.52
+  hyttahub:
+    path: ../..
 
   cloud_firestore: ^6.0.2
   firebase_core: ^4.1.1

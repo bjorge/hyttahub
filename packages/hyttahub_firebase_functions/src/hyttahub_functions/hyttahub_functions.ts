@@ -6,9 +6,11 @@ import { SiteEvent } from "../ts/site_events";
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { AccountEvent } from "../ts/account_events";
 import {
+  MarkForCopy,
   MarkForDeletion,
   MarkForDeletion_DeleteReason,
 } from "../ts/site_util";
+import { SiteEvent_ImportEvent } from "../ts/site_events";
 import { onSchedule } from "firebase-functions/scheduler";
 import { getArchiveBucketName } from "../shared/config";
 import {
@@ -18,6 +20,7 @@ import {
   firebaseSiteUsersPath,
   isRunningInEmulator,
   fbSiteMemberMarkedForDeletion,
+  fbSiteMemberMarkedForCopy,
   fbSiteMarkedForDeletion,
   fbUserId,
   fbVersion,
@@ -299,9 +302,159 @@ export const processMarkForDeleteRecords = onDocumentUpdated(
       } catch (error) {
         logger.error("Failed to decode MarkForDeletion protobuf:", error);
       }
+    } else if (data[fbSiteMemberMarkedForCopy] && typeof data[fbSiteMemberMarkedForCopy] === "string") {
+      try {
+        const buffer = Buffer.from(data[fbSiteMemberMarkedForCopy], "base64");
+        const copyInfo = MarkForCopy.decode(buffer);
+        const appName = event.params.appPathSegment;
+        const oldSiteId = event.params.siteId;
+        const email = event.params.email;
+        const fbUserIdValue = data[fbUserId];
+
+        logger.info(`Copysite triggered for ${email} in site ${oldSiteId}`);
+
+        const newSiteId = generateId();
+        const db = admin.firestore();
+        const bucket = admin.storage().bucket();
+
+        // 1. Copy events
+        const oldEventsRef = db.collection(firebaseSiteEventsPath(appName, oldSiteId));
+        const newEventsRef = db.collection(firebaseSiteEventsPath(appName, newSiteId));
+        const oldEventsSnapshot = await oldEventsRef.get();
+
+        let lastVersion = 0;
+        const batchArray: admin.firestore.WriteBatch[] = [db.batch()];
+        let operationCounter = 0;
+
+        oldEventsSnapshot.docs.forEach((doc) => {
+          const eventData = doc.data();
+          const version = eventData[fbVersion];
+          if (copyInfo.upToVersion !== 0 && typeof version === "number" && version > copyInfo.upToVersion) {
+            return;
+          }
+          if (typeof version === "number" && version > lastVersion) {
+            lastVersion = version;
+          }
+          const batchIndex = Math.floor(operationCounter / 400);
+          if (batchArray.length <= batchIndex) { batchArray.push(db.batch()); }
+          batchArray[batchIndex].set(newEventsRef.doc(doc.id), eventData);
+          operationCounter++;
+        });
+
+        // 2. Add ImportEvent
+        const newSiteEventVersion = lastVersion + 1;
+        const importSiteEvent = SiteEvent.create({
+          importEvent: SiteEvent_ImportEvent.create({}),
+          version: newSiteEventVersion,
+          author: Number(fbUserIdValue),
+        });
+        const batchIndexEvent = Math.floor(operationCounter / 400);
+        if (batchArray.length <= batchIndexEvent) { batchArray.push(db.batch()); }
+        batchArray[batchIndexEvent].set(newEventsRef.doc(newSiteEventVersion.toString()), {
+          [fbPayload]: Buffer.from(SiteEvent.encode(importSiteEvent).finish()).toString("base64"),
+          [fbTimeStamp]: FieldValue.serverTimestamp(),
+          [fbVersion]: newSiteEventVersion,
+        });
+        operationCounter++;
+
+        // 3. Add current user to new site_users
+        const newUserRef = db.collection(firebaseSiteUsersPath(appName, newSiteId)).doc(email);
+        const batchIndexUser = Math.floor(operationCounter / 400);
+        if (batchArray.length <= batchIndexUser) { batchArray.push(db.batch()); }
+        batchArray[batchIndexUser].set(newUserRef, {
+          [fbUserId]: fbUserIdValue,
+          [fbTimeStamp]: FieldValue.serverTimestamp(),
+        });
+        operationCounter++;
+
+        // 4. Add joinSite event to account events
+        const accountEventsRef = db.collection(firebaseAccountEventsPath(appName, email));
+        const lastAccountEventSnapshot = await accountEventsRef.orderBy(fbVersion, "desc").limit(1).get();
+        let newAccountEventVersion = 1;
+        if (!lastAccountEventSnapshot.empty) {
+          const lastEventData = lastAccountEventSnapshot.docs[0].data();
+          if (lastEventData[fbVersion] && typeof lastEventData[fbVersion] === "number") {
+            newAccountEventVersion = lastEventData[fbVersion] + 1;
+          }
+        }
+        const joinSiteEvent = AccountEvent.create({
+          joinSite: newSiteId,
+          version: newAccountEventVersion,
+        });
+        const batchIndexAccount = Math.floor(operationCounter / 400);
+        if (batchArray.length <= batchIndexAccount) { batchArray.push(db.batch()); }
+        batchArray[batchIndexAccount].set(accountEventsRef.doc(newAccountEventVersion.toString()), {
+          [fbPayload]: Buffer.from(AccountEvent.encode(joinSiteEvent).finish()).toString("base64"),
+          [fbTimeStamp]: FieldValue.serverTimestamp(),
+          [fbVersion]: newAccountEventVersion,
+        });
+
+        for (const batch of batchArray) { await batch.commit(); }
+
+        // 5. Copy storage items
+        const archiveBucketName = getArchiveBucketName();
+        let sourceBucket = bucket;
+        let sourcePrefix = firebaseFilesPath(appName, oldSiteId, "");
+
+        if (isRunningInEmulator()) {
+          const archivePrefix = firebaseEmulatorArchiveFilesPath(appName, oldSiteId, "");
+          const [archiveFiles] = await bucket.getFiles({ prefix: archivePrefix, maxResults: 1 });
+          if (archiveFiles.length > 0) { sourcePrefix = archivePrefix; }
+        } else if (archiveBucketName) {
+          const archiveSourceBucket = admin.storage().bucket(archiveBucketName);
+          const archivePrefix = firebaseFilesPath(appName, oldSiteId, "");
+          const [archiveFiles] = await archiveSourceBucket.getFiles({ prefix: archivePrefix, maxResults: 1 });
+          if (archiveFiles.length > 0) {
+            sourceBucket = archiveSourceBucket;
+            sourcePrefix = archivePrefix;
+          }
+        }
+
+        const query: any = { prefix: sourcePrefix, autoPaginate: false };
+        let pageToken: string | undefined;
+        do {
+          if (pageToken) { query.pageToken = pageToken; }
+          const [files, nextQuery] = await sourceBucket.getFiles(query);
+          const copyPromises = [];
+          for (const file of files) {
+            const relativePath = file.name.substring(sourcePrefix.length);
+            const newPath = firebaseFilesPath(appName, newSiteId, relativePath);
+            copyPromises.push(file.copy(bucket.file(newPath)));
+            if (isRunningInEmulator()) {
+              const archivePath = firebaseEmulatorArchiveFilesPath(appName, newSiteId, relativePath);
+              copyPromises.push(file.copy(bucket.file(archivePath)));
+            } else if (archiveBucketName) {
+              const archiveBucket = admin.storage().bucket(archiveBucketName);
+              const archivePath = firebaseFilesPath(appName, newSiteId, relativePath);
+              copyPromises.push(file.copy(archiveBucket.file(archivePath)));
+            }
+          }
+          await Promise.all(copyPromises);
+          pageToken = nextQuery?.pageToken;
+        } while (pageToken);
+
+        logger.info(`Successfully completed site copy: ${oldSiteId} -> ${newSiteId}`);
+
+        // Clear the MarkForCopy field
+        await after.ref.update({ [fbSiteMemberMarkedForCopy]: FieldValue.delete() });
+
+      } catch (error) {
+        logger.error("Failed to process MarkForCopy:", error);
+      }
     }
   }
 );
+
+function generateId(): string {
+  const validChars = "123456789ABCDE";
+  const allValidChars = "123456789ABCDEFG";
+  const firstChar = validChars.charAt(Math.floor(Math.random() * validChars.length));
+  let remainingChars = "";
+  for (let i = 0; i < 7; i++) {
+    remainingChars += allValidChars.charAt(Math.floor(Math.random() * allValidChars.length));
+  }
+  return firstChar + remainingChars;
+}
 
 async function cleanUp() {
   // Cloud Functions have a 540-second (9 min) timeout.

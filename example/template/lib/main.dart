@@ -85,15 +85,10 @@ void registerPersistence() {
         ? savedPlatform['implementationId'] as String? ?? 'memory'
         : 'memory';
 
-    if (implementationId == 'firebase') {
+    if (storage == StorageEnum.cloud || implementationId == 'firebase') {
       if (Firebase.apps.isEmpty) {
-        if (kDebugMode) {
-          print('PersistenceRegistry: Initializing Firebase for firestore');
-        }
         await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-        if (kDebugMode) {
-          print('PersistenceRegistry: Firebase initialized');
-        }
+        
         FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
         if (kDebugMode) {
           final host = kIsWeb ? 'localhost' : (Platform.isAndroid ? '10.0.2.2' : '127.0.0.1');
@@ -104,8 +99,6 @@ void registerPersistence() {
         }
       }
     }
-    // PocketBase needs no async platform initialization — the PocketBase
-    // client is ready as soon as it is constructed.
   };
 }
 

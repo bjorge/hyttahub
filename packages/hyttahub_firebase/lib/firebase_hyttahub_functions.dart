@@ -1,7 +1,10 @@
 // Copyright (c) 2025 bjorge
 
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
+import 'package:hyttahub/proto/site_util.pb.dart';
 
 class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
   @override
@@ -11,18 +14,24 @@ class FirebaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     int? upToVersion,
     String? mockUserEmail,
   }) async {
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'copySite',
-      options: HttpsCallableOptions(
-        timeout: const Duration(seconds: 540),
-      ),
+    final path = 'hyttahub/$appName/sites/$siteId/site_users';
+    final docRef = FirebaseFirestore.instance.collection(path).doc(mockUserEmail);
+    
+    final doc = await docRef.get();
+    if (!doc.exists) {
+      throw Exception('Site user record not found: $mockUserEmail');
+    }
+    
+    final authorId = doc.data()?['u'] as int? ?? 0;
+    final mark = MarkForCopy(
+      author: authorId,
+      upToVersion: upToVersion ?? 0,
     );
-    final result = await callable.call(<String, dynamic>{
-      'siteId': siteId,
-      'appName': appName,
-      if (upToVersion != null) 'upToVersion': upToVersion,
-    });
-    return Map<String, dynamic>.from(result.data);
+    
+    final mValue = base64Encode(mark.writeToBuffer());
+    await docRef.update({'MarkForCopy': mValue});
+    
+    return {'message': 'Site copy requested via data trigger'};
   }
 
   @override

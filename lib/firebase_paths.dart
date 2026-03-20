@@ -52,5 +52,7 @@ const fbVersion = 'v';
 const fbPayload = 'p';
 const fbBetaUsers = 'b';
 const fbSiteMemberMarkedForDeletion = 'm';
+const fbSiteMemberMarkedForCopy = 'MarkForCopy';
+const fbSiteMarkedForDeletion = 'sm';
 
 const firstCollectionEventVersion = 1;

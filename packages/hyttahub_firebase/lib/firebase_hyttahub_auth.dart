@@ -5,9 +5,11 @@ import 'package:hyttahub/auth_bloc/base_hyttahub_auth.dart';
 import 'package:hyttahub/auth_bloc/hyttahub_auth_user.dart';
 
 class FirebaseHyttaHubAuth implements BaseHyttaHubAuth {
-  FirebaseHyttaHubAuth({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
+  final FirebaseAuth? _authOverride;
 
-  final FirebaseAuth _auth;
+  FirebaseAuth get _auth => _authOverride ?? FirebaseAuth.instance;
+
+  FirebaseHyttaHubAuth({FirebaseAuth? auth}) : _authOverride = auth;
 
   HyttaHubAuthUser? _mapUser(User? user) {
     if (user == null) return null;

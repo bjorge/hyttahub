@@ -1,20 +1,107 @@
 // Copyright (c) 2025 bjorge
 
+import 'dart:async';
 import 'dart:convert';
 import 'package:hyttahub/firebase_paths.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/proto/site_util.pb.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
+import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 
 class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
   final StorageEnum _type;
+  StreamSubscription? _subscription;
 
-  InMemoryHyttaHubFunctions(this._type);
+  InMemoryHyttaHubFunctions(this._type) {
+    _startListener();
+  }
+
+  void _startListener() {
+    final storage = HyttaHubStorageFactory.getStorage(_type);
+    if (storage is InMemoryHyttaHubStorage) {
+      _subscription = storage.updates.listen((update) {
+        final path = update['path'] as String;
+        final docId = update['docId'] as String;
+
+        // Check if this is a site_users document
+        // Path: hyttahub/{appName}/sites/{siteId}/site_users
+        final segments = path.split('/');
+        if (segments.length == 5 &&
+            segments[0] == 'hyttahub' &&
+            segments[2] == 'sites' &&
+            segments[4] == 'site_users') {
+          _checkMarkForCopy(path, docId, segments[1], segments[3]);
+        }
+      });
+    }
+  }
+
+  Future<void> _checkMarkForCopy(
+    String path,
+    String docId,
+    String appName,
+    String siteId,
+  ) async {
+    final storage = HyttaHubStorageFactory.getStorage(_type);
+    final doc = await storage.getDocument(path, docId);
+    if (doc != null && doc[fbSiteMemberMarkedForCopy] != null) {
+      final mValue = doc[fbSiteMemberMarkedForCopy] as String;
+      final mark = MarkForCopy.fromBuffer(base64Decode(mValue));
+
+      // Trigger the copy
+      await _executeCopy(
+        siteId: siteId,
+        appName: appName,
+        upToVersion: mark.upToVersion == 0 ? null : mark.upToVersion,
+        mockUserEmail: docId,
+      );
+
+      // Clear the mark
+      await storage.updateDocument(path, docId, {
+        fbSiteMemberMarkedForCopy: null, // Depending on storage implementation, this might need special handling
+      });
+      // In InMemoryHyttaHubStorage, we can just delete it from the map if we want,
+      // but updateDocument with null should work.
+    }
+  }
+
   @override
   Future<Map<String, dynamic>> copySite({
+    required String siteId,
+    required String appName,
+    int? upToVersion,
+    String? mockUserEmail,
+  }) async {
+    final storage = HyttaHubStorageFactory.getStorage(_type);
+    final email = mockUserEmail ?? '';
+    
+    if (email.isEmpty) throw Exception('User not authenticated');
+
+    final path = 'hyttahub/$appName/sites/$siteId/site_users';
+    final userDoc = await storage.getDocument(path, email);
+    if (userDoc == null) {
+      throw Exception('User is not a member of the site to copy');
+    }
+
+    final authorId = userDoc[fbUserId] as int? ?? 0;
+    final mark = MarkForCopy(
+      author: authorId,
+      upToVersion: upToVersion ?? 0,
+    );
+
+    final mValue = base64Encode(mark.writeToBuffer());
+    await storage.updateDocument(path, email, {
+      fbSiteMemberMarkedForCopy: mValue,
+    });
+
+    return {'message': 'Site copy requested via data trigger (In-Memory)'};
+  }
+
+  Future<Map<String, dynamic>> _executeCopy({
     required String siteId,
     required String appName,
     int? upToVersion,
@@ -98,7 +185,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[fbVersion] as int) + 1;
     
     final joinSiteEvent = AccountEvent(
-      joinSite: newSiteId,
+      createSite: newSiteId,
       version: nextAccountVersion,
     );
     
@@ -174,5 +261,7 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
 
   @override
   Future<void> dispose() async {
+    await _subscription?.cancel();
+    _subscription = null;
   }
 }

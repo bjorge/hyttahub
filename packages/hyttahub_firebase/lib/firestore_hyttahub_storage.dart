@@ -2,16 +2,24 @@
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 
 class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore? _firestoreOverride;
+
+  FirebaseFirestore get _firestore {
+    if (_firestoreOverride == null && Firebase.apps.isEmpty) {
+      throw Exception('FirestoreHyttaHubStorage: Firebase not initialized!');
+    }
+    return _firestoreOverride ?? FirebaseFirestore.instance;
+  }
 
   FirestoreHyttaHubStorage({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+      : _firestoreOverride = firestore;
 
   @override
   Future<Map<String, dynamic>?> getDocument(String path, String docId) async {
