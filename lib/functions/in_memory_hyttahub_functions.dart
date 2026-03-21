@@ -69,38 +69,6 @@ class InMemoryHyttaHubFunctions implements BaseHyttaHubFunctions {
     }
   }
 
-  @override
-  Future<Map<String, dynamic>> copySite({
-    required String siteId,
-    required String appName,
-    int? upToVersion,
-    String? mockUserEmail,
-  }) async {
-    final storage = HyttaHubStorageFactory.getStorage(_type);
-    final email = mockUserEmail ?? '';
-    
-    if (email.isEmpty) throw Exception('User not authenticated');
-
-    final path = 'hyttahub/$appName/sites/$siteId/site_users';
-    final userDoc = await storage.getDocument(path, email);
-    if (userDoc == null) {
-      throw Exception('User is not a member of the site to copy');
-    }
-
-    final authorId = userDoc[docUserId] as int? ?? 0;
-    final mark = MarkForCopy(
-      author: authorId,
-      upToVersion: upToVersion ?? 0,
-    );
-
-    final mValue = base64Encode(mark.writeToBuffer());
-    await storage.updateDocument(path, email, {
-      docSiteMemberMarkedForCopy: mValue,
-    });
-
-    return {'message': 'Site copy requested via data trigger (In-Memory)'};
-  }
-
   Future<Map<String, dynamic>> _executeCopy({
     required String siteId,
     required String appName,

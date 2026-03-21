@@ -264,6 +264,14 @@ const SubmitSiteEvent$json = {
       '5': 9,
       '10': 'updateMemberOriginalEmail'
     },
+    {'1': 'isMarkForCopy', '3': 8, '4': 1, '5': 8, '10': 'isMarkForCopy'},
+    {
+      '1': 'markForCopyUpToVersion',
+      '3': 9,
+      '4': 1,
+      '5': 5,
+      '10': 'markForCopyUpToVersion'
+    },
   ],
 };
 
@@ -274,7 +282,8 @@ final $typed_data.Uint8List submitSiteEventDescriptor = $convert.base64Decode(
     'YWRkTWVtYmVyRW1haWwSLAoRcmVtb3ZlTWVtYmVyRW1haWwYBSABKAlSEXJlbW92ZU1lbWJlck'
     'VtYWlsEjIKFHVwZGF0ZU1lbWJlck5ld0VtYWlsGAYgASgJUhR1cGRhdGVNZW1iZXJOZXdFbWFp'
     'bBI8Chl1cGRhdGVNZW1iZXJPcmlnaW5hbEVtYWlsGAcgASgJUhl1cGRhdGVNZW1iZXJPcmlnaW'
-    '5hbEVtYWls');
+    '5hbEVtYWlsEiQKDWlzTWFya0ZvckNvcHkYCCABKAhSDWlzTWFya0ZvckNvcHkSNgoWbWFya0Zv'
+    'ckNvcHlVcFRvVmVyc2lvbhgJIAEoBVIWbWFya0ZvckNvcHlVcFRvVmVyc2lvbg==');
 
 @$core.Deprecated('Use siteEventRecordDescriptor instead')
 const SiteEventRecord$json = {

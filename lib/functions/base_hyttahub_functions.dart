@@ -3,12 +3,6 @@
 import 'dart:async';
 
 abstract class BaseHyttaHubFunctions {
-  Future<Map<String, dynamic>> copySite({
-    required String siteId,
-    required String appName,
-    int? upToVersion,
-    String? mockUserEmail,
-  });
 
   Future<Map<String, dynamic>> listSiteFiles({
     required String siteId,

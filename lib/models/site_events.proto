@@ -83,6 +83,8 @@ message SubmitSiteEvent {
       6; // for update member events, the new email of the member
   string updateMemberOriginalEmail =
       7; // for update member events, the original email of the member
+  bool isMarkForCopy = 8;
+  int32 markForCopyUpToVersion = 9;
 }
 
 // The SiteEventRecord is a representation of the actual record stored in the

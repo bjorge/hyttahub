@@ -1,12 +1,10 @@
 // Copyright (c) 2025 bjorge
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 import 'package:hyttahub/functions/base_hyttahub_functions.dart';
-import 'package:hyttahub/proto/site_util.pb.dart';
 import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 
@@ -53,44 +51,6 @@ class PocketbaseHyttaHubFunctions implements BaseHyttaHubFunctions {
     } on ClientException catch (e) {
       if (e.statusCode == 404) return {'files': []};
       rethrow;
-    }
-  }
-
-  @override
-  Future<Map<String, dynamic>> copySite({
-    required String siteId,
-    required String appName,
-    int? upToVersion,
-    String? mockUserEmail,
-  }) async {
-    final usersCol = encodePath(collectionSiteUsersPath(siteId, cloudRoot: appName));
-
-    try {
-      // 1. Find the site user record for this member
-      final results = await _client
-          .collection(usersCol)
-          .getFullList(filter: 'doc_id = "$mockUserEmail"');
-
-      if (results.isEmpty) {
-        throw Exception('Member not found in site: $siteId');
-      }
-
-      final record = results.first;
-      final authorId = record.getIntValue(docUserId);
-
-      // 2. Create the MarkForCopy proto
-      final mark = MarkForCopy(
-        author: authorId,
-        upToVersion: upToVersion ?? 0,
-      );
-
-      // 3. Update the record with the mark in field
-      final mValue = base64Encode(mark.writeToBuffer());
-      await _client.collection(usersCol).update(record.id, body: {docSiteMemberMarkedForCopy: mValue});
-
-      return {'message': 'Site copy requested'};
-    } on ClientException catch (e) {
-      throw Exception('PocketBase error: ${e.response}');
     }
   }
 

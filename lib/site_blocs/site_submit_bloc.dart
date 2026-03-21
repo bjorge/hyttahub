@@ -127,10 +127,29 @@ class SiteSubmitBloc extends BaseSubmitBloc<SubmitSiteEvent> {
         );
       }
 
+      if (submitSiteEvent.isMarkForCopy) {
+        final markForCopyInfo = base64Encode(
+          MarkForCopy(
+            author: submitSiteEvent.event.author,
+            upToVersion: submitSiteEvent.markForCopyUpToVersion,
+          ).writeToBuffer(),
+        );
+
+        batch.updateDocument(
+          collectionSiteUsersPath(siteId),
+          submitSiteEvent.authorEmail,
+          {
+            docSiteMemberMarkedForCopy: markForCopyInfo,
+            docTimeStamp: storage.serverTimestamp,
+          },
+        );
+      }
+
       // update the events immutable collection with the event
       // skipping for events handled by server cascading effects
       if (!submitSiteEvent.event.hasRemoveMember() &&
-          !submitSiteEvent.event.hasLeaveSite()) {
+          !submitSiteEvent.event.hasLeaveSite() &&
+          !submitSiteEvent.isMarkForCopy) {
         batch.setDocument(
           collectionSiteEventsPath(siteId),
           submitSiteEvent.event.version.toString(),

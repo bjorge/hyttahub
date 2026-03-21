@@ -102,6 +102,8 @@ export interface SubmitSiteEvent {
   updateMemberNewEmail: string;
   /** for update member events, the original email of the member */
   updateMemberOriginalEmail: string;
+  isMarkForCopy: boolean;
+  markForCopyUpToVersion: number;
 }
 
 /**
@@ -1040,6 +1042,8 @@ function createBaseSubmitSiteEvent(): SubmitSiteEvent {
     removeMemberEmail: "",
     updateMemberNewEmail: "",
     updateMemberOriginalEmail: "",
+    isMarkForCopy: false,
+    markForCopyUpToVersion: 0,
   };
 }
 
@@ -1062,6 +1066,12 @@ export const SubmitSiteEvent = {
     }
     if (message.updateMemberOriginalEmail !== "") {
       writer.uint32(58).string(message.updateMemberOriginalEmail);
+    }
+    if (message.isMarkForCopy !== false) {
+      writer.uint32(64).bool(message.isMarkForCopy);
+    }
+    if (message.markForCopyUpToVersion !== 0) {
+      writer.uint32(72).int32(message.markForCopyUpToVersion);
     }
     return writer;
   },
@@ -1115,6 +1125,20 @@ export const SubmitSiteEvent = {
 
           message.updateMemberOriginalEmail = reader.string();
           continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.isMarkForCopy = reader.bool();
+          continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.markForCopyUpToVersion = reader.int32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1134,6 +1158,10 @@ export const SubmitSiteEvent = {
       updateMemberOriginalEmail: isSet(object.updateMemberOriginalEmail)
         ? globalThis.String(object.updateMemberOriginalEmail)
         : "",
+      isMarkForCopy: isSet(object.isMarkForCopy) ? globalThis.Boolean(object.isMarkForCopy) : false,
+      markForCopyUpToVersion: isSet(object.markForCopyUpToVersion)
+        ? globalThis.Number(object.markForCopyUpToVersion)
+        : 0,
     };
   },
 
@@ -1157,6 +1185,12 @@ export const SubmitSiteEvent = {
     if (message.updateMemberOriginalEmail !== "") {
       obj.updateMemberOriginalEmail = message.updateMemberOriginalEmail;
     }
+    if (message.isMarkForCopy !== false) {
+      obj.isMarkForCopy = message.isMarkForCopy;
+    }
+    if (message.markForCopyUpToVersion !== 0) {
+      obj.markForCopyUpToVersion = Math.round(message.markForCopyUpToVersion);
+    }
     return obj;
   },
 
@@ -1173,6 +1207,8 @@ export const SubmitSiteEvent = {
     message.removeMemberEmail = object.removeMemberEmail ?? "";
     message.updateMemberNewEmail = object.updateMemberNewEmail ?? "";
     message.updateMemberOriginalEmail = object.updateMemberOriginalEmail ?? "";
+    message.isMarkForCopy = object.isMarkForCopy ?? false;
+    message.markForCopyUpToVersion = object.markForCopyUpToVersion ?? 0;
     return message;
   },
 };

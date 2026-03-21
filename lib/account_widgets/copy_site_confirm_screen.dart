@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:hyttahub/service_blocs/cloud_functions_bloc.dart';
+
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
@@ -13,6 +13,9 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
+import 'package:hyttahub/site_widgets/site_submit_button.dart';
+import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
+import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:intl/intl.dart';
 
 class CopySiteConfirmScreen extends StatefulWidget {
@@ -26,7 +29,8 @@ class CopySiteConfirmScreen extends StatefulWidget {
 
 class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
   late final SiteReplayBloc _siteReplayBloc;
-  bool _isProcessing = false;
+  late final SiteSubmitBloc _siteSubmitBloc;
+  final _formKey = GlobalKey<FormState>();
   int? _selectedVersion;
   int? _authorId;
   final Map<int, DateTime> _eventDates = {};
@@ -36,6 +40,15 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     super.initState();
     _siteReplayBloc = SiteReplayBloc(widget.siteId);
     _siteReplayBloc.add(CommonReplayBlocEvent(listen: true));
+    
+    _siteSubmitBloc = SiteSubmitBloc(
+      widget.siteId,
+      SubmitSiteEvent(
+        authorEmail: context.read<AuthBloc>().state.email,
+        event: SiteEvent(version: 999999999), 
+        isMarkForCopy: true,
+      ),
+    );
     
     _fetchAuthorId();
     _fetchEventDates();
@@ -98,43 +111,8 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
   @override
   void dispose() {
     _siteReplayBloc.close();
+    _siteSubmitBloc.close();
     super.dispose();
-  }
-
-  void _copySite() async {
-    setState(() {
-      _isProcessing = true;
-    });
-
-    try {
-      await context.read<CloudFunctionsBloc>().copySite(
-        widget.siteId,
-        upToVersion: _selectedVersion,
-        email: context.read<AuthBloc>().state.email,
-      );
-
-      if (!mounted) return;
-      
-      setState(() {
-        _isProcessing = false;
-      });
-      
-      // Navigate back out of confirm and sites loops
-      Navigator.pop(context);
-      Navigator.pop(context);
-      
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _isProcessing = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error copying site: $error"),
-          duration: const Duration(seconds: 5),
-        ),
-      );
-    }
   }
 
   String _getEventDescription(BuildContext context, SiteEvent event) {
@@ -157,12 +135,29 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _siteReplayBloc,
-      child: BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
-        builder: (context, siteState) {
-          if (siteState.state == CommonReplayStateEnum.hydrating) {
-            return Scaffold(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _siteReplayBloc),
+        BlocProvider.value(value: _siteSubmitBloc),
+      ],
+      child: BlocListener<SiteSubmitBloc, BaseSubmitState<SubmitSiteEvent>>(
+        listener: (context, state) {
+          if (state.submissionState.state == CommonSubmitBlocState_State.success) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          } else if (state.submissionState.state == CommonSubmitBlocState_State.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Error copying site"),
+                duration: Duration(seconds: 5),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<SiteReplayBloc, SiteReplayBlocState>(
+          builder: (context, siteState) {
+            if (siteState.state == CommonReplayStateEnum.hydrating) {
+              return Scaffold(
               appBar: AppBar(
                 title: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmTitle),
               ),
@@ -176,7 +171,19 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
           }
 
           final sortedVersions = decodedEvents.keys.toList()..sort((a, b) => b.compareTo(a));
-          _selectedVersion ??= sortedVersions.isNotEmpty ? sortedVersions.first : null;
+          if (_selectedVersion == null && sortedVersions.isNotEmpty) {
+            _selectedVersion = sortedVersions.first;
+            // Initialize payload with the default selected version
+            final payload = _siteSubmitBloc.state.payload!.deepCopy();
+            payload.markForCopyUpToVersion = _selectedVersion!;
+            _siteSubmitBloc.add(
+              SiteEventSubmission(
+                submission: CommonSubmitBlocEvent(
+                  updatedPayload: base64Encode(payload.writeToBuffer()),
+                )..freeze(),
+              ),
+            );
+          }
 
           int? oldestAllowedVersion;
           if (_authorId != null) {
@@ -202,21 +209,14 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
             appBar: AppBar(
               title: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmTitle),
               actions: [
-                if (_isProcessing)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-                  )
-                else
-                  IconButton(
-                    icon: const Icon(Icons.check),
-                    onPressed: _selectedVersion != null ? _copySite : null,
-                  ),
+                SiteSubmitIconButton(formKey: _formKey),
               ],
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            body: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmMessage),
@@ -254,6 +254,15 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
                                 setState(() {
                                   _selectedVersion = version;
                                 });
+                                final payload = _siteSubmitBloc.state.payload!.deepCopy();
+                                payload.markForCopyUpToVersion = version;
+                                _siteSubmitBloc.add(
+                                  SiteEventSubmission(
+                                    submission: CommonSubmitBlocEvent(
+                                      updatedPayload: base64Encode(payload.writeToBuffer()),
+                                    )..freeze(),
+                                  ),
+                                );
                               }
                             },
                             title: Text("Version $version"),
@@ -276,9 +285,11 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
+          ),
+        );
+      },
+    ),
+  ),
+);
   }
 }

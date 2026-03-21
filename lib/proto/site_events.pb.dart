@@ -894,6 +894,8 @@ class SubmitSiteEvent extends $pb.GeneratedMessage {
     $core.String? removeMemberEmail,
     $core.String? updateMemberNewEmail,
     $core.String? updateMemberOriginalEmail,
+    $core.bool? isMarkForCopy,
+    $core.int? markForCopyUpToVersion,
   }) {
     final result = create();
     if (event != null) result.event = event;
@@ -904,6 +906,9 @@ class SubmitSiteEvent extends $pb.GeneratedMessage {
       result.updateMemberNewEmail = updateMemberNewEmail;
     if (updateMemberOriginalEmail != null)
       result.updateMemberOriginalEmail = updateMemberOriginalEmail;
+    if (isMarkForCopy != null) result.isMarkForCopy = isMarkForCopy;
+    if (markForCopyUpToVersion != null)
+      result.markForCopyUpToVersion = markForCopyUpToVersion;
     return result;
   }
 
@@ -930,6 +935,9 @@ class SubmitSiteEvent extends $pb.GeneratedMessage {
         protoName: 'updateMemberNewEmail')
     ..aOS(7, _omitFieldNames ? '' : 'updateMemberOriginalEmail',
         protoName: 'updateMemberOriginalEmail')
+    ..aOB(8, _omitFieldNames ? '' : 'isMarkForCopy', protoName: 'isMarkForCopy')
+    ..aI(9, _omitFieldNames ? '' : 'markForCopyUpToVersion',
+        protoName: 'markForCopyUpToVersion')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1006,6 +1014,24 @@ class SubmitSiteEvent extends $pb.GeneratedMessage {
   $core.bool hasUpdateMemberOriginalEmail() => $_has(5);
   @$pb.TagNumber(7)
   void clearUpdateMemberOriginalEmail() => $_clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.bool get isMarkForCopy => $_getBF(6);
+  @$pb.TagNumber(8)
+  set isMarkForCopy($core.bool value) => $_setBool(6, value);
+  @$pb.TagNumber(8)
+  $core.bool hasIsMarkForCopy() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearIsMarkForCopy() => $_clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.int get markForCopyUpToVersion => $_getIZ(7);
+  @$pb.TagNumber(9)
+  set markForCopyUpToVersion($core.int value) => $_setSignedInt32(7, value);
+  @$pb.TagNumber(9)
+  $core.bool hasMarkForCopyUpToVersion() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearMarkForCopyUpToVersion() => $_clearField(9);
 }
 
 /// The SiteEventRecord is a representation of the actual record stored in the
