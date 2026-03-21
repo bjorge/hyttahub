@@ -183,7 +183,7 @@ func registerAppHooks(app core.App) {
 		}
 
 		mValue := e.Record.GetString("m")
-		copyValue := e.Record.GetString("MarkForCopy")
+		copyValue := e.Record.GetString("c")
 		if mValue == "" && copyValue == "" {
 			return e.Next()
 		}
@@ -290,10 +290,10 @@ func registerAppHooks(app core.App) {
 		}
 
 		// ---------------------------------------------------------------------
-		// Handle MarkForCopy
+		// Handle Copy (c field)
 		// ---------------------------------------------------------------------
 		if copyValue != "" {
-			log.Printf("[hyttahub] COPY: MarkForCopy field detected for %s", email)
+			log.Printf("[hyttahub] COPY: 'c' field detected for %s", email)
 			copyBytes, _ := base64.StdEncoding.DecodeString(copyValue)
 			copyInfo := &models.MarkForCopy{}
 			if err := proto.Unmarshal(copyBytes, copyInfo); err == nil {
@@ -396,7 +396,7 @@ func registerAppHooks(app core.App) {
 				
 				log.Printf("[hyttahub] COPY SUCCESS: Site %s is ready.", newSiteId)
 			}
-			e.Record.Set("MarkForCopy", "")
+			e.Record.Set("c", "")
 			app.Save(e.Record)
 		}
 		return e.Next()
@@ -424,9 +424,9 @@ func registerAppHooks(app core.App) {
 					col, err := app.FindCollectionByNameOrId(collectionName)
 					if err == nil {
 						if strings.HasSuffix(collectionName, "_users") {
-							if col.Fields.GetByName("MarkForCopy") == nil {
-								log.Printf("[hyttahub] Syncing MarkForCopy field: %s", collectionName)
-								col.Fields.Add(&core.TextField{Name: "MarkForCopy"})
+							if col.Fields.GetByName("c") == nil {
+								log.Printf("[hyttahub] Syncing 'c' field: %s", collectionName)
+								col.Fields.Add(&core.TextField{Name: "c"})
 								app.Save(col)
 							}
 						}
@@ -524,7 +524,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		col.Fields.Add(&core.NumberField{Name: "u"})
 		col.Fields.Add(&core.DateField{Name: "t"})
 		col.Fields.Add(&core.TextField{Name: "m"})
-		col.Fields.Add(&core.TextField{Name: "MarkForCopy"})
+		col.Fields.Add(&core.TextField{Name: "c"})
 	} else if strings.HasSuffix(collectionName, "__site_files") {
 		col.Fields.Add(&core.FileField{Name: "file", MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 	}

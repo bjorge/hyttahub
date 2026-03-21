@@ -69,7 +69,7 @@ func TestSiteCopyLogic(t *testing.T) {
 		UpToVersion: 1,
 	}
 	cpBytes, _ := proto.Marshal(copyInfo)
-	record.Set("MarkForCopy", base64.StdEncoding.EncodeToString(cpBytes))
+	record.Set("c", base64.StdEncoding.EncodeToString(cpBytes))
 	
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
@@ -77,8 +77,8 @@ func TestSiteCopyLogic(t *testing.T) {
 
 	// 3. Verify MarkForCopy was cleared
 	updatedRecord, _ := testApp.FindRecordById(srcUsersCol, record.Id)
-	if updatedRecord.GetString("MarkForCopy") != "" {
-		t.Errorf("MarkForCopy field should have been cleared")
+	if updatedRecord.GetString("c") != "" {
+		t.Errorf("'c' field should have been cleared")
 	}
 
 	// 4. Verify Account Event (CreateSite) was created
