@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/collection_paths.dart';
-import 'package:hyttahub/functions/in_memory_hyttahub_functions.dart';
+
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
@@ -11,7 +11,7 @@ import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
 
 void main() {
-  test('InMemoryHyttaHubFunctions site copy data trigger test', () async {
+  test('InMemoryHyttaHubStorage site copy data trigger test', () async {
     final appName = 'testapp';
     HyttaHubOptions.implementation = HyttaHubImplementation(
       cloudRootCollection: appName,
@@ -19,7 +19,7 @@ void main() {
     );
 
     final storage = HyttaHubStorageFactory.getStorage(StorageEnum.memory) as InMemoryHyttaHubStorage;
-    final functions = InMemoryHyttaHubFunctions(StorageEnum.memory);
+
 
     final siteId = 'SOURCE1';
     final email = 'user@example.com';
@@ -78,6 +78,6 @@ void main() {
     final newSiteIdPath = allPaths.firstWhere((p) => p.contains('sites/') && !p.contains(siteId));
     expect(newSiteIdPath, isNotNull);
     
-    await functions.dispose();
+
   });
 }

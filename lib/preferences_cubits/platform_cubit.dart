@@ -8,7 +8,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/auth_bloc/hyttahub_auth_factory.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
-import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
+
 
 class PlatformCubit extends HydratedCubit<String> {
   PlatformCubit(this.storageKey)
@@ -30,7 +30,7 @@ class PlatformCubit extends HydratedCubit<String> {
     HyttaHubAuthFactory.clear();
     HyttaHubStorageFactory.clear();
     HyttaHubInternalStorageFactory.clear();
-    HyttaHubFunctionsFactory.clear();
+
 
     emit(implementationId);
   }

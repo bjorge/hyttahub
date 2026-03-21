@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
-import 'package:hyttahub/functions/hyttahub_functions_factory.dart';
+import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
+import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
@@ -87,14 +88,28 @@ class SiteInfoScreen extends StatelessWidget {
                 ],
               ),
               FutureBuilder<Map<String, dynamic>>(
-                future: HyttaHubFunctionsFactory.getFunctions(
-                  HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
-                ).listSiteFiles(
-                  siteId: siteId,
-                  appName:
-                      HyttaHubOptions.implementation?.cloudRootCollection ??
-                      '',
-                ),
+                future: () async {
+                  final storage = HyttaHubStorageFactory.getStorage(
+                    HyttaHubOptions.implementation?.storage ?? StorageEnum.cloud,
+                  );
+                  final appName = HyttaHubOptions.implementation?.cloudRootCollection ?? '';
+                  final files = await storage.listFiles(collectionFilesPath(siteId, ''));
+                  int totalSize = 0;
+                  // If we don't have getFileBytes implementated well for sizing, we still mimic existing behavior for now
+                  for (final file in files) {
+                    final bytes = await storage.getFileBytes(
+                      appName: appName,
+                      siteId: siteId,
+                      fileName: file.split('/').last,
+                    );
+                    totalSize += bytes.length;
+                  }
+                  return {
+                    'files': files,
+                    'fileCount': files.length,
+                    'totalSize': totalSize,
+                  };
+                }(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -111,12 +126,8 @@ class SiteInfoScreen extends StatelessWidget {
                     return Container();
                   }
 
-                  final files = List<Map<String, dynamic>>.from(data['files']);
-                  final fileCount = files.length;
-                  final totalSize = files.fold<int>(
-                    0,
-                    (prev, file) => prev + (file['size'] as int),
-                  );
+                  final fileCount = data['fileCount'] as int;
+                  final totalSize = data['totalSize'] as int;
 
                   return Column(
                     spacing: 24.0,

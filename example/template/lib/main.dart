@@ -8,10 +8,10 @@ import 'package:hyttahub/hyttahub.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
 import 'package:hyttahub_firebase/firebase_hyttahub_auth.dart';
-import 'package:hyttahub_firebase/firebase_hyttahub_functions.dart';
+
 import 'package:hyttahub_firebase/firestore_hyttahub_storage.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_auth.dart';
-import 'package:hyttahub_pocketbase/pocketbase_hyttahub_functions.dart';
+
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 import 'package:template/firebase_options.dart';
 import 'package:template/proto/app_events.pb.dart';
@@ -46,7 +46,7 @@ void registerPersistence() {
     type: StorageEnum.cloud,
     storageBuilder: () => FirestoreHyttaHubStorage(),
     authBuilder: () => FirebaseHyttaHubAuth(),
-    functionsBuilder: () => FirebaseHyttaHubFunctions(),
+
   ));
 
   // PocketBase local emulator — connects to http://localhost:8090 (or the
@@ -59,7 +59,7 @@ void registerPersistence() {
     type: StorageEnum.cloud,
     storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
     authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
-    functionsBuilder: () => PocketbaseHyttaHubFunctions(client: pb),
+
   ));
 
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(

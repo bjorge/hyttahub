@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:hyttahub/collection_paths.dart';
+import 'package:hyttahub/proto/account_events.pb.dart';
+import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/proto/site_util.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
@@ -11,7 +14,157 @@ import 'package:hyttahub/storage/hyttahub_internal_storage_factory.dart';
 class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   final StorageEnum storageType;
 
-  InMemoryHyttaHubStorage({this.storageType = StorageEnum.memory});
+  InMemoryHyttaHubStorage({this.storageType = StorageEnum.memory}) {
+    // Start listening for mark for copy
+    updates.listen((update) {
+      final path = update['path'] as String;
+      final docId = update['docId'] as String;
+
+      // Check if this is a site_users document
+      final segments = path.split('/');
+      if (segments.length == 5 &&
+          segments[0] == 'hyttahub' &&
+          segments[2] == 'sites' &&
+          segments[4] == 'site_users') {
+        _checkMarkForCopy(path, docId, segments[1], segments[3]);
+      }
+    });
+  }
+
+  Future<void> _checkMarkForCopy(
+    String path,
+    String docId,
+    String appName,
+    String siteId,
+  ) async {
+    final doc = await getDocument(path, docId);
+    if (doc != null && doc[docSiteMemberMarkedForCopy] != null) {
+      // The protocol buffer MarkForCopy expects the base64 encoded payload
+      final mValue = doc[docSiteMemberMarkedForCopy] as String;
+      final mark = MarkForCopy.fromBuffer(base64Decode(mValue));
+
+      await _executeCopy(
+        siteId: siteId,
+        appName: appName,
+        upToVersion: mark.upToVersion == 0 ? null : mark.upToVersion,
+        mockUserEmail: docId,
+      );
+
+      await updateDocument(path, docId, {
+        docSiteMemberMarkedForCopy: null,
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>> _executeCopy({
+    required String siteId,
+    required String appName,
+    int? upToVersion,
+    String? mockUserEmail,
+  }) async {
+    final newSiteId = DateTime.now().millisecondsSinceEpoch.toString().substring(5);
+    final email = mockUserEmail ?? '';
+    
+    if (email.isEmpty) throw Exception('User not authenticated');
+
+    final oldUserDoc = await getDocument(
+      'hyttahub/$appName/sites/$siteId/site_users',
+      email,
+    );
+    if (oldUserDoc == null) throw Exception('User is not a member of the site to copy');
+    
+    final userId = oldUserDoc[docUserId] as int;
+
+    final oldSitePath = 'hyttahub/$appName/sites/$siteId/site_events';
+    final newSitePath = 'hyttahub/$appName/sites/$newSiteId/site_events';
+    final oldEvents = await getCollection(oldSitePath, orderBy: docVersion);
+
+    int lastVersion = 0;
+    await runBatch((batch) async {
+      for (final event in oldEvents) {
+        final version = event[docVersion] as int;
+        if (upToVersion != null && version > upToVersion) continue;
+        if (version > lastVersion) lastVersion = version;
+        
+        batch.setDocument(
+          newSitePath,
+          version.toString(),
+          event,
+        );
+      }
+
+      final newSiteEventVersion = lastVersion + 1;
+      final importSiteEvent = SiteEvent(
+        importEvent: SiteEvent_ImportEvent(),
+        version: newSiteEventVersion,
+        author: userId,
+      );
+
+      batch.setDocument(
+        newSitePath,
+        newSiteEventVersion.toString(),
+        {
+          docPayload: base64Encode(importSiteEvent.writeToBuffer()),
+          docTimeStamp: serverTimestamp,
+          docVersion: newSiteEventVersion,
+        },
+      );
+
+      batch.setDocument(
+        'hyttahub/$appName/sites/$newSiteId/site_users',
+        email,
+        {
+          docUserId: userId,
+          docTimeStamp: serverTimestamp,
+        },
+      );
+    });
+
+    final accountPath = 'hyttahub/$appName/accounts/$email/account_events';
+    final accountEvents = await getCollection(accountPath, orderBy: docVersion, descending: true);
+    final nextAccountVersion = accountEvents.isEmpty ? 1 : (accountEvents.first[docVersion] as int) + 1;
+    
+    final joinSiteEvent = AccountEvent(
+      createSite: newSiteId,
+      version: nextAccountVersion,
+    );
+    
+    await setDocument(
+      accountPath,
+      nextAccountVersion.toString(),
+      {
+        docPayload: base64Encode(joinSiteEvent.writeToBuffer()),
+        docTimeStamp: serverTimestamp,
+        docVersion: nextAccountVersion,
+      },
+    );
+
+    final archivePrefix = collectionArchiveFilePath(siteId, '');
+    var sourceFilePaths = await listFiles(archivePrefix);
+    String sourcePrefix;
+
+    if (sourceFilePaths.isNotEmpty) {
+      sourcePrefix = archivePrefix;
+    } else {
+      sourcePrefix = collectionFilesPath(siteId, '');
+      sourceFilePaths = await listFiles(sourcePrefix);
+    }
+
+    for (final path in sourceFilePaths) {
+      final fileName = path.substring(sourcePrefix.length);
+      final internalStorage = HyttaHubInternalStorageFactory.getInternalStorage(storageType);
+      final data = await internalStorage.downloadFile(path);
+      
+      await uploadFile(
+        appName: appName,
+        siteId: newSiteId,
+        fileName: fileName,
+        base64Data: base64Encode(data),
+      );
+    }
+
+    return {'siteId': newSiteId};
+  }
 
   // Map of path -> (Map of docId -> data)
   final Map<String, Map<String, Map<String, dynamic>>> data = {};

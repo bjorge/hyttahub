@@ -2,7 +2,7 @@
 
 import 'package:hyttahub/auth_bloc/base_hyttahub_auth.dart';
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
-import 'package:hyttahub/functions/base_hyttahub_functions.dart';
+
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 
 /// A descriptor for a HyttaHub implementation.
@@ -12,7 +12,6 @@ class HyttaHubImplementationDescriptor {
   final StorageEnum type;
   final BaseHyttaHubStorage Function()? storageBuilder;
   final BaseHyttaHubAuth Function()? authBuilder;
-  final BaseHyttaHubFunctions Function()? functionsBuilder;
 
   HyttaHubImplementationDescriptor({
     required this.id,
@@ -20,7 +19,6 @@ class HyttaHubImplementationDescriptor {
     required this.type,
     this.storageBuilder,
     this.authBuilder,
-    this.functionsBuilder,
   });
 }
 
@@ -43,8 +41,6 @@ class PersistenceRegistry {
       _implementations[id]?.storageBuilder?.call();
   static BaseHyttaHubAuth? createAuth(String id) =>
       _implementations[id]?.authBuilder?.call();
-  static BaseHyttaHubFunctions? createFunctions(String id) =>
-      _implementations[id]?.functionsBuilder?.call();
 
   static bool isImplementationRegistered(String id) => _implementations.containsKey(id);
 
