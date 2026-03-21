@@ -32,7 +32,6 @@ export {
   uploadFile,
   deleteFiles,
   getFile,
-  copySite,
   processMarkForDeleteRecords,
   listSiteFiles,
   autoJoinOnMemberAdded,
@@ -66,11 +65,8 @@ The following features can be enabled by exporting their respective functions in
 *   **`deleteFiles`**: Allows authorized site members to batch-delete multiple files from Firebase Storage.
 *   **`listSiteFiles`**: Retrieves a list of all files (and their sizes) associated with a specific site for an authorized member.
 
-### Site Backups & Copying
-*   **`copySite`**: A memory-intensive callable function that duplicates an entire site. It copies all events (up to an optional specified version), site storage files, adds a join event to the creator's account, and creates an `ImportEvent` on the new site.
-
 ### Housekeeping & Data Integrity
-*   **`processMarkForDeleteRecords`**: A Firestore trigger that listens for users being marked for deletion/removal from a site. It processes the removal by adding `LeaveSite` or `RemoveSite` events to the site and account event logs, and then deletes the member record. It also handles automatic cascading deletion of the site data and storage files immediately when the final member has left.
+*   **`processMarkForDeleteRecords`**: A Firestore trigger that listens for users being marked for deletion, removal, or copying. It processes member removals by adding `LeaveSite` or `RemoveSite` events, handles site copying by duplicating all events and files to a new site, and performs automatic cascading deletion of site data and storage files immediately when the final member has left.
 
 ### Auto-Join Behavior
 *   **`autoJoinOnMemberAdded`**: A Firestore trigger that listens for new members being added to a site. If a user is added to a site by an admin, this function automatically creates a `joinSite` event in their account (and adds them to a service-level Bloom filter for beta access, if enabled). 
