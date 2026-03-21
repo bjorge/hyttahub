@@ -100,7 +100,7 @@ func registerAppHooks(app core.App) {
 				e.Record.Set("t", time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
 			}
 
-			if strings.HasSuffix(colName, "__site_users") || strings.HasSuffix(colName, "__service_users") {
+			if strings.HasSuffix(colName, "__site_users") || strings.HasSuffix(colName, "__service_admins") {
 				count, _ := app.CountRecords(colName)
 				if count == 0 {
 					return e.Next()
@@ -125,7 +125,7 @@ func registerAppHooks(app core.App) {
 				if e.Auth != nil { authEmail = e.Auth.GetString("email") }
 				if authEmail == "" { return apis.NewUnauthorizedError("Unauthorized", nil) }
 
-				usersColName := strings.ReplaceAll(colName, "__service_events", "__service_users")
+				usersColName := strings.ReplaceAll(colName, "__service_events", "__service_admins")
 				records, err := app.FindRecordsByFilter(usersColName, "doc_id = {:email}", "", 1, 0, dbx.Params{"email": authEmail})
 				if err != nil || len(records) == 0 {
 					return apis.NewForbiddenError("Only service members can create events", nil)
@@ -440,7 +440,7 @@ func registerAppHooks(app core.App) {
 							if _, err := app.FindCollectionByNameOrId(parent); err != nil { return e.Next() }
 						} else if strings.HasSuffix(collectionName, "__service_events") {
 							prefix := strings.TrimSuffix(collectionName, "__service_events")
-							parent := prefix + "__service_users"
+							parent := prefix + "__service_admins"
 							if _, err := app.FindCollectionByNameOrId(parent); err != nil { return e.Next() }
 						} else if strings.Contains(collectionName, "__accounts__") {
 							parts := strings.Split(collectionName, "__")
@@ -477,7 +477,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		}
 	} else if strings.HasSuffix(collectionName, "__service_events") {
 		prefix := strings.TrimSuffix(collectionName, "__service_events")
-		parent := prefix + "__service_users"
+		parent := prefix + "__service_admins"
 		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
 			return fmt.Errorf("missing prerequisite collection %s", parent)
 		}
@@ -494,7 +494,7 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		usersColName := prefix + "__site_users"
 		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
 		listRule, viewRule, createRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.HasSuffix(collectionName, "__service_users") {
+	} else if strings.HasSuffix(collectionName, "__service_admins") {
 		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
 		listRule, viewRule, createRule, updateRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(""), types.Pointer(rule), types.Pointer(rule)
 	} else if strings.HasSuffix(collectionName, "__service_events") {
@@ -536,8 +536,8 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		prefix := strings.TrimSuffix(collectionName, "__site_users")
 		createHyttahubCollection(app, prefix+"__site_events")
 		createHyttahubCollection(app, prefix+"__site_files")
-	} else if strings.HasSuffix(collectionName, "__service_users") {
-		prefix := strings.TrimSuffix(collectionName, "__service_users")
+	} else if strings.HasSuffix(collectionName, "__service_admins") {
+		prefix := strings.TrimSuffix(collectionName, "__service_admins")
 		createHyttahubCollection(app, prefix+"__service_events")
 	}
 

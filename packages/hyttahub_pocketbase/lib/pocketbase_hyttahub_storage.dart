@@ -458,7 +458,11 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   Future<List<String>> listFiles(String prefix) async {
     // prefix is expected to be "appName/siteId" — derive the collection name
     // using the same hyttahub/{appName}/sites/{siteId}/site_files pattern.
-    final col = encodePath('hyttahub/$prefix/site_files');
+    final segments = prefix.split('/').where((s) => s.isNotEmpty).toList();
+    final appName = segments.isNotEmpty ? segments.first : '';
+    final siteId = segments.length > 1 ? segments[1] : '';
+    
+    final col = _filesCol(appName, siteId);
     try {
       final records = await _client.collection(col).getFullList();
       return records

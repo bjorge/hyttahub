@@ -19,7 +19,7 @@ func TestServiceSecurity(t *testing.T) {
 
 	registerAppHooks(testApp)
 
-	serviceUsersCol := "hyttahub__app__service_users"
+	serviceUsersCol := "hyttahub__app__service_admins"
 	serviceEventsCol := "hyttahub__app__service_events"
 
 	createHyttahubCollection(testApp, serviceUsersCol)
@@ -123,7 +123,7 @@ func TestServiceEventsImmutability(t *testing.T) {
 
 	registerAppHooks(testApp)
 
-	serviceUsersCol := "hyttahub__app__service_users"
+	serviceUsersCol := "hyttahub__app__service_admins"
 	serviceEventsCol := "hyttahub__app__service_events"
 	createHyttahubCollection(testApp, serviceUsersCol)
 	createHyttahubCollection(testApp, serviceEventsCol)
