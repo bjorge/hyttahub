@@ -351,7 +351,7 @@ func TestServiceCascading(t *testing.T) {
 
 	registerAppHooks(testApp)
 
-	serviceUsersCol := "hyttahub__app__service_admins"
+	serviceUsersCol := PrefixHyttaHub + "app" + SuffixServiceUsers
 	
 	// 1. Create service_users
 	if err := createHyttahubCollection(testApp, serviceUsersCol); err != nil {

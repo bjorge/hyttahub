@@ -26,7 +26,7 @@ String collectionServiceEventsPath(String serviceCollectionName, {String? cloudR
 }
 
 String collectionServiceAdminsPath(String serviceCollectionName, {String? cloudRoot}) {
-  return 'hyttahub/${cloudRoot ?? _root()}/services/$serviceCollectionName/service_admins';
+  return 'hyttahub/${cloudRoot ?? _root()}/services/$serviceCollectionName/service_users';
 }
 
 String collectionServiceBetaUsersPath({String? cloudRoot}) {

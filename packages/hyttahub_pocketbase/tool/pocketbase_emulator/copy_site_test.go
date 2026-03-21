@@ -25,9 +25,9 @@ func TestSiteCopyLogic(t *testing.T) {
 	sourceSiteId := "SRC123"
 
 	// 1. Setup Source Site
-	srcPrefix := fmt.Sprintf("hyttahub__%s__sites__%s", appName, sourceSiteId)
-	srcUsersCol := srcPrefix + "__site_users"
-	srcEventsCol := srcPrefix + "__site_events"
+	srcPrefix := fmt.Sprintf("%s%s__sites__%s", PrefixHyttaHub, appName, sourceSiteId)
+	srcUsersCol := srcPrefix + SuffixSiteUsers
+	srcEventsCol := srcPrefix + SuffixSiteEvents
 	
 	createHyttahubCollection(testApp, srcUsersCol)
 	// site_events is auto-created by createHyttahubCollection for site_users
@@ -35,8 +35,8 @@ func TestSiteCopyLogic(t *testing.T) {
 	// Add user to source site
 	col, _ := testApp.FindCollectionByNameOrId(srcUsersCol)
 	record := core.NewRecord(col)
-	record.Set("doc_id", email)
-	record.Set("u", 100)
+	record.Set(FieldDocId, email)
+	record.Set(FieldUserId, 100)
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
 	}
@@ -54,13 +54,13 @@ func TestSiteCopyLogic(t *testing.T) {
 	}
 	nseBytes, _ := proto.Marshal(newSiteEvent)
 	eventRecord := core.NewRecord(eventsCol)
-	eventRecord.Set("doc_id", "1")
-	eventRecord.Set("v", 1)
-	eventRecord.Set("p", base64.StdEncoding.EncodeToString(nseBytes))
+	eventRecord.Set(FieldDocId, "1")
+	eventRecord.Set(FieldVersion, 1)
+	eventRecord.Set(FieldPayload, base64.StdEncoding.EncodeToString(nseBytes))
 	testApp.Save(eventRecord)
 
 	// Setup Account Events collection for the user
-	accEventsColName := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodeSegment(email))
+	accEventsColName := fmt.Sprintf("%s%s%s%s%s", PrefixHyttaHub, appName, SegmentAccounts, encodeSegment(email), SuffixAccountEvents)
 	createHyttahubCollection(testApp, accEventsColName)
 
 	// 2. Trigger Site Copy
@@ -69,7 +69,7 @@ func TestSiteCopyLogic(t *testing.T) {
 		UpToVersion: 1,
 	}
 	cpBytes, _ := proto.Marshal(copyInfo)
-	record.Set("c", base64.StdEncoding.EncodeToString(cpBytes))
+	record.Set(FieldMarkCopy, base64.StdEncoding.EncodeToString(cpBytes))
 	
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
@@ -77,8 +77,8 @@ func TestSiteCopyLogic(t *testing.T) {
 
 	// 3. Verify MarkForCopy was cleared
 	updatedRecord, _ := testApp.FindRecordById(srcUsersCol, record.Id)
-	if updatedRecord.GetString("c") != "" {
-		t.Errorf("'c' field should have been cleared")
+	if updatedRecord.GetString(FieldMarkCopy) != "" {
+		t.Errorf("'%s' field should have been cleared", FieldMarkCopy)
 	}
 
 	// 4. Verify Account Event (CreateSite) was created
@@ -89,7 +89,7 @@ func TestSiteCopyLogic(t *testing.T) {
 
 	// Extract the new site ID from logic or search for it
 	var newSiteId string
-	pBase64 := accEvents[0].GetString("p")
+	pBase64 := accEvents[0].GetString(FieldPayload)
 	pBytes, _ := base64.StdEncoding.DecodeString(pBase64)
 	accEvent := &models.AccountEvent{}
 	if err := proto.Unmarshal(pBytes, accEvent); err == nil {
@@ -106,9 +106,9 @@ func TestSiteCopyLogic(t *testing.T) {
 	}
 
 	// 5. Verify New Site Collections exist
-	dstPrefix := fmt.Sprintf("hyttahub__%s__sites__%s", appName, newSiteId)
-	dstUsersCol := dstPrefix + "__site_users"
-	dstEventsCol := dstPrefix + "__site_events"
+	dstPrefix := fmt.Sprintf("%s%s__sites__%s", PrefixHyttaHub, appName, newSiteId)
+	dstUsersCol := dstPrefix + SuffixSiteUsers
+	dstEventsCol := dstPrefix + SuffixSiteEvents
 
 	if _, err := testApp.FindCollectionByNameOrId(dstUsersCol); err != nil {
 		t.Errorf("Destination site_users collection %s should exist", dstUsersCol)
@@ -132,7 +132,7 @@ func TestSiteCopyLogic(t *testing.T) {
 	// Check for ImportEvent
 	foundImport := false
 	for _, ev := range dstEvents {
-		evPBytes, _ := base64.StdEncoding.DecodeString(ev.GetString("p"))
+		evPBytes, _ := base64.StdEncoding.DecodeString(ev.GetString(FieldPayload))
 		siteEv := &models.SiteEvent{}
 		proto.Unmarshal(evPBytes, siteEv)
 		if siteEv.GetImportEvent() != nil {
