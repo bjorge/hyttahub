@@ -1,6 +1,6 @@
 name: hyttahub
 description: "A serverless Flutter framework for building applications with an event-sourced architecture, shared site management, and built-in compliance."
-version: 0.1.52
+version: 0.1.53
 repository: https://github.com/bjorge/hyttahub
 
 environment:

@@ -11,8 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hyttahub:
-    path: ../..
+  hyttahub: ^0.1.53
 
   cloud_firestore: ^6.0.2
   firebase_core: ^4.1.1

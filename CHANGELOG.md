@@ -1,3 +1,23 @@
+## 0.1.53
+
+*   **Platform Abstraction Simplified**:
+    *   Removed `HyttaHubFunctions` and `HyttaHubInternalStorage` abstractions. The framework has transitioned to a unified storage model, simplifying the implementation of new persistence layers.
+    *   Updated `HyttaHubImplementationDescriptor` to remove deprecated `functionsBuilder` and `internalStorageBuilder`.
+*   **Cross-Platform "Copy Site"**:
+    *   Ported the "Copy Site" business logic from the PocketBase implementation into the core library.
+    *   This feature is now natively supported across all platforms (Firebase, PocketBase, and In-Memory/Local Storage).
+*   **Auth Architecture Refactor**:
+    *   Decoupled `AuthBloc` from the global scope. It is now managed via `BlocProvider` and `PlatformCubit`, improving testability and resource management during logout/reset cycles.
+*   **Enhanced Service Shell**:
+    *   Split the `ServiceShell` into two distinct flows: **Service Admin Login** and **Normal Login**.
+    *   Administrative replay events and service-wide management features are now strictly isolated to the admin login flow.
+*   **Site & Account Submit Improvements**:
+    *   Refactored `SiteSubmitBloc` and `AccountSubmitBloc` to use standardized event submission patterns.
+    *   Consolidated site event creation logic to ensure consistency between cloud and local storage modes.
+*   **General Maintenance**:
+    *   Updated internal dependencies and resolved lint warnings from the latest Flutter SDK.
+    *   Added comprehensive unit tests for cross-platform site cloning (`copy_site_memory_test.dart`).
+
 ## 0.1.52
 
 *   **Account Removal Improvements**:
