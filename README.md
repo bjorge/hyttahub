@@ -18,11 +18,11 @@ A serverless Flutter framework designed as a solid starting point for new casual
     -   **Localization:** Support for multiple languages.
     -   **Theming:** Dynamic light and dark mode support.
 -   **Collaboration & Core Features**
-    -   **Shared Site (Resource) Management:** Supports the common use case of members sharing a resource, or "site" (such as a set of photo albums, a calendar, etc.). The framework manages adding and removing site members, as well as self-removal. Site members can be assigned administrative roles. Firebase rules ensure site data privacy.
+    -   **Shared Site (Resource) Management:** Supports the common use case of members sharing a resource, or "site" (such as a set of photo albums, a calendar, etc.). The framework manages adding and removing site members, as well as self-removal. Site members can be assigned administrative roles. Backend security rules ensure site data privacy.
 -   **Event Sourcing Framework Replay on the Client**
-    -   This eliminates the common practice of having separate models for UI forms, network marshalling, database storage, and business logic. This reduces boilerplate code and removes the need for app logic on the server side. Events are persisted on the client, significantly reducing service queries. Note: Some cloud functions are included to assist with cleanup upon account deletion.
+    -   This eliminates the common practice of having separate models for UI forms, network marshalling, database storage, and business logic. This reduces boilerplate code and removes the need for app logic on the server side. Events are persisted on the client, significantly reducing service queries. Note: Backend logic (e.g., Cloud Functions or database hooks) is used to assist with cleanup upon account deletion.
     -   **Event and Replay Views:** Service, account, and site events (and their resulting replays) can be viewed directly in the UI, assisting with debugging without needing to access the backend services.
-    -   **Persistence-Agnostic:** The framework is designed to support various storage providers (e.g., Firebase, Pocketbase) and allows switching between them at runtime. Built-in memory and local file storage are also supported out of the box.
+    -   **Persistence-Agnostic:** The framework is designed to support various storage providers (e.g., Firebase, PocketBase) and allows switching between them at runtime. Built-in memory and local file storage are also supported out of the box.
 
 ## Usage
 
@@ -65,20 +65,22 @@ After updating the `.arb` files, run:
 flutter gen-l10n
 ```
 
-**I want to run the example app using the Firebase Emulator, how do I do that?**
+**How do I run the example app with a local backend?**
 
--   Install either Docker or Podman.
--   Follow the instructions in the [`README`](tool/firebase_emulator/README) found in the `tool/firebase_emulator` directory to set up and start the emulator (this will also start the cloud functions in the emulator).
--   In a separate terminal, navigate to the `example/template` folder and run:
-    ```sh
-    flutter run -d chrome
-    ```
--   In the app, select "Firebase" as the storage implementation.
+HyttaHub supports multiple backends. To run the example with a local emulator:
+
+*   **For Firebase:**
+    *   Install Docker or Podman.
+    *   Follow the instructions in [`packages/hyttahub_firebase/tool/firebase_emulator/README`](packages/hyttahub_firebase/tool/firebase_emulator/README) to start the Firebase emulator.
+    *   In the app, select "Firebase" as the storage implementation.
+*   **For PocketBase:**
+    *   Follow the instructions in [`packages/hyttahub_pocketbase/tool/pocketbase_emulator/README`](packages/hyttahub_pocketbase/tool/pocketbase_emulator/README) to start the Go-based PocketBase emulator.
+    *   In the app, select "PocketBase (local)" as the storage implementation.
 
 **How do I tag a new release?**
 
 ```sh
-git tag v0.1.9
+git tag v0.1.53
 git push origin --tags
 ```
 
@@ -88,12 +90,12 @@ Protocol buffer files can be compiled for both Dart (Flutter) and TypeScript (Cl
 
 **Is any server-side code required for this project?**
 
-The project requires no long-running server-side code. Cloud Functions are used sparingly—only when necessary to provide access to parts of the system that are inaccessible to the client due to Firebase security rules. For example, when a site admin removes a member, a Cloud Function will securely add a "remove" event to that member's account stream (which the admin cannot access directly). Cloud Functions are also used for housekeeping tasks, such as removing abandoned site data when the last member leaves a site.
+The project requires no long-running server-side code. Backend logic (Cloud Functions for Firebase or Go hooks for PocketBase) is used sparingly—only when necessary to provide access to parts of the system that are inaccessible to the client due to security rules. For example, when a site admin removes a member, a backend process will securely add a "remove" event to that member's account stream (which the admin cannot access directly). This logic is also used for housekeeping tasks, such as removing abandoned site data when the last member leaves a site.
 
 **How is shared member data kept private?**
 
-Firebase rules, defined in [`firestore.rules`](tool/firebase_emulator/firestore.rules) and [`storage.rules`](tool/firebase_emulator/storage.rules), are designed to ensure member data privacy. Only site members are permitted to access site data, and only site administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the global service status. In the case of PocketBase, these same rules are coded into the Go code that runs on the server.
+Storage-specific security rules are designed to ensure member data privacy. For Firebase, these are defined in [`firestore.rules`](packages/hyttahub_firebase/tool/firebase_emulator/firestore.rules) and [`storage.rules`](packages/hyttahub_firebase/tool/firebase_emulator/storage.rules). For PocketBase, these same rules are implemented in the Go backend logic. In both cases, only site members are permitted to access site data, and only site administrators can add new members. Likewise, only the owner of an account can modify their account settings, and only a service administrator can update the global service status.
 
 **Can I add social authentication, such as Google or Apple logins?**
 
-The current implementation uses email addresses as keys in Firebase rules and site-member management. Any Firebase Auth options that reliably retain the user's email will work natively. For Apple sign-ins, since users can choose to anonymize their email via a relay, updates would be required in the framework to accommodate that specific case.
+The current implementations use email addresses as keys for member management and security rules. Any authentication provider that reliably retains and verifies the user's email will work natively. For Apple sign-ins, since users can choose to anonymize their email via a relay, updates would be required in the framework to accommodate that specific case.

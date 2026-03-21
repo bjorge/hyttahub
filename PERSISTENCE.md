@@ -1,23 +1,36 @@
 ## Persistence Registration
 
-HyttaHub is persistence-agnostic and uses a dynamic registration system. This allows you to support multiple providers for the same storage type (e.g., both Firebase and Supabase for cloud storage) and switch between them at runtime.
+HyttaHub is persistence-agnostic and uses a dynamic registration system. This allows you to support multiple providers for the same storage type (e.g., both Firebase and PocketBase for cloud storage) and switch between them at runtime.
 
 In your application's `main.dart`, register your implementations using `PersistenceRegistry` before calling `initializeHyttaHub`:
 
 ```dart
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/utilities/persistence_registries.dart';
+import 'package:hyttahub_firebase/firebase_hyttahub_auth.dart';
+import 'package:hyttahub_firebase/firestore_hyttahub_storage.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_auth.dart';
+import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 void registerPersistence() {
-  // Register a cloud implementation
+  // Register a Firebase implementation
   PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
     id: 'firebase',
     name: 'Firebase Cloud',
     type: StorageEnum.cloud,
     storageBuilder: () => FirestoreHyttaHubStorage(),
     authBuilder: () => FirebaseHyttaHubAuth(),
-    functionsBuilder: () => FirebaseHyttaHubFunctions(),
-    internalStorageBuilder: () => FirebaseHyttaHubInternalStorage(),
+  ));
+
+  // Register a PocketBase implementation
+  final pb = PocketBase('http://127.0.0.1:8090');
+  PersistenceRegistry.registerImplementation(HyttaHubImplementationDescriptor(
+    id: 'pocketbase',
+    name: 'PocketBase (local)',
+    type: StorageEnum.cloud,
+    storageBuilder: () => PocketbaseHyttaHubStorage(client: pb),
+    authBuilder: () => PocketbaseHyttaHubAuth(client: pb),
   ));
 
   // Register built-in providers (Memory/Local) to make them selectable in the UI
@@ -54,6 +67,6 @@ Future<void> main() async {
 ```
 
 ### How it Works:
-- **Custom Builders**: If you provide `storageBuilder`, `authBuilder`, etc., the library will use your custom classes.
-- **Built-in Fallbacks**: If you omit the builders (as shown in the 'memory' and 'local' examples above), the library falls back to its internal `InMemoryHyttaHubStorage` and `HydratedHyttaHubStorage` defaults based on the `StorageEnum` type.
+- **Custom Builders**: Provide `storageBuilder` and `authBuilder` to use your custom implementation classes.
+- **Built-in Fallbacks**: If you omit the builders (as shown in the 'memory' and 'local' examples above), the library falls back to its internal `InMemoryHyttaHubStorage` and `HydratedHyttaHubStorage` defaults.
 - **Runtime Switching**: The `PlatformCubit` manages the active `implementationId`, allowing the user to switch providers through the `HyttaHubAppBarActions` picker.
