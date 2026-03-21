@@ -139,14 +139,14 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
       },
     );
 
-    final archivePrefix = collectionArchiveFilePath(siteId, '');
+    final archivePrefix = '${collectionArchiveFilePath(siteId, '')}/';
     var sourceFilePaths = await listFiles(archivePrefix);
     String sourcePrefix;
 
     if (sourceFilePaths.isNotEmpty) {
       sourcePrefix = archivePrefix;
     } else {
-      sourcePrefix = collectionFilesPath(siteId, '');
+      sourcePrefix = '${collectionFilesPath(siteId, '')}/';
       sourceFilePaths = await listFiles(sourcePrefix);
     }
 
