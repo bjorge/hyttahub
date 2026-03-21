@@ -30,6 +30,6 @@ export {
   firebaseSiteEventsPath,
   docVersion,
   firebaseSitesPath,
-} from "./shared/constants";
+} from "./shared/collection_paths";
 
 export { setArchiveBucketName } from "./shared/config";

@@ -115,8 +115,9 @@ class SiteInfoScreen extends StatelessWidget {
                     return const CircularProgressIndicator();
                   }
                   if (snapshot.hasError) {
+                    print('Error fetching files for site info: ${snapshot.error}\nStack trace:\n${snapshot.stackTrace}');
                     return Text(
-                      loc.errorFetchingFiles,
+                      '${loc.errorFetchingFiles}: ${snapshot.error}',
                       style: const TextStyle(color: Colors.red),
                     );
                   }

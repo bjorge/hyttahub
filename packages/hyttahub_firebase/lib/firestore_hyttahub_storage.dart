@@ -198,7 +198,21 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
 
   @override
   Future<List<String>> listFiles(String prefix) async {
-    throw UnsupportedError('listFiles is not implemented for FirestoreHyttaHubStorage');
+    final segments = prefix.split('/').where((s) => s.isNotEmpty).toList();
+    final appName = segments.isNotEmpty ? segments.first : '';
+    final siteId = segments.length > 1 ? segments[1] : '';
+
+    final callable = FirebaseFunctions.instance.httpsCallable('listSiteFiles');
+    final result = await callable.call({
+      'appName': appName,
+      'siteId': siteId,
+    });
+
+    final data = result.data as Map<String, dynamic>;
+    final filesList = data['files'] as List<dynamic>? ?? [];
+    return filesList
+        .map((f) => (f as Map<String, dynamic>)['name'] as String)
+        .toList();
   }
 
   @override

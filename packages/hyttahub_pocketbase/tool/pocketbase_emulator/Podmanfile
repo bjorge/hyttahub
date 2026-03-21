@@ -35,7 +35,7 @@ COPY migrations/ ./migrations/
 RUN CGO_ENABLED=0 go test -v ./...
 
 # Build custom PocketBase
-RUN CGO_ENABLED=0 go build -o /usr/local/bin/pocketbase main.go
+RUN CGO_ENABLED=0 go build -o /usr/local/bin/pocketbase .
 
 # Working directory for data and hooks
 WORKDIR /app

@@ -32,6 +32,14 @@ export const firebaseSiteUsersPath = (appPathSegment: string, siteId: string) =>
 export const firebaseSitesPath = (appPathSegment: string) =>
   `hyttahub/${appPathSegment}/sites`;
 
+export const triggerSiteUsersPath =
+  "hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}";
+
+export const triggerAccountEvents1Path =
+  "hyttahub/{appPathSegment}/accounts/{email}/account_events/1";
+
+export const collectionGroupSiteUsers = "site_users";
+
 
 
 

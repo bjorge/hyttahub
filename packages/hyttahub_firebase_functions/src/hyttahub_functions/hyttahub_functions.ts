@@ -25,11 +25,12 @@ import {
   docTimeStamp,
   firebaseFilesPath,
   firebaseEmulatorArchiveFilesPath,
-} from "../shared/constants";
+  triggerSiteUsersPath,
+} from "../shared/collection_paths";
 
 
 export const processMarkForDeleteRecords = onDocumentUpdated(
-  `hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}`,
+  triggerSiteUsersPath,
   async (event) => {
     // const before = event.data?.before;
     const after = event.data?.after;

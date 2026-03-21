@@ -11,7 +11,11 @@ import {
   docVersion,
   docTimeStamp,
   docBetaUsers,
-} from "../shared/constants";
+  triggerSiteUsersPath,
+  triggerAccountEvents1Path,
+  collectionGroupSiteUsers,
+  firebaseSiteUsersPath,
+} from "../shared/collection_paths";
 import { BloomFilterProcessor, defaultBloomFilterSize, defaultBloomFilterHashCount } from "./bloom_filter";
 import { ServiceEvent } from "../ts/service_events";
 
@@ -22,7 +26,7 @@ import { ServiceEvent } from "../ts/service_events";
  * It also adds the user to the authorized emails list (beta users) if applicable.
  */
 export const autoJoinOnMemberAdded = onDocumentCreated(
-  "hyttahub/{appPathSegment}/sites/{siteId}/site_users/{email}",
+  triggerSiteUsersPath,
   async (event) => {
       const { appPathSegment, siteId } = event.params;
       const email = event.params.email.toLowerCase();
@@ -43,7 +47,7 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
 
       // NEW: Check if this is the only user in the site.
       // If it is, this user created the site and we should skip the auto-join as it's redundant.
-      const siteUsersRef = db.collection(`hyttahub/${appPathSegment}/sites/${siteId}/site_users`);
+      const siteUsersRef = db.collection(firebaseSiteUsersPath(appPathSegment, siteId));
       const siteUsersSnapshot = await siteUsersRef.count().get();
       const siteUsersCount = siteUsersSnapshot.data().count;
 
@@ -166,7 +170,7 @@ export const autoJoinOnMemberAdded = onDocumentCreated(
  * Listens for the creation of `hyttahub/{appPathSegment}/accounts/{email}` document.
  */
 export const onAccountCreated = onDocumentCreated(
-  "hyttahub/{appPathSegment}/accounts/{email}/account_events/1",
+  triggerAccountEvents1Path,
   async (event) => {
     const { appPathSegment } = event.params;
     const email = event.params.email.toLowerCase();
@@ -177,7 +181,7 @@ export const onAccountCreated = onDocumentCreated(
       
       // Find all sites where this email is in `site_users`
       logger.info(`Searching for sites where ${email} is pre-configured in site_users...`);
-      const siteUsersQuery = db.collectionGroup("site_users");
+      const siteUsersQuery = db.collectionGroup(collectionGroupSiteUsers);
       const sitesSnapshot = await siteUsersQuery.get();
       logger.info(`CollectionGroup 'site_users' query returned ${sitesSnapshot.size} total documents across all sites.`);
 

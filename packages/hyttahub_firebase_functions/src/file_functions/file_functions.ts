@@ -7,7 +7,7 @@ import {
   firebaseEmulatorArchiveFilesPath,
   firebaseSiteUsersPath,
   isRunningInEmulator,
-} from "../shared/constants";
+} from "../shared/collection_paths";
 
 import { getArchiveBucketName } from "../shared/config";
 
