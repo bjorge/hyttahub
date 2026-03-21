@@ -16,12 +16,14 @@ import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
+import 'package:hyttahub/common_widgets/common_submit_form_layout.dart';
 import 'package:intl/intl.dart';
 
 class CopySiteConfirmScreen extends StatefulWidget {
-  const CopySiteConfirmScreen({super.key, required this.siteId});
+  const CopySiteConfirmScreen({super.key, required this.siteId, required this.event});
 
   final String siteId;
+  final String event;
 
   @override
   State<CopySiteConfirmScreen> createState() => _CopySiteConfirmScreenState();
@@ -29,7 +31,6 @@ class CopySiteConfirmScreen extends StatefulWidget {
 
 class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
   late final SiteReplayBloc _siteReplayBloc;
-  late final SiteSubmitBloc _siteSubmitBloc;
   final _formKey = GlobalKey<FormState>();
   int? _selectedVersion;
   int? _authorId;
@@ -40,15 +41,6 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
     super.initState();
     _siteReplayBloc = SiteReplayBloc(widget.siteId);
     _siteReplayBloc.add(CommonReplayBlocEvent(listen: true));
-    
-    _siteSubmitBloc = SiteSubmitBloc(
-      widget.siteId,
-      SubmitSiteEvent(
-        authorEmail: context.read<AuthBloc>().state.email,
-        event: SiteEvent(version: 999999999), 
-        isMarkForCopy: true,
-      ),
-    );
     
     _fetchAuthorId();
     _fetchEventDates();
@@ -111,7 +103,6 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
   @override
   void dispose() {
     _siteReplayBloc.close();
-    _siteSubmitBloc.close();
     super.dispose();
   }
 
@@ -135,10 +126,18 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final initialSubmitEvent = SubmitSiteEvent.fromBuffer(
+      base64Url.decode(widget.event),
+    );
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _siteReplayBloc),
-        BlocProvider.value(value: _siteSubmitBloc),
+        BlocProvider<SiteSubmitBloc>(
+          create: (_) => SiteSubmitBloc(widget.siteId, initialSubmitEvent)
+            ..payloadChanged = true
+            ..isFormValid = false,
+        ),
       ],
       child: BlocListener<SiteSubmitBloc, BaseSubmitState<SubmitSiteEvent>>(
         listener: (context, state) {
@@ -174,12 +173,14 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
           if (_selectedVersion == null && sortedVersions.isNotEmpty) {
             _selectedVersion = sortedVersions.first;
             // Initialize payload with the default selected version
-            final payload = _siteSubmitBloc.state.payload!.deepCopy();
+            final payload = context.read<SiteSubmitBloc>().state.payload!.deepCopy();
             payload.markForCopyUpToVersion = _selectedVersion!;
-            _siteSubmitBloc.add(
+            payload.event.version = sortedVersions.first + 1;
+            context.read<SiteSubmitBloc>().add(
               SiteEventSubmission(
                 submission: CommonSubmitBlocEvent(
                   updatedPayload: base64Encode(payload.writeToBuffer()),
+                  isFormValid: true,
                 )..freeze(),
               ),
             );
@@ -205,88 +206,90 @@ class _CopySiteConfirmScreenState extends State<CopySiteConfirmScreen> {
 
           final displayedVersions = sortedVersions.where((version) => oldestAllowedVersion == null || version >= oldestAllowedVersion).toList();
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmTitle),
-              actions: [
-                SiteSubmitIconButton(formKey: _formKey),
-              ],
-            ),
-            body: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmMessage),
+          return BlocBuilder<SiteSubmitBloc, BaseSubmitState<SubmitSiteEvent>>(
+            builder: (context, submitState) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmTitle),
+                  actions: [
+                    SiteSubmitIconButton(formKey: _formKey),
+                  ],
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: displayedVersions.length,
-                    itemBuilder: (context, index) {
-                      final version = displayedVersions[index];
-                      final isLatest = index == 0;
-                      
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (isLatest)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                              child: Text(
-                                "Latest Version",
-                                style: Theme.of(context).textTheme.titleSmall,
+                body: Form(
+                  key: _formKey,
+                  child: CommonSubmitFormLayout<SubmitSiteEvent>(
+                    submitState: submitState,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(HyttaHubLocalizations.of(context)!.copySiteConfirmMessage),
+                      ),
+                      ...displayedVersions.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final version = entry.value;
+                        final isLatest = index == 0;
+                        
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (isLatest)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                                child: Text(
+                                  "Latest Version",
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                              )
+                            else if (index == 1)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                                child: Text(
+                                  "Older Versions",
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
                               ),
-                            )
-                          else if (index == 1)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                              child: Text(
-                                "Older Versions",
-                                style: Theme.of(context).textTheme.titleSmall,
+                            CheckboxListTile(
+                              value: _selectedVersion == version,
+                              onChanged: (bool? value) {
+                                if (value == true) {
+                                  setState(() {
+                                    _selectedVersion = version;
+                                  });
+                                  final payload = context.read<SiteSubmitBloc>().state.payload!.deepCopy();
+                                  payload.markForCopyUpToVersion = version;
+                                  payload.event.version = sortedVersions.first + 1;
+                                  context.read<SiteSubmitBloc>().add(
+                                    SiteEventSubmission(
+                                      submission: CommonSubmitBlocEvent(
+                                        updatedPayload: base64Encode(payload.writeToBuffer()),
+                                        isFormValid: true,
+                                      )..freeze(),
+                                    ),
+                                  );
+                                }
+                              },
+                              title: Text("Version $version"),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(_getEventDescription(context, decodedEvents[version]!)),
+                                  if (_eventDates.containsKey(version))
+                                    Text(
+                                      DateFormat.yMMMd(Localizations.localeOf(context).languageCode).add_jm().format(_eventDates[version]!),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7)),
+                                    ),
+                                ],
                               ),
                             ),
-                          CheckboxListTile(
-                            value: _selectedVersion == version,
-                            onChanged: (bool? value) {
-                              if (value == true) {
-                                setState(() {
-                                  _selectedVersion = version;
-                                });
-                                final payload = _siteSubmitBloc.state.payload!.deepCopy();
-                                payload.markForCopyUpToVersion = version;
-                                _siteSubmitBloc.add(
-                                  SiteEventSubmission(
-                                    submission: CommonSubmitBlocEvent(
-                                      updatedPayload: base64Encode(payload.writeToBuffer()),
-                                    )..freeze(),
-                                  ),
-                                );
-                              }
-                            },
-                            title: Text("Version $version"),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(_getEventDescription(context, decodedEvents[version]!)),
-                                if (_eventDates.containsKey(version))
-                                  Text(
-                                    DateFormat.yMMMd(Localizations.localeOf(context).languageCode).add_jm().format(_eventDates[version]!),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7)),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        );
+                      }),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
+              );
+            },
+          );
       },
     ),
   ),

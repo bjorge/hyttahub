@@ -468,7 +468,8 @@ class CopySiteConfirmRoute extends GoRoute {
         path: pathSegment,
         builder: (BuildContext context, GoRouterState state) {
           final siteId = state.pathParameters['siteId'] ?? '';
-          return CopySiteConfirmScreen(siteId: siteId);
+          final event = state.uri.queryParameters['event'] ?? '';
+          return CopySiteConfirmScreen(siteId: siteId, event: event);
         },
       );
 
@@ -476,8 +477,11 @@ class CopySiteConfirmRoute extends GoRoute {
   static const String pathSegment = 'copysiteconfirm/:siteId';
 
   /// The full path to this route.
-  static String fullPath({required String siteId}) =>
-      '${CopySiteRoute.fullPath}/copysiteconfirm/$siteId';
+  static String fullPath({required String siteId, required String event}) =>
+      Uri(
+        path: '${CopySiteRoute.fullPath}/copysiteconfirm/$siteId',
+        queryParameters: {'event': event},
+      ).toString();
 }
 
 class ReorderSitesRoute extends GoRoute {

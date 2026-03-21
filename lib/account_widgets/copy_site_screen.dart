@@ -5,6 +5,9 @@ import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
+import 'package:hyttahub/proto/site_events.pb.dart';
+import 'package:hyttahub/auth_bloc/auth_bloc.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -43,8 +46,19 @@ class _CopySiteScreenState extends State<CopySiteScreen> {
                               context,
                             )!.copySiteTooltip,
                             onPressed: () {
+                              final email = context.read<AuthBloc>().state.email;
+                              final payload = SubmitSiteEvent(
+                                authorEmail: email,
+                                event: SiteEvent(version: 999999999),
+                                isMarkForCopy: true,
+                              );
+                              final serialized = base64UrlEncode(payload.writeToBuffer());
+
                               context.push(
-                                CopySiteConfirmRoute.fullPath(siteId: siteId),
+                                CopySiteConfirmRoute.fullPath(
+                                  siteId: siteId,
+                                  event: serialized,
+                                ),
                               );
                             },
                           ),
