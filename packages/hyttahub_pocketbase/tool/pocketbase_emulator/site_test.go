@@ -182,3 +182,60 @@ func TestSiteEventsImmutability(t *testing.T) {
 	}
 	scenario3.Test(t)
 }
+
+func TestAnonymousSelfJoin(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	allowSelfJoin = true
+	defer func() { allowSelfJoin = false }()
+
+	siteUsersCol := "hyttahub__test__sites__ANON__site_users"
+	siteEventsCol := "hyttahub__test__sites__ANON__site_events"
+	createHyttahubCollection(testApp, siteUsersCol)
+	createHyttahubCollection(testApp, siteEventsCol)
+
+	// Create a user for testing
+	user, _ := testApp.FindAuthRecordByEmail("users", "anon@example.com")
+	if user == nil {
+		col, _ := testApp.FindCollectionByNameOrId("users")
+		user = core.NewRecord(col)
+		user.SetEmail("anon@example.com")
+		user.SetPassword("1234567890")
+		if err := testApp.Save(user); err != nil {
+			t.Fatal(err)
+		}
+	}
+	token, _ := user.NewAuthToken()
+
+	// 1. Authenticated non-member should be allowed to READ site events
+	scenario1 := tests.ApiScenario{
+		Name:            "Allow authenticated non-member to read site events",
+		Method:          http.MethodGet,
+		URL:             "/api/collections/" + siteEventsCol + "/records",
+		Headers:         map[string]string{"Authorization": token},
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusOK, 
+		ExpectedContent: []string{`"items":[]`},
+	}
+	scenario1.Test(t)
+
+	// 2. Authenticated non-member should be allowed to self-join
+	scenario2 := tests.ApiScenario{
+		Name:            "Allow self-join for authenticated user",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/" + siteUsersCol + "/records",
+		Body:            strings.NewReader(fmt.Sprintf(`{"doc_id": "anon@example.com", "u": 2, "t": "%s"}`, time.Now().UTC().Format(time.RFC3339))),
+		Headers:         map[string]string{"Authorization": token},
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusOK, 
+		ExpectedContent: []string{`"doc_id":"anon@example.com"`},
+	}
+	scenario2.Test(t)
+}

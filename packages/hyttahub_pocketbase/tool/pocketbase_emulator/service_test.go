@@ -166,3 +166,48 @@ func TestServiceEventsImmutability(t *testing.T) {
 	}
 	scenario3.Test(t)
 }
+
+func TestServiceUninitialized(t *testing.T) {
+	testApp, err := tests.NewTestApp(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	registerAppHooks(testApp)
+
+	serviceName := "fresh_app"
+	serviceUsersCol := "hyttahub__" + serviceName + "__service_users"
+	serviceEventsCol := "hyttahub__" + serviceName + "__service_events"
+
+	// 1. GET service events on a non-existent collection should return 404 (Not Found)
+	// This is critical for the Flutter app to enter the "Initialize Service" flow.
+	// If it returns 400 (Bad Request), the app will show an "Unexpected error".
+	scenario1 := tests.ApiScenario{
+		Name:            "GET uninitialized service events returns 404",
+		Method:          http.MethodGet,
+		URL:             "/api/collections/" + serviceEventsCol + "/records",
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusNotFound,
+		ExpectedContent: []string{`"status":404`},
+	}
+	scenario1.Test(t)
+
+	// 2. POST to service_users should trigger auto-creation
+	scenario2 := tests.ApiScenario{
+		Name:            "POST to uninitialized service_users auto-creates and succeeds",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/" + serviceUsersCol + "/records",
+		Body:            strings.NewReader(fmt.Sprintf(`{"doc_id": "owner@example.com", "u": 1, "t": "%s"}`, time.Now().UTC().Format(time.RFC3339))),
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusOK,
+		ExpectedContent: []string{`"doc_id":"owner@example.com"`},
+	}
+	scenario2.Test(t)
+
+	// Verify that the child collection was also created
+	if _, err := testApp.FindCollectionByNameOrId(serviceEventsCol); err != nil {
+		t.Errorf("Expected child collection %s to be auto-created", serviceEventsCol)
+	}
+}

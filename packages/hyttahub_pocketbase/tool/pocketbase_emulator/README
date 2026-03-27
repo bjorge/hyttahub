@@ -15,6 +15,8 @@ The Admin UI is available at http://localhost:8090/_/ once the container starts.
 ```
 docker build -t hyttahub-pocketbase-emulator -f Podmanfile .
 docker run --rm -it \
+  -e ALLOW_SELF_JOIN=1 \
+  -e ALLOW_ANONYMOUS=1 \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \
@@ -80,9 +82,20 @@ docker build -t hyttahub-pocketbase-emulator -f Podmanfile .
 
 ## Run
 
+To enable anonymous users and self-joining (required for the TicTacToe anonymous flow), you should set the `ALLOW_SELF_JOIN` and `ALLOW_ANONYMOUS` environment variables to `1`.
+
+### Configuration Flags
+
+| Flag                | Env Var            | Description                                                                 |
+|---------------------|--------------------|-----------------------------------------------------------------------------|
+| `--allow-self-join` | `ALLOW_SELF_JOIN`  | Allows authenticated users to see site events and join sites anonymously. |
+| `--allow-anonymous` | `ALLOW_ANONYMOUS`  | Enables experimental support for virtual users via the `X-Auth-Email` header.           |
+
 ### Podman (ChromeOS / Linux)
 ```
 sudo podman run --rm -it \
+  -e ALLOW_SELF_JOIN=1 \
+  -e ALLOW_ANONYMOUS=1 \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \
@@ -93,6 +106,8 @@ sudo podman run --rm -it \
 ### Docker (macOS M1/M2 or Linux)
 ```
 docker run --rm -it \
+  -e ALLOW_SELF_JOIN=1 \
+  -e ALLOW_ANONYMOUS=1 \
   --name hyttahub-pocketbase-emulator-container \
   -p 8090:8090 \
   -v "$(pwd)/pb_data":/app/pb_data \

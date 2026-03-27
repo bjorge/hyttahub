@@ -1,12 +1,17 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"io"
+	"path/filepath"
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
@@ -16,12 +21,14 @@ import (
 	"github.com/pocketbase/pocketbase/tools/hook"
 	"github.com/pocketbase/pocketbase/tools/types"
 	"google.golang.org/protobuf/proto"
-	"io"
-	"path/filepath"
 
 	_ "pocketbase_emulator/migrations"
 	"pocketbase_emulator/models"
 )
+
+var allowSelfJoin = false
+var allowAnonymous = false
+
 
 func decodeSegment(segment string) string {
 	if !strings.HasPrefix(segment, "e") {
@@ -66,7 +73,21 @@ func generateId() string {
 
 func main() {
 	app := pocketbase.New()
-	log.Printf("[hyttahub] Starting PocketBase Emulator v1.2 (with copy support)...")
+
+	app.RootCmd.PersistentFlags().BoolVar(
+		&allowSelfJoin,
+		"allow-self-join",
+		os.Getenv("ALLOW_SELF_JOIN") == "1" || os.Getenv("ALLOW_SELF_JOIN") == "true",
+		"Allow authenticated users to self-join sites",
+	)
+	app.RootCmd.PersistentFlags().BoolVar(
+		&allowAnonymous,
+		"allow-anonymous",
+		os.Getenv("ALLOW_ANONYMOUS") == "1" || os.Getenv("ALLOW_ANONYMOUS") == "true",
+		"Allow anonymous users via X-Auth-Email header",
+	)
+
+	log.Printf("[hyttahub] Starting PocketBase Emulator v1.2 (with copy support, allow-self-join=%v, allow-anonymous=%v)...", allowSelfJoin, allowAnonymous)
 
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true,
@@ -116,6 +137,10 @@ func registerAppHooks(app core.App) {
 
 				records, err := app.FindRecordsByFilter(colName, "doc_id = {:email}", "", 1, 0, dbx.Params{"email": authEmail})
 				if err != nil || len(records) == 0 {
+					// Allow self-join: user can add themselves to the site
+					if allowSelfJoin && strings.HasSuffix(colName, SuffixSiteUsers) && e.Record.GetString("doc_id") == authEmail {
+						return e.Next()
+					}
 					return apis.NewForbiddenError("Only existing members can add users", nil)
 				}
 				return e.Next()
@@ -452,6 +477,32 @@ func registerAppHooks(app core.App) {
 					reqPath := e.Request.URL.Path
 					reqMethod := e.Request.Method
 
+					// Anonymous Auth support: populate e.Auth from X-Auth-Email header if present.
+					if allowAnonymous && e.Auth == nil {
+						if authEmail := e.Request.Header.Get("X-Auth-Email"); authEmail != "" {
+							user, _ := app.FindAuthRecordByEmail("users", authEmail)
+							if user == nil {
+								// For anonymous auth, create a "virtual" record in-memory instead of saving to DB.
+								usersCol, _ := app.FindCollectionByNameOrId("users")
+								if usersCol != nil {
+									user = core.NewRecord(usersCol)
+									user.Set("email", authEmail)
+									user.SetVerified(true)
+
+									// Deterministic 15-char ID ensures consistency for ownership rules.
+									h := sha1.Sum([]byte(authEmail))
+									user.Id = hex.EncodeToString(h[:])[:15]
+									log.Printf("[hyttahub] Header Auth: Virtual user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
+								}
+							} else {
+								log.Printf("[hyttahub] Header Auth: Existing user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
+							}
+							if user != nil {
+								e.Auth = user
+							}
+						}
+					}
+
 					if !strings.HasPrefix(reqPath, "/api/collections/") {
 						return e.Next()
 					}
@@ -465,18 +516,7 @@ func registerAppHooks(app core.App) {
 						return e.Next()
 					}
 
-					col, err := app.FindCollectionByNameOrId(collectionName)
-					if err == nil {
-						if strings.HasSuffix(collectionName, "_users") {
-							if col.Fields.GetByName(FieldMarkCopy) == nil {
-								log.Printf("[hyttahub] Syncing 'c' field: %s", collectionName)
-								col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
-								app.Save(col)
-							}
-						}
-						return e.Next()
-					}
-
+					// Skip auto-sync if prerequisites are missing for read operations.
 					if reqMethod == "GET" || reqMethod == "HEAD" || reqMethod == "OPTIONS" {
 						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
 							prefix := strings.Split(collectionName, "__site_")[0]
@@ -508,7 +548,7 @@ func registerAppHooks(app core.App) {
 					}
 
 					if err := createHyttahubCollection(app, collectionName); err != nil {
-						return apis.NewBadRequestError("Failed to auto-create collection", err)
+						return apis.NewBadRequestError("Failed to auto-sync collection", err)
 					}
 					return e.Next()
 				},
@@ -524,25 +564,33 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	if !strings.HasPrefix(collectionName, "hyttahub__") {
 		return nil
 	}
-	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
-		return nil
+
+	col, _ := app.FindCollectionByNameOrId(collectionName)
+
+	if col != nil && strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
+		// Prerequisite check for existing site collections
+	} else if col == nil {
+		if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
+			prefix := strings.Split(collectionName, "__site_")[0]
+			parent := prefix + "__site_users"
+			if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+				return fmt.Errorf("missing prerequisite collection %s", parent)
+			}
+		} else if strings.HasSuffix(collectionName, "__service_events") {
+			prefix := strings.TrimSuffix(collectionName, "__service_events")
+			parent := prefix + "__service_users"
+			if _, err := app.FindCollectionByNameOrId(parent); err != nil {
+				return fmt.Errorf("missing prerequisite collection %s", parent)
+			}
+		}
 	}
 
-	if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-		prefix := strings.Split(collectionName, "__site_")[0]
-		parent := prefix + "__site_users"
-		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-			return fmt.Errorf("missing prerequisite collection %s", parent)
-		}
-	} else if strings.HasSuffix(collectionName, "__service_events") {
-		prefix := strings.TrimSuffix(collectionName, "__service_events")
-		parent := prefix + "__service_users"
-		if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-			return fmt.Errorf("missing prerequisite collection %s", parent)
-		}
+	isNew := false
+	if col == nil {
+		col = core.NewBaseCollection(collectionName)
+		isNew = true
 	}
 
-	col := core.NewBaseCollection(collectionName)
 	var listRule, viewRule, createRule, updateRule, deleteRule *string
 
 	if strings.HasSuffix(collectionName, "__site_users") {
@@ -552,6 +600,9 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 		prefix := strings.Split(collectionName, "__site_")[0]
 		usersColName := prefix + "__site_users"
 		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
+		if allowSelfJoin {
+			rule = "@request.auth.id != ''"
+		}
 		listRule, viewRule, createRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
 	} else if strings.HasSuffix(collectionName, "__service_users") {
 		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
@@ -581,34 +632,40 @@ func createHyttahubCollection(app core.App, collectionName string) error {
 	}
 
 	col.ListRule, col.ViewRule, col.CreateRule, col.UpdateRule, col.DeleteRule = listRule, viewRule, createRule, updateRule, deleteRule
-	col.Fields.Add(&core.TextField{Name: FieldDocId})
-	if strings.HasSuffix(collectionName, "_events") {
-		col.Fields.Add(&core.TextField{Name: FieldPayload})
-		col.Fields.Add(&core.NumberField{Name: FieldVersion})
-		col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
-	} else if strings.HasSuffix(collectionName, "_users") {
-		col.Fields.Add(&core.NumberField{Name: FieldUserId})
-		col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
-		col.Fields.Add(&core.TextField{Name: FieldMarkDelete})
-		col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
-	} else if strings.HasSuffix(collectionName, SuffixSiteFiles) {
-		col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
+
+	addFieldIfMissing := func(name string, field core.Field) {
+		if col.Fields.GetByName(name) == nil {
+			col.Fields.Add(field)
+		}
 	}
 
-	if _, err := app.FindCollectionByNameOrId(collectionName); err == nil {
-		return nil
+	addFieldIfMissing(FieldDocId, &core.TextField{Name: FieldDocId})
+	if strings.HasSuffix(collectionName, "_events") {
+		addFieldIfMissing(FieldPayload, &core.TextField{Name: FieldPayload})
+		addFieldIfMissing(FieldVersion, &core.NumberField{Name: FieldVersion})
+		addFieldIfMissing(FieldTimeStamp, &core.DateField{Name: FieldTimeStamp})
+	} else if strings.HasSuffix(collectionName, "_users") {
+		addFieldIfMissing(FieldUserId, &core.NumberField{Name: FieldUserId})
+		addFieldIfMissing(FieldTimeStamp, &core.DateField{Name: FieldTimeStamp})
+		addFieldIfMissing(FieldMarkDelete, &core.TextField{Name: FieldMarkDelete})
+		addFieldIfMissing(FieldMarkCopy, &core.TextField{Name: FieldMarkCopy})
+	} else if strings.HasSuffix(collectionName, SuffixSiteFiles) {
+		addFieldIfMissing(FieldFile, &core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 	}
+
 	if err := app.Save(col); err != nil {
 		return err
 	}
 
-	if strings.HasSuffix(collectionName, "__site_users") {
-		prefix := strings.TrimSuffix(collectionName, "__site_users")
-		createHyttahubCollection(app, prefix+"__site_events")
-		createHyttahubCollection(app, prefix+"__site_files")
-	} else if strings.HasSuffix(collectionName, "__service_users") {
-		prefix := strings.TrimSuffix(collectionName, "__service_users")
-		createHyttahubCollection(app, prefix+"__service_events")
+	if isNew {
+		if strings.HasSuffix(collectionName, "__site_users") {
+			prefix := strings.TrimSuffix(collectionName, "__site_users")
+			createHyttahubCollection(app, prefix+"__site_events")
+			createHyttahubCollection(app, prefix+"__site_files")
+		} else if strings.HasSuffix(collectionName, "__service_users") {
+			prefix := strings.TrimSuffix(collectionName, "__service_users")
+			createHyttahubCollection(app, prefix+"__service_events")
+		}
 	}
 
 	return nil
