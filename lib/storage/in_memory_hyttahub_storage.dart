@@ -27,6 +27,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
           segments[2] == 'sites' &&
           segments[4] == 'site_users') {
         _checkMarkForCopy(path, docId, segments[1], segments[3]);
+        _checkMarkForDeletion(path, docId, segments[1], segments[3]);
       }
     });
   }
@@ -51,8 +52,156 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
       );
 
       await updateDocument(path, docId, {
-        docSiteMemberMarkedForCopy: null,
+      docSiteMemberMarkedForCopy: null,
       });
+    }
+  }
+
+  Future<void> _checkMarkForDeletion(
+    String path,
+    String docId,
+    String appName,
+    String siteId,
+  ) async {
+    final doc = await getDocument(path, docId);
+    if (doc != null && doc[docSiteMemberMarkedForDeletion] != null) {
+      final mValue = doc[docSiteMemberMarkedForDeletion] as String;
+      final mark = MarkForDeletion.fromBuffer(base64Decode(mValue));
+      final memberId = doc[docUserId] as int?;
+
+      if (mark.deleteReason == MarkForDeletion_DeleteReason.memberLeftSite) {
+        // 1. Add LeaveSite to Site Events
+        if (memberId != null) {
+          final siteEventsPath = collectionSiteEventsPath(siteId);
+          final siteEvents = await getCollection(siteEventsPath,
+              orderBy: docVersion, descending: true);
+          final nextSiteVersion =
+              siteEvents.isEmpty ? 1 : (siteEvents.first[docVersion] as int) + 1;
+
+          final leaveSiteEvent = SiteEvent(
+            version: nextSiteVersion,
+            author: mark.author != 0 ? mark.author : memberId,
+            leaveSite: SiteEvent_LeaveSite(memberId: memberId),
+          );
+
+          await setDocument(
+            siteEventsPath,
+            nextSiteVersion.toString(),
+            {
+              docPayload: base64Encode(leaveSiteEvent.writeToBuffer()),
+              docVersion: nextSiteVersion,
+              docTimeStamp: serverTimestamp,
+            },
+          );
+        }
+
+        // 2. Add LeaveSite to Account Events
+        final accountEventsPath = collectionAccountEventsPath(docId);
+        final accountEvents = await getCollection(accountEventsPath,
+            orderBy: docVersion, descending: true);
+        final nextAccountVersion = accountEvents.isEmpty
+            ? 1
+            : (accountEvents.first[docVersion] as int) + 1;
+
+        final accountLeaveEvent = AccountEvent(
+          version: nextAccountVersion,
+          leaveSite: siteId,
+        );
+
+        await setDocument(
+          accountEventsPath,
+          nextAccountVersion.toString(),
+          {
+            docPayload: base64Encode(accountLeaveEvent.writeToBuffer()),
+            docVersion: nextAccountVersion,
+            docTimeStamp: serverTimestamp,
+          },
+        );
+      } else if (mark.deleteReason ==
+          MarkForDeletion_DeleteReason.memberRemovedFromSite) {
+        // 1. Add RemoveMember to Site Events
+        if (memberId != null) {
+          final siteEventsPath = collectionSiteEventsPath(siteId);
+          final siteEvents = await getCollection(siteEventsPath,
+              orderBy: docVersion, descending: true);
+          final nextSiteVersion =
+              siteEvents.isEmpty ? 1 : (siteEvents.first[docVersion] as int) + 1;
+
+          final removeMemberEvent = SiteEvent(
+            version: nextSiteVersion,
+            author: mark.author,
+            removeMember: SiteEvent_RemoveMember(memberId: memberId),
+          );
+
+          await setDocument(
+            siteEventsPath,
+            nextSiteVersion.toString(),
+            {
+              docPayload: base64Encode(removeMemberEvent.writeToBuffer()),
+              docVersion: nextSiteVersion,
+              docTimeStamp: serverTimestamp,
+            },
+          );
+        }
+
+        // 2. Add RemoveSite to Account Events
+        final accountEventsPath = collectionAccountEventsPath(docId);
+        final accountEvents = await getCollection(accountEventsPath,
+            orderBy: docVersion, descending: true);
+        final nextAccountVersion = accountEvents.isEmpty
+            ? 1
+            : (accountEvents.first[docVersion] as int) + 1;
+
+        final accountRemoveEvent = AccountEvent(
+          version: nextAccountVersion,
+          removeSite: siteId,
+        );
+
+        await setDocument(
+          accountEventsPath,
+          nextAccountVersion.toString(),
+          {
+            docPayload: base64Encode(accountRemoveEvent.writeToBuffer()),
+            docVersion: nextAccountVersion,
+            docTimeStamp: serverTimestamp,
+          },
+        );
+      }
+
+      // 3. Delete the site_user document
+      await deleteDocument(path, docId);
+
+      // 4. Check if site has no remaining members; if so, clean up
+      final remainingMembers = await getCollection(path);
+      if (remainingMembers.isEmpty) {
+        await _cleanupSite(siteId);
+      }
+    }
+  }
+
+  Future<void> _cleanupSite(String siteId) async {
+    // 1. Delete site_events collection
+    await deleteCollection(collectionSiteEventsPath(siteId));
+
+    // 2. Delete site_users collection (should already be empty, but be thorough)
+    await deleteCollection(collectionSiteUsersPath(siteId));
+
+    // 3. Delete active files for this site
+    final filesPrefix = collectionFilesPath(siteId, '');
+    final files = await listFiles(filesPrefix);
+    for (final filePath in files) {
+      final internalStorage =
+          HyttaHubInternalStorageFactory.getInternalStorage(storageType);
+      await internalStorage.deleteFile(filePath);
+    }
+
+    // 4. Delete archive files for this site
+    final archivePrefix = collectionArchiveFilePath(siteId, '');
+    final archiveFiles = await listFiles(archivePrefix);
+    for (final filePath in archiveFiles) {
+      final internalStorage =
+          HyttaHubInternalStorageFactory.getInternalStorage(storageType);
+      await internalStorage.deleteFile(filePath);
     }
   }
 
