@@ -1,3 +1,18 @@
+## 0.1.54
+
+*   **Standardized Terminology ("Hub" Strategy)**:
+    *   Transitioned the entire application from "Site" terminology to the more generic and versatile **"Hub"**.
+    *   Implemented a "Lite" localization strategy that removes redundant nouns where the UI context is clear (e.g., "Site Name" → "Name", "Leave Site" → "Leave").
+    *   Applied these changes consistently across all supported languages (English, Spanish, Italian, Norwegian, and Dutch).
+*   **Localization & Internationalization Improvements**:
+    *   Achieved 100% key coverage for all non-English localization files (`intl_es`, `intl_it`, `intl_nb`, `intl_nl`), resolving dozens of untranslated message warnings.
+    *   Translated high-priority system screens, including the **Data Store Initialization** and **Service Admin** management flows.
+    *   Fixed Dutch translation inaccuracies and mixed-language strings.
+*   **Maintenance & Logic Cleanup**:
+    *   Standardized storage deletion and cleanup logic across Firebase, PocketBase, and in-memory storage, ensuring `MarkForDeletion` documents are the single source of truth for cleanup tasks.
+    *   Resolved Flutter `synthetic-package` deprecation warnings in `l10n.yaml` across the main project and all example apps.
+    *   Updated `CHANGELOG.md` and version metadata to reflect the v0.1.54 release.
+
 ## 0.1.53
 
 *   **Platform Abstraction Simplified**:
