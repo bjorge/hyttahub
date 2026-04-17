@@ -467,14 +467,14 @@ packages:
       path: "../.."
       relative: true
     source: path
-    version: "0.1.52"
+    version: "0.1.53"
   hyttahub_firebase:
     dependency: "direct main"
     description:
       path: "../../packages/hyttahub_firebase"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   hyttahub_pocketbase:
     dependency: "direct main"
     description:
