@@ -5,7 +5,7 @@ import 'refresh_helper_stub.dart'
 class RefreshHelper {
   static Future<void> refresh() async {
     if (kIsWeb) {
-      reloadPage();
+      await reloadPage();
     }
   }
 }
