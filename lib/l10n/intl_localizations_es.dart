@@ -79,10 +79,10 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   }
 
   @override
-  String get sites => 'Sitios';
+  String get sites => 'Hubs';
 
   @override
-  String get noSites => 'ningún sitio';
+  String get noSites => 'ningún hub';
 
   @override
   String get initializingAccountTitle => 'Inicializando cuenta';
@@ -97,10 +97,10 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get accountSettingsTitle => 'Configuración de la cuenta';
 
   @override
-  String get manageSitesTitle => 'Abandonar sitio';
+  String get manageSitesTitle => 'Abandonar';
 
   @override
-  String get reorderSitesTitle => 'Reordenar sitios';
+  String get reorderSitesTitle => 'Reordenar hubs';
 
   @override
   String get removeAccountTitle => 'Eliminar cuenta';
@@ -119,10 +119,10 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get cancelButton => 'Cancelar';
 
   @override
-  String get createSiteTitle => 'Crear sitio';
+  String get createSiteTitle => 'Crear hub';
 
   @override
-  String get joinSiteTitle => 'Unirse a un sitio';
+  String get joinSiteTitle => 'Unirse a un hub';
 
   @override
   String get unimplementedTitle => 'No implementado';
@@ -131,17 +131,16 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get toBeImplemented => '¡Próximamente!';
 
   @override
-  String get siteNameLabel => 'Nombre del sitio';
+  String get siteNameLabel => 'Nombre';
 
   @override
-  String get siteNameEmptyError => 'El nombre del sitio no puede estar vacío';
+  String get siteNameEmptyError => 'El nombre no puede estar vacío';
 
   @override
   String get userNameLabel => 'Nombre de usuario';
 
   @override
-  String get userNameEmptyError =>
-      'El nombre de usuario del sitio no puede estar vacío';
+  String get userNameEmptyError => 'El nombre de usuario no puede estar vacío';
 
   @override
   String get pasteCodeTooltip => 'Pegar código';
@@ -150,25 +149,23 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get backspaceTooltip => 'Borrar';
 
   @override
-  String get joinSiteCodeLabel =>
-      'Introduce el código de sitio de 8 caracteres';
+  String get joinSiteCodeLabel => 'Introduce el código de 8 caracteres';
 
   @override
-  String get siteCodeEmptyError => 'El código del sitio no puede estar vacío';
+  String get siteCodeEmptyError => 'El código no puede estar vacío';
 
   @override
-  String get siteCodeLengthError =>
-      'El código del sitio debe tener 8 caracteres';
+  String get siteCodeLengthError => 'El código debe tener 8 caracteres';
 
   @override
-  String get leaveSiteTooltip => 'Abandonar sitio';
+  String get leaveSiteTooltip => 'Abandonar';
 
   @override
-  String get removeSiteTitle => 'Eliminar sitio';
+  String get removeSiteTitle => 'Eliminar';
 
   @override
   String get leaveSiteConfirmation =>
-      '¿Abandonar el sitio? Solo un administrador puede agregarte de nuevo.';
+      '¿Abandonar? Solo un administrador puede agregarte de nuevo.';
 
   @override
   String get updateTermsTitle => 'Actualizar términos';
@@ -264,14 +261,14 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get noTermsAvailable => 'No hay términos disponibles.';
 
   @override
-  String get initializeDataStoreTitle => 'Initialize the Data Store';
+  String get initializeDataStoreTitle => 'Inicializar el Almacén de Datos';
 
   @override
   String get errorTodo => 'Error: pendiente';
 
   @override
   String get initializeDataStoreBody =>
-      'The data store is empty. Create the first service admin in order to initialize the system.';
+      'El almacén de datos está vacío. Crea al primer administrador del servicio para inicializar el sistema.';
 
   @override
   String get successfullySubmittedTodo =>
@@ -295,7 +292,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get permissionDenied => 'No tienes permiso para realizar esta acción.';
 
   @override
-  String get removedFromSite => 'Has sido eliminado de este sitio.';
+  String get removedFromSite => 'Has sido eliminado.';
 
   @override
   String get addMemberTitle => 'Agregar miembro';
@@ -314,35 +311,34 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get administratorLabel => 'Administrador';
 
   @override
-  String get emailExistsError => 'El correo electrónico ya existe en el sitio';
+  String get emailExistsError => 'El correo electrónico ya existe.';
 
   @override
-  String get renameSiteTitle => 'Renombrar sitio';
+  String get renameSiteTitle => 'Renombrar';
 
   @override
-  String get manageSiteMembers => 'Gestionar Miembros del Sitio';
+  String get manageSiteMembers => 'Miembros';
 
   @override
-  String get showSiteEventsState => 'Mostrar Eventos y Estado del Sitio';
+  String get showSiteEventsState => 'Mostrar eventos y estado';
 
   @override
-  String get showSiteAllowedEmails => 'Mostrar Correos Permitidos del Sitio';
+  String get showSiteAllowedEmails => 'Correos permitidos';
 
   @override
-  String get siteSettingsTitle => 'Configuración del Sitio';
+  String get siteSettingsTitle => 'Configuración';
 
   @override
-  String get newSiteNameLabel => 'Nuevo nombre del sitio';
+  String get newSiteNameLabel => 'Nuevo nombre';
 
   @override
-  String get siteEmailsTitle =>
-      'Correos electrónicos del sitio (base de datos)';
+  String get siteEmailsTitle => 'Correos del hub (base de datos)';
 
   @override
-  String get siteEventsTitle => 'Eventos del sitio (base de datos)';
+  String get siteEventsTitle => 'Eventos del hub (base de datos)';
 
   @override
-  String get siteStateTitle => 'Estado del sitio (reproducción local)';
+  String get siteStateTitle => 'Estado del hub (reproducción local)';
 
   @override
   String get membersTitle => 'Miembros';
@@ -459,7 +455,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
 
   @override
   String get cannotRemoveAccountContent =>
-      'Debes abandonar todos los sitios antes de poder eliminar tu cuenta.';
+      'Debes abandonar todos los hubs antes de poder eliminar tu cuenta.';
 
   @override
   String get cannotChangeEmailWhenOnlyAdminError =>
@@ -469,10 +465,10 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get okButton => 'Aceptar';
 
   @override
-  String get copySiteIdTooltip => 'Copiar ID del sitio';
+  String get copySiteIdTooltip => 'Copiar ID';
 
   @override
-  String get siteIdCopied => 'ID del sitio copiado al portapapeles';
+  String get siteIdCopied => 'ID copiado al portapapeles';
 
   @override
   String get and => 'y';
@@ -534,7 +530,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get loadingEllipsis => '...';
 
   @override
-  String get loginDismissSnackbar => 'Descartar';
+  String get loginDismissSnackbar => 'Cerrar';
 
   @override
   String get passwordEmptyError => 'La contraseña no puede estar vacía.';
@@ -549,21 +545,21 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get noEventsFound => 'No se encontraron eventos.';
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Copiar';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Copiar';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Confirmar copia';
 
   @override
   String get copySiteConfirmMessage =>
-      'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.';
+      'Copiar creará un hub privado duplicado para ti. Ten en cuenta que copiar archivos multimedia puede llevar tiempo. Podrás editar el nombre y añadir miembros una vez completada la copia.';
 
   @override
   String errorAssigningUser(String error) {
-    return 'Error assigning user: $error';
+    return 'Error al asignar usuario: $error';
   }
 
   @override
@@ -618,7 +614,7 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get openSourceLicensesTitle => 'Paquetes de código abierto';
 
   @override
-  String get siteInfoTitle => 'Información del sitio';
+  String get siteInfoTitle => 'Información';
 
   @override
   String get siteEventCount => 'Cantidad de eventos';
@@ -662,58 +658,58 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   }
 
   @override
-  String get siteFileCount => 'File Count';
+  String get siteFileCount => 'Cantidad de archivos';
 
   @override
-  String get siteTotalFileSize => 'Total File Size';
+  String get siteTotalFileSize => 'Tamaño total de archivos';
 
   @override
-  String get errorFetchingFiles => 'Error fetching files';
+  String get errorFetchingFiles => 'Error al obtener archivos';
 
   @override
   String get refresh => 'Refrescar';
 
   @override
   String eventSiteCreated(String siteName) {
-    return 'Site Created: $siteName';
+    return 'Creado: $siteName';
   }
 
   @override
   String eventAddedMember(String memberName) {
-    return 'Added Member: $memberName';
+    return 'Miembro añadido: $memberName';
   }
 
   @override
   String eventRenamedSite(String siteName) {
-    return 'Renamed Site: $siteName';
+    return 'Bautizado: $siteName';
   }
 
   @override
   String eventRemovedMember(int memberId) {
-    return 'Removed Member: $memberId';
+    return 'Miembro eliminado: $memberId';
   }
 
   @override
   String eventMemberLeft(int memberId) {
-    return 'Member Left: $memberId';
+    return 'Miembro abandonó: $memberId';
   }
 
   @override
   String eventRestoredMember(String memberName) {
-    return 'Restored Member: $memberName';
+    return 'Miembro restaurado: $memberName';
   }
 
   @override
   String eventUpdatedMember(String memberName) {
-    return 'Updated Member: $memberName';
+    return 'Miembro actualizado: $memberName';
   }
 
   @override
-  String get eventSiteCopied => 'Site Copied/Imported';
+  String get eventSiteCopied => 'Copiado/Importado';
 
   @override
-  String get eventAppSpecific => 'App specific event';
+  String get eventAppSpecific => 'Evento específico de la aplicación';
 
   @override
-  String get eventUnknown => 'Unknown Event';
+  String get eventUnknown => 'Evento desconocido';
 }

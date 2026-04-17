@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @app_adminPrivileges.
   ///
   /// In en, this message translates to:
-  /// **'You have admin privileges for this site.'**
+  /// **'You have admin privileges for this hub.'**
   String get app_adminPrivileges;
 
   /// No description provided for @app_howToProceed.
@@ -173,13 +173,13 @@ abstract class AppLocalizations {
   /// No description provided for @app_viewSite.
   ///
   /// In en, this message translates to:
-  /// **'View Site'**
+  /// **'View'**
   String get app_viewSite;
 
   /// No description provided for @app_editSite.
   ///
   /// In en, this message translates to:
-  /// **'Edit Site'**
+  /// **'Edit'**
   String get app_editSite;
 
   /// No description provided for @app_eventUpdateText.

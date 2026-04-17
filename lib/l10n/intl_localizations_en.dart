@@ -77,10 +77,10 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   }
 
   @override
-  String get sites => 'Sites';
+  String get sites => 'Hubs';
 
   @override
-  String get noSites => 'no sites';
+  String get noSites => 'no hubs';
 
   @override
   String get initializingAccountTitle => 'Initializing Account';
@@ -95,10 +95,10 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get accountSettingsTitle => 'Account Settings';
 
   @override
-  String get manageSitesTitle => 'Leave Site';
+  String get manageSitesTitle => 'Leave';
 
   @override
-  String get reorderSitesTitle => 'Reorder Sites';
+  String get reorderSitesTitle => 'Reorder';
 
   @override
   String get removeAccountTitle => 'Remove Account';
@@ -116,10 +116,10 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get cancelButton => 'Cancel';
 
   @override
-  String get createSiteTitle => 'Create Site';
+  String get createSiteTitle => 'Create Hub';
 
   @override
-  String get joinSiteTitle => 'Join Site';
+  String get joinSiteTitle => 'Join Hub';
 
   @override
   String get unimplementedTitle => 'Unimplemented';
@@ -128,16 +128,16 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get toBeImplemented => 'Coming Soon!';
 
   @override
-  String get siteNameLabel => 'Site Name';
+  String get siteNameLabel => 'Name';
 
   @override
-  String get siteNameEmptyError => 'Site name cannot be empty';
+  String get siteNameEmptyError => 'Name cannot be empty';
 
   @override
   String get userNameLabel => 'User Name';
 
   @override
-  String get userNameEmptyError => 'Site user name cannot be empty';
+  String get userNameEmptyError => 'User name cannot be empty';
 
   @override
   String get pasteCodeTooltip => 'Paste Code';
@@ -146,23 +146,22 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get backspaceTooltip => 'Backspace';
 
   @override
-  String get joinSiteCodeLabel => 'Enter 8-character Site Code';
+  String get joinSiteCodeLabel => 'Enter 8-character Code';
 
   @override
-  String get siteCodeEmptyError => 'Site code cannot be empty';
+  String get siteCodeEmptyError => 'Code cannot be empty';
 
   @override
-  String get siteCodeLengthError => 'Site code must be 8 characters long';
+  String get siteCodeLengthError => 'Code must be 8 characters long';
 
   @override
-  String get leaveSiteTooltip => 'Leave Site';
+  String get leaveSiteTooltip => 'Leave';
 
   @override
-  String get removeSiteTitle => 'Remove Site';
+  String get removeSiteTitle => 'Remove';
 
   @override
-  String get leaveSiteConfirmation =>
-      'Leave Site? Only an admin can add you back.';
+  String get leaveSiteConfirmation => 'Leave? Only an admin can add you back.';
 
   @override
   String get updateTermsTitle => 'Update Terms';
@@ -287,7 +286,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
       'You do not have permission to perform this action.';
 
   @override
-  String get removedFromSite => 'You have been removed from this site.';
+  String get removedFromSite => 'You have been removed.';
 
   @override
   String get addMemberTitle => 'Add Member';
@@ -305,34 +304,34 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get administratorLabel => 'Administrator';
 
   @override
-  String get emailExistsError => 'Email already exists in the site';
+  String get emailExistsError => 'Email already exists.';
 
   @override
-  String get renameSiteTitle => 'Rename Site';
+  String get renameSiteTitle => 'Rename';
 
   @override
-  String get manageSiteMembers => 'Manage Site Members';
+  String get manageSiteMembers => 'Members';
 
   @override
-  String get showSiteEventsState => 'Show Site Events & State';
+  String get showSiteEventsState => 'Show Events & State';
 
   @override
-  String get showSiteAllowedEmails => 'Show Site Allowed Emails';
+  String get showSiteAllowedEmails => 'Allowed Emails';
 
   @override
-  String get siteSettingsTitle => 'Site Settings';
+  String get siteSettingsTitle => 'Settings';
 
   @override
-  String get newSiteNameLabel => 'New Site Name';
+  String get newSiteNameLabel => 'New Name';
 
   @override
-  String get siteEmailsTitle => 'Site Emails (database)';
+  String get siteEmailsTitle => 'Hub Emails (database)';
 
   @override
-  String get siteEventsTitle => 'Site Events (database)';
+  String get siteEventsTitle => 'Hub Events (database)';
 
   @override
-  String get siteStateTitle => 'Site State (local replay)';
+  String get siteStateTitle => 'Hub State (local replay)';
 
   @override
   String get membersTitle => 'Members';
@@ -447,7 +446,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String get cannotRemoveAccountContent =>
-      'You must leave all sites before you can remove your account.';
+      'You must leave all hubs before you can remove your account.';
 
   @override
   String get cannotChangeEmailWhenOnlyAdminError =>
@@ -457,10 +456,10 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get okButton => 'OK';
 
   @override
-  String get copySiteIdTooltip => 'Copy Site ID';
+  String get copySiteIdTooltip => 'Copy ID';
 
   @override
-  String get siteIdCopied => 'Site ID copied to clipboard';
+  String get siteIdCopied => 'ID copied to clipboard';
 
   @override
   String get and => '&';
@@ -536,17 +535,17 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get noEventsFound => 'No events found.';
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Copy';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Copy';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Copy Confirmation';
 
   @override
   String get copySiteConfirmMessage =>
-      'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.';
+      'Copying will create a private duplicate hub for you. Note that copying over the media files might take some time. You can edit the new name and add members once the copy is complete.';
 
   @override
   String errorAssigningUser(String error) {
@@ -605,7 +604,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   String get openSourceLicensesTitle => 'Open Source Packages';
 
   @override
-  String get siteInfoTitle => 'Site Info';
+  String get siteInfoTitle => 'Info';
 
   @override
   String get siteEventCount => 'Event Count';
@@ -662,7 +661,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String eventSiteCreated(String siteName) {
-    return 'Site Created: $siteName';
+    return 'Created: $siteName';
   }
 
   @override
@@ -672,7 +671,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
 
   @override
   String eventRenamedSite(String siteName) {
-    return 'Renamed Site: $siteName';
+    return 'Renamed: $siteName';
   }
 
   @override
@@ -696,7 +695,7 @@ class HyttaHubLocalizationsEn extends HyttaHubLocalizations {
   }
 
   @override
-  String get eventSiteCopied => 'Site Copied/Imported';
+  String get eventSiteCopied => 'Copied/Imported';
 
   @override
   String get eventAppSpecific => 'App specific event';

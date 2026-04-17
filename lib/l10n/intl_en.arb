@@ -30,35 +30,35 @@
       }
     }
   },
-  "sites": "Sites",
-  "noSites": "no sites",
+  "sites": "Hubs",
+  "noSites": "no hubs",
   "initializingAccountTitle": "Initializing Account",
   "serviceCreateAccountTitle": "Service Create Account",
   "serviceLoginTitle": "Service Login",
   "accountSettingsTitle": "Account Settings",
-  "manageSitesTitle": "Leave Site",
-  "reorderSitesTitle": "Reorder Sites",
+  "manageSitesTitle": "Leave",
+  "reorderSitesTitle": "Reorder",
   "removeAccountTitle": "Remove Account",
   "logout": "Logout",
   "logoutDialogTitle": "Logout?",
   "logoutDialogMessage": "Are you sure you want to log out?",
   "cancelButton": "Cancel",
-  "createSiteTitle": "Create Site",
-  "joinSiteTitle": "Join Site",
+  "createSiteTitle": "Create Hub",
+  "joinSiteTitle": "Join Hub",
   "unimplementedTitle": "Unimplemented",
   "toBeImplemented": "Coming Soon!",
-  "siteNameLabel": "Site Name",
-  "siteNameEmptyError": "Site name cannot be empty",
+  "siteNameLabel": "Name",
+  "siteNameEmptyError": "Name cannot be empty",
   "userNameLabel": "User Name",
-  "userNameEmptyError": "Site user name cannot be empty",
+  "userNameEmptyError": "User name cannot be empty",
   "pasteCodeTooltip": "Paste Code",
   "backspaceTooltip": "Backspace",
-  "joinSiteCodeLabel": "Enter 8-character Site Code",
-  "siteCodeEmptyError": "Site code cannot be empty",
-  "siteCodeLengthError": "Site code must be 8 characters long",
-  "leaveSiteTooltip": "Leave Site",
-  "removeSiteTitle": "Remove Site",
-  "leaveSiteConfirmation": "Leave Site? Only an admin can add you back.",
+  "joinSiteCodeLabel": "Enter 8-character Code",
+  "siteCodeEmptyError": "Code cannot be empty",
+  "siteCodeLengthError": "Code must be 8 characters long",
+  "leaveSiteTooltip": "Leave",
+  "removeSiteTitle": "Remove",
+  "leaveSiteConfirmation": "Leave? Only an admin can add you back.",
   "updateTermsTitle": "Update Terms",
   "viewTerms": "View Terms",
   "viewPrivacyPolicy": "View Privacy Policy",
@@ -97,22 +97,22 @@
   "errorTitle": "Error",
   "unexpectedError": "Unexpected error, check internet, go back and try again",
   "permissionDenied": "You do not have permission to perform this action.",
-  "removedFromSite": "You have been removed from this site.",
+  "removedFromSite": "You have been removed.",
   "addMemberTitle": "Add Member",
   "memberNameLabel": "Member Name",
   "memberNameEmptyError": "Member name cannot be empty",
   "memberNameExistsError": "Member name already exists",
   "administratorLabel": "Administrator",
-  "emailExistsError": "Email already exists in the site",
-  "renameSiteTitle": "Rename Site",
-  "manageSiteMembers": "Manage Site Members",
-  "showSiteEventsState": "Show Site Events & State",
-  "showSiteAllowedEmails": "Show Site Allowed Emails",
-  "siteSettingsTitle": "Site Settings",
-  "newSiteNameLabel": "New Site Name",
-  "siteEmailsTitle": "Site Emails (database)",
-  "siteEventsTitle": "Site Events (database)",
-  "siteStateTitle": "Site State (local replay)",
+  "emailExistsError": "Email already exists.",
+  "renameSiteTitle": "Rename",
+  "manageSiteMembers": "Members",
+  "showSiteEventsState": "Show Events & State",
+  "showSiteAllowedEmails": "Allowed Emails",
+  "siteSettingsTitle": "Settings",
+  "newSiteNameLabel": "New Name",
+  "siteEmailsTitle": "Hub Emails (database)",
+  "siteEventsTitle": "Hub Events (database)",
+  "siteStateTitle": "Hub State (local replay)",
   "membersTitle": "Members",
   "serviceSettingsTitle": "Service Settings",
   "termsOfServiceContentLabel": "Terms of Service Content",
@@ -154,11 +154,11 @@
   "restoreAdminTitle": "Restore Admin",
   "removeAccountConfirmation": "Remove Account? This action cannot be undone.",
   "cannotRemoveAccountTitle": "Cannot Remove Account",
-  "cannotRemoveAccountContent": "You must leave all sites before you can remove your account.",
+  "cannotRemoveAccountContent": "You must leave all hubs before you can remove your account.",
   "cannotChangeEmailWhenOnlyAdminError": "Cannot change your email when you are the only admin.",
   "okButton": "OK",
-  "copySiteIdTooltip": "Copy Site ID",
-  "siteIdCopied": "Site ID copied to clipboard",
+  "copySiteIdTooltip": "Copy ID",
+  "siteIdCopied": "ID copied to clipboard",
   "and": "&",
   "mustAgreeToTermsError": "You must agree to the terms.",
   "mustAgreeToPrivacyPolicyError": "You must agree to the privacy policy.",
@@ -202,21 +202,21 @@
   "passwordTooLongError": "Password is too long.",
   "noEventsFound": "No events found.",
 
-  "copySiteTitle": "Copy Site",
+  "copySiteTitle": "Copy",
   "@copySiteTitle": {
-    "description": "Title for the Copy Site dialog option."
+    "description": "Title for the Copy dialog option."
   },
-  "copySiteTooltip": "Copy Site",
+  "copySiteTooltip": "Copy",
   "@copySiteTooltip": {
-    "description": "Tooltip for the copy site button."
+    "description": "Tooltip for the copy button."
   },
-  "copySiteConfirmTitle": "Copy Site Confirmation",
+  "copySiteConfirmTitle": "Copy Confirmation",
   "@copySiteConfirmTitle": {
-    "description": "Title for the copy site confirmation screen."
+    "description": "Title for the copy confirmation screen."
   },
-  "copySiteConfirmMessage": "Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.",
+  "copySiteConfirmMessage": "Copying will create a private duplicate hub for you. Note that copying over the media files might take some time. You can edit the new name and add members once the copy is complete.",
   "@copySiteConfirmMessage": {
-    "description": "Message for the copy site confirmation."
+    "description": "Message for the copy confirmation."
   },
   "errorAssigningUser": "Error assigning user: {error}",
   "@errorAssigningUser": {
@@ -249,7 +249,7 @@
     "description": "Button label to refresh the browser page."
   },
   "openSourceLicensesTitle": "Open Source Packages",
-  "siteInfoTitle": "Site Info",
+  "siteInfoTitle": "Info",
   "siteEventCount": "Event Count",
   "siteTotalSize": "Total Size",
   "bytesLabel": "{size} bytes",
@@ -291,7 +291,7 @@
   "siteTotalFileSize": "Total File Size",
   "errorFetchingFiles": "Error fetching files",
   "refresh": "Refresh",
-  "eventSiteCreated": "Site Created: {siteName}",
+  "eventSiteCreated": "Created: {siteName}",
   "@eventSiteCreated": {
     "placeholders": {
       "siteName": {
@@ -307,7 +307,7 @@
       }
     }
   },
-  "eventRenamedSite": "Renamed Site: {siteName}",
+  "eventRenamedSite": "Renamed: {siteName}",
   "@eventRenamedSite": {
     "placeholders": {
       "siteName": {
@@ -347,7 +347,7 @@
       }
     }
   },
-  "eventSiteCopied": "Site Copied/Imported",
+  "eventSiteCopied": "Copied/Imported",
   "eventAppSpecific": "App specific event",
   "eventUnknown": "Unknown Event"
 }

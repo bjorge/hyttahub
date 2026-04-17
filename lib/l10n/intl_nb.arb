@@ -30,35 +30,35 @@
       }
     }
   },
-  "sites": "Nettsteder",
-  "noSites": "ingen nettsteder",
+  "sites": "Huber",
+  "noSites": "ingen huber",
   "initializingAccountTitle": "Initialiserer konto",
   "serviceCreateAccountTitle": "Opprett tjenestekonto",
   "serviceLoginTitle": "Tjenestepålogging",
   "accountSettingsTitle": "Kontoinnstillinger",
-  "manageSitesTitle": "Forlat sted",
+  "manageSitesTitle": "Forlat",
   "reorderSitesTitle": "Endre rekkefølge",
   "removeAccountTitle": "Fjern konto",
   "logout": "Logg ut",
   "logoutDialogTitle": "Logg ut?",
   "logoutDialogMessage": "Er du sikker på at du vil logge ut?",
   "cancelButton": "Avbryt",
-  "createSiteTitle": "Opprett sted",
-  "joinSiteTitle": "Bli med i et sted",
+  "createSiteTitle": "Opprett hub",
+  "joinSiteTitle": "Bli med i en hub",
   "unimplementedTitle": "Ikke implementert",
   "toBeImplemented": "Kommer snart!",
-  "siteNameLabel": "Stedsnavn",
-  "siteNameEmptyError": "Stedsnavn kan ikke være tomt",
+  "siteNameLabel": "Navn",
+  "siteNameEmptyError": "Navn kan ikke være tomt",
   "userNameLabel": "Brukernavn",
   "userNameEmptyError": "Brukernavn kan ikke være tomt",
   "pasteCodeTooltip": "Lim inn kode",
   "backspaceTooltip": "Tilbake",
-  "joinSiteCodeLabel": "Skriv inn 8-tegns stedskode",
-  "siteCodeEmptyError": "Stedskode kan ikke være tom",
-  "siteCodeLengthError": "Stedskode må være 8 tegn lang",
-  "leaveSiteTooltip": "Forlat stedet",
-  "removeSiteTitle": "Fjern sted",
-  "leaveSiteConfirmation": "Forlate stedet? Kun en administrator kan legge deg til igjen.",
+  "joinSiteCodeLabel": "Oppgi 8-tegns kode",
+  "siteCodeEmptyError": "Koden kan ikke være tom",
+  "siteCodeLengthError": "Koden må være 8 tegn lang",
+  "leaveSiteTooltip": "Forlat",
+  "removeSiteTitle": "Fjern",
+  "leaveSiteConfirmation": "Forlate? Kun en administrator kan legge deg til igjen.",
   "updateTermsTitle": "Oppdater vilkår",
   "viewTerms": "Vis vilkår",
   "viewPrivacyPolicy": "Vis personvernreglene",
@@ -88,31 +88,31 @@
   "noPrivacyPolicyAvailable": "Ingen personvernpolicy tilgjengelig.",
   "termsOfServiceTitle": "Vilkår for bruk",
   "noTermsAvailable": "Ingen vilkår tilgjengelig.",
-  "initializeDataStoreTitle": "Initialize the Data Store",
+  "initializeDataStoreTitle": "Initialiser Datastore",
   "errorTodo": "Feil: todo",
-  "initializeDataStoreBody": "The data store is empty. Create the first service admin in order to initialize the system.",
+  "initializeDataStoreBody": "Datastoret er tomt. Opprett den første tjenesteadministratoren for å initialisere systemet.",
   "successfullySubmittedTodo": "Sendt inn vellykket. TODO: grå ut feltene",
   "errorSubmittingForm": "Feil ved innsending av skjema",
   "disallowedCharactersError": "Tegnene '[' og ']' er ikke tillatt",
   "errorTitle": "Feil",
   "unexpectedError": "Uventet feil, sjekk internett, gå tilbake og prøv igjen",
   "permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen.",
-  "removedFromSite": "Du har blitt fjernet fra dette nettstedet.",
+  "removedFromSite": "Du har blitt fjernet.",
   "addMemberTitle": "Legg til medlem",
   "memberNameLabel": "Medlemsnavn",
   "memberNameEmptyError": "Medlemsnavn kan ikke være tomt",
   "memberNameExistsError": "Medlemsnavn finnes allerede",
   "administratorLabel": "Administrator",
-  "emailExistsError": "E-post finnes allerede på stedet",
-  "renameSiteTitle": "Gi nytt navn til sted",
-  "manageSiteMembers": "Administrer stedets medlemmer",
-  "showSiteEventsState": "Vis stedhendelser og tilstand",
-  "showSiteAllowedEmails": "Vis stedets tillatte e-poster",
-  "siteSettingsTitle": "Stedsinnstillinger",
-  "newSiteNameLabel": "Nytt stedsnavn",
-  "siteEmailsTitle": "Stedets e-poster (database)",
-  "siteEventsTitle": "Stedhendelser (database)",
-  "siteStateTitle": "Stedtilstand (lokal avspilling)",
+  "emailExistsError": "E-post finnes allerede.",
+  "renameSiteTitle": "Endre navn",
+  "manageSiteMembers": "Medlemmer",
+  "showSiteEventsState": "Hendelser og tilstand",
+  "showSiteAllowedEmails": "Tillatte e-poster",
+  "siteSettingsTitle": "Innstillinger",
+  "newSiteNameLabel": "Nytt navn",
+  "siteEmailsTitle": "Hub e-poster (database)",
+  "siteEventsTitle": "Hub hendelser (database)",
+  "siteStateTitle": "Hub tilstand (lokal avspilling)",
   "membersTitle": "Medlemmer",
   "serviceSettingsTitle": "Tjenesteinnstillinger",
   "termsOfServiceContentLabel": "Innhold i tjenestevilkårene",
@@ -127,7 +127,7 @@
   "betaUserEmailsLabel": "E-postadresser for betabrukere",
   "aliasLabel": "Alias",
   "nicknameEmptyError": "Kallenavn kan ikke være tomt",
-  "adminAliasExistsError": "Administratoralias finnes allerede",
+  "adminAliasExistsError": "Administratoralias finnes already",
   "failedToLoadEmails": "Kunne ikke laste inn e-poster.",
   "permissionDeniedViewList": "Du har ikke tillatelse til å se denne listen.",
   "noEmailsFound": "Ingen e-poster funnet.",
@@ -154,11 +154,11 @@
   "restoreAdminTitle": "Gjenopprett administrator",
   "removeAccountConfirmation": "Fjerne konto? Denne handlingen kan ikke angres.",
   "cannotRemoveAccountTitle": "Kan ikke fjerne konto",
-  "cannotRemoveAccountContent": "Du må forlate alle steder før du kan fjerne kontoen din.",
+  "cannotRemoveAccountContent": "Du må forlate alle huber før du kan fjerne kontoen din.",
   "cannotChangeEmailWhenOnlyAdminError": "Du kan ikke endre e-posten din når du er den eneste administratoren.",
   "okButton": "OK",
-  "copySiteIdTooltip": "Kopier sted-ID",
-  "siteIdCopied": "Sted-ID kopiert til utklippstavlen",
+  "copySiteIdTooltip": "Kopier ID",
+  "siteIdCopied": "ID kopiert til utklippstavlen",
   "and": "&",
   "mustAgreeToTermsError": "Du må godta vilkårene.",
   "mustAgreeToPrivacyPolicyError": "Du må godta personvernpolicyen.",
@@ -218,7 +218,7 @@
   "clearLocalStorageButton": "Tøm all lokal lagring",
   "refreshBrowserButton": "Last inn siden på nytt",
   "openSourceLicensesTitle": "Open Source-pakker",
-  "siteInfoTitle": "Sideinformasjon",
+  "siteInfoTitle": "Info",
   "siteEventCount": "Antall hendelser",
   "siteTotalSize": "Total størrelse",
   "bytesLabel": "{size} byte",
@@ -259,5 +259,88 @@
   "siteFileCount": "Antall filer",
   "siteTotalFileSize": "Total filstørrelse",
   "errorFetchingFiles": "Feil ved henting av filer",
-  "refresh": "Oppdater"
+  "refresh": "Oppdater",
+  "copySiteTitle": "Kopier",
+  "@copySiteTitle": {
+    "description": "Tittel for kopieringsvalg."
+  },
+  "copySiteTooltip": "Kopier",
+  "@copySiteTooltip": {
+    "description": "Verktøyhint for kopieringsknapp."
+  },
+  "copySiteConfirmTitle": "Bekreft kopiering",
+  "@copySiteConfirmTitle": {
+    "description": "Tittel for bekreftelsesskjerm for kopiering."
+  },
+  "copySiteConfirmMessage": "Kopiering vil opprette en privat kopi for deg. Merk at kopiering av mediefiler kan ta tid. Du kan endre navnet og legge til medlemmer når kopieringen er ferdig.",
+  "@copySiteConfirmMessage": {
+    "description": "Melding for bekreftelse av kopiering."
+  },
+  "errorAssigningUser": "Feil ved tildeling av bruker: {error}",
+  "@errorAssigningUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCreated": "Opprettet: {siteName}",
+  "@eventSiteCreated": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventAddedMember": "La til medlem: {memberName}",
+  "@eventAddedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRenamedSite": "Endret navn: {siteName}",
+  "@eventRenamedSite": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRemovedMember": "Fjernet medlem: {memberId}",
+  "@eventRemovedMember": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventMemberLeft": "Medlem forlot: {memberId}",
+  "@eventMemberLeft": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventRestoredMember": "Gjenopprettet medlem: {memberName}",
+  "@eventRestoredMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventUpdatedMember": "Oppdatert medlem: {memberName}",
+  "@eventUpdatedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCopied": "Kopiert/Importert",
+  "eventAppSpecific": "Appspesifikk hendelse",
+  "eventUnknown": "Ukjent hendelse"
 }

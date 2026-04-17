@@ -230,13 +230,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @sites.
   ///
   /// In en, this message translates to:
-  /// **'Sites'**
+  /// **'Hubs'**
   String get sites;
 
   /// No description provided for @noSites.
   ///
   /// In en, this message translates to:
-  /// **'no sites'**
+  /// **'no hubs'**
   String get noSites;
 
   /// No description provided for @initializingAccountTitle.
@@ -266,13 +266,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @manageSitesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Leave Site'**
+  /// **'Leave'**
   String get manageSitesTitle;
 
   /// No description provided for @reorderSitesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Reorder Sites'**
+  /// **'Reorder'**
   String get reorderSitesTitle;
 
   /// No description provided for @removeAccountTitle.
@@ -308,13 +308,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @createSiteTitle.
   ///
   /// In en, this message translates to:
-  /// **'Create Site'**
+  /// **'Create Hub'**
   String get createSiteTitle;
 
   /// No description provided for @joinSiteTitle.
   ///
   /// In en, this message translates to:
-  /// **'Join Site'**
+  /// **'Join Hub'**
   String get joinSiteTitle;
 
   /// No description provided for @unimplementedTitle.
@@ -332,13 +332,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @siteNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Site Name'**
+  /// **'Name'**
   String get siteNameLabel;
 
   /// No description provided for @siteNameEmptyError.
   ///
   /// In en, this message translates to:
-  /// **'Site name cannot be empty'**
+  /// **'Name cannot be empty'**
   String get siteNameEmptyError;
 
   /// No description provided for @userNameLabel.
@@ -350,7 +350,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @userNameEmptyError.
   ///
   /// In en, this message translates to:
-  /// **'Site user name cannot be empty'**
+  /// **'User name cannot be empty'**
   String get userNameEmptyError;
 
   /// No description provided for @pasteCodeTooltip.
@@ -368,37 +368,37 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @joinSiteCodeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Enter 8-character Site Code'**
+  /// **'Enter 8-character Code'**
   String get joinSiteCodeLabel;
 
   /// No description provided for @siteCodeEmptyError.
   ///
   /// In en, this message translates to:
-  /// **'Site code cannot be empty'**
+  /// **'Code cannot be empty'**
   String get siteCodeEmptyError;
 
   /// No description provided for @siteCodeLengthError.
   ///
   /// In en, this message translates to:
-  /// **'Site code must be 8 characters long'**
+  /// **'Code must be 8 characters long'**
   String get siteCodeLengthError;
 
   /// No description provided for @leaveSiteTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Leave Site'**
+  /// **'Leave'**
   String get leaveSiteTooltip;
 
   /// No description provided for @removeSiteTitle.
   ///
   /// In en, this message translates to:
-  /// **'Remove Site'**
+  /// **'Remove'**
   String get removeSiteTitle;
 
   /// No description provided for @leaveSiteConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Leave Site? Only an admin can add you back.'**
+  /// **'Leave? Only an admin can add you back.'**
   String get leaveSiteConfirmation;
 
   /// No description provided for @updateTermsTitle.
@@ -632,7 +632,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @removedFromSite.
   ///
   /// In en, this message translates to:
-  /// **'You have been removed from this site.'**
+  /// **'You have been removed.'**
   String get removedFromSite;
 
   /// No description provided for @addMemberTitle.
@@ -668,61 +668,61 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @emailExistsError.
   ///
   /// In en, this message translates to:
-  /// **'Email already exists in the site'**
+  /// **'Email already exists.'**
   String get emailExistsError;
 
   /// No description provided for @renameSiteTitle.
   ///
   /// In en, this message translates to:
-  /// **'Rename Site'**
+  /// **'Rename'**
   String get renameSiteTitle;
 
   /// No description provided for @manageSiteMembers.
   ///
   /// In en, this message translates to:
-  /// **'Manage Site Members'**
+  /// **'Members'**
   String get manageSiteMembers;
 
   /// No description provided for @showSiteEventsState.
   ///
   /// In en, this message translates to:
-  /// **'Show Site Events & State'**
+  /// **'Show Events & State'**
   String get showSiteEventsState;
 
   /// No description provided for @showSiteAllowedEmails.
   ///
   /// In en, this message translates to:
-  /// **'Show Site Allowed Emails'**
+  /// **'Allowed Emails'**
   String get showSiteAllowedEmails;
 
   /// No description provided for @siteSettingsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Site Settings'**
+  /// **'Settings'**
   String get siteSettingsTitle;
 
   /// No description provided for @newSiteNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'New Site Name'**
+  /// **'New Name'**
   String get newSiteNameLabel;
 
   /// No description provided for @siteEmailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Site Emails (database)'**
+  /// **'Hub Emails (database)'**
   String get siteEmailsTitle;
 
   /// No description provided for @siteEventsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Site Events (database)'**
+  /// **'Hub Events (database)'**
   String get siteEventsTitle;
 
   /// No description provided for @siteStateTitle.
   ///
   /// In en, this message translates to:
-  /// **'Site State (local replay)'**
+  /// **'Hub State (local replay)'**
   String get siteStateTitle;
 
   /// No description provided for @membersTitle.
@@ -932,7 +932,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @cannotRemoveAccountContent.
   ///
   /// In en, this message translates to:
-  /// **'You must leave all sites before you can remove your account.'**
+  /// **'You must leave all hubs before you can remove your account.'**
   String get cannotRemoveAccountContent;
 
   /// No description provided for @cannotChangeEmailWhenOnlyAdminError.
@@ -950,13 +950,13 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @copySiteIdTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Copy Site ID'**
+  /// **'Copy ID'**
   String get copySiteIdTooltip;
 
   /// No description provided for @siteIdCopied.
   ///
   /// In en, this message translates to:
-  /// **'Site ID copied to clipboard'**
+  /// **'ID copied to clipboard'**
   String get siteIdCopied;
 
   /// No description provided for @and.
@@ -1085,28 +1085,28 @@ abstract class HyttaHubLocalizations {
   /// **'No events found.'**
   String get noEventsFound;
 
-  /// Title for the Copy Site dialog option.
+  /// Title for the Copy dialog option.
   ///
   /// In en, this message translates to:
-  /// **'Copy Site'**
+  /// **'Copy'**
   String get copySiteTitle;
 
-  /// Tooltip for the copy site button.
+  /// Tooltip for the copy button.
   ///
   /// In en, this message translates to:
-  /// **'Copy Site'**
+  /// **'Copy'**
   String get copySiteTooltip;
 
-  /// Title for the copy site confirmation screen.
+  /// Title for the copy confirmation screen.
   ///
   /// In en, this message translates to:
-  /// **'Copy Site Confirmation'**
+  /// **'Copy Confirmation'**
   String get copySiteConfirmTitle;
 
-  /// Message for the copy site confirmation.
+  /// Message for the copy confirmation.
   ///
   /// In en, this message translates to:
-  /// **'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.'**
+  /// **'Copying will create a private duplicate hub for you. Note that copying over the media files might take some time. You can edit the new name and add members once the copy is complete.'**
   String get copySiteConfirmMessage;
 
   /// No description provided for @errorAssigningUser.
@@ -1220,7 +1220,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @siteInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Site Info'**
+  /// **'Info'**
   String get siteInfoTitle;
 
   /// No description provided for @siteEventCount.
@@ -1286,7 +1286,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @eventSiteCreated.
   ///
   /// In en, this message translates to:
-  /// **'Site Created: {siteName}'**
+  /// **'Created: {siteName}'**
   String eventSiteCreated(String siteName);
 
   /// No description provided for @eventAddedMember.
@@ -1298,7 +1298,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @eventRenamedSite.
   ///
   /// In en, this message translates to:
-  /// **'Renamed Site: {siteName}'**
+  /// **'Renamed: {siteName}'**
   String eventRenamedSite(String siteName);
 
   /// No description provided for @eventRemovedMember.
@@ -1328,7 +1328,7 @@ abstract class HyttaHubLocalizations {
   /// No description provided for @eventSiteCopied.
   ///
   /// In en, this message translates to:
-  /// **'Site Copied/Imported'**
+  /// **'Copied/Imported'**
   String get eventSiteCopied;
 
   /// No description provided for @eventAppSpecific.

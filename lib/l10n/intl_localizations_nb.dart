@@ -78,10 +78,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   }
 
   @override
-  String get sites => 'Nettsteder';
+  String get sites => 'Huber';
 
   @override
-  String get noSites => 'ingen nettsteder';
+  String get noSites => 'ingen huber';
 
   @override
   String get initializingAccountTitle => 'Initialiserer konto';
@@ -96,7 +96,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get accountSettingsTitle => 'Kontoinnstillinger';
 
   @override
-  String get manageSitesTitle => 'Forlat sted';
+  String get manageSitesTitle => 'Forlat';
 
   @override
   String get reorderSitesTitle => 'Endre rekkefølge';
@@ -117,10 +117,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get cancelButton => 'Avbryt';
 
   @override
-  String get createSiteTitle => 'Opprett sted';
+  String get createSiteTitle => 'Opprett hub';
 
   @override
-  String get joinSiteTitle => 'Bli med i et sted';
+  String get joinSiteTitle => 'Bli med i en hub';
 
   @override
   String get unimplementedTitle => 'Ikke implementert';
@@ -129,10 +129,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get toBeImplemented => 'Kommer snart!';
 
   @override
-  String get siteNameLabel => 'Stedsnavn';
+  String get siteNameLabel => 'Navn';
 
   @override
-  String get siteNameEmptyError => 'Stedsnavn kan ikke være tomt';
+  String get siteNameEmptyError => 'Navn kan ikke være tomt';
 
   @override
   String get userNameLabel => 'Brukernavn';
@@ -147,23 +147,23 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get backspaceTooltip => 'Tilbake';
 
   @override
-  String get joinSiteCodeLabel => 'Skriv inn 8-tegns stedskode';
+  String get joinSiteCodeLabel => 'Oppgi 8-tegns kode';
 
   @override
-  String get siteCodeEmptyError => 'Stedskode kan ikke være tom';
+  String get siteCodeEmptyError => 'Koden kan ikke være tom';
 
   @override
-  String get siteCodeLengthError => 'Stedskode må være 8 tegn lang';
+  String get siteCodeLengthError => 'Koden må være 8 tegn lang';
 
   @override
-  String get leaveSiteTooltip => 'Forlat stedet';
+  String get leaveSiteTooltip => 'Forlat';
 
   @override
-  String get removeSiteTitle => 'Fjern sted';
+  String get removeSiteTitle => 'Fjern';
 
   @override
   String get leaveSiteConfirmation =>
-      'Forlate stedet? Kun en administrator kan legge deg til igjen.';
+      'Forlate? Kun en administrator kan legge deg til igjen.';
 
   @override
   String get updateTermsTitle => 'Oppdater vilkår';
@@ -256,14 +256,14 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get noTermsAvailable => 'Ingen vilkår tilgjengelig.';
 
   @override
-  String get initializeDataStoreTitle => 'Initialize the Data Store';
+  String get initializeDataStoreTitle => 'Initialiser Datastore';
 
   @override
   String get errorTodo => 'Feil: todo';
 
   @override
   String get initializeDataStoreBody =>
-      'The data store is empty. Create the first service admin in order to initialize the system.';
+      'Datastoret er tomt. Opprett den første tjenesteadministratoren for å initialisere systemet.';
 
   @override
   String get successfullySubmittedTodo =>
@@ -288,7 +288,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
       'Du har ikke tillatelse til å utføre denne handlingen.';
 
   @override
-  String get removedFromSite => 'Du har blitt fjernet fra dette nettstedet.';
+  String get removedFromSite => 'Du har blitt fjernet.';
 
   @override
   String get addMemberTitle => 'Legg til medlem';
@@ -306,34 +306,34 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get administratorLabel => 'Administrator';
 
   @override
-  String get emailExistsError => 'E-post finnes allerede på stedet';
+  String get emailExistsError => 'E-post finnes allerede.';
 
   @override
-  String get renameSiteTitle => 'Gi nytt navn til sted';
+  String get renameSiteTitle => 'Endre navn';
 
   @override
-  String get manageSiteMembers => 'Administrer stedets medlemmer';
+  String get manageSiteMembers => 'Medlemmer';
 
   @override
-  String get showSiteEventsState => 'Vis stedhendelser og tilstand';
+  String get showSiteEventsState => 'Hendelser og tilstand';
 
   @override
-  String get showSiteAllowedEmails => 'Vis stedets tillatte e-poster';
+  String get showSiteAllowedEmails => 'Tillatte e-poster';
 
   @override
-  String get siteSettingsTitle => 'Stedsinnstillinger';
+  String get siteSettingsTitle => 'Innstillinger';
 
   @override
-  String get newSiteNameLabel => 'Nytt stedsnavn';
+  String get newSiteNameLabel => 'Nytt navn';
 
   @override
-  String get siteEmailsTitle => 'Stedets e-poster (database)';
+  String get siteEmailsTitle => 'Hub e-poster (database)';
 
   @override
-  String get siteEventsTitle => 'Stedhendelser (database)';
+  String get siteEventsTitle => 'Hub hendelser (database)';
 
   @override
-  String get siteStateTitle => 'Stedtilstand (lokal avspilling)';
+  String get siteStateTitle => 'Hub tilstand (lokal avspilling)';
 
   @override
   String get membersTitle => 'Medlemmer';
@@ -382,7 +382,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get nicknameEmptyError => 'Kallenavn kan ikke være tomt';
 
   @override
-  String get adminAliasExistsError => 'Administratoralias finnes allerede';
+  String get adminAliasExistsError => 'Administratoralias finnes already';
 
   @override
   String get failedToLoadEmails => 'Kunne ikke laste inn e-poster.';
@@ -449,7 +449,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String get cannotRemoveAccountContent =>
-      'Du må forlate alle steder før du kan fjerne kontoen din.';
+      'Du må forlate alle huber før du kan fjerne kontoen din.';
 
   @override
   String get cannotChangeEmailWhenOnlyAdminError =>
@@ -459,10 +459,10 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get okButton => 'OK';
 
   @override
-  String get copySiteIdTooltip => 'Kopier sted-ID';
+  String get copySiteIdTooltip => 'Kopier ID';
 
   @override
-  String get siteIdCopied => 'Sted-ID kopiert til utklippstavlen';
+  String get siteIdCopied => 'ID kopiert til utklippstavlen';
 
   @override
   String get and => '&';
@@ -537,21 +537,21 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get noEventsFound => 'Ingen hendelser funnet.';
 
   @override
-  String get copySiteTitle => 'Copy Site';
+  String get copySiteTitle => 'Kopier';
 
   @override
-  String get copySiteTooltip => 'Copy Site';
+  String get copySiteTooltip => 'Kopier';
 
   @override
-  String get copySiteConfirmTitle => 'Copy Site Confirmation';
+  String get copySiteConfirmTitle => 'Bekreft kopiering';
 
   @override
   String get copySiteConfirmMessage =>
-      'Copying the site will create a private duplicate site for you. Note that copying over the media files might take some time. You can edit the new site name and add members once the copy is complete.';
+      'Kopiering vil opprette en privat kopi for deg. Merk at kopiering av mediefiler kan ta tid. Du kan endre navnet og legge til medlemmer når kopieringen er ferdig.';
 
   @override
   String errorAssigningUser(String error) {
-    return 'Error assigning user: $error';
+    return 'Feil ved tildeling av bruker: $error';
   }
 
   @override
@@ -606,7 +606,7 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
   String get openSourceLicensesTitle => 'Open Source-pakker';
 
   @override
-  String get siteInfoTitle => 'Sideinformasjon';
+  String get siteInfoTitle => 'Info';
 
   @override
   String get siteEventCount => 'Antall hendelser';
@@ -663,45 +663,45 @@ class HyttaHubLocalizationsNb extends HyttaHubLocalizations {
 
   @override
   String eventSiteCreated(String siteName) {
-    return 'Site Created: $siteName';
+    return 'Opprettet: $siteName';
   }
 
   @override
   String eventAddedMember(String memberName) {
-    return 'Added Member: $memberName';
+    return 'La til medlem: $memberName';
   }
 
   @override
   String eventRenamedSite(String siteName) {
-    return 'Renamed Site: $siteName';
+    return 'Endret navn: $siteName';
   }
 
   @override
   String eventRemovedMember(int memberId) {
-    return 'Removed Member: $memberId';
+    return 'Fjernet medlem: $memberId';
   }
 
   @override
   String eventMemberLeft(int memberId) {
-    return 'Member Left: $memberId';
+    return 'Medlem forlot: $memberId';
   }
 
   @override
   String eventRestoredMember(String memberName) {
-    return 'Restored Member: $memberName';
+    return 'Gjenopprettet medlem: $memberName';
   }
 
   @override
   String eventUpdatedMember(String memberName) {
-    return 'Updated Member: $memberName';
+    return 'Oppdatert medlem: $memberName';
   }
 
   @override
-  String get eventSiteCopied => 'Site Copied/Imported';
+  String get eventSiteCopied => 'Kopiert/Importert';
 
   @override
-  String get eventAppSpecific => 'App specific event';
+  String get eventAppSpecific => 'Appspesifikk hendelse';
 
   @override
-  String get eventUnknown => 'Unknown Event';
+  String get eventUnknown => 'Ukjent hendelse';
 }

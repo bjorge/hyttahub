@@ -42,16 +42,16 @@ class AppLocalizationsNl extends AppLocalizations {
   String get app_editModeTitle => 'Edit Mode';
 
   @override
-  String get app_adminPrivileges => 'You have admin privileges for this site.';
+  String get app_adminPrivileges => 'You have admin privileges for this hub.';
 
   @override
   String get app_howToProceed => 'How would you like to proceed?';
 
   @override
-  String get app_viewSite => 'View Site';
+  String get app_viewSite => 'View';
 
   @override
-  String get app_editSite => 'Edit Site';
+  String get app_editSite => 'Edit';
 
   @override
   String app_eventUpdateText(String value) {

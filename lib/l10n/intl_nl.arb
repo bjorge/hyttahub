@@ -30,35 +30,35 @@
       }
     }
   },
-  "sites": "Sites",
-  "noSites": "no sites",
+  "sites": "Hubs",
+  "noSites": "geen hubs",
   "initializingAccountTitle": "Initializing Account",
   "serviceCreateAccountTitle": "Service Create Account",
   "serviceLoginTitle": "Service Login",
   "accountSettingsTitle": "Account Settings",
-  "manageSitesTitle": "Leave Site",
-  "reorderSitesTitle": "Reorder Sites",
+  "manageSitesTitle": "Verlaten",
+  "reorderSitesTitle": "Hubs herschikken",
   "removeAccountTitle": "Remove Account",
   "logout": "Logout",
   "logoutDialogTitle": "Logout?",
   "logoutDialogMessage": "Are you sure you want to log out?",
   "cancelButton": "Cancel",
-  "createSiteTitle": "Create Site",
-  "joinSiteTitle": "Join Site",
+  "createSiteTitle": "Hub maken",
+  "joinSiteTitle": "Deelnemen aan hub",
   "unimplementedTitle": "Unimplemented",
   "toBeImplemented": "Coming Soon!",
-  "siteNameLabel": "Site Name",
-  "siteNameEmptyError": "Site name cannot be empty",
+  "siteNameLabel": "Naam",
+  "siteNameEmptyError": "Naam mag niet leeg zijn",
   "userNameLabel": "User Name",
-  "userNameEmptyError": "Site user name cannot be empty",
+  "userNameEmptyError": "Gebruikersnaam mag niet leeg zijn",
   "pasteCodeTooltip": "Paste Code",
   "backspaceTooltip": "Backspace",
-  "joinSiteCodeLabel": "Enter 8-character Site Code",
-  "siteCodeEmptyError": "Site code cannot be empty",
-  "siteCodeLengthError": "Site code must be 8 characters long",
-  "leaveSiteTooltip": "Leave Site",
-  "removeSiteTitle": "Remove Site",
-  "leaveSiteConfirmation": "Leave Site? Only an admin can add you back.",
+  "joinSiteCodeLabel": "Voer 8-cijferige code in",
+  "siteCodeEmptyError": "Code mag niet leeg zijn",
+  "siteCodeLengthError": "Code moet 8 tekens lang zijn",
+  "leaveSiteTooltip": "Verlaten",
+  "removeSiteTitle": "Verwijderen",
+  "leaveSiteConfirmation": "Verlaten? Alleen een beheerder kan je opnieuw toevoegen.",
   "updateTermsTitle": "Update Terms",
   "viewTerms": "View Terms",
   "viewPrivacyPolicy": "View Privacy Policy",
@@ -88,31 +88,31 @@
   "noPrivacyPolicyAvailable": "No privacy policy available.",
   "termsOfServiceTitle": "Terms of Service",
   "noTermsAvailable": "No terms available.",
-  "initializeDataStoreTitle": "Initialize the Data Store",
-  "errorTodo": "Error: todo",
-  "initializeDataStoreBody": "The data store is empty. Create the first service admin in order to initialize the system.",
+  "initializeDataStoreTitle": "Initialiseer de Gegevensopslag",
+  "errorTodo": "Fout: todo",
+  "initializeDataStoreBody": "De gegevensopslag is leeg. Maak de eerste servicebeheerder aan om het systeem te initialiseren.",
   "successfullySubmittedTodo": "successfully submitted, todo: grey out fields",
   "errorSubmittingForm": "Error submitting form",
   "disallowedCharactersError": "Characters '[' and ']' are not allowed",
   "errorTitle": "Error",
-  "unexpectedError": "Unexpected error, check internet, go back and try again",
-  "permissionDenied": "You do not have permission to perform this action.",
-  "removedFromSite": "Je bent verwijderd van deze site.",
+  "unexpectedError": "Onverwachte fout, controleer internet, ga terug en probeer opnieuw",
+  "permissionDenied": "Je hebt geen toestemming om deze actie uit te voeren.",
+  "removedFromSite": "Je bent verwijderd.",
   "addMemberTitle": "Add Member",
   "memberNameLabel": "Member Name",
   "memberNameEmptyError": "Member name cannot be empty",
   "memberNameExistsError": "Member name already exists",
   "administratorLabel": "Administrator",
-  "emailExistsError": "Email already exists in the site",
-  "renameSiteTitle": "Rename Site",
-  "manageSiteMembers": "Manage Site Members",
-  "showSiteEventsState": "Show Site Events & State",
-  "showSiteAllowedEmails": "Show Site Allowed Emails",
-  "siteSettingsTitle": "Site Settings",
-  "newSiteNameLabel": "New Site Name",
-  "siteEmailsTitle": "Site Emails (database)",
-  "siteEventsTitle": "Site Events (database)",
-  "siteStateTitle": "Site State (local replay)",
+  "emailExistsError": "E-mail bestaat al.",
+  "renameSiteTitle": "Naam wijzigen",
+  "manageSiteMembers": "Leden",
+  "showSiteEventsState": "Show Events & State",
+  "showSiteAllowedEmails": "Allowed Emails",
+  "siteSettingsTitle": "Instellingen",
+  "newSiteNameLabel": "Nieuwe naam",
+  "siteEmailsTitle": "Hub e-mails (database)",
+  "siteEventsTitle": "Hub gebeurtenissen (database)",
+  "siteStateTitle": "Hub status (lokal replay)",
   "membersTitle": "Members",
   "serviceSettingsTitle": "Service Settings",
   "termsOfServiceContentLabel": "Terms of Service Content",
@@ -154,11 +154,11 @@
   "restoreAdminTitle": "Restore Admin",
   "removeAccountConfirmation": "Remove Account? This action cannot be undone.",
   "cannotRemoveAccountTitle": "Cannot Remove Account",
-  "cannotRemoveAccountContent": "You must leave all sites before you can remove your account.",
+  "cannotRemoveAccountContent": "Je moet alle hubs verlaten voordat je je account kunt verwijderen.",
   "cannotChangeEmailWhenOnlyAdminError": "Cannot change your email when you are the only admin.",
   "okButton": "OK",
-  "copySiteIdTooltip": "Site-ID kopiëren",
-  "siteIdCopied": "Site-ID naar klembord gekopieerd",
+  "copySiteIdTooltip": "ID kopiëren",
+  "siteIdCopied": "ID naar klembord gekopieerd",
   "and": "&",
   "mustAgreeToTermsError": "You must agree to the terms.",
   "mustAgreeToPrivacyPolicyError": "You must agree to the privacy policy.",
@@ -196,17 +196,17 @@
     }
   },
   "loadingEllipsis": "...",
-  "loginDismissSnackbar": "Dismiss",
-  "passwordEmptyError": "Password cannot be empty.",
-  "passwordTooShortError": "Password is too short.",
-  "passwordTooLongError": "Password is too long.",
-  "noEventsFound": "No events found.",
-  "importSiteTitle": "Import Site",
-  "selectFileButton": "Select File",
-  "importButton": "Import",
-  "selectAdminTitle": "Select Your Admin Account",
-  "selectAdminInstruction": "Please select your administrator account from the list of admins for the imported site.",
-  "assignUserButton": "Assign User",
+  "loginDismissSnackbar": "Sluiten",
+  "passwordEmptyError": "Wachtwoord mag niet leeg zijn.",
+  "passwordTooShortError": "Wachtwoord is te kort.",
+  "passwordTooLongError": "Wachtwoord is te lang.",
+  "noEventsFound": "Geen gebeurtenissen gevonden.",
+  "importSiteTitle": "Hub importeren",
+  "selectFileButton": "Bestand selecteren",
+  "importButton": "Importeren",
+  "selectAdminTitle": "Selecteer je beheerdersaccount",
+  "selectAdminInstruction": "Selecteer je beheerdersaccount uit de lijst met beheerders voor de geïmporteerde hub.",
+  "assignUserButton": "Gebruiker toewijzen",
   "largeFileWarning": "Large file detected ({sizeInMB}MB). Upload may take several minutes.",
   "@largeFileWarning": {
     "placeholders": {
@@ -240,12 +240,12 @@
     }
   },
   "processingImport": "Processing import, this can take up to 10 minutes. Please wait and remain on this screen...",
-  "userMustBeSignedIn": "User must be signed in to import site",
-  "copySiteTitle": "Site kopiëren",
-  "copySiteTooltip": "Site kopiëren",
-  "copySiteConfirmTitle": "Bevestiging site kopiëren",
-  "copySiteConfirmMessage": "Door de site te kopiëren wordt er een privédubplicaatsite voor je gemaakt. Houd er rekening mee dat het kopiëren van mediabestanden enige tijd kan duren. Je kunt de naam van de nieuwe site bewerken en leden toevoegen zodra de kopie voltooid is.",
-  "errorImportingSite": "Error importing site: {error}",
+  "userMustBeSignedIn": "Gebruiker moet ingelogd zijn om hub te importeren",
+  "copySiteTitle": "Kopiëren",
+  "copySiteTooltip": "Kopiëren",
+  "copySiteConfirmTitle": "Bevestiging kopiëren",
+  "copySiteConfirmMessage": "Door te kopiëren wordt er een privédubplicaathub voor je gemaakt. Houd er rekening mee dat het kopiëren van mediabestanden enige tijd kan duren. Je kunt de nieuwe naam bewerken en leden toevoegen zodra de kopie voltooid is.",
+  "errorImportingSite": "Error importing hub: {error}",
   "@errorImportingSite": {
     "placeholders": {
       "error": {
@@ -278,7 +278,7 @@
   "clearLocalStorageButton": "Wis alle lokale opslag",
   "refreshBrowserButton": "Vernieuw browser",
   "openSourceLicensesTitle": "Open-source pakketten",
-  "siteInfoTitle": "Site-informatie",
+  "siteInfoTitle": "Informatie",
   "siteEventCount": "Aantal gebeurtenissen",
   "siteTotalSize": "Totale grootte",
   "bytesLabel": "{size} bytes",
@@ -289,5 +289,118 @@
       }
     }
   },
-  "refresh": "Vernieuwen"
+  "kilobytesLabel": "{size} KB",
+  "@kilobytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "megabytesLabel": "{size} MB",
+  "@megabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "gigabytesLabel": "{size} GB",
+  "@gigabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "siteFileCount": "Aantal bestanden",
+  "siteTotalFileSize": "Totale bestandsgrootte",
+  "errorFetchingFiles": "Fout bij het ophalen van bestanden",
+  "refresh": "Vernieuwen",
+  "copySiteTitle": "Kopiëren",
+  "@copySiteTitle": {
+    "description": "Titel voor kopieeroptie."
+  },
+  "copySiteTooltip": "Kopiëren",
+  "@copySiteTooltip": {
+    "description": "Tooltip voor kopieerknop."
+  },
+  "copySiteConfirmTitle": "Bevestiging kopiëren",
+  "@copySiteConfirmTitle": {
+    "description": "Titel voor kopieerbevestigingsscherm."
+  },
+  "copySiteConfirmMessage": "Door te kopiëren wordt er een privé-hubduplicaat voor je gemaakt. Houd er rekening mee dat het kopiëren van mediabestanden even kan duren. Je kunt de naam aanpassen en leden toevoegen zodra de kopie voltooid is.",
+  "@copySiteConfirmMessage": {
+    "description": "Bericht voor kopieerbevestiging."
+  },
+  "errorAssigningUser": "Fout bij het toewijzen van gebruiker: {error}",
+  "@errorAssigningUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCreated": "Aangemaakt: {siteName}",
+  "@eventSiteCreated": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventAddedMember": "Lid toegevoegd: {memberName}",
+  "@eventAddedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRenamedSite": "Naam gewijzigd: {siteName}",
+  "@eventRenamedSite": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRemovedMember": "Lid verwijderd: {memberId}",
+  "@eventRemovedMember": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventMemberLeft": "Lid heeft de groep verlaten: {memberId}",
+  "@eventMemberLeft": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventRestoredMember": "Lid hersteld: {memberName}",
+  "@eventRestoredMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventUpdatedMember": "Lid bijgewerkt: {memberName}",
+  "@eventUpdatedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCopied": "Gekopieerd/Geïmporteerd",
+  "eventAppSpecific": "App-specifieke gebeurtenis",
+  "eventUnknown": "Onbekende gebeurtenis"
 }

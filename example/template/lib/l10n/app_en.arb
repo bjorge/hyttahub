@@ -24,10 +24,10 @@
   "app_permissionDenied": "You do not have permission to perform this action.",
   "app_appEventsOption": "App Events",
   "app_editModeTitle": "Edit Mode",
-  "app_adminPrivileges": "You have admin privileges for this site.",
+  "app_adminPrivileges": "You have admin privileges for this hub.",
   "app_howToProceed": "How would you like to proceed?",
-  "app_viewSite": "View Site",
-  "app_editSite": "Edit Site",
+  "app_viewSite": "View",
+  "app_editSite": "Edit",
   "app_eventUpdateText": "Updated Text: {value}",
   "@app_eventUpdateText": {
     "placeholders": {

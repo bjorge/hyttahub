@@ -36,22 +36,23 @@ class AppLocalizationsNb extends AppLocalizations {
       'Du har ikke tillatelse til å utføre denne handlingen.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'Apphendelser';
 
   @override
-  String get app_editModeTitle => 'Edit Mode';
+  String get app_editModeTitle => 'Redigeringsmodus';
 
   @override
-  String get app_adminPrivileges => 'You have admin privileges for this site.';
+  String get app_adminPrivileges =>
+      'Du har administratorrettigheter for denne huben.';
 
   @override
-  String get app_howToProceed => 'How would you like to proceed?';
+  String get app_howToProceed => 'Hvordan ønsker du å fortsette?';
 
   @override
-  String get app_viewSite => 'View Site';
+  String get app_viewSite => 'Vis';
 
   @override
-  String get app_editSite => 'Edit Site';
+  String get app_editSite => 'Rediger';
 
   @override
   String app_eventUpdateText(String value) {

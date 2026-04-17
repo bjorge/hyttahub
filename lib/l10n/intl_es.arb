@@ -30,35 +30,35 @@
       }
     }
   },
-  "sites": "Sitios",
-  "noSites": "ningún sitio",
+  "sites": "Hubs",
+  "noSites": "ningún hub",
   "initializingAccountTitle": "Inicializando cuenta",
   "serviceCreateAccountTitle": "Crear cuenta de servicio",
   "serviceLoginTitle": "Inicio de sesión de servicio",
   "accountSettingsTitle": "Configuración de la cuenta",
-  "manageSitesTitle": "Abandonar sitio",
-  "reorderSitesTitle": "Reordenar sitios",
+  "manageSitesTitle": "Abandonar",
+  "reorderSitesTitle": "Reordenar hubs",
   "removeAccountTitle": "Eliminar cuenta",
   "logout": "Cerrar sesión",
   "logoutDialogTitle": "¿Cerrar sesión?",
   "logoutDialogMessage": "¿Estás seguro de que deseas cerrar sesión?",
   "cancelButton": "Cancelar",
-  "createSiteTitle": "Crear sitio",
-  "joinSiteTitle": "Unirse a un sitio",
+  "createSiteTitle": "Crear hub",
+  "joinSiteTitle": "Unirse a un hub",
   "unimplementedTitle": "No implementado",
   "toBeImplemented": "¡Próximamente!",
-  "siteNameLabel": "Nombre del sitio",
-  "siteNameEmptyError": "El nombre del sitio no puede estar vacío",
+  "siteNameLabel": "Nombre",
+  "siteNameEmptyError": "El nombre no puede estar vacío",
   "userNameLabel": "Nombre de usuario",
-  "userNameEmptyError": "El nombre de usuario del sitio no puede estar vacío",
+  "userNameEmptyError": "El nombre de usuario no puede estar vacío",
   "pasteCodeTooltip": "Pegar código",
   "backspaceTooltip": "Borrar",
-  "joinSiteCodeLabel": "Introduce el código de sitio de 8 caracteres",
-  "siteCodeEmptyError": "El código del sitio no puede estar vacío",
-  "siteCodeLengthError": "El código del sitio debe tener 8 caracteres",
-  "leaveSiteTooltip": "Abandonar sitio",
-  "removeSiteTitle": "Eliminar sitio",
-  "leaveSiteConfirmation": "¿Abandonar el sitio? Solo un administrador puede agregarte de nuevo.",
+  "joinSiteCodeLabel": "Introduce el código de 8 caracteres",
+  "siteCodeEmptyError": "El código no puede estar vacío",
+  "siteCodeLengthError": "El código debe tener 8 caracteres",
+  "leaveSiteTooltip": "Abandonar",
+  "removeSiteTitle": "Eliminar",
+  "leaveSiteConfirmation": "¿Abandonar? Solo un administrador puede agregarte de nuevo.",
   "updateTermsTitle": "Actualizar términos",
   "viewTerms": "Ver términos",
   "viewPrivacyPolicy": "Ver política de privacidad",
@@ -88,31 +88,31 @@
   "noPrivacyPolicyAvailable": "No hay política de privacidad disponible.",
   "termsOfServiceTitle": "Términos de servicio",
   "noTermsAvailable": "No hay términos disponibles.",
-  "initializeDataStoreTitle": "Initialize the Data Store",
+  "initializeDataStoreTitle": "Inicializar el Almacén de Datos",
   "errorTodo": "Error: pendiente",
-  "initializeDataStoreBody": "The data store is empty. Create the first service admin in order to initialize the system.",
+  "initializeDataStoreBody": "El almacén de datos está vacío. Crea al primer administrador del servicio para inicializar el sistema.",
   "successfullySubmittedTodo": "enviado con éxito, pendiente: deshabilitar los campos",
   "errorSubmittingForm": "Error al enviar el formulario",
   "disallowedCharactersError": "No se permiten los caracteres '[' y ']'",
   "errorTitle": "Error",
   "unexpectedError": "Error inesperado, verifica la conexión a internet, regresa e inténtalo de nuevo",
   "permissionDenied": "No tienes permiso para realizar esta acción.",
-  "removedFromSite": "Has sido eliminado de este sitio.",
+  "removedFromSite": "Has sido eliminado.",
   "addMemberTitle": "Agregar miembro",
   "memberNameLabel": "Nombre del miembro",
   "memberNameEmptyError": "El nombre del miembro no puede estar vacío",
   "memberNameExistsError": "El nombre del miembro ya existe",
   "administratorLabel": "Administrador",
-  "emailExistsError": "El correo electrónico ya existe en el sitio",
-  "renameSiteTitle": "Renombrar sitio",
-  "manageSiteMembers": "Gestionar Miembros del Sitio",
-  "showSiteEventsState": "Mostrar Eventos y Estado del Sitio",
-  "showSiteAllowedEmails": "Mostrar Correos Permitidos del Sitio",
-  "siteSettingsTitle": "Configuración del Sitio",
-  "newSiteNameLabel": "Nuevo nombre del sitio",
-  "siteEmailsTitle": "Correos electrónicos del sitio (base de datos)",
-  "siteEventsTitle": "Eventos del sitio (base de datos)",
-  "siteStateTitle": "Estado del sitio (reproducción local)",
+  "emailExistsError": "El correo electrónico ya existe.",
+  "renameSiteTitle": "Renombrar",
+  "manageSiteMembers": "Miembros",
+  "showSiteEventsState": "Mostrar eventos y estado",
+  "showSiteAllowedEmails": "Correos permitidos",
+  "siteSettingsTitle": "Configuración",
+  "newSiteNameLabel": "Nuevo nombre",
+  "siteEmailsTitle": "Correos del hub (base de datos)",
+  "siteEventsTitle": "Eventos del hub (base de datos)",
+  "siteStateTitle": "Estado del hub (reproducción local)",
   "membersTitle": "Miembros",
   "serviceSettingsTitle": "Configuración del servicio",
   "termsOfServiceContentLabel": "Contenido de los Términos de Servicio",
@@ -154,11 +154,11 @@
   "restoreAdminTitle": "Restaurar administrador",
   "removeAccountConfirmation": "¿Eliminar cuenta? Esta acción no se puede deshacer.",
   "cannotRemoveAccountTitle": "No se puede eliminar la cuenta",
-  "cannotRemoveAccountContent": "Debes abandonar todos los sitios antes de poder eliminar tu cuenta.",
+  "cannotRemoveAccountContent": "Debes abandonar todos los hubs antes de poder eliminar tu cuenta.",
   "cannotChangeEmailWhenOnlyAdminError": "No puedes cambiar tu correo electrónico cuando eres el único administrador.",
   "okButton": "Aceptar",
-  "copySiteIdTooltip": "Copiar ID del sitio",
-  "siteIdCopied": "ID del sitio copiado al portapapeles",
+  "copySiteIdTooltip": "Copiar ID",
+  "siteIdCopied": "ID copiado al portapapeles",
   "and": "y",
   "mustAgreeToTermsError": "Debes aceptar los términos.",
   "mustAgreeToPrivacyPolicyError": "Debes aceptar la política de privacidad.",
@@ -196,7 +196,7 @@
     }
   },
   "loadingEllipsis": "...",
-  "loginDismissSnackbar": "Descartar",
+  "loginDismissSnackbar": "Cerrar",
   "passwordEmptyError": "La contraseña no puede estar vacía.",
   "passwordTooShortError": "La contraseña es demasiado corta.",
   "passwordTooLongError": "La contraseña es demasiado larga.",
@@ -219,7 +219,7 @@
   "clearLocalStorageButton": "Limpiar todo el almacenamiento local",
   "refreshBrowserButton": "Refrescar navegador",
   "openSourceLicensesTitle": "Paquetes de código abierto",
-  "siteInfoTitle": "Información del sitio",
+  "siteInfoTitle": "Información",
   "siteEventCount": "Cantidad de eventos",
   "siteTotalSize": "Tamaño total",
   "bytesLabel": "{size} bytes",
@@ -230,5 +230,118 @@
       }
     }
   },
-  "refresh": "Refrescar"
+  "kilobytesLabel": "{size} KB",
+  "@kilobytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "megabytesLabel": "{size} MB",
+  "@megabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "gigabytesLabel": "{size} GB",
+  "@gigabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "siteFileCount": "Cantidad de archivos",
+  "siteTotalFileSize": "Tamaño total de archivos",
+  "errorFetchingFiles": "Error al obtener archivos",
+  "refresh": "Refrescar",
+  "copySiteTitle": "Copiar",
+  "@copySiteTitle": {
+    "description": "Título para la opción de copiar."
+  },
+  "copySiteTooltip": "Copiar",
+  "@copySiteTooltip": {
+    "description": "Sugerencia para el botón de copiar."
+  },
+  "copySiteConfirmTitle": "Confirmar copia",
+  "@copySiteConfirmTitle": {
+    "description": "Título para la pantalla de confirmación de copia."
+  },
+  "copySiteConfirmMessage": "Copiar creará un hub privado duplicado para ti. Ten en cuenta que copiar archivos multimedia puede llevar tiempo. Podrás editar el nombre y añadir miembros una vez completada la copia.",
+  "@copySiteConfirmMessage": {
+    "description": "Mensaje de confirmación de copia."
+  },
+  "errorAssigningUser": "Error al asignar usuario: {error}",
+  "@errorAssigningUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCreated": "Creado: {siteName}",
+  "@eventSiteCreated": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventAddedMember": "Miembro añadido: {memberName}",
+  "@eventAddedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRenamedSite": "Bautizado: {siteName}",
+  "@eventRenamedSite": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRemovedMember": "Miembro eliminado: {memberId}",
+  "@eventRemovedMember": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventMemberLeft": "Miembro abandonó: {memberId}",
+  "@eventMemberLeft": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventRestoredMember": "Miembro restaurado: {memberName}",
+  "@eventRestoredMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventUpdatedMember": "Miembro actualizado: {memberName}",
+  "@eventUpdatedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCopied": "Copiado/Importado",
+  "eventAppSpecific": "Evento específico de la aplicación",
+  "eventUnknown": "Evento desconocido"
 }
