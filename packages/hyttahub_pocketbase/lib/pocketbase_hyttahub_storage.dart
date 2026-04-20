@@ -194,6 +194,10 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
     final col = encodePath(path);
     final controller = StreamController<Map<String, Map<String, dynamic>>>();
+    // Holds the per-subscription unsubscribe function returned by PocketBase.
+    // Using this instead of unsubscribe('*') avoids cancelling other blocs'
+    // subscriptions on the same collection.
+    Future<void> Function()? unsubscribeFn;
 
     Future<void> setup() async {
       while (!controller.isClosed) {
@@ -202,8 +206,15 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           final map = _toDocIdMap(initial);
           if (!controller.isClosed) controller.add(map);
 
-          await _client.collection(col).subscribe('*', (event) async {
+          if (kDebugMode) {
+            print('[PB] listenCollection subscribe col=$col');
+          }
+
+          unsubscribeFn = await _client.collection(col).subscribe('*', (event) async {
             if (controller.isClosed) return;
+            if (kDebugMode) {
+              print('[PB] listenCollection event col=$col action=${event.action}');
+            }
             final updated = await getCollection(path);
             controller.add(_toDocIdMap(updated));
           });
@@ -224,8 +235,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
     setup().catchError(controller.addError);
     controller.onCancel = () async {
+      if (kDebugMode) {
+        print('[PB] listenCollection cancel col=$col — calling per-subscription unsubscribe');
+      }
       try {
-        await _client.collection(col).unsubscribe('*');
+        // Use the per-subscription unsubscribe to avoid removing other
+        // subscribers on the same collection (e.g. the main AppReplayBloc).
+        await unsubscribeFn?.call();
       } catch (_) {
         // Ignore unsubscribe errors for collections that were never subscribed.
       }
@@ -254,6 +270,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   }) {
     final col = encodePath(path);
     final controller = StreamController<Map<int, String>>();
+    // Per-subscription unsubscribe handle — prevents cancelling other blocs'
+    // subscriptions on the same collection when this stream is cancelled.
+    Future<void> Function()? unsubscribeFn;
 
     Future<void> setup() async {
       while (!controller.isClosed) {
@@ -272,9 +291,19 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           }
           if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
 
-          await _client.collection(col).subscribe('*', (event) async {
+          if (kDebugMode) {
+            print('[PB] listenEvents subscribe col=$col');
+          }
+
+          unsubscribeFn = await _client.collection(col).subscribe('*', (event) async {
             if (controller.isClosed) return;
+            if (kDebugMode) {
+              print('[PB] listenEvents SSE event col=$col action=${event.action}');
+            }
             final all = await getCollection(path);
+            // Use the original lastVersion (not an internal watermark) to ensure
+            // that delayed events (gaps) are eventually caught if they appear
+            // in a later fetch. BaseReplayBloc will handle the deduplication.
             final events = _buildEventMap(
               all,
               lastVersion,
@@ -283,10 +312,12 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             );
             if (kDebugMode) {
               print(
-                '[PB] listenEvents update col=$col events=${events.keys.toList()}',
+                '[PB] listenEvents update col=$col newEvents=${events.keys.toList()}',
               );
             }
-            if (events.isNotEmpty) controller.add(events);
+            if (events.isNotEmpty) {
+              controller.add(events);
+            }
           });
 
           // Successfully subscribed, break out of the retry loop
@@ -305,8 +336,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
     setup().catchError(controller.addError);
     controller.onCancel = () async {
+      if (kDebugMode) {
+        print('[PB] listenEvents cancel col=$col — calling per-subscription unsubscribe');
+      }
       try {
-        await _client.collection(col).unsubscribe('*');
+        // Use the per-subscription unsubscribe to avoid removing other
+        // subscribers on the same collection (e.g. the summary AppNameReplayBloc).
+        await unsubscribeFn?.call();
       } catch (_) {
         // Ignore unsubscribe errors for collections that were never subscribed.
       }
