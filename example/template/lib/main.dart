@@ -149,6 +149,8 @@ Future<void> main() async {
       appId: 'hyttahub.example.template',
       storage: storage,
       implementationId: implementationId,
+      // turn off use of isolates for now in the web
+      useIsolates: !kIsWeb,
     ),
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
   );

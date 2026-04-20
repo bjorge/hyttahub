@@ -148,6 +148,8 @@ Future<void> main() async {
       appBuildNumber: appBuildNumber,
       appId: 'hyttahub.example.tictactoe',
       cloudRootCollection: cloudRootCollection,
+      // turn off use of isolates for now in the web
+      useIsolates: !kIsWeb,
     ),
     siteScreenRoute: (siteId) => SiteScreenRoute.fullPath(siteId),
   );

@@ -15,6 +15,8 @@ import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 
+import 'package:hyttahub/utils/renderer_detection.dart';
+
 /// A generic page that displays application information and secondary actions.
 class HyttaHubInfoPage extends StatelessWidget {
   /// Creates a [HyttaHubInfoPage].
@@ -23,6 +25,11 @@ class HyttaHubInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = HyttaHubLocalizations.of(context)!;
+    final renderer = getWebRenderer;
+    final browser = getWebBrowser;
+
+    final webInfo = [renderer, browser].whereType<String>().join(', ');
+    final displayWebInfo = webInfo.isNotEmpty ? ' ($webInfo)' : '';
 
     return Scaffold(
       appBar: AppBar(
@@ -37,10 +44,10 @@ class HyttaHubInfoPage extends StatelessWidget {
           SizedBox(height: 20),
           Center(
             child: Text(
-              l10n.app_versionInfo(
+              '${l10n.app_versionInfo(
                 HyttaHubOptions.appVersion,
                 HyttaHubOptions.appBuildNumber,
-              ),
+              )}$displayWebInfo',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
