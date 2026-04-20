@@ -1,3 +1,18 @@
+## 0.1.55
+
+*   **Web Renderer & Browser Detection**:
+    *   Added runtime detection for the active Flutter web renderer (Skwasm, CanvasKit, or JS/HTML).
+    *   Added browser detection to identify if the app is running in Chrome vs. other browsers.
+    *   Displayed this information in the `HyttaHubInfoPage` for improved debugging and environment awareness on the web.
+*   **Flexible Isolate Configuration**:
+    *   Introduced a global `useIsolates` flag in `HyttaHubOptions` to allow controlling the use of background isolates for computationally intensive tasks like replay logic.
+    *   Enabled conditional disabling of isolates in the web environment to ensure compatibility across a wider range of browsers and hosting configurations.
+*   **UI Customization**:
+    *   Added configuration options to the `HyttaHubAppBarActions` widget to toggle the visibility of the Language, Theme, and Platform pickers.
+    *   Provides developers with greater control over the app bar interface, allowing them to hide controls that are not relevant to their deployment.
+*   **Maintenance**:
+    *   Updated version metadata to reflect the v0.1.55 release.
+
 ## 0.1.54
 
 *   **Standardized Terminology ("Hub" Strategy)**:
