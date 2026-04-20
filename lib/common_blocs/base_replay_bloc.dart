@@ -24,12 +24,12 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     hydrateIsolateHandler,
 
     // Whether to use Flutter isolates via `compute()` for heavy CPU work.
-    bool useIsolate = true,
+    bool? useIsolates,
     this.gapTimeout = const Duration(seconds: 5),
   }) : _initialState = initialState,
        _replayIsolateHandler = replayIsolateHandler,
-       _hydrateIsolateHandler = hydrateIsolateHandler {
-    _useIsolate = useIsolate;
+       _hydrateIsolateHandler = hydrateIsolateHandler,
+       _useIsolateOverride = useIsolates {
 
     if (storage != null) {
       _storageOverride = storage;
@@ -53,8 +53,17 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   _replayIsolateHandler;
 
   final FutureOr<Uint8List> Function(Map<int, String>) _hydrateIsolateHandler;
+
   // Whether to use compute() to run handlers in isolates. Default true.
-  late final bool _useIsolate;
+  final bool? _useIsolateOverride;
+  bool get _useIsolate {
+    if (_useIsolateOverride != null) return _useIsolateOverride;
+    final impl = HyttaHubOptions.implementation;
+    if (impl != null && impl.hasUseIsolates()) {
+      return impl.useIsolates;
+    }
+    return true;
+  }
 
   final Duration gapTimeout;
 

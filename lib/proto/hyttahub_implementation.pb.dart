@@ -28,6 +28,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
     $core.String? cloudRootCollection,
     $core.bool? disableCloudCache,
     $core.String? implementationId,
+    $core.bool? useIsolates,
   }) {
     final result = create();
     if (storage != null) result.storage = storage;
@@ -37,6 +38,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
       result.cloudRootCollection = cloudRootCollection;
     if (disableCloudCache != null) result.disableCloudCache = disableCloudCache;
     if (implementationId != null) result.implementationId = implementationId;
+    if (useIsolates != null) result.useIsolates = useIsolates;
     return result;
   }
 
@@ -61,6 +63,7 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
         protoName: 'cloudRootCollection')
     ..aOB(5, _omitFieldNames ? '' : 'disableCloudCache')
     ..aOS(6, _omitFieldNames ? '' : 'implementationId')
+    ..aOB(7, _omitFieldNames ? '' : 'useIsolates', protoName: 'useIsolates')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -136,6 +139,15 @@ class HyttaHubImplementation extends $pb.GeneratedMessage {
   $core.bool hasImplementationId() => $_has(5);
   @$pb.TagNumber(6)
   void clearImplementationId() => $_clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.bool get useIsolates => $_getBF(6);
+  @$pb.TagNumber(7)
+  set useIsolates($core.bool value) => $_setBool(6, value);
+  @$pb.TagNumber(7)
+  $core.bool hasUseIsolates() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearUseIsolates() => $_clearField(7);
 }
 
 const $core.bool _omitFieldNames =

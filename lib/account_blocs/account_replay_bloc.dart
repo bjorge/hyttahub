@@ -40,13 +40,17 @@ FutureOr<Uint8List> accountHydrateIsolateHandler(Map<int, String> eventsMap) {
 }
 
 class AccountReplayBloc extends BaseReplayBloc<AccountReplayBlocState> {
-  AccountReplayBloc(this.collectionName, {BaseHyttaHubStorage? storage})
-    : super(
-        AccountReplayBlocState(state: CommonReplayStateEnum.hydrating),
-        storage: storage,
-        replayIsolateHandler: accountReplayIsolateHandler,
-        hydrateIsolateHandler: accountHydrateIsolateHandler,
-      );
+  AccountReplayBloc(
+    this.collectionName, {
+    BaseHyttaHubStorage? storage,
+    bool? useIsolates,
+  }) : super(
+         AccountReplayBlocState(state: CommonReplayStateEnum.hydrating),
+         storage: storage,
+         replayIsolateHandler: accountReplayIsolateHandler,
+         hydrateIsolateHandler: accountHydrateIsolateHandler,
+         useIsolates: useIsolates,
+       );
 
   @override
   StorageEnum get storageType =>

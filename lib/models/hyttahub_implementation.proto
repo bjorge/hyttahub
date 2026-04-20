@@ -14,4 +14,5 @@ message HyttaHubImplementation {
   string cloudRootCollection = 4;
   bool disable_cloud_cache = 5;
   string implementation_id = 6;
+  bool useIsolates = 7;
 }

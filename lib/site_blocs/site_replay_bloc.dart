@@ -40,13 +40,17 @@ FutureOr<Uint8List> siteHydrateIsolateHandler(Map<int, String> eventsMap) {
 }
 
 class SiteReplayBloc extends BaseReplayBloc<SiteReplayBlocState> {
-  SiteReplayBloc(this.collectionName, {BaseHyttaHubStorage? storage})
-    : super(
-        SiteReplayBlocState(state: CommonReplayStateEnum.hydrating),
-        storage: storage,
-        replayIsolateHandler: siteReplayIsolateHandler,
-        hydrateIsolateHandler: siteHydrateIsolateHandler,
-      );
+  SiteReplayBloc(
+    this.collectionName, {
+    BaseHyttaHubStorage? storage,
+    bool? useIsolates,
+  }) : super(
+         SiteReplayBlocState(state: CommonReplayStateEnum.hydrating),
+         storage: storage,
+         replayIsolateHandler: siteReplayIsolateHandler,
+         hydrateIsolateHandler: siteHydrateIsolateHandler,
+         useIsolates: useIsolates,
+       );
 
   @override
   StorageEnum get storageType =>

@@ -40,13 +40,17 @@ FutureOr<Uint8List> appHydrateIsolateHandler(Map<int, String> eventsMap) {
 }
 
 class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
-  AppReplayBloc(this.collectionName, {BaseHyttaHubStorage? storage})
-    : super(
-        AppReplayBlocState(),
-        storage: storage,
-        replayIsolateHandler: appReplayIsolateHandler,
-        hydrateIsolateHandler: appHydrateIsolateHandler,
-      );
+  AppReplayBloc(
+    this.collectionName, {
+    BaseHyttaHubStorage? storage,
+    bool? useIsolates,
+  }) : super(
+         AppReplayBlocState(),
+         storage: storage,
+         replayIsolateHandler: appReplayIsolateHandler,
+         hydrateIsolateHandler: appHydrateIsolateHandler,
+         useIsolates: useIsolates,
+       );
 
   @override
   StorageEnum get storageType =>

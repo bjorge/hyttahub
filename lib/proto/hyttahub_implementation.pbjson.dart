@@ -64,6 +64,7 @@ const HyttaHubImplementation$json = {
       '5': 9,
       '10': 'implementationId'
     },
+    {'1': 'useIsolates', '3': 7, '4': 1, '5': 8, '10': 'useIsolates'},
   ],
 };
 
@@ -73,4 +74,5 @@ final $typed_data.Uint8List hyttaHubImplementationDescriptor = $convert.base64De
     'IHc3RvcmFnZRImCg5hcHBCdWlsZE51bWJlchgCIAEoBVIOYXBwQnVpbGROdW1iZXISFAoFYXBw'
     'SWQYAyABKAlSBWFwcElkEjAKE2Nsb3VkUm9vdENvbGxlY3Rpb24YBCABKAlSE2Nsb3VkUm9vdE'
     'NvbGxlY3Rpb24SLgoTZGlzYWJsZV9jbG91ZF9jYWNoZRgFIAEoCFIRZGlzYWJsZUNsb3VkQ2Fj'
-    'aGUSKwoRaW1wbGVtZW50YXRpb25faWQYBiABKAlSEGltcGxlbWVudGF0aW9uSWQ=');
+    'aGUSKwoRaW1wbGVtZW50YXRpb25faWQYBiABKAlSEGltcGxlbWVudGF0aW9uSWQSIAoLdXNlSX'
+    'NvbGF0ZXMYByABKAhSC3VzZUlzb2xhdGVz');

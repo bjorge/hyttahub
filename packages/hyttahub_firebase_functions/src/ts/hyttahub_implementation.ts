@@ -55,6 +55,7 @@ export interface HyttaHubImplementation {
   cloudRootCollection: string;
   disableCloudCache: boolean;
   implementationId: string;
+  useIsolates: boolean;
 }
 
 function createBaseHyttaHubImplementation(): HyttaHubImplementation {
@@ -65,6 +66,7 @@ function createBaseHyttaHubImplementation(): HyttaHubImplementation {
     cloudRootCollection: "",
     disableCloudCache: false,
     implementationId: "",
+    useIsolates: false,
   };
 }
 
@@ -87,6 +89,9 @@ export const HyttaHubImplementation = {
     }
     if (message.implementationId !== "") {
       writer.uint32(50).string(message.implementationId);
+    }
+    if (message.useIsolates !== false) {
+      writer.uint32(56).bool(message.useIsolates);
     }
     return writer;
   },
@@ -140,6 +145,13 @@ export const HyttaHubImplementation = {
 
           message.implementationId = reader.string();
           continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.useIsolates = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -157,6 +169,7 @@ export const HyttaHubImplementation = {
       cloudRootCollection: isSet(object.cloudRootCollection) ? globalThis.String(object.cloudRootCollection) : "",
       disableCloudCache: isSet(object.disableCloudCache) ? globalThis.Boolean(object.disableCloudCache) : false,
       implementationId: isSet(object.implementationId) ? globalThis.String(object.implementationId) : "",
+      useIsolates: isSet(object.useIsolates) ? globalThis.Boolean(object.useIsolates) : false,
     };
   },
 
@@ -180,6 +193,9 @@ export const HyttaHubImplementation = {
     if (message.implementationId !== "") {
       obj.implementationId = message.implementationId;
     }
+    if (message.useIsolates !== false) {
+      obj.useIsolates = message.useIsolates;
+    }
     return obj;
   },
 
@@ -194,6 +210,7 @@ export const HyttaHubImplementation = {
     message.cloudRootCollection = object.cloudRootCollection ?? "";
     message.disableCloudCache = object.disableCloudCache ?? false;
     message.implementationId = object.implementationId ?? "";
+    message.useIsolates = object.useIsolates ?? false;
     return message;
   },
 };

@@ -41,12 +41,13 @@ FutureOr<Uint8List> serviceHydrateIsolateHandler(Map<int, String> eventsMap) {
 }
 
 class ServiceReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
-  ServiceReplayBloc({BaseHyttaHubStorage? storage})
+  ServiceReplayBloc({BaseHyttaHubStorage? storage, bool? useIsolates})
     : super(
         ServiceReplayBlocState(state: CommonReplayStateEnum.hydrating),
         storage: storage,
         replayIsolateHandler: serviceReplayIsolateHandler,
         hydrateIsolateHandler: serviceHydrateIsolateHandler,
+        useIsolates: useIsolates,
       );
 
   @override
