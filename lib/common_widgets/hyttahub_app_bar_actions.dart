@@ -11,11 +11,19 @@ import 'package:hyttahub/utilities/persistence_registries.dart';
 class HyttaHubAppBarActions extends StatelessWidget {
   final List<AppLanguage>? supportedLanguages;
   final List<String>? supportedPlatforms;
+  final bool showInfo;
+  final bool showLanguagePicker;
+  final bool showThemePicker;
+  final bool showPlatformPicker;
 
   const HyttaHubAppBarActions({
     super.key,
     this.supportedLanguages,
     this.supportedPlatforms,
+    this.showInfo = true,
+    this.showLanguagePicker = true,
+    this.showThemePicker = true,
+    this.showPlatformPicker = true,
   });
 
   @override
@@ -24,17 +32,19 @@ class HyttaHubAppBarActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-
-        IconButton(
-          icon: const Icon(Icons.info_outline),
-          tooltip: l10n.info,
-          onPressed: () {
-            HyttaHubRoutes.landingInfoPageRoute.go(context);
-          },
-        ),
-        _LanguagePicker(l10n: l10n, supportedLanguages: supportedLanguages),
-        _ThemePicker(l10n: l10n),
-        _PlatformPicker(l10n: l10n, supportedPlatforms: supportedPlatforms),
+        if (showInfo)
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: l10n.info,
+            onPressed: () {
+              HyttaHubRoutes.landingInfoPageRoute.go(context);
+            },
+          ),
+        if (showLanguagePicker)
+          _LanguagePicker(l10n: l10n, supportedLanguages: supportedLanguages),
+        if (showThemePicker) _ThemePicker(l10n: l10n),
+        if (showPlatformPicker)
+          _PlatformPicker(l10n: l10n, supportedPlatforms: supportedPlatforms),
       ],
     );
   }
