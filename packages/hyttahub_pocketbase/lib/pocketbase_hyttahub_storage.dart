@@ -194,6 +194,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
     final col = encodePath(path);
     final controller = StreamController<Map<String, Map<String, dynamic>>>();
+    Map<String, Map<String, dynamic>> currentData = {};
     // Holds the per-subscription unsubscribe function returned by PocketBase.
     // Using this instead of unsubscribe('*') avoids cancelling other blocs'
     // subscriptions on the same collection.
@@ -203,8 +204,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       while (!controller.isClosed) {
         try {
           final initial = await getCollection(path);
-          final map = _toDocIdMap(initial);
-          if (!controller.isClosed) controller.add(map);
+          currentData = _toDocIdMap(initial);
+          if (!controller.isClosed) controller.add(Map.from(currentData));
 
           if (kDebugMode) {
             print('[PB] listenCollection subscribe col=$col');
@@ -213,10 +214,29 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           unsubscribeFn = await _client.collection(col).subscribe('*', (event) async {
             if (controller.isClosed) return;
             if (kDebugMode) {
-              print('[PB] listenCollection event col=$col action=${event.action}');
+              print(
+                '[PB] listenCollection SSE event col=$col action=${event.action}',
+              );
             }
+            final record = event.record;
+            if (record != null) {
+              final doc = record.toJson();
+              final docId = (doc['doc_id'] ?? doc['id']) as String?;
+              if (docId != null) {
+                if (event.action == 'create' || event.action == 'update') {
+                  currentData[docId] = doc;
+                } else if (event.action == 'delete') {
+                  currentData.remove(docId);
+                }
+                controller.add(Map.from(currentData));
+                return;
+              }
+            }
+
+            // Fallback to full fetch if record data is missing or invalid
             final updated = await getCollection(path);
-            controller.add(_toDocIdMap(updated));
+            currentData = _toDocIdMap(updated);
+            controller.add(Map.from(currentData));
           });
 
           // Successfully subscribed, break out of the retry loop
@@ -300,6 +320,28 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             if (kDebugMode) {
               print('[PB] listenEvents SSE event col=$col action=${event.action}');
             }
+
+            final record = event.record;
+            if (record != null) {
+              final doc = record.toJson();
+              try {
+                final version = (doc[versionField] as num).toInt();
+                final payload = doc[payloadField] as String;
+                if (version > lastVersion) {
+                  if (kDebugMode) {
+                    print(
+                      '[PB] listenEvents incremental update col=$col version=$version',
+                    );
+                  }
+                  controller.add({version: payload});
+                  return;
+                }
+              } catch (_) {
+                // Ignore malformed record data
+              }
+            }
+
+            // Fallback to full fetch if incremental update is insufficient
             final all = await getCollection(path);
             // Use the original lastVersion (not an internal watermark) to ensure
             // that delayed events (gaps) are eventually caught if they appear
@@ -312,7 +354,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             );
             if (kDebugMode) {
               print(
-                '[PB] listenEvents update col=$col newEvents=${events.keys.toList()}',
+                '[PB] listenEvents fallback update col=$col newEvents=${events.keys.toList()}',
               );
             }
             if (events.isNotEmpty) {
