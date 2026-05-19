@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
+	"sync"
 	"time"
 
 	"io"
@@ -29,32 +29,6 @@ import (
 var allowSelfJoin = false
 var allowAnonymous = false
 
-
-func decodeSegment(segment string) string {
-	if !strings.HasPrefix(segment, "e") {
-		return segment
-	}
-	b64 := segment[1:]
-	b64 = strings.ReplaceAll(b64, "_", "-")
-
-	// Add padding back if necessary
-	if len(b64)%4 != 0 {
-		b64 += strings.Repeat("=", 4-len(b64)%4)
-	}
-
-	decoded, err := base64.URLEncoding.DecodeString(b64)
-	if err != nil {
-		return segment
-	}
-	return string(decoded)
-}
-
-func encodeSegment(email string) string {
-	b64 := base64.URLEncoding.EncodeToString([]byte(email))
-	b64 = strings.ReplaceAll(b64, "=", "")
-	return "e" + b64
-}
-
 func generateId() string {
 	const validChars = "123456789ABCDE"
 	const allValidChars = "123456789ABCDEFG"
@@ -69,6 +43,21 @@ func generateId() string {
 	}
 
 	return string(firstChar) + string(remainingChars)
+}
+
+func copyFileLocal(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, in)
+	return err
 }
 
 func main() {
@@ -87,7 +76,7 @@ func main() {
 		"Allow anonymous users via X-Auth-Email header",
 	)
 
-	log.Printf("[hyttahub] Starting PocketBase Emulator v1.2 (with copy support, allow-self-join=%v, allow-anonymous=%v)...", allowSelfJoin, allowAnonymous)
+	log.Printf("[hyttahub] Starting PocketBase Emulator (Flat Schema)...")
 
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true,
@@ -100,18 +89,147 @@ func main() {
 	}
 }
 
+var migrateMutex sync.Mutex
+
+// migrate creates the 7 flat collections if they don't exist
+func migrate(app core.App) error {
+	migrateMutex.Lock()
+	defer migrateMutex.Unlock()
+
+	collections := []struct {
+		Name     string
+		IdField  string
+		IsEvent  bool
+		IsUser   bool
+		IsFile   bool
+		ListRule string
+	}{
+		{Name: ColSiteUsers, IdField: FieldSiteId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email"},
+		{Name: ColServiceUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email"},
+		{Name: ColBetaUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_beta_users.doc_id ?= @request.auth.email"},
+		{Name: ColSiteEvents, IdField: FieldSiteId, IsEvent: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
+		{Name: ColSiteFiles, IdField: FieldSiteId, IsFile: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
+		{Name: ColAccountEvents, IdField: FieldAccountId, IsEvent: true, ListRule: "@request.auth.id != '' && @request.auth.email = accountId"},
+		{Name: ColServiceEvents, IdField: FieldServiceId, IsEvent: true, ListRule: ""},
+	}
+
+	for _, cfg := range collections {
+		col, _ := app.FindCollectionByNameOrId(cfg.Name)
+		if col != nil {
+			continue // Already exists
+		}
+
+		col = core.NewBaseCollection(cfg.Name)
+
+		// Basic Rules
+		if cfg.Name == ColSiteEvents && allowSelfJoin {
+			col.ListRule = types.Pointer("@request.auth.id != ''")
+			col.ViewRule = types.Pointer("@request.auth.id != ''")
+			col.CreateRule = types.Pointer("@request.auth.id != ''")
+		} else {
+			col.ListRule = types.Pointer(cfg.ListRule)
+			col.ViewRule = types.Pointer(cfg.ListRule)
+			if cfg.IsEvent {
+				if cfg.Name == ColServiceEvents {
+					col.CreateRule = types.Pointer("")
+				} else if cfg.Name == ColAccountEvents {
+					col.CreateRule = types.Pointer("@request.auth.id != ''")
+				} else {
+					col.CreateRule = types.Pointer(cfg.ListRule)
+				}
+			} else if cfg.Name == ColAccountEvents {
+				col.CreateRule = types.Pointer("@request.auth.id != ''")
+				col.DeleteRule = types.Pointer(cfg.ListRule)
+			} else {
+				// Users/Files
+				col.CreateRule = types.Pointer("")
+				col.UpdateRule = types.Pointer(cfg.ListRule)
+				col.DeleteRule = types.Pointer(cfg.ListRule)
+			}
+		}
+
+		// Core fields
+		col.Fields.Add(&core.TextField{Name: FieldApp, Required: true})
+		col.Fields.Add(&core.TextField{Name: cfg.IdField, Required: true})
+		col.Fields.Add(&core.TextField{Name: FieldDocId, Required: true})
+
+		// Indexes
+		col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_app ON %s (%s)", cfg.Name, cfg.Name, FieldApp))
+		col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_%s ON %s (%s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField))
+
+		if cfg.IsEvent {
+			col.Fields.Add(&core.NumberField{Name: FieldVersion})
+			col.Fields.Add(&core.TextField{Name: FieldPayload})
+			col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
+			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE UNIQUE INDEX idx_%s_app_%s_v ON %s (%s, %s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField, FieldVersion))
+		} else if cfg.IsUser {
+			col.Fields.Add(&core.NumberField{Name: FieldUserId})
+			col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
+			col.Fields.Add(&core.TextField{Name: FieldMarkDelete})
+			col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
+		} else if cfg.IsFile {
+			col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
+		}
+
+		if err := app.Save(col); err != nil {
+			log.Printf("[hyttahub] ERROR creating %s: %v", cfg.Name, err)
+			return err
+		}
+	}
+	return nil
+}
+
 func registerAppHooks(app core.App) {
 
-	// -------------------------------------------------------------------------
-	// Firestore Rules Emulation: Complex Create Logic
-	// -------------------------------------------------------------------------
+	app.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
+		Func: func(se *core.ServeEvent) error {
+			// Run migration to ensure the 7 flat collections exist
+			if err := migrate(app); err != nil {
+				log.Fatalf("[hyttahub] Migration failed: %v", err)
+			}
+
+			se.Router.GET("/{path...}", apis.Static(os.DirFS(app.DataDir()+"/../pb_public"), false))
+			
+			// Anonymous Auth Middleware
+			se.Router.Bind(&hook.Handler[*core.RequestEvent]{
+				Func: func(e *core.RequestEvent) error {
+					reqPath := e.Request.URL.Path
+					reqMethod := e.Request.Method
+
+					if allowAnonymous && e.Auth == nil {
+						if authEmail := e.Request.Header.Get("X-Auth-Email"); authEmail != "" {
+							user, _ := app.FindAuthRecordByEmail("users", authEmail)
+							if user == nil {
+								usersCol, _ := app.FindCollectionByNameOrId("users")
+								if usersCol != nil {
+									user = core.NewRecord(usersCol)
+									user.Set("email", authEmail)
+									user.SetVerified(true)
+									h := sha1.Sum([]byte(authEmail))
+									user.Id = hex.EncodeToString(h[:])[:15]
+									log.Printf("[hyttahub] Header Auth: Virtual user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
+								}
+							} else {
+								log.Printf("[hyttahub] Header Auth: Existing user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
+							}
+							if user != nil {
+								e.Auth = user
+							}
+						}
+					}
+					return e.Next()
+				},
+				Priority: -99999,
+			})
+			return se.Next()
+		},
+		Priority: -99999,
+	})
+
+	// Security logic for Creates
 	app.OnRecordCreateRequest().Bind(&hook.Handler[*core.RecordRequestEvent]{
 		Func: func(e *core.RecordRequestEvent) error {
 			colName := e.Record.Collection().Name
-
-			if !strings.HasPrefix(colName, "hyttahub__") {
-				return e.Next()
-			}
 
 			if e.HasSuperuserAuth() {
 				return e.Next()
@@ -121,76 +239,96 @@ func registerAppHooks(app core.App) {
 				e.Record.Set(FieldTimeStamp, time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
 			}
 
-			if strings.HasSuffix(colName, SuffixSiteUsers) || strings.HasSuffix(colName, SuffixServiceUsers) {
-				count, _ := app.CountRecords(colName)
-				if count == 0 {
-					return e.Next()
-				}
+			appId := e.Record.GetString(FieldApp)
+			if appId == "" {
+				// Not a hyttahub flat collection record if it has no app
+				return e.Next()
+			}
 
+			// Helper to get authEmail, returning error if not authenticated
+			getAuthEmail := func() (string, error) {
 				authEmail := ""
 				if e.Auth != nil {
 					authEmail = e.Auth.GetString("email")
 				}
 				if authEmail == "" {
-					return apis.NewUnauthorizedError("Unauthorized", nil)
+					return "", apis.NewUnauthorizedError("Unauthorized", nil)
+				}
+				return authEmail, nil
+			}
+
+			if colName == ColSiteUsers || colName == ColServiceUsers || colName == ColBetaUsers {
+				siteIdField := FieldSiteId
+				if colName == ColServiceUsers || colName == ColBetaUsers {
+					siteIdField = FieldServiceId
+				}
+				siteId := e.Record.GetString(siteIdField)
+
+				count, _ := app.CountRecords(colName, dbx.NewExp("app = {:app} AND "+siteIdField+" = {:siteId}", dbx.Params{"app": appId, "siteId": siteId}))
+				if count == 0 {
+					return e.Next() // First user allowed
 				}
 
-				records, err := app.FindRecordsByFilter(colName, "doc_id = {:email}", "", 1, 0, dbx.Params{"email": authEmail})
+				authEmail, err := getAuthEmail()
+				if err != nil {
+					return err
+				}
+
+				records, err := app.FindRecordsByFilter(colName, "app = {:app} && "+siteIdField+" = {:siteId} && doc_id = {:email}", "", 1, 0, dbx.Params{"app": appId, "siteId": siteId, "email": authEmail})
 				if err != nil || len(records) == 0 {
-					// Allow self-join: user can add themselves to the site
-					if allowSelfJoin && strings.HasSuffix(colName, SuffixSiteUsers) && e.Record.GetString("doc_id") == authEmail {
+					log.Printf("[DEBUG] Failed to find existing member. app=%s, siteId=%s, authEmail=%s, err=%v, len(records)=%d", appId, siteId, authEmail, err, len(records))
+					if allowSelfJoin && colName == ColSiteUsers && e.Record.GetString(FieldDocId) == authEmail {
 						return e.Next()
 					}
-					return apis.NewForbiddenError("Only existing members can add users", nil)
+					return apis.NewForbiddenError("Only existing members can add users.", nil)
 				}
 				return e.Next()
 			}
 
-			if strings.HasSuffix(colName, "__service_events") {
-				count, _ := app.CountRecords(colName)
+			if colName == ColServiceEvents {
+				serviceId := e.Record.GetString(FieldServiceId)
+				count, _ := app.CountRecords(colName, dbx.NewExp("app = {:app} AND serviceId = {:serviceId}", dbx.Params{"app": appId, "serviceId": serviceId}))
 				if count == 0 {
-					return e.Next()
+					return e.Next() // First event allowed
 				}
 
-				authEmail := ""
-				if e.Auth != nil {
-					authEmail = e.Auth.GetString("email")
-				}
-				if authEmail == "" {
-					return apis.NewUnauthorizedError("Unauthorized", nil)
+				authEmail, err := getAuthEmail()
+				if err != nil {
+					return err
 				}
 
-				usersColName := strings.ReplaceAll(colName, "__service_events", "__service_users")
-				records, err := app.FindRecordsByFilter(usersColName, "doc_id = {:email}", "", 1, 0, dbx.Params{"email": authEmail})
+				records, err := app.FindRecordsByFilter(ColServiceUsers, "app = {:app} && serviceId = {:serviceId} && doc_id = {:email}", "", 1, 0, dbx.Params{"app": appId, "serviceId": serviceId, "email": authEmail})
 				if err != nil || len(records) == 0 {
 					return apis.NewForbiddenError("Only service members can create events", nil)
 				}
 				return e.Next()
 			}
 
-			if strings.HasSuffix(colName, "__site_files") {
-				authEmail := ""
-				if e.Auth != nil {
-					authEmail = e.Auth.GetString("email")
-				}
-				if authEmail == "" {
-					return apis.NewUnauthorizedError("Unauthorized", nil)
+			if colName == ColSiteFiles {
+				authEmail, err := getAuthEmail()
+				if err != nil {
+					return err
 				}
 
-				usersColName := strings.ReplaceAll(colName, SuffixSiteFiles, SuffixSiteUsers)
-				records, err := app.FindRecordsByFilter(usersColName, FieldDocId+" = {:email}", "", 1, 0, dbx.Params{"email": authEmail})
+				siteId := e.Record.GetString(FieldSiteId)
+				records, err := app.FindRecordsByFilter(ColSiteUsers, "app = {:app} && siteId = {:siteId} && doc_id = {:email}", "", 1, 0, dbx.Params{"app": appId, "siteId": siteId, "email": authEmail})
 				if err != nil || len(records) == 0 {
 					return apis.NewForbiddenError("Only site members can upload files", nil)
 				}
 				return e.Next()
 			}
 
-			authEmail := ""
-			if e.Auth != nil {
-				authEmail = e.Auth.GetString("email")
-			}
-			if authEmail == "" {
-				return apis.NewUnauthorizedError("Unauthorized", nil)
+			if colName == ColAccountEvents {
+				authEmail, err := getAuthEmail()
+				if err != nil {
+					return err
+				}
+
+				accountId := e.Record.GetString(FieldAccountId)
+				if authEmail != accountId {
+					return apis.NewForbiddenError("You can only create events for your own account", nil)
+				}
+				return e.Next()
 			}
 
 			return e.Next()
@@ -198,21 +336,16 @@ func registerAppHooks(app core.App) {
 		Priority: -99999,
 	})
 
+	// User deletion cascade
 	app.OnRecordAfterDeleteSuccess().BindFunc(func(e *core.RecordEvent) error {
-		colName := e.Record.Collection().Name
-		if colName == "users" {
+		if e.Record.Collection().Name == "users" {
 			email := e.Record.GetString("email")
 			if email != "" {
 				log.Printf("[hyttahub] Auth user deleted (%s). Cleaning up account collections...", email)
-				encodedEmail := encodeSegment(email)
-				prefix := "hyttahub__"
-				suffix := "__accounts__" + encodedEmail + "__"
-				collections, _ := app.FindAllCollections()
-				for _, c := range collections {
-					if strings.HasPrefix(c.Name, prefix) && strings.Contains(c.Name, suffix) {
-						log.Printf("[hyttahub] CASCADE: Deleting user collection: %s", c.Name)
-						app.Delete(c)
-					}
+				// Delete all account events for this email
+				events, _ := app.FindRecordsByFilter(ColAccountEvents, "accountId = {:email}", "", 0, 0, dbx.Params{"email": email})
+				for _, ev := range events {
+					app.Delete(ev)
 				}
 			}
 		}
@@ -221,7 +354,7 @@ func registerAppHooks(app core.App) {
 
 	app.OnRecordAfterUpdateSuccess().BindFunc(func(e *core.RecordEvent) error {
 		colName := e.Record.Collection().Name
-		if !strings.HasSuffix(colName, SuffixSiteUsers) {
+		if colName != ColSiteUsers {
 			return e.Next()
 		}
 
@@ -231,48 +364,36 @@ func registerAppHooks(app core.App) {
 			return e.Next()
 		}
 
-		parts := strings.Split(colName, "__")
-		if len(parts) < 5 {
-			return e.Next()
-		}
-		appName := parts[1]
-		email := e.Record.GetString("doc_id")
+		appId := e.Record.GetString(FieldApp)
+		siteId := e.Record.GetString(FieldSiteId)
+		email := e.Record.GetString(FieldDocId)
 
-		saveGenericEvent := func(targetColName string, version int, base64Payload string, eventType string) {
-			log.Printf("[hyttahub]   -> Creating %s event (v=%d) in collection: %s", eventType, version, targetColName)
+		saveGenericEvent := func(targetColName string, idField string, idValue string, version int, base64Payload string, eventType string) {
 			col, _ := app.FindCollectionByNameOrId(targetColName)
 			if col != nil {
 				record := core.NewRecord(col)
+				record.Set(FieldApp, appId)
+				record.Set(idField, idValue)
 				record.Set(FieldDocId, fmt.Sprintf("%d", version))
 				record.Set(FieldVersion, version)
 				record.Set(FieldPayload, base64Payload)
 				record.Set(FieldTimeStamp, time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
 				if err := app.Save(record); err != nil {
-					log.Printf("[hyttahub] ERROR saving event record: %v", err)
-				} else {
-					log.Printf("[hyttahub] Event record %d saved successfully.", version)
+					log.Printf("[hyttahub] ERROR saving %s: %v", targetColName, err)
 				}
-			} else {
-				log.Printf("[hyttahub] ERROR: Collection %s not found.", targetColName)
 			}
 		}
 
-		// ---------------------------------------------------------------------
-		// Handle MarkForDeletion (m field)
-		// ---------------------------------------------------------------------
+		// Handle MarkForDeletion
 		if mValue != "" {
-			log.Printf("[hyttahub] CASCADE: Processing MarkForDeletion for %s", email)
 			mBytes, err := base64.StdEncoding.DecodeString(mValue)
 			if err == nil {
 				mInfo := &models.MarkForDeletion{}
 				if err := proto.Unmarshal(mBytes, mInfo); err == nil {
-					siteId := parts[3]
 					memberId := e.Record.GetInt(FieldUserId)
 					switch mInfo.DeleteReason {
 					case models.MarkForDeletion_memberLeftSite:
-						log.Printf("[hyttahub] CASCADE: Processing Member Left Site (%s)", siteId)
-						eventsCol := strings.TrimSuffix(colName, SuffixSiteUsers) + SuffixSiteEvents
-						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
+						lastRecords, _ := app.FindRecordsByFilter(ColSiteEvents, "app = {:app} && siteId = {:siteId}", "-v", 1, 0, dbx.Params{"app": appId, "siteId": siteId})
 						newVersion := 1
 						if len(lastRecords) > 0 {
 							newVersion = lastRecords[0].GetInt(FieldVersion) + 1
@@ -282,26 +403,22 @@ func registerAppHooks(app core.App) {
 							EventType: &models.SiteEvent_LeaveSite_{LeaveSite: &models.SiteEvent_LeaveSite{MemberId: int32(memberId)}},
 						}
 						eBytes, _ := proto.Marshal(siteEvent)
-						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Leave")
+						saveGenericEvent(ColSiteEvents, FieldSiteId, siteId, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Leave")
 
-						encodedEmail := encodeSegment(email)
-						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+						lastAccRecords, _ := app.FindRecordsByFilter(ColAccountEvents, "app = {:app} && accountId = {:accountId}", "-v", 1, 0, dbx.Params{"app": appId, "accountId": email})
 						newAccVersion := 1
 						if len(lastAccRecords) > 0 {
-							newAccVersion = lastAccRecords[0].GetInt("v") + 1
+							newAccVersion = lastAccRecords[0].GetInt(FieldVersion) + 1
 						}
 						accEvent := &models.AccountEvent{
 							Version:   int32(newAccVersion),
 							EventType: &models.AccountEvent_LeaveSite{LeaveSite: siteId},
 						}
 						aeBytes, _ := proto.Marshal(accEvent)
-						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
+						saveGenericEvent(ColAccountEvents, FieldAccountId, email, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Leave")
 
 					case models.MarkForDeletion_memberRemovedFromSite:
-						log.Printf("[hyttahub] CASCADE: Processing Member Removed From Site (%s)", siteId)
-						eventsCol := strings.TrimSuffix(colName, SuffixSiteUsers) + SuffixSiteEvents
-						lastRecords, _ := app.FindRecordsByFilter(eventsCol, "", "-v", 1, 0)
+						lastRecords, _ := app.FindRecordsByFilter(ColSiteEvents, "app = {:app} && siteId = {:siteId}", "-v", 1, 0, dbx.Params{"app": appId, "siteId": siteId})
 						newVersion := 1
 						if len(lastRecords) > 0 {
 							newVersion = lastRecords[0].GetInt(FieldVersion) + 1
@@ -311,57 +428,45 @@ func registerAppHooks(app core.App) {
 							EventType: &models.SiteEvent_RemoveMember_{RemoveMember: &models.SiteEvent_RemoveMember{MemberId: int32(memberId)}},
 						}
 						eBytes, _ := proto.Marshal(siteEvent)
-						saveGenericEvent(eventsCol, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Remove")
+						saveGenericEvent(ColSiteEvents, FieldSiteId, siteId, newVersion, base64.StdEncoding.EncodeToString(eBytes), "Site-Remove")
 
-						encodedEmail := encodeSegment(email)
-						accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-						lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+						lastAccRecords, _ := app.FindRecordsByFilter(ColAccountEvents, "app = {:app} && accountId = {:accountId}", "-v", 1, 0, dbx.Params{"app": appId, "accountId": email})
 						newAccVersion := 1
 						if len(lastAccRecords) > 0 {
-							newAccVersion = lastAccRecords[0].GetInt("v") + 1
+							newAccVersion = lastAccRecords[0].GetInt(FieldVersion) + 1
 						}
 						accEvent := &models.AccountEvent{
 							Version:   int32(newAccVersion),
 							EventType: &models.AccountEvent_RemoveSite{RemoveSite: siteId},
 						}
 						aeBytes, _ := proto.Marshal(accEvent)
-						saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Remove")
+						saveGenericEvent(ColAccountEvents, FieldAccountId, email, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Remove")
 					}
 				}
 			}
 			app.Delete(e.Record)
-			count, _ := app.CountRecords(colName)
+			
+			count, _ := app.CountRecords(ColSiteUsers, dbx.NewExp("app = {:app} AND siteId = {:siteId}", dbx.Params{"app": appId, "siteId": siteId}))
 			if count == 0 {
-				prefix := strings.Join(parts[0:len(parts)-1], "__") + "__"
-				collections, _ := app.FindAllCollections()
-				for _, c := range collections {
-					if strings.HasPrefix(c.Name, prefix) {
-						app.Delete(c)
-					}
+				events, _ := app.FindRecordsByFilter(ColSiteEvents, "app = {:app} && siteId = {:siteId}", "", 0, 0, dbx.Params{"app": appId, "siteId": siteId})
+				for _, ev := range events {
+					app.Delete(ev)
+				}
+				files, _ := app.FindRecordsByFilter(ColSiteFiles, "app = {:app} && siteId = {:siteId}", "", 0, 0, dbx.Params{"app": appId, "siteId": siteId})
+				for _, f := range files {
+					app.Delete(f)
 				}
 			}
 		}
 
-		// ---------------------------------------------------------------------
-		// Handle Copy (c field)
-		// ---------------------------------------------------------------------
+		// Handle Copy
 		if copyValue != "" {
-			log.Printf("[hyttahub] COPY: 'c' field detected for %s", email)
 			copyBytes, _ := base64.StdEncoding.DecodeString(copyValue)
 			copyInfo := &models.MarkForCopy{}
 			if err := proto.Unmarshal(copyBytes, copyInfo); err == nil {
-				sourceSiteId := parts[3]
 				newSiteId := generateId()
-				log.Printf("[hyttahub] COPY: Performing site copy: SOURCE=%s -> DEST=%s (upToVersion=%d)", sourceSiteId, newSiteId, copyInfo.UpToVersion)
 
-				newPrefix := fmt.Sprintf("hyttahub__%s__sites__%s", appName, newSiteId)
-				if err := createHyttahubCollection(app, newPrefix+"__site_users"); err != nil {
-					log.Printf("[hyttahub] COPY ERROR: Failed to create site_users: %v", err)
-				}
-
-				srcEventsCol := strings.TrimSuffix(colName, SuffixSiteUsers) + SuffixSiteEvents
-				dstEventsCol := newPrefix + SuffixSiteEvents
-				srcEvents, _ := app.FindRecordsByFilter(srcEventsCol, "", "v", 0, 0)
+				srcEvents, _ := app.FindRecordsByFilter(ColSiteEvents, "app = {:app} && siteId = {:siteId}", "v", 0, 0, dbx.Params{"app": appId, "siteId": siteId})
 				var siteName string
 				maxV := int32(0)
 				for _, srcEv := range srcEvents {
@@ -380,308 +485,64 @@ func registerAppHooks(app core.App) {
 							maxV = int32(v)
 						}
 					}
-					saveGenericEvent(dstEventsCol, v, pBase64, "Site-Event-Copy")
+					saveGenericEvent(ColSiteEvents, FieldSiteId, newSiteId, v, pBase64, "Site-Event-Copy")
 				}
 
 				maxV++
-				log.Printf("[hyttahub] COPY: Site name detected as: %s. Creating ImportEvent (v=%d)", siteName, maxV)
+				log.Printf("[hyttahub] COPY: Site name: %s. Creating ImportEvent (v=%d)", siteName, maxV)
 				importEvent := &models.SiteEvent{
 					Version: maxV, Author: copyInfo.Author,
 					EventType: &models.SiteEvent_ImportEvent_{ImportEvent: &models.SiteEvent_ImportEvent{}},
 				}
 				ieBytes, _ := proto.Marshal(importEvent)
-				saveGenericEvent(dstEventsCol, int(maxV), base64.StdEncoding.EncodeToString(ieBytes), "Site-Import-Event")
+				saveGenericEvent(ColSiteEvents, FieldSiteId, newSiteId, int(maxV), base64.StdEncoding.EncodeToString(ieBytes), "Site-Import")
 
-				usersCol, _ := app.FindCollectionByNameOrId(newPrefix + SuffixSiteUsers)
-				if usersCol != nil {
-					userRec := core.NewRecord(usersCol)
-					userRec.Set(FieldDocId, email)
-					userRec.Set(FieldUserId, copyInfo.Author)
-					userRec.Set(FieldTimeStamp, time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
-					if err := app.Save(userRec); err == nil {
-						log.Printf("[hyttahub] COPY: Admin user link created for %s on new site.", email)
-					}
-				}
+				usersCol, _ := app.FindCollectionByNameOrId(ColSiteUsers)
+				userRec := core.NewRecord(usersCol)
+				userRec.Set(FieldApp, appId)
+				userRec.Set(FieldSiteId, newSiteId)
+				userRec.Set(FieldDocId, email)
+				userRec.Set(FieldUserId, copyInfo.Author)
+				userRec.Set(FieldTimeStamp, time.Now().UTC().Format("2006-01-02 15:04:05.000Z"))
+				app.Save(userRec)
 
-				srcFilesCol := strings.TrimSuffix(colName, SuffixSiteUsers) + SuffixSiteFiles
-				dstFilesCol := newPrefix + SuffixSiteFiles
-				srcFiles, _ := app.FindRecordsByFilter(srcFilesCol, "", "", 0, 0)
+				srcFiles, _ := app.FindRecordsByFilter(ColSiteFiles, "app = {:app} && siteId = {:siteId}", "", 0, 0, dbx.Params{"app": appId, "siteId": siteId})
 				for _, srcFile := range srcFiles {
-					fcol, _ := app.FindCollectionByNameOrId(dstFilesCol)
-					if fcol == nil {
-						break
-					}
+					fcol, _ := app.FindCollectionByNameOrId(ColSiteFiles)
 					newFile := core.NewRecord(fcol)
+					newFile.Set(FieldApp, appId)
+					newFile.Set(FieldSiteId, newSiteId)
 					newFile.Set(FieldDocId, srcFile.GetString(FieldDocId))
 					filename := srcFile.GetString(FieldFile)
-					// Save record first without the file field to avoid validation errors for missing files
 					if err := app.Save(newFile); err == nil && filename != "" {
 						srcPath := filepath.Join(app.DataDir(), "storage", srcFile.BaseFilesPath(), filename)
 						dstPath := filepath.Join(app.DataDir(), "storage", newFile.BaseFilesPath(), filename)
 
 						if err := os.MkdirAll(filepath.Dir(dstPath), 0755); err == nil {
 							if err := copyFileLocal(srcPath, dstPath); err == nil {
-								// Also copy .attrs if they exist
 								copyFileLocal(srcPath+".attrs", dstPath+".attrs")
-
-								// Use direct DB update to bypass PocketBase file field validation
-								_, dbErr := app.DB().Update(newFile.Collection().Name, dbx.Params{"file": filename}, dbx.HashExp{"id": newFile.Id}).Execute()
-								if dbErr != nil {
-									log.Printf("[hyttahub] COPY ERROR: Failed to update file metadata for %s: %v", filename, dbErr)
-								}
-							} else {
-								log.Printf("[hyttahub] COPY ERROR: Failed to copy physical file %s: %v", filename, err)
+								app.DB().Update(newFile.Collection().Name, dbx.Params{"file": filename}, dbx.HashExp{"id": newFile.Id}).Execute()
 							}
-						} else {
-							log.Printf("[hyttahub] COPY ERROR: Failed to create directories for %s: %v", filename, err)
 						}
-					} else if err != nil {
-						log.Printf("[hyttahub] COPY ERROR: Failed to create file record metadata for %s: %v", srcFile.GetString("doc_id"), err)
 					}
 				}
-				log.Printf("[hyttahub] COPY: %d files processed.", len(srcFiles))
 
-				encodedEmail := encodeSegment(email)
-				accEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
-				lastAccRecords, _ := app.FindRecordsByFilter(accEventsCol, "", "-v", 1, 0)
+				lastAccRecords, _ := app.FindRecordsByFilter(ColAccountEvents, "app = {:app} && accountId = {:accountId}", "-v", 1, 0, dbx.Params{"app": appId, "accountId": email})
 				newAccVersion := 1
 				if len(lastAccRecords) > 0 {
 					newAccVersion = lastAccRecords[0].GetInt(FieldVersion) + 1
 				}
 
-				log.Printf("[hyttahub] COPY: Adding CreateSite event to account stream (%s) at v=%d", accEventsCol, newAccVersion)
 				accEvent := &models.AccountEvent{
 					Version:   int32(newAccVersion),
 					EventType: &models.AccountEvent_CreateSite{CreateSite: newSiteId},
 				}
 				aeBytes, _ := proto.Marshal(accEvent)
-				saveGenericEvent(accEventsCol, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Create-Event")
-
-				log.Printf("[hyttahub] COPY SUCCESS: Site %s is ready.", newSiteId)
+				saveGenericEvent(ColAccountEvents, FieldAccountId, email, newAccVersion, base64.StdEncoding.EncodeToString(aeBytes), "Account-Create")
 			}
 			e.Record.Set("c", "")
 			app.Save(e.Record)
 		}
 		return e.Next()
 	})
-
-	app.OnServe().Bind(&hook.Handler[*core.ServeEvent]{
-		Func: func(se *core.ServeEvent) error {
-			se.Router.GET("/{path...}", apis.Static(os.DirFS(app.DataDir()+"/../pb_public"), false))
-			se.Router.POST("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-			se.Router.DELETE("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-			se.Router.PATCH("/{path...}", func(e *core.RequestEvent) error { return e.Next() })
-
-			se.Router.Bind(&hook.Handler[*core.RequestEvent]{
-				Func: func(e *core.RequestEvent) error {
-					reqPath := e.Request.URL.Path
-					reqMethod := e.Request.Method
-
-					// Anonymous Auth support: populate e.Auth from X-Auth-Email header if present.
-					if allowAnonymous && e.Auth == nil {
-						if authEmail := e.Request.Header.Get("X-Auth-Email"); authEmail != "" {
-							user, _ := app.FindAuthRecordByEmail("users", authEmail)
-							if user == nil {
-								// For anonymous auth, create a "virtual" record in-memory instead of saving to DB.
-								usersCol, _ := app.FindCollectionByNameOrId("users")
-								if usersCol != nil {
-									user = core.NewRecord(usersCol)
-									user.Set("email", authEmail)
-									user.SetVerified(true)
-
-									// Deterministic 15-char ID ensures consistency for ownership rules.
-									h := sha1.Sum([]byte(authEmail))
-									user.Id = hex.EncodeToString(h[:])[:15]
-									log.Printf("[hyttahub] Header Auth: Virtual user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
-								}
-							} else {
-								log.Printf("[hyttahub] Header Auth: Existing user for %s (id: %s) -> %s %s", authEmail, user.Id, reqMethod, reqPath)
-							}
-							if user != nil {
-								e.Auth = user
-							}
-						}
-					}
-
-					if !strings.HasPrefix(reqPath, "/api/collections/") {
-						return e.Next()
-					}
-					parts := strings.Split(reqPath, "/")
-					if len(parts) < 4 {
-						return e.Next()
-					}
-					collectionName := parts[3]
-
-					if !strings.HasPrefix(collectionName, "hyttahub__") {
-						return e.Next()
-					}
-
-					// Skip auto-sync if prerequisites are missing for read operations.
-					if reqMethod == "GET" || reqMethod == "HEAD" || reqMethod == "OPTIONS" {
-						if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-							prefix := strings.Split(collectionName, "__site_")[0]
-							parent := prefix + "__site_users"
-							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-								return e.Next()
-							}
-						} else if strings.HasSuffix(collectionName, "__service_events") {
-							prefix := strings.TrimSuffix(collectionName, "__service_events")
-							parent := prefix + "__service_users"
-							if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-								return e.Next()
-							}
-						} else if strings.Contains(collectionName, "__accounts__") {
-							parts := strings.Split(collectionName, "__")
-							emailChunk := ""
-							for i, part := range parts {
-								if part == "accounts" && i+1 < len(parts) {
-									emailChunk = parts[i+1]
-									break
-								}
-							}
-							email := decodeSegment(emailChunk)
-							user, _ := app.FindAuthRecordByEmail("users", email)
-							if user == nil {
-								return e.Next()
-							}
-						}
-					}
-
-					if err := createHyttahubCollection(app, collectionName); err != nil {
-						return apis.NewBadRequestError("Failed to auto-sync collection", err)
-					}
-					return e.Next()
-				},
-				Priority: -99999,
-			})
-			return se.Next()
-		},
-		Priority: -99999,
-	})
-}
-
-func createHyttahubCollection(app core.App, collectionName string) error {
-	if !strings.HasPrefix(collectionName, "hyttahub__") {
-		return nil
-	}
-
-	col, _ := app.FindCollectionByNameOrId(collectionName)
-
-	if col != nil && strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-		// Prerequisite check for existing site collections
-	} else if col == nil {
-		if strings.Contains(collectionName, "__site_") && !strings.HasSuffix(collectionName, "__site_users") {
-			prefix := strings.Split(collectionName, "__site_")[0]
-			parent := prefix + "__site_users"
-			if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-				return fmt.Errorf("missing prerequisite collection %s", parent)
-			}
-		} else if strings.HasSuffix(collectionName, "__service_events") {
-			prefix := strings.TrimSuffix(collectionName, "__service_events")
-			parent := prefix + "__service_users"
-			if _, err := app.FindCollectionByNameOrId(parent); err != nil {
-				return fmt.Errorf("missing prerequisite collection %s", parent)
-			}
-		}
-	}
-
-	isNew := false
-	if col == nil {
-		col = core.NewBaseCollection(collectionName)
-		isNew = true
-	}
-
-	var listRule, viewRule, createRule, updateRule, deleteRule *string
-
-	if strings.HasSuffix(collectionName, "__site_users") {
-		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
-		listRule, viewRule, createRule, updateRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(""), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.HasSuffix(collectionName, "__site_events") {
-		prefix := strings.Split(collectionName, "__site_")[0]
-		usersColName := prefix + "__site_users"
-		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
-		if allowSelfJoin {
-			rule = "@request.auth.id != ''"
-		}
-		listRule, viewRule, createRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.HasSuffix(collectionName, "__service_users") {
-		rule := "@request.auth.id != '' && @collection." + collectionName + ".doc_id ?= @request.auth.email"
-		listRule, viewRule, createRule, updateRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(""), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.HasSuffix(collectionName, "__service_events") {
-		listRule, viewRule, createRule = types.Pointer(""), types.Pointer(""), types.Pointer("")
-	} else if strings.HasSuffix(collectionName, "__site_files") {
-		prefix := strings.Split(collectionName, "__site_files")[0]
-		usersColName := prefix + "__site_users"
-		rule := "@request.auth.id != '' && @collection." + usersColName + ".doc_id ?= @request.auth.email"
-		listRule, viewRule, createRule, updateRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
-	} else if strings.Contains(collectionName, "__accounts__") {
-		parts := strings.Split(collectionName, "__")
-		emailChunk := ""
-		for i, part := range parts {
-			if part == "accounts" && i+1 < len(parts) {
-				emailChunk = parts[i+1]
-				break
-			}
-		}
-		email := decodeSegment(emailChunk)
-		rule := "@request.auth.id != '' && @request.auth.email = \"" + email + "\""
-		listRule, viewRule, createRule, deleteRule = types.Pointer(rule), types.Pointer(rule), types.Pointer(rule), types.Pointer(rule)
-		if !strings.HasSuffix(collectionName, "__account_events") {
-			updateRule = types.Pointer(rule)
-		}
-	}
-
-	col.ListRule, col.ViewRule, col.CreateRule, col.UpdateRule, col.DeleteRule = listRule, viewRule, createRule, updateRule, deleteRule
-
-	addFieldIfMissing := func(name string, field core.Field) {
-		if col.Fields.GetByName(name) == nil {
-			col.Fields.Add(field)
-		}
-	}
-
-	addFieldIfMissing(FieldDocId, &core.TextField{Name: FieldDocId})
-	if strings.HasSuffix(collectionName, "_events") {
-		addFieldIfMissing(FieldPayload, &core.TextField{Name: FieldPayload})
-		addFieldIfMissing(FieldVersion, &core.NumberField{Name: FieldVersion})
-		addFieldIfMissing(FieldTimeStamp, &core.DateField{Name: FieldTimeStamp})
-	} else if strings.HasSuffix(collectionName, "_users") {
-		addFieldIfMissing(FieldUserId, &core.NumberField{Name: FieldUserId})
-		addFieldIfMissing(FieldTimeStamp, &core.DateField{Name: FieldTimeStamp})
-		addFieldIfMissing(FieldMarkDelete, &core.TextField{Name: FieldMarkDelete})
-		addFieldIfMissing(FieldMarkCopy, &core.TextField{Name: FieldMarkCopy})
-	} else if strings.HasSuffix(collectionName, SuffixSiteFiles) {
-		addFieldIfMissing(FieldFile, &core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
-	}
-
-	if err := app.Save(col); err != nil {
-		return err
-	}
-
-	if isNew {
-		if strings.HasSuffix(collectionName, "__site_users") {
-			prefix := strings.TrimSuffix(collectionName, "__site_users")
-			createHyttahubCollection(app, prefix+"__site_events")
-			createHyttahubCollection(app, prefix+"__site_files")
-		} else if strings.HasSuffix(collectionName, "__service_users") {
-			prefix := strings.TrimSuffix(collectionName, "__service_users")
-			createHyttahubCollection(app, prefix+"__service_events")
-		}
-	}
-
-	return nil
-}
-
-func copyFileLocal(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-	_, err = io.Copy(out, in)
-	return err
 }

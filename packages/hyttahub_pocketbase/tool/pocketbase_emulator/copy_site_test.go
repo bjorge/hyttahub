@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"fmt"
 	"testing"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -18,23 +17,18 @@ func TestSiteCopyLogic(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	setupCollections(testApp)
 	registerAppHooks(testApp)
 
 	email := "copy-user@example.com"
 	appName := "testapp"
 	sourceSiteId := "SRC123"
 
-	// 1. Setup Source Site
-	srcPrefix := fmt.Sprintf("%s%s__sites__%s", PrefixHyttaHub, appName, sourceSiteId)
-	srcUsersCol := srcPrefix + SuffixSiteUsers
-	srcEventsCol := srcPrefix + SuffixSiteEvents
-	
-	createHyttahubCollection(testApp, srcUsersCol)
-	// site_events is auto-created by createHyttahubCollection for site_users
-
 	// Add user to source site
-	col, _ := testApp.FindCollectionByNameOrId(srcUsersCol)
+	col, _ := testApp.FindCollectionByNameOrId(ColSiteUsers)
 	record := core.NewRecord(col)
+	record.Set(FieldApp, appName)
+	record.Set(FieldSiteId, sourceSiteId)
 	record.Set(FieldDocId, email)
 	record.Set(FieldUserId, 100)
 	if err := testApp.Save(record); err != nil {
@@ -42,7 +36,7 @@ func TestSiteCopyLogic(t *testing.T) {
 	}
 
 	// Add an event to source site
-	eventsCol, _ := testApp.FindCollectionByNameOrId(srcEventsCol)
+	eventsCol, _ := testApp.FindCollectionByNameOrId(ColSiteEvents)
 	newSiteEvent := &models.SiteEvent{
 		Version: 1,
 		Author: 100,
@@ -54,14 +48,12 @@ func TestSiteCopyLogic(t *testing.T) {
 	}
 	nseBytes, _ := proto.Marshal(newSiteEvent)
 	eventRecord := core.NewRecord(eventsCol)
+	eventRecord.Set(FieldApp, appName)
+	eventRecord.Set(FieldSiteId, sourceSiteId)
 	eventRecord.Set(FieldDocId, "1")
 	eventRecord.Set(FieldVersion, 1)
 	eventRecord.Set(FieldPayload, base64.StdEncoding.EncodeToString(nseBytes))
 	testApp.Save(eventRecord)
-
-	// Setup Account Events collection for the user
-	accEventsColName := fmt.Sprintf("%s%s%s%s%s", PrefixHyttaHub, appName, SegmentAccounts, encodeSegment(email), SuffixAccountEvents)
-	createHyttahubCollection(testApp, accEventsColName)
 
 	// 2. Trigger Site Copy
 	copyInfo := &models.MarkForCopy{
@@ -76,18 +68,18 @@ func TestSiteCopyLogic(t *testing.T) {
 	}
 
 	// 3. Verify MarkForCopy was cleared
-	updatedRecord, _ := testApp.FindRecordById(srcUsersCol, record.Id)
+	updatedRecord, _ := testApp.FindRecordById(ColSiteUsers, record.Id)
 	if updatedRecord.GetString(FieldMarkCopy) != "" {
 		t.Errorf("'%s' field should have been cleared", FieldMarkCopy)
 	}
 
 	// 4. Verify Account Event (CreateSite) was created
-	accEvents, err := testApp.FindRecordsByFilter(accEventsColName, "v > 0", "-v", 1, 0)
+	accEvents, err := testApp.FindRecordsByFilter(ColAccountEvents, "app='testapp' && accountId='copy-user@example.com' && v > 0", "-v", 1, 0)
 	if err != nil || len(accEvents) == 0 {
 		t.Fatalf("Account event should have been created for site copy")
 	}
 
-	// Extract the new site ID from logic or search for it
+	// Extract the new site ID
 	var newSiteId string
 	pBase64 := accEvents[0].GetString(FieldPayload)
 	pBytes, _ := base64.StdEncoding.DecodeString(pBase64)
@@ -105,26 +97,14 @@ func TestSiteCopyLogic(t *testing.T) {
 		t.Fatal("Could not find new site ID in account events")
 	}
 
-	// 5. Verify New Site Collections exist
-	dstPrefix := fmt.Sprintf("%s%s__sites__%s", PrefixHyttaHub, appName, newSiteId)
-	dstUsersCol := dstPrefix + SuffixSiteUsers
-	dstEventsCol := dstPrefix + SuffixSiteEvents
-
-	if _, err := testApp.FindCollectionByNameOrId(dstUsersCol); err != nil {
-		t.Errorf("Destination site_users collection %s should exist", dstUsersCol)
-	}
-	if _, err := testApp.FindCollectionByNameOrId(dstEventsCol); err != nil {
-		t.Errorf("Destination site_events collection %s should exist", dstEventsCol)
-	}
-
 	// 6. Verify User is member of new site
-	dstUsers, _ := testApp.FindRecordsByFilter(dstUsersCol, "doc_id = {:email}", "", 1, 0, map[string]any{"email": email})
+	dstUsers, _ := testApp.FindRecordsByFilter(ColSiteUsers, "app='testapp' && siteId={:siteId} && doc_id={:email}", "", 1, 0, map[string]any{"siteId": newSiteId, "email": email})
 	if len(dstUsers) == 0 {
 		t.Errorf("User should be a member of the new site")
 	}
 
 	// 7. Verify Events were copied and ImportEvent exists
-	dstEvents, _ := testApp.FindRecordsByFilter(dstEventsCol, "v > 0", "v", 100, 0)
+	dstEvents, _ := testApp.FindRecordsByFilter(ColSiteEvents, "app='testapp' && siteId={:siteId} && v > 0", "v", 100, 0, map[string]any{"siteId": newSiteId})
 	if len(dstEvents) < 2 {
 		t.Errorf("Should have at least 2 events in new site (copied 1 + 1 import), got %d", len(dstEvents))
 	}

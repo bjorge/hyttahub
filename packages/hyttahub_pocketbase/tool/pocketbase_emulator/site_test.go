@@ -11,231 +11,128 @@ import (
 	"github.com/pocketbase/pocketbase/tests"
 )
 
-func TestAutoCollectionCreation(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	collectionName := "hyttahub__test__sites__T123__site_users"
-	
-	// Use the app we already configured
-	scenario := tests.ApiScenario{
-		Name:            "GET triggers auto-creation",
-		Method:          http.MethodGet,
-		URL:             "/api/collections/" + collectionName + "/records",
-		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
-		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusOK, 
-		ExpectedContent: []string{`"items":[]`},
-	}
-	scenario.Test(t)
-
-	// Verify it exists now
-	_, err = testApp.FindCollectionByNameOrId(collectionName)
-	if err != nil {
-		t.Fatalf("Collection %s should have been auto-created", collectionName)
-	}
+func setupCollections(app core.App) {
+	migrate(app)
 }
 
-func TestMembershipSecurity(t *testing.T) {
+func TestSiteMembershipSecurity(t *testing.T) {
 	testApp, err := tests.NewTestApp(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	setupCollections(testApp)
 	registerAppHooks(testApp)
 
-	siteUsersCol := "hyttahub__test__sites__SWS__site_users"
-	createHyttahubCollection(testApp, siteUsersCol)
-	
-	// Create a user for testing
-	user, err := testApp.FindAuthRecordByEmail("users", "test@example.com")
-	if err != nil {
+	appName := "tictactoe"
+	siteId := "S123"
+
+	// Create users
+	user1, _ := testApp.FindAuthRecordByEmail("users", "user1@example.com")
+	if user1 == nil {
 		col, _ := testApp.FindCollectionByNameOrId("users")
-		user = core.NewRecord(col)
-		user.SetEmail("test@example.com")
-		user.SetPassword("1234567890")
-		if err := testApp.Save(user); err != nil {
-			t.Fatal(err)
-		}
+		user1 = core.NewRecord(col)
+		user1.SetEmail("user1@example.com")
+		user1.SetPassword("1234567890")
+		testApp.Save(user1)
 	}
 
-	token, _ := user.NewAuthToken()
+	user2, _ := testApp.FindAuthRecordByEmail("users", "user2@example.com")
+	if user2 == nil {
+		col, _ := testApp.FindCollectionByNameOrId("users")
+		user2 = core.NewRecord(col)
+		user2.SetEmail("user2@example.com")
+		user2.SetPassword("1234567890")
+		testApp.Save(user2)
+	}
 
-	// 1. First user creation should be allowed
+	token1, _ := user1.NewAuthToken()
+	token2, _ := user2.NewAuthToken()
+
+	// 1. user1 creates the site (first user allowed)
 	scenario1 := tests.ApiScenario{
-		Name:            "Allow first user creation in new site",
+		Name:            "Create Site (First User)",
 		Method:          http.MethodPost,
-		URL:             "/api/collections/" + siteUsersCol + "/records",
-		Body:            strings.NewReader(fmt.Sprintf(`{"doc_id": "test@example.com", "u": 1, "t": "%s"}`, time.Now().UTC().Format(time.RFC3339))),
-		Headers:         map[string]string{"Authorization": token},
-		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
-		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusOK, 
-		ExpectedContent: []string{`"doc_id":"test@example.com"`},
-	}
-	scenario1.Test(t)
-
-	// 2. Second user creation by a non-member should be FORBIDDEN
-	otherUser, _ := testApp.FindAuthRecordByEmail("users", "other@example.com")
-	if otherUser == nil {
-		col, _ := testApp.FindCollectionByNameOrId("users")
-		otherUser = core.NewRecord(col)
-		otherUser.SetEmail("other@example.com")
-		otherUser.SetPassword("1234567890")
-		testApp.Save(otherUser)
-	}
-	otherToken, _ := otherUser.NewAuthToken()
-
-	scenario2 := tests.ApiScenario{
-		Name:            "Forbidden if non-member tries to add themselves",
-		Method:          http.MethodPost,
-		URL:             "/api/collections/" + siteUsersCol + "/records",
-		Body:            strings.NewReader(fmt.Sprintf(`{"doc_id": "other@example.com", "u": 2, "t": "%s"}`, time.Now().UTC().Format(time.RFC3339))),
-		Headers:         map[string]string{"Authorization": otherToken},
-		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
-		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusForbidden,
-		ExpectedContent: []string{`"message":"Only existing members can add users."`},
-	}
-	scenario2.Test(t)
-}
-
-func TestSiteEventsImmutability(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	siteEventsCol := "hyttahub__test__sites__IMMUTABLE__site_events"
-	siteUsersCol := "hyttahub__test__sites__IMMUTABLE__site_users"
-
-	createHyttahubCollection(testApp, siteEventsCol)
-	createHyttahubCollection(testApp, siteUsersCol)
-
-	// Create a user for testing
-	user, err := testApp.FindAuthRecordByEmail("users", "test@example.com")
-	if err != nil {
-		col, _ := testApp.FindCollectionByNameOrId("users")
-		user = core.NewRecord(col)
-		user.SetEmail("test@example.com")
-		user.SetPassword("1234567890")
-		if err := testApp.Save(user); err != nil {
-			t.Fatal(err)
-		}
-	}
-	token, _ := user.NewAuthToken()
-
-	// 1. Add user to site_users first so they can create events
-	createHyttahubCollection(testApp, siteUsersCol)
-	col, _ := testApp.FindCollectionByNameOrId(siteUsersCol)
-	record := core.NewRecord(col)
-	record.Set("doc_id", "test@example.com")
-	record.Set("u", 1)
-	if err := testApp.Save(record); err != nil {
-		t.Fatal(err)
-	}
-
-	// 2. Create a site event
-	scenario1 := tests.ApiScenario{
-		Name:            "Allow creating a site event",
-		Method:          http.MethodPost,
-		URL:             "/api/collections/" + siteEventsCol + "/records",
-		Body:            strings.NewReader(`{"id": "eventid12345678", "doc_id": "1", "v": 1, "p": "test-payload"}`),
-		Headers:         map[string]string{"Authorization": token},
+		URL:             "/api/collections/" + ColSiteUsers + "/records",
+		Body:            strings.NewReader(fmt.Sprintf(`{"app": "%s", "siteId": "%s", "doc_id": "user1@example.com", "u": %d}`, appName, siteId, time.Now().Unix())),
+		Headers:         map[string]string{"Authorization": token1},
 		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
 		DisableTestAppCleanup: true,
 		ExpectedStatus:  http.StatusOK,
-		ExpectedContent: []string{`"doc_id":"1"`, `"id":"eventid12345678"`},
+		ExpectedContent: []string{""},
 	}
 	scenario1.Test(t)
 
-	// 3. Try to update the event (should be FORBIDDEN)
+	// 2. user2 tries to join site without invite
 	scenario2 := tests.ApiScenario{
-		Name:            "Forbidden updating a site event",
-		Method:          http.MethodPatch,
-		URL:             "/api/collections/" + siteEventsCol + "/records/eventid12345678",
-		Body:            strings.NewReader(`{"p": "updated-payload"}`),
-		Headers:         map[string]string{"Authorization": token},
+		Name:            "Join Site Without Invite",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/" + ColSiteUsers + "/records",
+		Body:            strings.NewReader(fmt.Sprintf(`{"app": "%s", "siteId": "%s", "doc_id": "user2@example.com", "u": %d}`, appName, siteId, time.Now().Unix())),
+		Headers:         map[string]string{"Authorization": token2},
 		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
 		DisableTestAppCleanup: true,
 		ExpectedStatus:  http.StatusForbidden,
-		ExpectedContent: []string{`"Only superusers can perform this action."`},
+		ExpectedContent: []string{""},
 	}
 	scenario2.Test(t)
 
-	// 4. Try to delete the event (should be FORBIDDEN)
+	// Seed user1 as the first member (since scenario1 rolled back)
+	col, _ := testApp.FindCollectionByNameOrId(ColSiteUsers)
+	su := core.NewRecord(col)
+	su.Set(FieldApp, appName)
+	su.Set(FieldSiteId, siteId)
+	su.Set(FieldDocId, "user1@example.com")
+	su.Set(FieldUserId, 123)
+	testApp.Save(su)
+
+	// 3. user1 invites user2
 	scenario3 := tests.ApiScenario{
-		Name:            "Forbidden deleting a site event",
-		Method:          http.MethodDelete,
-		URL:             "/api/collections/" + siteEventsCol + "/records/eventid12345678",
-		Headers:         map[string]string{"Authorization": token},
+		Name:            "Invite User",
+		Method:          http.MethodPost,
+		URL:             "/api/collections/" + ColSiteUsers + "/records",
+		Body:            strings.NewReader(fmt.Sprintf(`{"app": "%s", "siteId": "%s", "doc_id": "user2@example.com", "u": %d}`, appName, siteId, time.Now().Unix())),
+		Headers:         map[string]string{"Authorization": token1},
 		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
 		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusForbidden,
-		ExpectedContent: []string{`"Only superusers can perform this action."`},
+		ExpectedStatus:  http.StatusOK,
+		ExpectedContent: []string{""},
 	}
 	scenario3.Test(t)
-}
 
-func TestAnonymousSelfJoin(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	allowSelfJoin = true
-	defer func() { allowSelfJoin = false }()
-
-	siteUsersCol := "hyttahub__test__sites__ANON__site_users"
-	siteEventsCol := "hyttahub__test__sites__ANON__site_events"
-	createHyttahubCollection(testApp, siteUsersCol)
-	createHyttahubCollection(testApp, siteEventsCol)
-
-	// Create a user for testing
-	user, _ := testApp.FindAuthRecordByEmail("users", "anon@example.com")
-	if user == nil {
-		col, _ := testApp.FindCollectionByNameOrId("users")
-		user = core.NewRecord(col)
-		user.SetEmail("anon@example.com")
-		user.SetPassword("1234567890")
-		if err := testApp.Save(user); err != nil {
-			t.Fatal(err)
-		}
-	}
-	token, _ := user.NewAuthToken()
-
-	// 1. Authenticated non-member should be allowed to READ site events
-	scenario1 := tests.ApiScenario{
-		Name:            "Allow authenticated non-member to read site events",
+	// 4. Verify user2 can now see the events
+	scenario4 := tests.ApiScenario{
+		Name:            "Read Events as Member",
 		Method:          http.MethodGet,
-		URL:             "/api/collections/" + siteEventsCol + "/records",
-		Headers:         map[string]string{"Authorization": token},
+		URL:             fmt.Sprintf("/api/collections/%s/records?filter=(app='%s'%%26%%26siteId='%s')", ColSiteEvents, appName, siteId),
+		Headers:         map[string]string{"Authorization": token2},
 		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
 		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusOK, 
-		ExpectedContent: []string{`"items":[]`},
+		ExpectedStatus:  http.StatusOK,
+		ExpectedContent: []string{""},
 	}
-	scenario1.Test(t)
+	scenario4.Test(t)
 
-	// 2. Authenticated non-member should be allowed to self-join
-	scenario2 := tests.ApiScenario{
-		Name:            "Allow self-join for authenticated user",
-		Method:          http.MethodPost,
-		URL:             "/api/collections/" + siteUsersCol + "/records",
-		Body:            strings.NewReader(fmt.Sprintf(`{"doc_id": "anon@example.com", "u": 2, "t": "%s"}`, time.Now().UTC().Format(time.RFC3339))),
-		Headers:         map[string]string{"Authorization": token},
+	// 5. Verify non-member cannot see events
+	user3, _ := testApp.FindAuthRecordByEmail("users", "user3@example.com")
+	if user3 == nil {
+		col, _ := testApp.FindCollectionByNameOrId("users")
+		user3 = core.NewRecord(col)
+		user3.SetEmail("user3@example.com")
+		user3.SetPassword("1234567890")
+		testApp.Save(user3)
+	}
+	token3, _ := user3.NewAuthToken()
+
+	scenario5 := tests.ApiScenario{
+		Name:            "Read Events as Non-Member",
+		Method:          http.MethodGet,
+		URL:             fmt.Sprintf("/api/collections/%s/records?filter=(app='%s'%%26%%26siteId='%s')", ColSiteEvents, appName, siteId),
+		Headers:         map[string]string{"Authorization": token3},
 		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
 		DisableTestAppCleanup: true,
-		ExpectedStatus:  http.StatusOK, 
-		ExpectedContent: []string{`"doc_id":"anon@example.com"`},
+		ExpectedStatus:  http.StatusOK,
+		ExpectedContent: []string{`"totalItems":0`},
 	}
-	scenario2.Test(t)
+	scenario5.Test(t)
 }

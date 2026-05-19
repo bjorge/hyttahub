@@ -1,21 +1,17 @@
 package main
 
-// Collection prefixes and suffixes mapped to PocketBase notation
+// Fixed collection names — 7 flat collections, no dynamic creation.
 const (
-	PrefixHyttaHub = "hyttahub__"
-
-	SuffixSiteUsers  = "__site_users"
-	SuffixSiteEvents = "__site_events"
-	SuffixSiteFiles  = "__site_files"
-
-	SuffixServiceUsers  = "__service_users"
-	SuffixServiceEvents = "__service_events"
-
-	SegmentAccounts     = "__accounts__"
-	SuffixAccountEvents = "__account_events"
+	ColSiteEvents    = "hyttahub_site_events"
+	ColSiteUsers     = "hyttahub_site_users"
+	ColSiteFiles     = "hyttahub_site_files"
+	ColAccountEvents = "hyttahub_account_events"
+	ColServiceEvents = "hyttahub_service_events"
+	ColServiceUsers  = "hyttahub_service_users"
+	ColBetaUsers     = "hyttahub_beta_users"
 )
 
-// Document Document Fields matching the Dart collection_paths.dart configuration
+// Document field names matching the Dart collection_paths.dart configuration.
 const (
 	FieldDocId      = "doc_id"
 	FieldUserId     = "u"
@@ -25,4 +21,10 @@ const (
 	FieldMarkDelete = "m"
 	FieldMarkCopy   = "c"
 	FieldFile       = "file"
+
+	// Flat schema fields
+	FieldApp       = "app"
+	FieldSiteId    = "siteId"
+	FieldAccountId = "accountId"
+	FieldServiceId = "serviceId"
 )

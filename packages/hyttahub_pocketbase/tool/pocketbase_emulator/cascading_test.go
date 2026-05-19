@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/pocketbase/pocketbase/core"
@@ -13,23 +11,18 @@ import (
 	"pocketbase_emulator/models"
 )
 
-
-
 func TestMemberRemovedCascadingEffect(t *testing.T) {
 	testApp, err := tests.NewTestApp(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	setupCollections(testApp)
 	registerAppHooks(testApp)
 
 	email := "removed-user@example.com"
-	encodedEmail := encodeSegment(email)
 	appName := "testapp"
 	siteId := "S123"
-
-	siteUsersCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_users", appName, siteId)
-	accountEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodedEmail)
 
 	// Create a user for testing
 	user, _ := testApp.FindAuthRecordByEmail("users", email)
@@ -41,24 +34,22 @@ func TestMemberRemovedCascadingEffect(t *testing.T) {
 		testApp.Save(user)
 	}
 
-	// 1. Manually create the collections
-	createHyttahubCollection(testApp, siteUsersCol)
-	siteEventsCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_events", appName, siteId)
-	createHyttahubCollection(testApp, siteEventsCol)
-	createHyttahubCollection(testApp, accountEventsCol)
+	// 1. Manually create the collections (now just records in flat schema)
+	accEventsCol, _ := testApp.FindCollectionByNameOrId(ColAccountEvents)
+	accountEvent := core.NewRecord(accEventsCol)
+	accountEvent.Set(FieldApp, appName)
+	accountEvent.Set(FieldAccountId, email)
+	accountEvent.Set(FieldDocId, "2")
+	accountEvent.Set(FieldVersion, 2)
+	accountEvent.Set(FieldPayload, "init")
+	testApp.Save(accountEvent)
 
-	// Seed v=1 event in account_events because main.go only creates v > 1
-	accEventsCol, _ := testApp.FindCollectionByNameOrId(accountEventsCol)
-	initEvent := core.NewRecord(accEventsCol)
-	initEvent.Set("doc_id", "1")
-	initEvent.Set("v", 1)
-	initEvent.Set("p", "init")
-	testApp.Save(initEvent)
-
-	col, _ := testApp.FindCollectionByNameOrId(siteUsersCol)
+	col, _ := testApp.FindCollectionByNameOrId(ColSiteUsers)
 	record := core.NewRecord(col)
-	record.Set("doc_id", email)
-	record.Set("u", 123)
+	record.Set(FieldApp, appName)
+	record.Set(FieldSiteId, siteId)
+	record.Set(FieldDocId, email)
+	record.Set(FieldUserId, 123)
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
 	}
@@ -71,38 +62,28 @@ func TestMemberRemovedCascadingEffect(t *testing.T) {
 	mBase64 := base64.StdEncoding.EncodeToString(mBytes)
 
 	// 3. Update the record with the deletion mark
-	record.Set("m", mBase64)
+	record.Set(FieldMarkDelete, mBase64)
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
 	}
 
 	// 4. Verify that the site user record is gone (as per the hook at the end)
-	_, err = testApp.FindRecordById(siteUsersCol, record.Id)
+	_, err = testApp.FindRecordById(ColSiteUsers, record.Id)
 	if err == nil {
-		t.Logf("Site user record ID %s still exists in %s", record.Id, siteUsersCol)
+		t.Logf("Site user record ID %s still exists in %s", record.Id, ColSiteUsers)
 		t.Errorf("Site user record should have been deleted by the hook")
-	} else {
-		t.Logf("Site user record was successfully deleted")
 	}
 
 	// 6. Verify that an account event was created
-	events, err := testApp.FindRecordsByFilter(accountEventsCol, "v > 0", "-v", 1, 0)
+	events, err := testApp.FindRecordsByFilter(ColAccountEvents, "app='testapp' && accountId='removed-user@example.com' && v > 0", "-v", 1, 0)
 	if err != nil || len(events) == 0 {
 		t.Errorf("Account event should have been created for removed user")
-	} else {
-		t.Logf("Successfully verified account event creation: removeSite")
 	}
 
 	// 7. Verify that site collections were deleted (because it was the last user)
-	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err == nil {
-		t.Errorf("Site users collection %s should have been deleted (last user removed)", siteUsersCol)
-	} else {
-		t.Logf("Verified site users collection was deleted")
-	}
-	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err == nil {
-		t.Errorf("Site events collection %s should have been deleted (last user removed)", siteEventsCol)
-	} else {
-		t.Logf("Verified site events collection was deleted")
+	siteEvents, _ := testApp.FindRecordsByFilter(ColSiteEvents, "app='testapp' && siteId='S123'", "", 1, 0)
+	if len(siteEvents) > 0 {
+		t.Errorf("Site events records should have been deleted (last user removed)")
 	}
 }
 
@@ -112,14 +93,12 @@ func TestMemberLeftCascadingEffect(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	setupCollections(testApp)
 	registerAppHooks(testApp)
 
 	email := "leaving-user@example.com"
 	appName := "testapp_left"
 	siteId := "SLEFT"
-
-	siteUsersCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_users", appName, siteId)
-	siteEventsCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_events", appName, siteId)
 
 	// Create a user for testing
 	user, _ := testApp.FindAuthRecordByEmail("users", email)
@@ -131,74 +110,51 @@ func TestMemberLeftCascadingEffect(t *testing.T) {
 		testApp.Save(user)
 	}
 
-	// 1. Manually create the site_users and site_events
-	createHyttahubCollection(testApp, siteUsersCol)
-	createHyttahubCollection(testApp, siteEventsCol)
-
 	// Seed v=1 event in site_events because main.go only creates v > 1
-	eventsCol, _ := testApp.FindCollectionByNameOrId(siteEventsCol)
+	eventsCol, _ := testApp.FindCollectionByNameOrId(ColSiteEvents)
 	initEvent := core.NewRecord(eventsCol)
-	initEvent.Set("doc_id", "1")
-	initEvent.Set("v", 1)
-	initEvent.Set("p", "init")
+	initEvent.Set(FieldApp, appName)
+	initEvent.Set(FieldSiteId, siteId)
+	initEvent.Set(FieldDocId, "1")
+	initEvent.Set(FieldVersion, 1)
+	initEvent.Set(FieldPayload, "init")
 	testApp.Save(initEvent)
 
-	col, _ := testApp.FindCollectionByNameOrId(siteUsersCol)
+	col, _ := testApp.FindCollectionByNameOrId(ColSiteUsers)
 	record := core.NewRecord(col)
-	record.Set("doc_id", email)
-	record.Set("u", 123)
+	record.Set(FieldApp, appName)
+	record.Set(FieldSiteId, siteId)
+	record.Set(FieldDocId, email)
+	record.Set(FieldUserId, 123)
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
 	}
 
 	// 2. Prepare the MarkForDeletion protobuf
-	// memberLeftSite is 0, so proto.Marshal returns empty bytes by default.
-	// To pass the main.go non-empty check, we can manually encode a Tag 1 (DeleteReason), Type 0 (Varint), Value 0.
-	// 0x08 = (1 << 3) | 0. 0x00 = 0.
 	mBase64 := base64.StdEncoding.EncodeToString([]byte{0x08, 0x00})
 
 	// 3. Update the record with the deletion mark
-	accountEventsCol := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodeSegment(email))
-	createHyttahubCollection(testApp, accountEventsCol) // Ensure it exists
-
-	// Pre-create the site_events collection before triggering the cascading effect.
-	// It's already created in step 1, but ensuring it's explicitly present here
-	// before the record update is consistent with the instruction's intent.
-	// The instruction also included a seedEvent line which seems misplaced or incomplete,
-	// so it's omitted to maintain syntactical correctness and focus on the collection creation.
-
-	record.Set("m", mBase64)
+	record.Set(FieldMarkDelete, mBase64)
 	if err := testApp.Save(record); err != nil {
 		t.Fatal(err)
 	}
 
 	// 4. Verify that the site user record is gone
-	_, err = testApp.FindRecordById(siteUsersCol, record.Id)
+	_, err = testApp.FindRecordById(ColSiteUsers, record.Id)
 	if err == nil {
-		t.Logf("Site user record ID %s still exists in %s", record.Id, siteUsersCol)
 		t.Errorf("Site user record should have been deleted by the hook")
-	} else {
-		t.Logf("Site user record was successfully deleted")
 	}
 
 	// 6. Verify that account event was created
-	accEvents, err := testApp.FindRecordsByFilter(accountEventsCol, "v >= 1", "-v", 1, 0)
+	accEvents, err := testApp.FindRecordsByFilter(ColAccountEvents, "app='testapp_left' && accountId='leaving-user@example.com' && v >= 1", "-v", 1, 0)
 	if err != nil || len(accEvents) == 0 {
-		t.Errorf("Account event should have been created for leaving user in %s", accountEventsCol)
-	} else {
-		t.Logf("Successfully verified account event creation: leaveSite")
+		t.Errorf("Account event should have been created for leaving user")
 	}
 
-	// 7. Verify that site collections were deleted
-	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err == nil {
-		t.Errorf("Site users collection %s should have been deleted (last user left)", siteUsersCol)
-	} else {
-		t.Logf("Verified site users collection was deleted")
-	}
-	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err == nil {
-		t.Errorf("Site events collection %s should have been deleted (last user left)", siteEventsCol)
-	} else {
-		t.Logf("Verified site events collection was deleted")
+	// 7. Verify that site records were deleted
+	events, _ := testApp.FindRecordsByFilter(ColSiteEvents, "app='testapp_left' && siteId='SLEFT'", "", 1, 0)
+	if len(events) > 0 {
+		t.Errorf("Site events should have been deleted (last user left)")
 	}
 }
 
@@ -208,6 +164,7 @@ func TestMemberLeavesWithOthersRemaining(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	setupCollections(testApp)
 	registerAppHooks(testApp)
 
 	email1 := "user1@example.com"
@@ -215,153 +172,46 @@ func TestMemberLeavesWithOthersRemaining(t *testing.T) {
 	appName := "testapp_others"
 	siteId := "SOTHERS"
 
-	siteUsersCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_users", appName, siteId)
-	siteEventsCol := fmt.Sprintf("hyttahub__%s__sites__%s__site_events", appName, siteId)
-
-	// Create collections
-	createHyttahubCollection(testApp, siteUsersCol)
-	createHyttahubCollection(testApp, siteEventsCol)
-
 	// Add both users
-	col, _ := testApp.FindCollectionByNameOrId(siteUsersCol)
+	col, _ := testApp.FindCollectionByNameOrId(ColSiteUsers)
 	record1 := core.NewRecord(col)
-	record1.Set("doc_id", email1)
-	record1.Set("u", 1)
+	record1.Set(FieldApp, appName)
+	record1.Set(FieldSiteId, siteId)
+	record1.Set(FieldDocId, email1)
+	record1.Set(FieldUserId, 1)
 	testApp.Save(record1)
 
 	record2 := core.NewRecord(col)
-	record2.Set("doc_id", email2)
-	record2.Set("u", 2)
+	record2.Set(FieldApp, appName)
+	record2.Set(FieldSiteId, siteId)
+	record2.Set(FieldDocId, email2)
+	record2.Set(FieldUserId, 2)
 	testApp.Save(record2)
 
 	// Prepare leave mark for user1
 	mBase64 := base64.StdEncoding.EncodeToString([]byte{0x08, 0x00})
-	record1.Set("m", mBase64)
+	record1.Set(FieldMarkDelete, mBase64)
 	
-	// Create account event collection for user1
-	accountEventsCol1 := fmt.Sprintf("hyttahub__%s__accounts__%s__account_events", appName, encodeSegment(email1))
-	createHyttahubCollection(testApp, accountEventsCol1)
-
 	// Trigger leave
 	if err := testApp.Save(record1); err != nil {
 		t.Fatal(err)
 	}
 
-	// Verify user1 is gone from site_users
-	_, err = testApp.FindRecordById(siteUsersCol, record1.Id)
+	// Verify user1 is gone
+	_, err = testApp.FindRecordById(ColSiteUsers, record1.Id)
 	if err == nil {
 		t.Errorf("User1 record should have been deleted")
 	}
 
 	// Verify user2 STILL EXISTS
-	_, err = testApp.FindRecordById(siteUsersCol, record2.Id)
+	_, err = testApp.FindRecordById(ColSiteUsers, record2.Id)
 	if err != nil {
 		t.Errorf("User2 record should STILL exist")
 	}
 
-	// Verify site collections STILL EXIST
-	if _, err := testApp.FindCollectionByNameOrId(siteUsersCol); err != nil {
-		t.Errorf("Site users collection should still exist")
-	}
-
 	// Verify site event (LeaveSite) was created
-	events, err := testApp.FindRecordsByFilter(siteEventsCol, "v > 0", "-v", 1, 0)
+	events, err := testApp.FindRecordsByFilter(ColSiteEvents, "app='testapp_others' && siteId='SOTHERS' && v > 0", "-v", 1, 0)
 	if err != nil || len(events) == 0 {
 		t.Errorf("Site event should have been created")
 	}
 }
-
-func TestForwardCascading(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	siteUsersCol := "hyttahub__test__sites__CASC__site_users"
-
-	// 1. Create site_users
-	if err := createHyttahubCollection(testApp, siteUsersCol); err != nil {
-		t.Fatal(err)
-	}
-
-	// 2. Verify related collections were created
-	related := []string{
-		"hyttahub__test__sites__CASC__site_events",
-		"hyttahub__test__sites__CASC__site_files",
-	}
-	for _, colName := range related {
-		if _, err := testApp.FindCollectionByNameOrId(colName); err != nil {
-			t.Errorf("Collection %s should have been forward-cascaded", colName)
-		}
-	}
-
-	// 3. Verify deprecated collections were NOT created
-	deprecated := []string{
-		"hyttahub__test__sites__CASC__site_emails",
-		"hyttahub__test__sites__CASC__site_exports",
-	}
-	for _, colName := range deprecated {
-		if _, err := testApp.FindCollectionByNameOrId(colName); err == nil {
-			t.Errorf("Deprecated collection %s should NOT have been created", colName)
-		}
-	}
-}
-
-func TestReverseCascadingEnforcement(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	siteEventsCol := "hyttahub__test__sites__REV__site_events"
-
-	// 1. Create site_events (should FAIL because parent doesn't exist)
-	if err := createHyttahubCollection(testApp, siteEventsCol); err == nil {
-		t.Fatalf("Expected error when creating child collection %s without parent", siteEventsCol)
-	} else if !strings.Contains(err.Error(), "missing prerequisite collection") {
-		t.Fatalf("Expected 'missing prerequisite' error, got: %v", err)
-	}
-
-	// 2. Now create parent
-	parent := "hyttahub__test__sites__REV__site_users"
-	if err := createHyttahubCollection(testApp, parent); err != nil {
-		t.Fatal(err)
-	}
-
-	// 3. Verify it exists
-	if _, err := testApp.FindCollectionByNameOrId(parent); err != nil {
-		t.Errorf("Collection %s should exist after explicit creation", parent)
-	}
-
-	// 4. Verify child was created (via parent's forward cascade)
-	if _, err := testApp.FindCollectionByNameOrId(siteEventsCol); err != nil {
-		t.Errorf("Collection %s should have been forward-cascaded from the parent", siteEventsCol)
-	}
-}
-
-func TestServiceCascading(t *testing.T) {
-	testApp, err := tests.NewTestApp(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	registerAppHooks(testApp)
-
-	serviceUsersCol := PrefixHyttaHub + "app" + SuffixServiceUsers
-	
-	// 1. Create service_users
-	if err := createHyttahubCollection(testApp, serviceUsersCol); err != nil {
-		t.Fatal(err)
-	}
-
-	// 2. Verify service_events was created
-	serviceEventsCol := "hyttahub__app__service_events"
-	if _, err := testApp.FindCollectionByNameOrId(serviceEventsCol); err != nil {
-		t.Errorf("Collection %s should have been cascaded", serviceEventsCol)
-	}
-}
-
