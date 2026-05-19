@@ -18,7 +18,8 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     // Start listening for mark for copy
     updates.listen((update) {
       final path = update['path'] as String;
-      final docId = update['docId'] as String;
+      final docId = update['docId'] as String?;
+      if (docId == null) return;
 
       // Check if this is a site_users document
       final segments = path.split('/');
