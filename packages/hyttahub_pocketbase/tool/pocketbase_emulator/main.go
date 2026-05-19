@@ -106,7 +106,7 @@ func migrate(app core.App) error {
 	}{
 		{Name: ColSiteUsers, IdField: FieldSiteId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email"},
 		{Name: ColServiceUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email"},
-		{Name: ColBetaUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_beta_users.doc_id ?= @request.auth.email"},
+		{Name: ColBetaUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app"},
 		{Name: ColSiteEvents, IdField: FieldSiteId, IsEvent: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
 		{Name: ColSiteFiles, IdField: FieldSiteId, IsFile: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
 		{Name: ColAccountEvents, IdField: FieldAccountId, IsEvent: true, ListRule: "@request.auth.id != '' && @request.auth.email = accountId"},
@@ -167,6 +167,9 @@ func migrate(app core.App) error {
 			col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
 			col.Fields.Add(&core.TextField{Name: FieldMarkDelete})
 			col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
+			if cfg.Name == ColBetaUsers {
+				col.Fields.Add(&core.TextField{Name: FieldBetaUsers})
+			}
 		} else if cfg.IsFile {
 			col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 		}
@@ -266,7 +269,7 @@ func registerAppHooks(app core.App) {
 
 				count, _ := app.CountRecords(colName, dbx.NewExp("app = {:app} AND "+siteIdField+" = {:siteId}", dbx.Params{"app": appId, "siteId": siteId}))
 				if count == 0 {
-					return e.Next() // First user allowed
+					return e.Next() // First user/document allowed
 				}
 
 				authEmail, err := getAuthEmail()
@@ -274,7 +277,12 @@ func registerAppHooks(app core.App) {
 					return err
 				}
 
-				records, err := app.FindRecordsByFilter(colName, "app = {:app} && "+siteIdField+" = {:siteId} && doc_id = {:email}", "", 1, 0, dbx.Params{"app": appId, "siteId": siteId, "email": authEmail})
+				memberCol := colName
+				if colName == ColBetaUsers {
+					memberCol = ColServiceUsers
+				}
+
+				records, err := app.FindRecordsByFilter(memberCol, "app = {:app} && "+siteIdField+" = {:siteId} && doc_id = {:email}", "", 1, 0, dbx.Params{"app": appId, "siteId": siteId, "email": authEmail})
 				if err != nil || len(records) == 0 {
 					log.Printf("[DEBUG] Failed to find existing member. app=%s, siteId=%s, authEmail=%s, err=%v, len(records)=%d", appId, siteId, authEmail, err, len(records))
 					if allowSelfJoin && colName == ColSiteUsers && e.Record.GetString(FieldDocId) == authEmail {

@@ -21,6 +21,7 @@ const (
 	FieldMarkDelete = "m"
 	FieldMarkCopy   = "c"
 	FieldFile       = "file"
+	FieldBetaUsers  = "b"
 
 	// Flat schema fields
 	FieldApp       = "app"

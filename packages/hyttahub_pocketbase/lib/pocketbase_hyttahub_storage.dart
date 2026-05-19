@@ -68,6 +68,14 @@ class PathInfo {
           app: app,
         );
       }
+      if (segments.length == 4 && segments[2] == 'services') {
+        final id = segments[3];
+        return PathInfo(
+          collection: 'hyttahub_beta_users',
+          app: app,
+          serviceId: id,
+        );
+      }
       if (segments.length >= 5) {
         final type = segments[2]; // 'sites', 'accounts', 'services'
         final id = segments[3];
@@ -88,6 +96,8 @@ class PathInfo {
             return PathInfo(collection: 'hyttahub_service_users', app: app, serviceId: id);
           } else if (sub == 'service_events') {
             return PathInfo(collection: 'hyttahub_service_events', app: app, serviceId: id);
+          } else if (sub == 'beta_users') {
+            return PathInfo(collection: 'hyttahub_beta_users', app: app, serviceId: id);
           }
         }
       }
