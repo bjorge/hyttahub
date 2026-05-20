@@ -56,9 +56,17 @@ class PathInfo {
     this.serviceId,
   });
 
+  /// Custom path parsers registered by consumers to handle application-specific flat collections.
+  static final List<PathInfo? Function(String path)> customParsers = [];
+
   /// Introspects the hierarchical path and returns the mapped [PathInfo]
   /// with the appropriate flat collection name, app field, and parent IDs.
   static PathInfo parse(String path) {
+    for (final parser in customParsers) {
+      final info = parser(path);
+      if (info != null) return info;
+    }
+
     final segments = path.split('/').where((s) => s.isNotEmpty).toList();
     if (segments.length >= 3 && segments[0] == 'hyttahub') {
       final app = segments[1];
