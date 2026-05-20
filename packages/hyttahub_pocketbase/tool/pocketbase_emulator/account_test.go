@@ -99,4 +99,41 @@ func TestAccountMembershipSecurity(t *testing.T) {
 		ExpectedContent: []string{`"totalItems":0`},
 	}
 	scenario4.Test(t)
+
+	// Create a record in ColAccountEvents for user1 to delete
+	col, _ := testApp.FindCollectionByNameOrId(ColAccountEvents)
+	rec := core.NewRecord(col)
+	rec.Set(FieldApp, appName)
+	rec.Set(FieldAccountId, email1)
+	rec.Set(FieldDocId, "test-delete-1")
+	rec.Set(FieldVersion, 2)
+	if err := testApp.Save(rec); err != nil {
+		t.Fatal(err)
+	}
+	recId := rec.Id
+
+	// 5. user2 tries to delete user1's event (should fail with 404 because they don't have access to the record)
+	scenario5 := tests.ApiScenario{
+		Name:            "Delete Account Event (Other)",
+		Method:          http.MethodDelete,
+		URL:             fmt.Sprintf("/api/collections/%s/records/%s", ColAccountEvents, recId),
+		Headers:         map[string]string{"Authorization": token2},
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusNotFound,
+		ExpectedContent: []string{`"message":"The requested resource wasn't found."`},
+	}
+	scenario5.Test(t)
+
+	// 6. user1 deletes their own event (should succeed with 204)
+	scenario6 := tests.ApiScenario{
+		Name:            "Delete Account Event (Self)",
+		Method:          http.MethodDelete,
+		URL:             fmt.Sprintf("/api/collections/%s/records/%s", ColAccountEvents, recId),
+		Headers:         map[string]string{"Authorization": token1},
+		TestAppFactory:  func(t testing.TB) *tests.TestApp { return testApp },
+		DisableTestAppCleanup: true,
+		ExpectedStatus:  http.StatusNoContent,
+	}
+	scenario6.Test(t)
 }

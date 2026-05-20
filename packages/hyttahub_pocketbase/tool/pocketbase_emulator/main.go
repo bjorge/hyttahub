@@ -115,31 +115,32 @@ func migrate(app core.App) error {
 
 	for _, cfg := range collections {
 		col, _ := app.FindCollectionByNameOrId(cfg.Name)
-		if col != nil {
-			continue // Already exists
+		isNew := col == nil
+		if isNew {
+			col = core.NewBaseCollection(cfg.Name)
 		}
-
-		col = core.NewBaseCollection(cfg.Name)
 
 		// Basic Rules
 		if cfg.Name == ColSiteEvents && allowSelfJoin {
 			col.ListRule = types.Pointer("@request.auth.id != ''")
 			col.ViewRule = types.Pointer("@request.auth.id != ''")
 			col.CreateRule = types.Pointer("@request.auth.id != ''")
+			col.UpdateRule = nil
+			col.DeleteRule = nil
 		} else {
 			col.ListRule = types.Pointer(cfg.ListRule)
 			col.ViewRule = types.Pointer(cfg.ListRule)
+			col.UpdateRule = nil
+			col.DeleteRule = nil
 			if cfg.IsEvent {
 				if cfg.Name == ColServiceEvents {
 					col.CreateRule = types.Pointer("")
 				} else if cfg.Name == ColAccountEvents {
 					col.CreateRule = types.Pointer("@request.auth.id != ''")
+					col.DeleteRule = types.Pointer(cfg.ListRule)
 				} else {
 					col.CreateRule = types.Pointer(cfg.ListRule)
 				}
-			} else if cfg.Name == ColAccountEvents {
-				col.CreateRule = types.Pointer("@request.auth.id != ''")
-				col.DeleteRule = types.Pointer(cfg.ListRule)
 			} else {
 				// Users/Files
 				col.CreateRule = types.Pointer("")
@@ -148,34 +149,36 @@ func migrate(app core.App) error {
 			}
 		}
 
-		// Core fields
-		col.Fields.Add(&core.TextField{Name: FieldApp, Required: true})
-		col.Fields.Add(&core.TextField{Name: cfg.IdField, Required: true})
-		col.Fields.Add(&core.TextField{Name: FieldDocId, Required: true})
+		if isNew {
+			// Core fields
+			col.Fields.Add(&core.TextField{Name: FieldApp, Required: true})
+			col.Fields.Add(&core.TextField{Name: cfg.IdField, Required: true})
+			col.Fields.Add(&core.TextField{Name: FieldDocId, Required: true})
 
-		// Indexes
-		col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_app ON %s (%s)", cfg.Name, cfg.Name, FieldApp))
-		col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_%s ON %s (%s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField))
+			// Indexes
+			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_app ON %s (%s)", cfg.Name, cfg.Name, FieldApp))
+			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_%s ON %s (%s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField))
 
-		if cfg.IsEvent {
-			col.Fields.Add(&core.NumberField{Name: FieldVersion})
-			col.Fields.Add(&core.TextField{Name: FieldPayload})
-			col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
-			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE UNIQUE INDEX idx_%s_app_%s_v ON %s (%s, %s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField, FieldVersion))
-		} else if cfg.IsUser {
-			col.Fields.Add(&core.NumberField{Name: FieldUserId})
-			col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
-			col.Fields.Add(&core.TextField{Name: FieldMarkDelete})
-			col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
-			if cfg.Name == ColBetaUsers {
-				col.Fields.Add(&core.TextField{Name: FieldBetaUsers})
+			if cfg.IsEvent {
+				col.Fields.Add(&core.NumberField{Name: FieldVersion})
+				col.Fields.Add(&core.TextField{Name: FieldPayload})
+				col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
+				col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE UNIQUE INDEX idx_%s_app_%s_v ON %s (%s, %s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField, FieldVersion))
+			} else if cfg.IsUser {
+				col.Fields.Add(&core.NumberField{Name: FieldUserId})
+				col.Fields.Add(&core.DateField{Name: FieldTimeStamp})
+				col.Fields.Add(&core.TextField{Name: FieldMarkDelete})
+				col.Fields.Add(&core.TextField{Name: FieldMarkCopy})
+				if cfg.Name == ColBetaUsers {
+					col.Fields.Add(&core.TextField{Name: FieldBetaUsers})
+				}
+			} else if cfg.IsFile {
+				col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 			}
-		} else if cfg.IsFile {
-			col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
 		}
 
 		if err := app.Save(col); err != nil {
-			log.Printf("[hyttahub] ERROR creating %s: %v", cfg.Name, err)
+			log.Printf("[hyttahub] ERROR saving %s: %v", cfg.Name, err)
 			return err
 		}
 	}
