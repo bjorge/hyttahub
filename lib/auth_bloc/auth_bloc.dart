@@ -13,11 +13,17 @@ import 'package:bloc/bloc.dart';
 const debugAwaitDelayMilliseconds = 500;
 
 class AuthBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
-  AuthBloc({BaseHyttaHubAuth? auth})
+  AuthBloc({BaseHyttaHubAuth? auth, bool serviceLogin = false})
     : _authOverride = auth,
-      super(AuthBlocState(authState: AuthState.initializing)) {
+      _serviceLogin = serviceLogin,
+      super(AuthBlocState(
+        authState: AuthState.initializing,
+        isServiceAdmin: serviceLogin,
+      )) {
     on<AuthBlocEvent>(_onAuthBlockEvent);
   }
+
+  final bool _serviceLogin;
 
   BaseHyttaHubAuth get _auth =>
       _authOverride ??
@@ -59,7 +65,7 @@ class AuthBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
         startingState.authState = AuthState.initializing;
         startingState.clearEmail();
         startingState.clearUid();
-        startingState.clearIsServiceAdmin();
+        startingState.isServiceAdmin = _serviceLogin;
         _user = null;
 
         startingState.clearErrorMessage();
@@ -109,7 +115,7 @@ Info: $e
 
         final registeringState = state.deepCopy();
         registeringState.authState = AuthState.registering;
-        registeringState.isServiceAdmin = event.emailSignup.serviceAdmin;
+        registeringState.isServiceAdmin = _serviceLogin;
         registeringState.clearEmail();
         registeringState.clearErrorMessage();
         _onErrorMessage = "";
@@ -141,7 +147,7 @@ Info: $e
         /********* loggingInState ***********/
         final loggingInState = state.deepCopy();
         loggingInState.authState = AuthState.authenticating;
-        loggingInState.isServiceAdmin = event.emailLogin.serviceAdmin;
+        loggingInState.isServiceAdmin = _serviceLogin;
         loggingInState.clearEmail();
         _user = null;
 

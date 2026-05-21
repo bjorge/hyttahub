@@ -991,7 +991,7 @@ final serviceAdminProviderShellRoute = ShellRoute(
           return BlocProvider<AuthBloc>(
             key: const Key('ServiceAdminAuthBlocProvider'),
             create: (_) =>
-                AuthBloc()
+                AuthBloc(serviceLogin: true)
                   ..add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup())),
             child: child,
           );
@@ -1059,7 +1059,7 @@ final serviceUserProviderShellRoute = ShellRoute(
           return BlocProvider<AuthBloc>(
             key: const Key('ServiceUserAuthBlocProvider'),
             create: (_) =>
-                AuthBloc()
+                AuthBloc(serviceLogin: false)
                   ..add(AuthBlocEvent(startup: AuthBlocEvent_AppStartup())),
             child: child,
           );
