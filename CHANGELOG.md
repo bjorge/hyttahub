@@ -1,3 +1,13 @@
+## 0.1.56
+
+*   **Robust Service Admin Authentication**:
+    *   Introduced a `serviceLogin` parameter in `AuthBloc` to explicitly initialize and persist the `isServiceAdmin` state.
+    *   Updated route definitions (`serviceAdminProviderShellRoute` and `serviceUserProviderShellRoute`) to enforce correct configuration, preventing admin state leakage and ensuring reliable session isolation.
+*   **In-Memory Storage Stability**:
+    *   Added a null-safety guard for `docId` within the `InMemoryHyttaHubStorage` updates listener to gracefully handle event updates lacking a document ID.
+*   **Maintenance**:
+    *   Updated version metadata and dependencies to support the 0.1.56 release.
+
 ## 0.1.55
 
 *   **Web Renderer & Browser Detection**:
