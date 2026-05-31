@@ -1,3 +1,7 @@
+## 0.1.4
+
+* **Optimized Document Creation**: Removed the redundant lookup (`_findRecord`/`get` call) from both `setDocument` and the batch `setDocument` implementations. Under the flattened schema model, `setDocument` performs a clean `create` operation, while modifications are explicitly routed via `updateDocument`.
+
 ## 0.1.3
 
 * **BREAKING CHANGE (Flat Schema Refactoring)**: Transitioned the PocketBase integration from a dynamic, on-demand collection creation model to a robust flat schema with a fixed set of 7 pre-configured collections (`hyttahub_site_users`, `hyttahub_service_users`, `hyttahub_beta_users`, `hyttahub_site_events`, `hyttahub_site_files`, `hyttahub_account_events`, `hyttahub_service_events`). Existing databases must be reset or migrated.
