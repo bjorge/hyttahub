@@ -238,19 +238,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     if (kDebugMode) {
       print('[PB] setDocument path=$path col=${info.collection} docId=$docId data=$data');
     }
-    final existing = await _findRecord(info, docId);
     try {
-      if (existing != null) {
-        if (kDebugMode) print('[PB] setDocument → update id=${existing.id}');
-        await _client.collection(info.collection).update(existing.id, body: data);
-      } else {
-        if (kDebugMode) print('[PB] setDocument → create');
-        await _client.collection(info.collection).create(body: {
-          'doc_id': docId,
-          ...info.fields,
-          ...data,
-        });
-      }
+      if (kDebugMode) print('[PB] setDocument → create');
+      await _client.collection(info.collection).create(body: {
+        'doc_id': docId,
+        ...info.fields,
+        ...data,
+      });
       if (kDebugMode) print('[PB] setDocument ✓ col=${info.collection} docId=$docId');
     } on ClientException catch (e) {
       if (kDebugMode) {
@@ -648,16 +642,11 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   void setDocument(String path, String docId, Map<String, dynamic> data) {
     final info = PathInfo.parse(path);
     _operations.add(() async {
-      final existing = await _storage._findRecord(info, docId);
-      if (existing != null) {
-        await _storage._client.collection(info.collection).update(existing.id, body: data);
-      } else {
-        await _storage._client.collection(info.collection).create(body: {
-          'doc_id': docId,
-          ...info.fields,
-          ...data,
-        });
-      }
+      await _storage._client.collection(info.collection).create(body: {
+        'doc_id': docId,
+        ...info.fields,
+        ...data,
+      });
     });
   }
 
