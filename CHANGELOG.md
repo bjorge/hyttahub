@@ -1,3 +1,21 @@
+## 0.1.57
+
+*   **Multi-Lingual Terms of Service & Privacy Policy**:
+    *   Added support for localized legal documents using Markdown-style language delimiters (e.g., `### en ###`, `### nb ###`).
+    *   Implemented `getLocalizedContent` inside `localization_utils.dart` to parse localized sections with robust fallbacks (direct language match → English → first defined section → entire text).
+    *   Updated `ServiceTermsDisplay` and `ServicePrivacyDisplay` to watch the active language from `LanguageCubit` and display only the relevant localized section.
+    *   Added comprehensive parser tests in `localization_utils_test.dart`.
+*   **Consumer Default Language**:
+    *   Added support for a consumer default language (`AppLanguage`) configurable in `HyttaHubOptions.defaultLanguage`.
+    *   Ensured that if a default language is not set, English (`AppLanguage.en`) is used as the global fallback.
+*   **Terms of Service Dialog Fix**:
+    *   Fixed a race condition during login where the Terms of Service update dialog is displayed as account events are still being read, causing an event version mismatch.
+    *   Resolved the bug by watching the account state dynamically instead of reading it at a static point in time.
+*   **PocketBase Integration Improvements**:
+    *   Updated the PocketBase client dependency to v0.1.4.
+    *   Optimized `setDocument` by removing an unnecessary get call, aligning with the flattened schema design where `setDocument` is strictly used for creation and `updateDocument` for updates.
+*   **Maintenance**:
+    *   Updated version metadata and dependencies to support the 0.1.57 release.
 ## 0.1.56
 
 *   **Robust Service Admin Authentication**:
