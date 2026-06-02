@@ -5,6 +5,7 @@ import 'package:hyttahub/proto/app_wrapper.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
+import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 
 /// A function that replays an app-specific event and returns the new app state.
 typedef AppReplay =
@@ -30,4 +31,6 @@ class HyttaHubOptions {
   static String appTitle = '';
   static String appVersion = '';
   static int appBuildNumber = 0;
+
+  static AppLanguage? defaultLanguage;
 }
