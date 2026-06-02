@@ -11,7 +11,7 @@ A serverless Flutter framework designed as a solid starting point for new casual
     -   **Service Administrators:** Manage the users who can maintain policies and service status.
     -   **Beta/Authorized Users:** Limit application access to a predefined set of regular users.
 -   **GDPR and App Store Compliance**
-    -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates.
+    -   **Terms of Service & Privacy Policy:** A complete flow for presenting and requiring user acceptance of legal terms, including versioning for updates. It supports multi-lingual/localized documents using language-coded markdown-styled headers (e.g., `### en ###`, `### nb ###`). The system automatically extracts the appropriate translation based on the user's active language, falling back to English or the first available section if a specific translation is not defined.
     -   **Account Deletion:** A clear, user-accessible path for account deletion.
     -   **User Data Access:** Since all the event source data is cached on the client, the user can export their data at any time. The application just needs to provide an export feature (e.g., copying events to the clipboard). If the application supports media, then it can provide a way to export the media as well (according to its terms of service).
 -   **App Appearance & Personalization**
@@ -99,3 +99,18 @@ Storage-specific security rules are designed to ensure member data privacy. For 
 **Can I add social authentication, such as Google or Apple logins?**
 
 The current implementations use email addresses as keys for member management and security rules. Any authentication provider that reliably retains and verifies the user's email will work natively. For Apple sign-ins, since users can choose to anonymize their email via a relay, updates would be required in the framework to accommodate that specific case.
+
+**How do I write localized Terms of Service or Privacy Policy documents?**
+
+You can write terms of service and privacy policy documents in multiple languages using simple header delimiters in the content. For example:
+
+```markdown
+### en ###
+These are the terms of service in English...
+
+### nb ###
+Dette er vilkårene på norsk...
+```
+
+The system automatically extracts the block matching the user's active application language. If the matching block is not found, it falls back to English (`### en ###`), or the first available block in the text. Plain, un-annotated text remains fully supported for single-language apps.
+
