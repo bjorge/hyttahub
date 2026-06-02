@@ -29,7 +29,7 @@ class _UpdateTermsWidget extends State<UpdateTermsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final accountState = context.read<AccountReplayBloc>().state;
+    final accountState = context.watch<AccountReplayBloc>().state;
     final accountEvent = SubmitAccountEvent(
       event: AccountEvent(
         version: accountState.nextVersion,
@@ -38,6 +38,7 @@ class _UpdateTermsWidget extends State<UpdateTermsWidget> {
     );
 
     return BlocProvider(
+      key: ValueKey(accountState.nextVersion),
       create: (_) => AccountSubmitBloc(
         context.read<AuthBloc>().state.email,
         accountEvent,
