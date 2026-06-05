@@ -1,3 +1,7 @@
+## 0.1.5
+
+* **Server-Side Real-Time Filtering**: Added support for PocketBase server-side filtering (`info.filter`) during real-time subscriptions, reducing client-side network traffic and event processing by filtering events directly on the server.
+
 ## 0.1.4
 
 * **Optimized Document Creation**: Removed the redundant lookup (`_findRecord`/`get` call) from both `setDocument` and the batch `setDocument` implementations. Under the flattened schema model, `setDocument` performs a clean `create` operation, while modifications are explicitly routed via `updateDocument`.
