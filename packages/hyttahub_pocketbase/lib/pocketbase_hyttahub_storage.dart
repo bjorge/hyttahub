@@ -340,7 +340,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             final updated = await getCollection(path);
             currentData = _toDocIdMap(updated);
             controller.add(Map.from(currentData));
-          });
+          }, filter: info.filter);
 
           // Successfully subscribed, break out of the retry loop
           break;
@@ -460,7 +460,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             if (events.isNotEmpty) {
               controller.add(events);
             }
-          });
+          }, filter: info.filter);
 
           // Successfully subscribed, break out of the retry loop
           break;
