@@ -10,7 +10,7 @@ class HyttaHubLimits {
   static const int maxAdminAliasLength = 50;
   static const int maxMinVersionLength = 10;
   static const int maxBetaUsersLength = 1000;
-  static const int maxTermsLength = 30000;
-  static const int maxPrivacyLength = 30000;
+  static const int maxTermsLength = 50000;
+  static const int maxPrivacyLength = 50000;
   static const int maxSitesPerAccount = 20;
 }
