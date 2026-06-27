@@ -1,3 +1,9 @@
+## 0.1.58
+
+*   **Terms of Service & Privacy Policy Limits**:
+    *   Increased the maximum character limits for Terms of Service and Privacy Policy (`maxTermsLength` and `maxPrivacyLength` in `HyttaHubLimits`) from 10,000 to 50,000 characters.
+
+
 ## 0.1.57
 
 *   **Multi-Lingual Terms of Service & Privacy Policy**:
