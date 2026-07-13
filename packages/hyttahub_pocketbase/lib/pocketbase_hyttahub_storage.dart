@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:http/http.dart' as http;
 import 'package:hyttahub/storage/base_hyttahub_storage.dart';
@@ -295,8 +296,18 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     Map<String, Map<String, dynamic>> currentData = {};
     // Holds the per-subscription unsubscribe function returned by PocketBase.
     Future<void> Function()? unsubscribeFn;
+    bool isSettingUp = false;
 
     Future<void> setup() async {
+      if (isSettingUp) return;
+      isSettingUp = true;
+
+      // Clean up previous subscription before recreating
+      try {
+        await unsubscribeFn?.call();
+      } catch (_) {}
+      unsubscribeFn = null;
+
       while (!controller.isClosed) {
         try {
           final initial = await getCollection(path);
@@ -307,7 +318,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             print('[PB] listenCollection subscribe col=${info.collection}');
           }
 
-          unsubscribeFn = await _client.collection(info.collection).subscribe('*', (event) async {
+          final unsub = await _client.collection(info.collection).subscribe('*', (event) async {
             if (controller.isClosed) return;
             final record = event.record;
             if (record != null) {
@@ -342,21 +353,55 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             controller.add(Map.from(currentData));
           }, filter: info.filter);
 
-          // Successfully subscribed, break out of the retry loop
-          break;
-        } on ClientException catch (e) {
-          if (_isCollectionNotFound(e)) {
-            // Collection does not exist yet. Wait a bit and retry.
-            await Future.delayed(const Duration(milliseconds: 500));
-            continue;
+          if (controller.isClosed) {
+            await unsub();
+            break;
           }
-          rethrow;
+          unsubscribeFn = unsub;
+          break;
+        } catch (e) {
+          if (e is ClientException) {
+            if (e.statusCode == 400 || e.statusCode == 401 || e.statusCode == 403) {
+              rethrow;
+            }
+            if (_isCollectionNotFound(e)) {
+              // Collection does not exist yet. Wait a bit and retry.
+              await Future.delayed(const Duration(milliseconds: 500));
+              continue;
+            }
+          }
+          if (kDebugMode) {
+            print('[PB] listenCollection transient error: $e. Retrying in 2s...');
+          }
+          await Future.delayed(const Duration(seconds: 2));
+          continue;
         }
       }
+      isSettingUp = false;
     }
 
     setup().catchError(controller.addError);
+
+    _StorageLifecycleObserver? observer;
+    try {
+      final binding = WidgetsBinding.instance;
+      observer = _StorageLifecycleObserver(() {
+        if (kDebugMode) {
+          print('[PB] App resumed, forcing listenCollection setup for ${info.collection}');
+        }
+        setup();
+      });
+      binding.addObserver(observer);
+    } catch (_) {
+      // Ignored if WidgetsBinding is not initialized (e.g. in unit tests)
+    }
+
     controller.onCancel = () async {
+      if (observer != null) {
+        try {
+          WidgetsBinding.instance.removeObserver(observer);
+        } catch (_) {}
+      }
       if (kDebugMode) {
         print('[PB] listenCollection cancel col=${info.collection} — calling unsubscribe');
       }
@@ -389,8 +434,18 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     final info = PathInfo.parse(path);
     final controller = StreamController<Map<int, String>>();
     Future<void> Function()? unsubscribeFn;
+    bool isSettingUp = false;
 
     Future<void> setup() async {
+      if (isSettingUp) return;
+      isSettingUp = true;
+
+      // Clean up previous subscription before recreating
+      try {
+        await unsubscribeFn?.call();
+      } catch (_) {}
+      unsubscribeFn = null;
+
       while (!controller.isClosed) {
         try {
           final initial = await getCollection(path);
@@ -411,7 +466,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             print('[PB] listenEvents subscribe col=${info.collection}');
           }
 
-          unsubscribeFn = await _client.collection(info.collection).subscribe('*', (event) async {
+          final unsub = await _client.collection(info.collection).subscribe('*', (event) async {
             if (controller.isClosed) return;
 
             final record = event.record;
@@ -462,21 +517,54 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             }
           }, filter: info.filter);
 
-          // Successfully subscribed, break out of the retry loop
-          break;
-        } on ClientException catch (e) {
-          if (_isCollectionNotFound(e)) {
-            // Collection does not exist yet. Wait a bit and retry.
-            await Future.delayed(const Duration(milliseconds: 500));
-            continue;
+          if (controller.isClosed) {
+            await unsub();
+            break;
           }
-          rethrow;
+          unsubscribeFn = unsub;
+          break;
+        } catch (e) {
+          if (e is ClientException) {
+            if (e.statusCode == 400 || e.statusCode == 401 || e.statusCode == 403) {
+              rethrow;
+            }
+            if (_isCollectionNotFound(e)) {
+              await Future.delayed(const Duration(milliseconds: 500));
+              continue;
+            }
+          }
+          if (kDebugMode) {
+            print('[PB] listenEvents transient error: $e. Retrying in 2s...');
+          }
+          await Future.delayed(const Duration(seconds: 2));
+          continue;
         }
       }
+      isSettingUp = false;
     }
 
     setup().catchError(controller.addError);
+
+    _StorageLifecycleObserver? observer;
+    try {
+      final binding = WidgetsBinding.instance;
+      observer = _StorageLifecycleObserver(() {
+        if (kDebugMode) {
+          print('[PB] App resumed, forcing listenEvents setup for ${info.collection}');
+        }
+        setup();
+      });
+      binding.addObserver(observer);
+    } catch (_) {
+      // Ignored if WidgetsBinding is not initialized (e.g. in unit tests)
+    }
+
     controller.onCancel = () async {
+      if (observer != null) {
+        try {
+          WidgetsBinding.instance.removeObserver(observer);
+        } catch (_) {}
+      }
       if (kDebugMode) {
         print('[PB] listenEvents cancel col=${info.collection} — calling unsubscribe');
       }
@@ -673,5 +761,17 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
       await op();
     }
     _operations.clear();
+  }
+}
+
+class _StorageLifecycleObserver extends WidgetsBindingObserver {
+  _StorageLifecycleObserver(this.onResume);
+  final VoidCallback onResume;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      onResume();
+    }
   }
 }
