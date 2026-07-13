@@ -1,3 +1,9 @@
+## 0.1.6
+
+* **App Lifecycle Auto-Reconnect**: Added a lifecycle observer to automatically reconnect real-time subscriptions and catch up on state when the application is resumed (`AppLifecycleState.resumed`).
+* **Subscription Leak Mitigation**: Fixed a race condition where cancelling a stream subscription before connection setup completes leaked the subscription on the server, causing subsequent subscription attempts to ignore events.
+* **Transient Error Retries**: Introduced automatic retries with a backoff delay for transient network/socket exceptions during the initial real-time connection setup.
+
 ## 0.1.5
 
 * **Server-Side Real-Time Filtering**: Added support for PocketBase server-side filtering (`info.filter`) during real-time subscriptions, reducing client-side network traffic and event processing by filtering events directly on the server.
