@@ -415,35 +415,50 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       try {
         final path = await getCollectionPath();
         if (path != null && path.isNotEmpty) {
-          final docs = await _storage.getCollection(
+          final latestDocs = await _storage.getCollection(
             path,
             orderBy: versionField,
-            descending: false,
+            descending: true,
+            limit: 1,
           );
-          final Map<int, String> newEvents = {};
-          for (final doc in docs) {
-            final v = doc[versionField];
-            final p = doc[payloadField];
-            if (v is num && p is String) {
-              final ver = v.toInt();
-              if (ver > _lastVersion) {
-                newEvents[ver] = p;
+
+          if (latestDocs.isNotEmpty) {
+            final latestDoc = latestDocs.first;
+            final v = latestDoc[versionField];
+            final latestVersion = (v is num) ? v.toInt() : 0;
+
+            if (latestVersion > _lastVersion) {
+              final docs = await _storage.getCollection(
+                path,
+                orderBy: versionField,
+                descending: false,
+              );
+              final Map<int, String> newEvents = {};
+              for (final doc in docs) {
+                final docV = doc[versionField];
+                final docP = doc[payloadField];
+                if (docV is num && docP is String) {
+                  final ver = docV.toInt();
+                  if (ver > _lastVersion) {
+                    newEvents[ver] = docP;
+                  }
+                }
+              }
+              if (newEvents.isNotEmpty && !isClosed) {
+                if (kDebugMode) {
+                  print(
+                    'BaseReplayBloc ($S): Auto-resync found ${newEvents.length} missing events (v>$_lastVersion)',
+                  );
+                }
+                add(
+                  CommonReplayBlocEvent(
+                    newEvents: CommonReplayBlocEvent_NewEvents(
+                      events: newEvents.entries,
+                    ),
+                  ),
+                );
               }
             }
-          }
-          if (newEvents.isNotEmpty && !isClosed) {
-            if (kDebugMode) {
-              print(
-                'BaseReplayBloc ($S): Auto-resync found ${newEvents.length} missing events (v>$_lastVersion)',
-              );
-            }
-            add(
-              CommonReplayBlocEvent(
-                newEvents: CommonReplayBlocEvent_NewEvents(
-                  events: newEvents.entries,
-                ),
-              ),
-            );
           }
         }
       } catch (e) {

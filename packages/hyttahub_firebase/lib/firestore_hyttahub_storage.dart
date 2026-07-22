@@ -35,10 +35,14 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     String path, {
     String? orderBy,
     bool descending = false,
+    int? limit,
   }) async {
     Query query = _firestore.collection(path);
     if (orderBy != null) {
       query = query.orderBy(orderBy, descending: descending);
+    }
+    if (limit != null) {
+      query = query.limit(limit);
     }
     final snapshot = await query.get(const GetOptions(source: Source.server));
     return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();

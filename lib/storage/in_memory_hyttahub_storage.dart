@@ -335,11 +335,12 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     String path, {
     String? orderBy,
     bool descending = false,
+    int? limit,
   }) async {
     final docs = data[path];
     if (docs == null) return [];
 
-    final list = docs.values.toList();
+    var list = docs.values.toList();
     if (orderBy != null) {
       list.sort((a, b) {
         final valA = a[orderBy];
@@ -348,6 +349,9 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
         final cmp = (valA as Comparable).compareTo(valB);
         return descending ? -cmp : cmp;
       });
+    }
+    if (limit != null && list.length > limit) {
+      list = list.sublist(0, limit);
     }
     return list;
   }

@@ -111,6 +111,7 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
     this.handleEmptySnapshotCompleter,
     super.storage,
     Duration gapTimeout = const Duration(milliseconds: 100),
+    super.resyncInterval,
   }) : super(
          ServiceReplayBlocState(),
          gapTimeout: gapTimeout,
@@ -190,12 +191,14 @@ void main() {
       FutureOr<Uint8List> Function(Map<String, dynamic>)?
       replayIsolateHandlerOverride,
       Duration gapTimeout = const Duration(milliseconds: 100),
+      Duration? resyncInterval,
     }) {
       return TestReplayBloc(
         collectionPath,
         hydrateIsolateHandlerOverride: hydrateIsolateHandlerOverride,
         replayIsolateHandlerOverride: replayIsolateHandlerOverride,
         gapTimeout: gapTimeout,
+        resyncInterval: resyncInterval,
         storage: HyttaHubStorageFactory.getStorage(
           StorageEnum.memory,
         ),
@@ -571,6 +574,38 @@ void main() {
 
         await Future.delayed(const Duration(milliseconds: 100));
         expect(bloc.state.events, isEmpty);
+      });
+    });
+
+    group('Resync Interval', () {
+      test('auto-resync polls highest version and fetches missing events', () async {
+        await inMemoryStorage.setDocument(
+          collectionPath,
+          '1',
+          {docVersion: 1, docPayload: 'event1'},
+        );
+
+        final bloc = buildBloc(
+          resyncInterval: const Duration(milliseconds: 100),
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
+
+        bloc.add(CommonReplayBlocEvent(listen: true));
+        await Future.delayed(const Duration(milliseconds: 100));
+        expect(bloc.state.events, {1: 'event1'});
+
+        // Add event 2 directly to storage bypassing real-time listener
+        await inMemoryStorage.setDocument(
+          collectionPath,
+          '2',
+          {docVersion: 2, docPayload: 'event2'},
+        );
+
+        // Wait for resync interval timer to fire
+        await Future.delayed(const Duration(milliseconds: 250));
+
+        expect(bloc.state.events, {1: 'event1', 2: 'event2'});
+        await bloc.close();
       });
     });
   });
