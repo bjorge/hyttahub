@@ -1,3 +1,10 @@
+## 0.1.7
+
+* **Batch Operation Support**: Implemented `runBatch` and `PocketbaseHyttaHubBatch` leveraging PocketBase's transactional batch service (`createBatch()`) to perform queued document creations (`setDocument`) and updates (`updateDocument`) in a single HTTP batch request (`/api/batch`).
+* **Unit Testing for Batches**: Added unit tests verifying `runBatch` HTTP requests, payload encoding, and handling of empty batch operations.
+* **PocketBase Emulator Upgrade**: Upgraded local emulator server (`tool/pocketbase_emulator`) to PocketBase `v0.39.9` and Go `1.25.0`, adapting route interceptors, schema creation hooks, and access rules (`rules.json`) to the v0.39 API contract.
+* **Emulator Containerization**: Updated `Podmanfile` to build with `golang:1.25-alpine` and updated automated protobuf model code generation.
+
 ## 0.1.6
 
 * **App Lifecycle Auto-Reconnect**: Added a lifecycle observer to automatically reconnect real-time subscriptions and catch up on state when the application is resumed (`AppLifecycleState.resumed`).
