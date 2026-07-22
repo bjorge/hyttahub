@@ -26,6 +26,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     // Whether to use Flutter isolates via `compute()` for heavy CPU work.
     bool? useIsolates,
     this.gapTimeout = const Duration(seconds: 5),
+    this.resyncInterval,
   }) : _initialState = initialState,
        _replayIsolateHandler = replayIsolateHandler,
        _hydrateIsolateHandler = hydrateIsolateHandler,
@@ -40,9 +41,14 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   final Map<int, String> _eventBuffer = {};
   Timer? _gapTimer;
+  Timer? _resyncTimer;
   Map<int, String> _hydratedEvents = {};
   S? _hydratedState;
   int _lastVersion = 0;
+
+  final Duration? resyncInterval;
+  Duration? get _effectiveResyncInterval =>
+      resyncInterval ?? HyttaHubOptions.resyncInterval;
 
   StreamSubscription? _subscription;
   final S _initialState;
@@ -144,6 +150,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
     _eventBuffer.addAll(eventsData);
     await _processBuffer(emit);
+    _resetResyncTimer();
   }
 
   Future<void> _processBuffer(Emitter<S> emit) async {
@@ -381,6 +388,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
               }
             },
           );
+      _resetResyncTimer();
     } catch (e, _) {
       CommonReplayStateEnum errorState = CommonReplayStateEnum.networkError;
       if (_storage.isPermissionDenied(e)) {
@@ -388,6 +396,64 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       }
       emit(stateCopyWithStatus(state.deepCopy(), errorState)..freeze());
     }
+  }
+
+  void _resetResyncTimer() {
+    _resyncTimer?.cancel();
+    _resyncTimer = null;
+    final interval = _effectiveResyncInterval;
+    if (interval == null) return;
+
+    _resyncTimer = Timer(interval, () async {
+      if (isClosed) return;
+      final currentStatus = (state as dynamic).state;
+      if (currentStatus != CommonReplayStateEnum.listening) {
+        _resetResyncTimer();
+        return;
+      }
+
+      try {
+        final path = await getCollectionPath();
+        if (path != null && path.isNotEmpty) {
+          final docs = await _storage.getCollection(
+            path,
+            orderBy: versionField,
+            descending: false,
+          );
+          final Map<int, String> newEvents = {};
+          for (final doc in docs) {
+            final v = doc[versionField];
+            final p = doc[payloadField];
+            if (v is num && p is String) {
+              final ver = v.toInt();
+              if (ver > _lastVersion) {
+                newEvents[ver] = p;
+              }
+            }
+          }
+          if (newEvents.isNotEmpty && !isClosed) {
+            if (kDebugMode) {
+              print(
+                'BaseReplayBloc ($S): Auto-resync found ${newEvents.length} missing events (v>$_lastVersion)',
+              );
+            }
+            add(
+              CommonReplayBlocEvent(
+                newEvents: CommonReplayBlocEvent_NewEvents(
+                  events: newEvents.entries,
+                ),
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        // Silently ignore errors during background health check
+      } finally {
+        if (!isClosed) {
+          _resetResyncTimer();
+        }
+      }
+    });
   }
 
   Future<S> _runReplay(S currentState, Map<int, String> eventsData) async {
@@ -413,6 +479,8 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
   @override
   Future<void> close() async {
+    _resyncTimer?.cancel();
+    _resyncTimer = null;
     await _subscription?.cancel();
     _gapTimer?.cancel();
     return await super.close();
