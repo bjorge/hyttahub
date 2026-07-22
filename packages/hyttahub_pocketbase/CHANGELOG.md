@@ -1,5 +1,6 @@
 ## 0.1.7
 
+* **Query Projection & Result Limiting in `getCollection`**: Added support for `limit` and `fields` parameters in `getCollection()`, allowing callers to cap the maximum number of returned records (`perPage`) and select specific fields (`fields`) to optimize network payload size.
 * **Batch Operation Support**: Implemented `runBatch` and `PocketbaseHyttaHubBatch` leveraging PocketBase's transactional batch service (`createBatch()`) to perform queued document creations (`setDocument`) and updates (`updateDocument`) in a single HTTP batch request (`/api/batch`).
 * **Unit Testing for Batches**: Added unit tests verifying `runBatch` HTTP requests, payload encoding, and handling of empty batch operations.
 * **PocketBase Emulator Upgrade**: Upgraded local emulator server (`tool/pocketbase_emulator`) to PocketBase `v0.39.9` and Go `1.25.0`, adapting route interceptors, schema creation hooks, and access rules (`rules.json`) to the v0.39 API contract.
