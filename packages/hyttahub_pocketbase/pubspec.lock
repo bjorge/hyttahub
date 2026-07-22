@@ -209,10 +209,10 @@ packages:
     dependency: "direct main"
     description:
       name: hyttahub
-      sha256: aec6783b341c02fc26a86052693e2c30709627ff75f28f50871b0be5533d2f13
+      sha256: "29d24ef0799f93808b92adcdb5315ccbfbbdc0380eff427067bca7303b41056d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.53"
+    version: "0.1.60"
   intl:
     dependency: transitive
     description:

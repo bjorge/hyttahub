@@ -1,7 +1,7 @@
 name: hyttahub_pocketbase
 description: "PocketBase implementations for hyttahub base functionality."
 repository: https://github.com/bjorge/hyttahub
-version: 0.1.7
+version: 0.1.8
 # publish_to: none
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  hyttahub: ^0.1.53
+  hyttahub: ^0.1.60
 
   pocketbase: ^0.24.0
   http: ^1.2.0

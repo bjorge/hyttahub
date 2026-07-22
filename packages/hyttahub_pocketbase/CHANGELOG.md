@@ -1,3 +1,7 @@
+## 0.1.8
+
+* **Dependency Update**: Upgraded `hyttahub` dependency constraint to `^0.1.60`.
+
 ## 0.1.7
 
 * **Query Projection & Result Limiting in `getCollection`**: Added support for `limit` and `fields` parameters in `getCollection()`, allowing callers to cap the maximum number of returned records (`perPage`) and select specific fields (`fields`) to optimize network payload size.
