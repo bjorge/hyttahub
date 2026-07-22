@@ -18,7 +18,7 @@ dependencies:
     path: ../../packages/hyttahub_firebase
   hyttahub_pocketbase:
     path: ../../packages/hyttahub_pocketbase
-  pocketbase: ^0.23.2
+  pocketbase: ^0.24.0
 
   cloud_firestore: ^6.0.2
   firebase_core: ^4.1.1
