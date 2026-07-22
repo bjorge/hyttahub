@@ -68,7 +68,7 @@ func loadCollectionRules() CollectionRules {
 		return nil
 	}
 
-	log.Printf("[hyttahub] Loaded collection rules from %s", targetPath)
+	log.Printf("[hyttahub] Loaded collection rules from file: %s", targetPath)
 	return rules
 }
 

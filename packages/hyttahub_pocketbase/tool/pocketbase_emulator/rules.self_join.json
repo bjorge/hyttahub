@@ -2,21 +2,21 @@
   "hyttahub_site_users": {
     "listRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
     "viewRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
-    "createRule": "",
+    "createRule": "@request.auth.id != '' && (@collection.hyttahub_site_users.siteId ?!= siteId || (@collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app))",
     "updateRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
     "deleteRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email"
   },
   "hyttahub_service_users": {
     "listRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email",
     "viewRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email",
-    "createRule": "",
+    "createRule": "@request.auth.id != '' && (@collection.hyttahub_service_users.serviceId ?!= serviceId || (@collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app))",
     "updateRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email",
     "deleteRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email"
   },
   "hyttahub_beta_users": {
     "listRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app",
     "viewRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app",
-    "createRule": "",
+    "createRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app",
     "updateRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app",
     "deleteRule": "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app"
   },
@@ -30,7 +30,7 @@
   "hyttahub_site_files": {
     "listRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app",
     "viewRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app",
-    "createRule": "",
+    "createRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app",
     "updateRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app",
     "deleteRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"
   },
@@ -44,7 +44,7 @@
   "hyttahub_service_events": {
     "listRule": "",
     "viewRule": "",
-    "createRule": "",
+    "createRule": "@request.auth.id != '' && (@collection.hyttahub_service_users.serviceId ?!= serviceId || (@collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app))",
     "updateRule": null,
     "deleteRule": null
   }
