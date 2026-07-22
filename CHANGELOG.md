@@ -1,3 +1,17 @@
+## 0.1.59
+
+*   **Consumer Default Theme**:
+    *   Added support for a consumer default theme (`ThemeMode`) configurable via `HyttaHubOptions.defaultTheme`.
+    *   Updated `ThemeCubit` to respect `HyttaHubOptions.defaultTheme` on initial state creation, `reset()`, and fallback JSON deserialization.
+    *   Added unit tests in `theme_cubit_test.dart`.
+*   **Debug State Event Copying**:
+    *   Added copy-to-clipboard functionality to `EventsDisplay` (`events_display.dart`), allowing developers to copy individual or all event JSON payloads from debug state screens.
+*   **Stream Listener Resilience**:
+    *   Enhanced real-time event streaming and keepalive support in `BaseReplayBloc` for more robust stream connection management.
+*   **Maintenance**:
+    *   Updated version metadata to support the 0.1.59 release.
+
+
 ## 0.1.58
 
 *   **Terms of Service & Privacy Policy Limits**:
