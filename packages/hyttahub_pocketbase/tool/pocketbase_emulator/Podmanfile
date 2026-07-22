@@ -29,6 +29,7 @@ RUN mkdir -p protos models && \
 
 # Copy the source code
 COPY *.go ./
+COPY rules*.json ./
 COPY migrations/ ./migrations/
 RUN go mod tidy
 
@@ -40,6 +41,9 @@ RUN CGO_ENABLED=0 go build -o /usr/local/bin/pocketbase .
 
 # Working directory for data and hooks
 WORKDIR /app
+
+# Copy rules file to runtime directory
+COPY rules*.json ./
 
 # Create directories for persistent data
 RUN mkdir -p /app/pb_data /app/pb_public

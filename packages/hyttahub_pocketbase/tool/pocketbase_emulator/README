@@ -90,6 +90,16 @@ To enable anonymous users and self-joining (required for the TicTacToe anonymous
 |---------------------|--------------------|-----------------------------------------------------------------------------|
 | `--allow-self-join` | `ALLOW_SELF_JOIN`  | Allows authenticated users to see site events and join sites anonymously. |
 | `--allow-anonymous` | `ALLOW_ANONYMOUS`  | Enables experimental support for virtual users via the `X-Auth-Email` header.           |
+| `--rules-file`      | `RULES_FILE`       | Path to custom JSON collection API rules file (defaults to `rules.json`).   |
+
+### Security Rules Configuration (`rules.json`)
+
+Collection API access rules are declaratively defined in `rules.json` side-by-side with the Go emulator code. On startup, PocketBase loads `rules.json` (or the path specified by `--rules-file` / `RULES_FILE`) to configure collection access rules:
+
+- `"listRule"` / `"viewRule"` / `"createRule"` / `"updateRule"` / `"deleteRule"`
+- A value of `null` restricts operation to Admin / Superuser only.
+- A value of `""` allows open / unrestricted public access.
+- A filter string expression (e.g. `"@request.auth.id != '' && ..."` restricts access based on authentication and record relations.
 
 ### Podman (ChromeOS / Linux)
 ```

@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -19,7 +20,6 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
-	"github.com/pocketbase/pocketbase/tools/types"
 	"google.golang.org/protobuf/proto"
 
 	_ "pocketbase_emulator/migrations"
@@ -28,6 +28,49 @@ import (
 
 var allowSelfJoin = false
 var allowAnonymous = false
+var rulesFilePath = ""
+
+type CollectionRules map[string]struct {
+	ListRule   *string `json:"listRule"`
+	ViewRule   *string `json:"viewRule"`
+	CreateRule *string `json:"createRule"`
+	UpdateRule *string `json:"updateRule"`
+	DeleteRule *string `json:"deleteRule"`
+}
+
+func loadCollectionRules() CollectionRules {
+	targetPath := rulesFilePath
+	if targetPath == "" {
+		if allowSelfJoin {
+			if _, err := os.Stat("rules.self_join.json"); err == nil {
+				targetPath = "rules.self_join.json"
+			}
+		}
+		if targetPath == "" && allowAnonymous {
+			if _, err := os.Stat("rules.anonymous.json"); err == nil {
+				targetPath = "rules.anonymous.json"
+			}
+		}
+		if targetPath == "" {
+			targetPath = "rules.json"
+		}
+	}
+
+	data, err := os.ReadFile(targetPath)
+	if err != nil {
+		log.Printf("[hyttahub] Notice: rules file (%s) not read (%v), using default rules", targetPath, err)
+		return nil
+	}
+
+	var rules CollectionRules
+	if err := json.Unmarshal(data, &rules); err != nil {
+		log.Printf("[hyttahub] Warning: failed to parse rules file %s: %v", targetPath, err)
+		return nil
+	}
+
+	log.Printf("[hyttahub] Loaded collection rules from %s", targetPath)
+	return rules
+}
 
 func generateId() string {
 	const validChars = "123456789ABCDE"
@@ -75,6 +118,12 @@ func main() {
 		os.Getenv("ALLOW_ANONYMOUS") == "1" || os.Getenv("ALLOW_ANONYMOUS") == "true",
 		"Allow anonymous users via X-Auth-Email header",
 	)
+	app.RootCmd.PersistentFlags().StringVar(
+		&rulesFilePath,
+		"rules-file",
+		os.Getenv("RULES_FILE"),
+		"Path to custom JSON collection rules file (defaults to rules.json)",
+	)
 
 	log.Printf("[hyttahub] Starting PocketBase Emulator (Flat Schema)...")
 
@@ -96,21 +145,22 @@ func migrate(app core.App) error {
 	migrateMutex.Lock()
 	defer migrateMutex.Unlock()
 
+	loadedRules := loadCollectionRules()
+
 	collections := []struct {
-		Name     string
-		IdField  string
-		IsEvent  bool
-		IsUser   bool
-		IsFile   bool
-		ListRule string
+		Name    string
+		IdField string
+		IsEvent bool
+		IsUser  bool
+		IsFile  bool
 	}{
-		{Name: ColSiteUsers, IdField: FieldSiteId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email"},
-		{Name: ColServiceUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email"},
-		{Name: ColBetaUsers, IdField: FieldServiceId, IsUser: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_service_users.doc_id ?= @request.auth.email && @collection.hyttahub_service_users.serviceId ?= serviceId && @collection.hyttahub_service_users.app ?= app"},
-		{Name: ColSiteEvents, IdField: FieldSiteId, IsEvent: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
-		{Name: ColSiteFiles, IdField: FieldSiteId, IsFile: true, ListRule: "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app"},
-		{Name: ColAccountEvents, IdField: FieldAccountId, IsEvent: true, ListRule: "@request.auth.id != '' && @request.auth.email = accountId"},
-		{Name: ColServiceEvents, IdField: FieldServiceId, IsEvent: true, ListRule: ""},
+		{Name: ColSiteUsers, IdField: FieldSiteId, IsUser: true},
+		{Name: ColServiceUsers, IdField: FieldServiceId, IsUser: true},
+		{Name: ColBetaUsers, IdField: FieldServiceId, IsUser: true},
+		{Name: ColSiteEvents, IdField: FieldSiteId, IsEvent: true},
+		{Name: ColSiteFiles, IdField: FieldSiteId, IsFile: true},
+		{Name: ColAccountEvents, IdField: FieldAccountId, IsEvent: true},
+		{Name: ColServiceEvents, IdField: FieldServiceId, IsEvent: true},
 	}
 
 	for _, cfg := range collections {
@@ -120,33 +170,14 @@ func migrate(app core.App) error {
 			col = core.NewBaseCollection(cfg.Name)
 		}
 
-		// Basic Rules
-		if cfg.Name == ColSiteEvents && allowSelfJoin {
-			col.ListRule = types.Pointer("@request.auth.id != ''")
-			col.ViewRule = types.Pointer("@request.auth.id != ''")
-			col.CreateRule = types.Pointer("@request.auth.id != ''")
-			col.UpdateRule = nil
-			col.DeleteRule = nil
+		if rules, found := loadedRules[cfg.Name]; found {
+			col.ListRule = rules.ListRule
+			col.ViewRule = rules.ViewRule
+			col.CreateRule = rules.CreateRule
+			col.UpdateRule = rules.UpdateRule
+			col.DeleteRule = rules.DeleteRule
 		} else {
-			col.ListRule = types.Pointer(cfg.ListRule)
-			col.ViewRule = types.Pointer(cfg.ListRule)
-			col.UpdateRule = nil
-			col.DeleteRule = nil
-			if cfg.IsEvent {
-				if cfg.Name == ColServiceEvents {
-					col.CreateRule = types.Pointer("")
-				} else if cfg.Name == ColAccountEvents {
-					col.CreateRule = types.Pointer("@request.auth.id != ''")
-					col.DeleteRule = types.Pointer(cfg.ListRule)
-				} else {
-					col.CreateRule = types.Pointer(cfg.ListRule)
-				}
-			} else {
-				// Users/Files
-				col.CreateRule = types.Pointer("")
-				col.UpdateRule = types.Pointer(cfg.ListRule)
-				col.DeleteRule = types.Pointer(cfg.ListRule)
-			}
+			log.Printf("[hyttahub] Warning: No rules configuration found for collection %s", cfg.Name)
 		}
 
 		if isNew {
