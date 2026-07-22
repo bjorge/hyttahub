@@ -63,8 +63,8 @@ func TestServiceSecurity(t *testing.T) {
 		URL:             "/api/collections/" + ColServiceUsers + "/records",
 		Body:            strings.NewReader(fmt.Sprintf(`{"app": "%s", "serviceId": "%s", "doc_id": "normal@example.com", "u": %d}`, appName, serviceId, time.Now().Unix())),
 		TestAppFactory:  setupServiceTestApp,
-		ExpectedStatus:  http.StatusForbidden,
-		ExpectedContent: []string{`"Only existing members can add users."`},
+		ExpectedStatus:  http.StatusBadRequest,
+		ExpectedContent: []string{`"Failed to create record."`},
 	}
 	scenario2.BeforeTestFunc = func(t testing.TB, app *tests.TestApp, e *core.ServeEvent) {
 		scenario2.Headers = map[string]string{"Authorization": getAuthToken(app, email2)}

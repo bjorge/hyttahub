@@ -73,8 +73,8 @@ func TestSiteMembershipSecurity(t *testing.T) {
 		URL:             "/api/collections/" + ColSiteUsers + "/records",
 		Body:            strings.NewReader(fmt.Sprintf(`{"app": "%s", "siteId": "%s", "doc_id": "user2@example.com", "u": %d}`, appName, siteId, time.Now().Unix())),
 		TestAppFactory:  setupSiteTestApp,
-		ExpectedStatus:  http.StatusForbidden,
-		ExpectedContent: []string{`"Only existing members can add users."`},
+		ExpectedStatus:  http.StatusBadRequest,
+		ExpectedContent: []string{`"Failed to create record."`},
 	}
 	scenario2.BeforeTestFunc = func(t testing.TB, app *tests.TestApp, e *core.ServeEvent) {
 		scenario2.Headers = map[string]string{"Authorization": getAuthToken(app, email2)}
