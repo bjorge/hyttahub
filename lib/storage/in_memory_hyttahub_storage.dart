@@ -336,6 +336,7 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     String? orderBy,
     bool descending = false,
     int? limit,
+    List<String>? fields,
   }) async {
     final docs = data[path];
     if (docs == null) return [];
@@ -352,6 +353,14 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     }
     if (limit != null && list.length > limit) {
       list = list.sublist(0, limit);
+    }
+    if (fields != null && fields.isNotEmpty) {
+      final fieldSet = fields.toSet();
+      return list
+          .map((doc) => Map<String, dynamic>.fromEntries(
+                doc.entries.where((e) => fieldSet.contains(e.key)),
+              ))
+          .toList();
     }
     return list;
   }

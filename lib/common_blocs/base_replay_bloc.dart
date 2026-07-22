@@ -420,6 +420,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             orderBy: versionField,
             descending: true,
             limit: 1,
+            fields: [versionField],
           );
 
           if (latestDocs.isNotEmpty) {

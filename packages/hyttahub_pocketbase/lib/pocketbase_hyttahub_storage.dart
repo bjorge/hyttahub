@@ -216,19 +216,31 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     String? orderBy,
     bool descending = false,
     int? limit,
+    List<String>? fields,
   }) async {
     final info = PathInfo.parse(path);
     final sort = orderBy != null ? '${descending ? '-' : '+'}$orderBy' : null;
+    final fieldsStr = fields != null && fields.isNotEmpty ? fields.join(',') : null;
     try {
       if (limit != null) {
         final result = await _client
             .collection(info.collection)
-            .getList(page: 1, perPage: limit, sort: sort, filter: info.filter);
+            .getList(
+              page: 1,
+              perPage: limit,
+              sort: sort,
+              filter: info.filter,
+              fields: fieldsStr,
+            );
         return result.items.map((r) => r.toJson()).toList();
       }
       final records = await _client
           .collection(info.collection)
-          .getFullList(sort: sort, filter: info.filter);
+          .getFullList(
+            sort: sort,
+            filter: info.filter,
+            fields: fieldsStr,
+          );
       return records.map((r) => r.toJson()).toList();
     } on ClientException catch (e) {
       if (_isCollectionNotFound(e)) return [];

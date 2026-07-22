@@ -10,6 +10,7 @@ abstract class BaseHyttaHubStorage {
     String? orderBy,
     bool descending = false,
     int? limit,
+    List<String>? fields,
   });
   Future<void> setDocument(String path, String docId, Map<String, dynamic> data);
   Future<void> updateDocument(String path, String docId, Map<String, dynamic> data);

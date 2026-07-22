@@ -36,6 +36,7 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     String? orderBy,
     bool descending = false,
     int? limit,
+    List<String>? fields,
   }) async {
     Query query = _firestore.collection(path);
     if (orderBy != null) {
@@ -45,7 +46,16 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
       query = query.limit(limit);
     }
     final snapshot = await query.get(const GetOptions(source: Source.server));
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    return snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      if (fields != null && fields.isNotEmpty) {
+        final fieldSet = fields.toSet();
+        return Map.fromEntries(
+          data.entries.where((e) => fieldSet.contains(e.key)),
+        );
+      }
+      return data;
+    }).toList();
   }
 
   @override
