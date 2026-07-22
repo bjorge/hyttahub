@@ -156,9 +156,6 @@ func migrate(app core.App) error {
 			col.Fields.Add(&core.TextField{Name: FieldDocId, Required: true})
 
 			// Indexes
-			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_app ON %s (%s)", cfg.Name, cfg.Name, FieldApp))
-			col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE INDEX idx_%s_%s ON %s (%s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField))
-
 			if cfg.IsEvent {
 				col.Fields.Add(&core.NumberField{Name: FieldVersion})
 				col.Fields.Add(&core.TextField{Name: FieldPayload})
@@ -172,8 +169,10 @@ func migrate(app core.App) error {
 				if cfg.Name == ColBetaUsers {
 					col.Fields.Add(&core.TextField{Name: FieldBetaUsers})
 				}
+				col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE UNIQUE INDEX idx_%s_app_%s_doc_id ON %s (%s, %s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField, FieldDocId))
 			} else if cfg.IsFile {
 				col.Fields.Add(&core.FileField{Name: FieldFile, MaxSelect: 1, MaxSize: 10 * 1024 * 1024})
+				col.Indexes = append(col.Indexes, fmt.Sprintf("CREATE UNIQUE INDEX idx_%s_app_%s_doc_id ON %s (%s, %s, %s)", cfg.Name, cfg.IdField, cfg.Name, FieldApp, cfg.IdField, FieldDocId))
 			}
 		}
 
