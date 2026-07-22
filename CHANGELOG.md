@@ -1,3 +1,14 @@
+## 0.1.60
+
+*   **Auto-Resync Interval & Self-Healing Streams**:
+    *   Added `resyncInterval` property to `HyttaHubOptions` to configure background event stream health checks.
+    *   Implemented periodic polling and stream auto-resync in `BaseReplayBloc` (`_resetResyncTimer`) to detect and recover from missed real-time events.
+*   **Batch Storage Operations**:
+    *   Added `runBatch` method and `HyttaHubBatch` interface to `BaseHyttaHubStorage` to support atomic batch operations across storage implementations.
+*   **Maintenance**:
+    *   Updated package version to 0.1.60.
+
+
 ## 0.1.59
 
 *   **Consumer Default Theme**:
