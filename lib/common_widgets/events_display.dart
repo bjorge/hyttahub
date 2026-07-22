@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:hyttahub/collection_paths.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/storage/hyttahub_storage_factory.dart';
@@ -91,7 +91,10 @@ class _EventsDisplayState<
       final records = <R>[];
       final base64Events = <int, String>{};
       for (final data in docs) {
-        if (data case {docPayload: String payload, docTimeStamp: dynamic timestampValue}) {
+        if (data case {
+          docPayload: String payload,
+          docTimeStamp: dynamic timestampValue,
+        }) {
           String isoDate;
           try {
             if (timestampValue is String) {
@@ -136,15 +139,33 @@ class _EventsDisplayState<
     }
   }
 
+  void _copyAllEvents() {
+    if (_records == null || _records!.isEmpty) return;
+    try {
+      final jsonMaps = _records!
+          .map((record) => record.toProto3Json())
+          .toList();
+      const jsonEncoder = JsonEncoder.withIndent('  ');
+      final allJsonString = jsonEncoder.convert(jsonMaps);
+      Clipboard.setData(ClipboardData(text: allJsonString));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied all events to clipboard')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to copy all events: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = HyttaHubLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        leading:
-            context.canPop()
-                ? BackButton(onPressed: () => context.pop())
-                : null,
+        leading: context.canPop()
+            ? BackButton(onPressed: () => context.pop())
+            : null,
         title: Text(
           _showReplay ? widget.config.replayTitle : widget.config.screenTitle,
         ),
@@ -156,7 +177,14 @@ class _EventsDisplayState<
                 : localizations.showReplayStateTooltip,
             onPressed: _toggleViewMode,
           ),
-          if (!_showReplay)
+          if (!_showReplay) ...[
+            IconButton(
+              icon: const Icon(Icons.copy_all),
+              tooltip: 'Copy all events JSON',
+              onPressed: _records != null && _records!.isNotEmpty
+                  ? _copyAllEvents
+                  : null,
+            ),
             IconButton(
               icon: Icon(
                 _isDescending ? Icons.arrow_downward : Icons.arrow_upward,
@@ -164,6 +192,7 @@ class _EventsDisplayState<
               tooltip: localizations.toggleSortOrderTooltip,
               onPressed: _toggleSortOrder,
             ),
+          ],
         ],
       ),
       body: _buildBody(),
@@ -235,9 +264,37 @@ class _EventsDisplayState<
     const jsonEncoder = JsonEncoder.withIndent('  ');
     final jsonString = jsonEncoder.convert(jsonMap);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: _JsonViewer(jsonString: jsonString),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.copy),
+              label: const Text('Copy Replay State'),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: jsonString));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Copied replay state to clipboard'),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: _JsonViewer(jsonString: jsonString),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -258,11 +315,31 @@ class _EventCardContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          HyttaHubLocalizations.of(context)!.eventVersion(version),
-          style: Theme.of(context).textTheme.titleMedium,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  HyttaHubLocalizations.of(context)!.eventVersion(version),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(isoDate, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.copy),
+              tooltip: 'Copy event JSON',
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: jsonString));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Copied event to clipboard')),
+                );
+              },
+            ),
+          ],
         ),
-        Text(isoDate, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 12),
         _JsonViewer(jsonString: jsonString),
       ],
