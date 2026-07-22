@@ -152,7 +152,8 @@ class PathInfo {
 /// **Real-time**: [listenCollection] and [listenEvents] use PocketBase SSE with
 /// client-side filtering matching the requested [PathInfo].
 ///
-/// **Batching**: No native batch API — operations run sequentially.
+/// **Batching**: Uses PocketBase's batch service (`createBatch()`) to execute
+/// queued operations transactionally in a single HTTP batch request.
 class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   PocketbaseHyttaHubStorage({required PocketBase client}) : _client = client;
 
@@ -738,18 +739,19 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   }
 }
 
-/// A [HyttaHubBatch] implementation for PocketBase.
+/// A [HyttaHubBatch] implementation for PocketBase using PocketBase's
+/// batch service (`createBatch()`).
 class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   PocketbaseHyttaHubBatch(this._storage);
 
   final PocketbaseHyttaHubStorage _storage;
-  final List<Future<void> Function()> _operations = [];
+  final List<Future<void> Function(BatchService pbBatch)> _operations = [];
 
   @override
   void setDocument(String path, String docId, Map<String, dynamic> data) {
     final info = PathInfo.parse(path);
-    _operations.add(() async {
-      await _storage._client.collection(info.collection).create(body: {
+    _operations.add((pbBatch) async {
+      pbBatch.collection(info.collection).create(body: {
         'doc_id': docId,
         ...info.fields,
         ...data,
@@ -760,12 +762,12 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
   @override
   void updateDocument(String path, String docId, Map<String, dynamic> data) {
     final info = PathInfo.parse(path);
-    _operations.add(() async {
+    _operations.add((pbBatch) async {
       final existing = await _storage._findRecord(info, docId);
       if (existing == null) {
         throw Exception('Document not found for updateDocument: $path/$docId');
       }
-      await _storage._client.collection(info.collection).update(existing.id, body: data);
+      pbBatch.collection(info.collection).update(existing.id, body: data);
     });
   }
 
@@ -774,12 +776,15 @@ class PocketbaseHyttaHubBatch implements HyttaHubBatch {
     // No-op: synchronous interface contract.
   }
 
-  /// Executes all queued operations sequentially.
+  /// Executes all queued operations transactionally in a single HTTP batch request.
   Future<void> executeAll() async {
+    if (_operations.isEmpty) return;
+    final pbBatch = _storage._client.createBatch();
     for (final op in _operations) {
-      await op();
+      await op(pbBatch);
     }
     _operations.clear();
+    await pbBatch.send();
   }
 }
 

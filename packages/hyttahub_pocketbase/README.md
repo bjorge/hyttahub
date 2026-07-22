@@ -67,5 +67,5 @@ Future<void> main() async {
 `PocketbaseHyttaHubStorage` implements the core `BaseHyttaHubStorage` API, providing:
 
 *   **Real-time Updates**: Uses PocketBase's Server-Sent Events (SSE) subscription API. 
-*   **Batching**: Since PocketBase has no native transaction API, `runBatch` accumulates operations and executes them sequentially.
+*   **Batching**: Uses PocketBase's batch service (`createBatch()`) to process operations transactionally in a single HTTP batch request.
 *   **File Storage**: Automatically handles site-specific shared assets. Each file is stored as a PocketBase record in a collection named `hyttahub__{appName}__sites__{siteId}__site_files`.
