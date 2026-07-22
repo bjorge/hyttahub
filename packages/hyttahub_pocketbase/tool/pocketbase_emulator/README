@@ -2,9 +2,9 @@
 
 Runs a local PocketBase instance in a container for development and testing.
 
-PocketBase v0.36 uses a custom Go-based implementation (`main.go`) extending the 
+PocketBase v0.39 uses a custom Go-based implementation (`main.go`) extending the 
 core framework. The container builds the customized binary on the fly using
-`golang:1.24-alpine`.
+`golang:1.25-alpine`.
 
 The Admin UI is available at http://localhost:8090/_/ once the container starts.
 

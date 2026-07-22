@@ -228,7 +228,6 @@ func registerAppHooks(app core.App) {
 			})
 			return se.Next()
 		},
-		Priority: -99999,
 	})
 
 	// Security logic for Creates

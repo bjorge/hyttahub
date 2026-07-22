@@ -1,10 +1,10 @@
 module pocketbase_emulator
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/pocketbase/dbx v1.12.0
-	github.com/pocketbase/pocketbase v0.36.6
+	github.com/pocketbase/pocketbase v0.39.9
 	google.golang.org/protobuf v1.36.11
 )
 
