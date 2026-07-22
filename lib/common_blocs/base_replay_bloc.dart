@@ -428,36 +428,39 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             final latestVersion = (v is num) ? v.toInt() : 0;
 
             if (latestVersion > _lastVersion) {
-              final docs = await _storage.getCollection(
-                path,
-                orderBy: versionField,
-                descending: false,
-              );
-              final Map<int, String> newEvents = {};
-              for (final doc in docs) {
-                final docV = doc[versionField];
-                final docP = doc[payloadField];
-                if (docV is num && docP is String) {
-                  final ver = docV.toInt();
-                  if (ver > _lastVersion) {
-                    newEvents[ver] = docP;
-                  }
-                }
-              }
-              if (newEvents.isNotEmpty && !isClosed) {
-                if (kDebugMode) {
-                  print(
-                    'BaseReplayBloc ($S): Auto-resync found ${newEvents.length} missing events (v>$_lastVersion)',
-                  );
-                }
-                add(
-                  CommonReplayBlocEvent(
-                    newEvents: CommonReplayBlocEvent_NewEvents(
-                      events: newEvents.entries,
-                    ),
-                  ),
+              if (kDebugMode) {
+                print(
+                  'BaseReplayBloc ($S): Auto-resync found missing events (latest v:$latestVersion > last v:$_lastVersion), restarting listener',
                 );
               }
+              await _subscription?.cancel();
+              _subscription = _storage
+                  .listenEvents(
+                    path,
+                    lastVersion: _lastVersion,
+                    versionField: versionField,
+                    payloadField: payloadField,
+                  )
+                  .listen(
+                    (eventsData) {
+                      if (eventsData.isNotEmpty) {
+                        if (!isClosed) {
+                          add(
+                            CommonReplayBlocEvent(
+                              newEvents: CommonReplayBlocEvent_NewEvents(
+                                events: eventsData.entries,
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    onError: (error) {
+                      if (!isClosed) {
+                        // do not emit an error state here, as it would be confusing to the UI, and might cause an exception
+                      }
+                    },
+                  );
             }
           }
         }
