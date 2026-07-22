@@ -2,15 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 
 class ThemeCubit extends HydratedCubit<ThemeMode> {
-  ThemeCubit(this.storageKey) : super(ThemeMode.system);
+  ThemeCubit(this.storageKey)
+      : super(HyttaHubOptions.defaultTheme ?? ThemeMode.system);
 
   final String storageKey;
 
   void setTheme(ThemeMode mode) => emit(mode);
 
-  void reset() => emit(ThemeMode.system);
+  void reset() => emit(HyttaHubOptions.defaultTheme ?? ThemeMode.system);
 
   // for hydrated storage
   @override
@@ -25,7 +27,7 @@ class ThemeCubit extends HydratedCubit<ThemeMode> {
       case 'dark':
         return ThemeMode.dark;
       default:
-        return ThemeMode.system;
+        return HyttaHubOptions.defaultTheme ?? ThemeMode.system;
     }
   }
 

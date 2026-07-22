@@ -33,6 +33,7 @@ class HyttaHubOptions {
   static int appBuildNumber = 0;
 
   static AppLanguage? defaultLanguage;
+  static ThemeMode? defaultTheme;
 
   /// Optional global interval for SSE self-healing background checks.
   /// If null (default), auto-resync polling is disabled.
