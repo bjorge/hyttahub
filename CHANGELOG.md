@@ -11,6 +11,9 @@
     *   Removed 13 dead keys (plus 5 orphaned metadata blocks) left in `intl_nl.arb` by "Removed import site option." (`252341e`), which had cleaned the other locales but missed Dutch.
     *   Backfilled the missing `example/template` translations: Spanish, Italian and Dutch were each missing 13 strings and Norwegian 7, all of which had been silently falling back to English.
     *   Normalized every `.arb` to the template's key order and placeholder metadata, so all locales now diff cleanly against one another.
+*   **PocketBase Self-Join Rule Fix**:
+    *   Fixed `rules.self_join.json` so the `--allow-self-join` / `ALLOW_SELF_JOIN` option actually permits self-joining. The `hyttahub_site_users` `createRule` now accepts `doc_id = @request.auth.email`, letting an authenticated user create their own membership record.
+    *   Previously this file was identical to `rules.json` for `hyttahub_site_users`, so the flag only delivered the "see site events" half of its documented behaviour while the "join sites" half was blocked at the API-rule layer. The matching server-side check already existed in the Go hook (`allowSelfJoin && colName == ColSiteUsers && doc_id == authEmail`); the declarative rule had not kept up since the rules files were derived from the Firestore rules, which have no self-join concept.
 *   **Maintenance**:
     *   Updated package version to 0.1.61.
 

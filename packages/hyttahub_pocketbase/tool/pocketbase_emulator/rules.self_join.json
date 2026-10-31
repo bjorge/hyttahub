@@ -2,7 +2,7 @@
   "hyttahub_site_users": {
     "listRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
     "viewRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
-    "createRule": "@request.auth.id != '' && (@collection.hyttahub_site_users.siteId ?!= siteId || (@collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app))",
+    "createRule": "@request.auth.id != '' && (doc_id = @request.auth.email || @collection.hyttahub_site_users.siteId ?!= siteId || (@collection.hyttahub_site_users.doc_id ?= @request.auth.email && @collection.hyttahub_site_users.siteId ?= siteId && @collection.hyttahub_site_users.app ?= app))",
     "updateRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email",
     "deleteRule": "@request.auth.id != '' && @collection.hyttahub_site_users.doc_id ?= @request.auth.email"
   },
