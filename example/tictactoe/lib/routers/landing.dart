@@ -30,6 +30,8 @@ class LandingPage extends StatelessWidget {
               AppLanguage.en,
               AppLanguage.es,
               AppLanguage.it,
+              AppLanguage.ca,
+              AppLanguage.pt,
               AppLanguage.nb,
               AppLanguage.nl,
             ],

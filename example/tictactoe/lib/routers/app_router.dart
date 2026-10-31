@@ -44,6 +44,8 @@ class _AppRouterState extends State<AppRouter> {
         Locale('en'),
         Locale('it'),
         Locale('es'),
+        Locale('ca'),
+        Locale('pt'),
         Locale('nb'),
         Locale('nl'),
       ],

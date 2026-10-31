@@ -29,54 +29,55 @@ class AppLocalizationsIt extends AppLocalizations {
   String get app_enterButton => 'Invio';
 
   @override
-  String get app_pickPhotosButton => 'Pick Photos';
+  String get app_pickPhotosButton => 'Scegli Foto';
 
   @override
   String get app_permissionDenied =>
       'Non hai il permesso di eseguire questa azione.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'Eventi dell\'Applicazione';
 
   @override
-  String get app_editModeTitle => 'Edit Mode';
+  String get app_editModeTitle => 'Modalità di Modifica';
 
   @override
-  String get app_adminPrivileges => 'You have admin privileges for this hub.';
+  String get app_adminPrivileges =>
+      'Hai privilegi di amministratore per questo hub.';
 
   @override
-  String get app_howToProceed => 'How would you like to proceed?';
+  String get app_howToProceed => 'Come vuoi procedere?';
 
   @override
-  String get app_viewSite => 'View';
+  String get app_viewSite => 'Visualizza';
 
   @override
-  String get app_editSite => 'Edit';
+  String get app_editSite => 'Modifica';
 
   @override
   String app_eventUpdateText(String value) {
-    return 'Updated Text: $value';
+    return 'Testo Aggiornato: $value';
   }
 
   @override
-  String get app_eventUpdateCode => 'Updated Code';
+  String get app_eventUpdateCode => 'Codice Aggiornato';
 
   @override
   String app_eventUpdateCheckbox(String value) {
-    return 'Updated Checkbox: $value';
+    return 'Casella Aggiornata: $value';
   }
 
   @override
   String app_eventUpdateDropdown(String value) {
-    return 'Updated Dropdown: $value';
+    return 'Menu a Tendina Aggiornato: $value';
   }
 
   @override
-  String get app_eventUpdateList => 'Updated List';
+  String get app_eventUpdateList => 'Lista Aggiornata';
 
   @override
   String app_eventUpdatePhoto(String name) {
-    return 'Updated Photo: $name';
+    return 'Foto Aggiornata: $name';
   }
 
   @override

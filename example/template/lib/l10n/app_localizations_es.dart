@@ -29,54 +29,55 @@ class AppLocalizationsEs extends AppLocalizations {
   String get app_enterButton => 'Entrar';
 
   @override
-  String get app_pickPhotosButton => 'Pick Photos';
+  String get app_pickPhotosButton => 'Elegir Fotos';
 
   @override
   String get app_permissionDenied =>
       'No tienes permiso para realizar esta acción.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'Eventos de la Aplicación';
 
   @override
-  String get app_editModeTitle => 'Edit Mode';
+  String get app_editModeTitle => 'Modo de Edición';
 
   @override
-  String get app_adminPrivileges => 'You have admin privileges for this hub.';
+  String get app_adminPrivileges =>
+      'Tienes privilegios de administrador en este hub.';
 
   @override
-  String get app_howToProceed => 'How would you like to proceed?';
+  String get app_howToProceed => '¿Cómo quieres continuar?';
 
   @override
-  String get app_viewSite => 'View';
+  String get app_viewSite => 'Ver';
 
   @override
-  String get app_editSite => 'Edit';
+  String get app_editSite => 'Editar';
 
   @override
   String app_eventUpdateText(String value) {
-    return 'Updated Text: $value';
+    return 'Texto Actualizado: $value';
   }
 
   @override
-  String get app_eventUpdateCode => 'Updated Code';
+  String get app_eventUpdateCode => 'Código Actualizado';
 
   @override
   String app_eventUpdateCheckbox(String value) {
-    return 'Updated Checkbox: $value';
+    return 'Casilla Actualizada: $value';
   }
 
   @override
   String app_eventUpdateDropdown(String value) {
-    return 'Updated Dropdown: $value';
+    return 'Desplegable Actualizado: $value';
   }
 
   @override
-  String get app_eventUpdateList => 'Updated List';
+  String get app_eventUpdateList => 'Lista Actualizada';
 
   @override
   String app_eventUpdatePhoto(String name) {
-    return 'Updated Photo: $name';
+    return 'Foto Actualizada: $name';
   }
 
   @override

@@ -1,0 +1,102 @@
+{
+  "@@locale": "ca",
+  "app_submissionError": "Error en l'enviament: {error}",
+  "@app_submissionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "app_unexpectedError": "Error inesperat; comprova la connexió a Internet, torna enrere i prova-ho de nou",
+  "app_appTitle": "Exemple de formulari de Hytta Hub",
+  "app_versionInfo": "Versió {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_enterButton": "Entra",
+  "app_pickPhotosButton": "Tria fotos",
+  "app_permissionDenied": "No tens permís per fer aquesta acció.",
+  "app_appEventsOption": "Esdeveniments de l'aplicació",
+  "app_editModeTitle": "Mode d'edició",
+  "app_adminPrivileges": "Tens privilegis d'administrador en aquest hub.",
+  "app_howToProceed": "Com vols continuar?",
+  "app_viewSite": "Mostra",
+  "app_editSite": "Edita",
+  "app_eventUpdateText": "Text actualitzat: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Codi actualitzat",
+  "app_eventUpdateCheckbox": "Casella actualitzada: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Desplegable actualitzat: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Llista actualitzada",
+  "app_eventUpdatePhoto": "Foto actualitzada: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventRemovePhoto": "Foto eliminada",
+  "app_labelText": "Text",
+  "app_labelCode": "Codi",
+  "app_labelCheckbox": "Casella",
+  "app_labelDropdown": "Desplegable",
+  "app_labelList": "Llista",
+  "app_labelPhoto": "Foto",
+  "app_reorderList": "Reordena la llista",
+  "app_updateLabel": "Actualitza {label}",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "Cap foto",
+  "app_selectedPhoto": "Foto seleccionada",
+  "app_deletePhoto": "Suprimeix la foto",
+  "app_deletePhotoTitle": "Suprimeix la foto",
+  "app_deletePhotoConfirmation": "Confirma la supressió de la foto",
+  "app_appSpecificEvent": "Esdeveniment específic de l'aplicació",
+  "app_updateTextTitle": "Actualitza el text",
+  "app_textValueLabel": "Valor del text",
+  "app_updateCheckboxTitle": "Actualitza la casella",
+  "app_checkboxValueLabel": "Valor de la casella",
+  "app_updateCodeTitle": "Actualitza el codi",
+  "app_codeValueLabel": "Valor del codi",
+  "app_updateDropdownTitle": "Actualitza el desplegable",
+  "app_dropdownValueLabel": "Valor del desplegable",
+  "app_dropdownOption1": "Opció 1",
+  "app_dropdownOption2": "Opció 2",
+  "app_updateListTitle": "Actualitza la llista",
+  "app_reorderableListLabel": "Llista reordenable",
+  "app_updatePhotoTitle": "Actualitza la foto",
+  "app_appEventsTitle": "Esdeveniments de l'aplicació",
+  "app_appStateTitle": "Estat de l'aplicació"
+}

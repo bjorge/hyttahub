@@ -20,6 +20,7 @@
     }
   },
   "app_enterButton": "Enter",
+  "app_pickPhotosButton": "Velg Bilder",
   "app_permissionDenied": "Du har ikke tillatelse til å utføre denne handlingen.",
   "app_appEventsOption": "Apphendelser",
   "app_editModeTitle": "Redigeringsmodus",
@@ -27,6 +28,41 @@
   "app_howToProceed": "Hvordan ønsker du å fortsette?",
   "app_viewSite": "Vis",
   "app_editSite": "Rediger",
+  "app_eventUpdateText": "Tekst Oppdatert: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Kode Oppdatert",
+  "app_eventUpdateCheckbox": "Avkrysning Oppdatert: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Nedtrekksmeny Oppdatert: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Liste Oppdatert",
+  "app_eventUpdatePhoto": "Bilde Oppdatert: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventRemovePhoto": "Bilde Fjernet",
   "app_labelText": "Tekst",
   "app_labelCode": "Kode",
   "app_labelCheckbox": "Avkrysning",
@@ -47,8 +83,6 @@
   "app_deletePhoto": "Slett Bilde",
   "app_deletePhotoTitle": "Slett Bilde",
   "app_deletePhotoConfirmation": "Bekreft sletting av bilde",
-  "app_eventRemovePhoto": "Bilde Fjernet",
-
   "app_appSpecificEvent": "Appspesifikk hendelse",
   "app_updateTextTitle": "Oppdater Tekst",
   "app_textValueLabel": "Tekstverdi",

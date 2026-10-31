@@ -1,0 +1,93 @@
+{
+  "@@locale": "pt",
+  "app_unexpectedError": "Erro inesperado; verifique a internet, volte e tente novamente",
+  "app_appTitle": "Exemplo de formulário do Hytta Hub",
+  "app_nightMode": "Modo noturno",
+  "app_themeSettingsAlwaysOff": "Sempre desativado",
+  "app_themeSettingsAlwaysOn": "Sempre ativado",
+  "app_themeSettingsAutomatic": "Automático",
+  "app_versionInfo": "Versão {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Selecionar idioma",
+  "app_english": "Inglês",
+  "app_italian": "Italiano",
+  "app_spanish": "Espanhol",
+  "app_norwegian": "Norueguês",
+  "app_dutch": "Holandês",
+  "app_enterButton": "Entrar",
+  "app_serviceLoginButton": "Login do serviço",
+  "app_permissionDenied": "Você não tem permissão para realizar esta ação.",
+  "app_appEventsOption": "Eventos do aplicativo",
+  "app_eventMove": "O jogador {player} moveu para ({x}, {y})",
+  "@app_eventMove": {
+    "placeholders": {
+      "player": {
+        "type": "int"
+      },
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      }
+    }
+  },
+  "app_eventStartGame": "Partida iniciada (contra o bot: {vsBot})",
+  "@app_eventStartGame": {
+    "placeholders": {
+      "vsBot": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventPlayAgain": "Jogar novamente",
+  "app_draw": "Empate!",
+  "app_playerWins": "{name} venceu!",
+  "@app_playerWins": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_startMultiplayerGame": "Iniciar partida multijogador",
+  "app_startBotGame": "Iniciar partida contra o bot",
+  "app_playerYou": "{name} (você)",
+  "@app_playerYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_botName": "Bot",
+  "app_unknownPlayer": "Desconhecido ({id})",
+  "@app_unknownPlayer": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "app_submissionErrorSnack": "Erro no envio: {errorCode}",
+  "@app_submissionErrorSnack": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "Evento específico do aplicativo",
+  "app_appEventsTitle": "Eventos do aplicativo",
+  "app_appStateTitle": "Estado do aplicativo",
+  "app_platformLabel": "Plataforma"
+}

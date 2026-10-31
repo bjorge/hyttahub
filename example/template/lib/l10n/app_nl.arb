@@ -1,62 +1,102 @@
 {
-    "@@locale": "nl",
-    "app_submissionError": "Fout bij indienen: {error}",
-    "@app_submissionError": {
-        "placeholders": {
-            "error": {}
-        }
-    },
-    "app_unexpectedError": "Onverwachte fout, controleer uw internetverbinding en probeer het opnieuw",
-    "app_appTitle": "Hytta Hub Formuliervoorbeeld",
-    "app_versionInfo": "Versie {appVersion}-{appBuildNumber}",
-    "@app_versionInfo": {
-        "placeholders": {
-            "appVersion": {
-                "type": "String"
-            },
-            "appBuildNumber": {
-                "type": "int"
-            }
-        }
-    },
-    "app_enterButton": "Enter",
-    "app_permissionDenied": "U heeft geen toestemming om deze actie uit te voeren.",
-    "app_labelText": "Tekst",
-    "app_labelCode": "Code",
-    "app_labelCheckbox": "Selectievakje",
-    "app_labelDropdown": "Keuzelijst",
-    "app_labelList": "Lijst",
-    "app_labelPhoto": "Foto",
-    "app_reorderList": "Lijst Herschikken",
-    "app_updateLabel": "{label} Bijwerken",
-    "@app_updateLabel": {
-        "placeholders": {
-            "label": {
-                "type": "String"
-            }
-        }
-    },
-    "app_noPhoto": "Geen foto",
-    "app_selectedPhoto": "Geselecteerde Foto",
-    "app_deletePhoto": "Foto Verwijderen",
-    "app_deletePhotoTitle": "Foto Verwijderen",
-    "app_deletePhotoConfirmation": "Bevestig verwijdering van foto",
-    "app_eventRemovePhoto": "Foto Verwijderd",
-
-    "app_appSpecificEvent": "App-specifieke gebeurtenis",
-    "app_updateTextTitle": "Tekst Bijwerken",
-    "app_textValueLabel": "Tekstwaarde",
-    "app_updateCheckboxTitle": "Selectievakje Bijwerken",
-    "app_checkboxValueLabel": "Selectievakwaarde",
-    "app_updateCodeTitle": "Code Bijwerken",
-    "app_codeValueLabel": "Codewaarde",
-    "app_updateDropdownTitle": "Keuzelijst Bijwerken",
-    "app_dropdownValueLabel": "Keuzelijstwaarde",
-    "app_dropdownOption1": "Optie 1",
-    "app_dropdownOption2": "Optie 2",
-    "app_updateListTitle": "Lijst Bijwerken",
-    "app_reorderableListLabel": "Herschikbare Lijst",
-    "app_updatePhotoTitle": "Foto Bijwerken",
-    "app_appEventsTitle": "App Gebeurtenissen",
-    "app_appStateTitle": "App Status"
+  "@@locale": "nl",
+  "app_submissionError": "Fout bij indienen: {error}",
+  "@app_submissionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "app_unexpectedError": "Onverwachte fout, controleer uw internetverbinding en probeer het opnieuw",
+  "app_appTitle": "Hytta Hub Formuliervoorbeeld",
+  "app_versionInfo": "Versie {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_enterButton": "Enter",
+  "app_pickPhotosButton": "Foto's Kiezen",
+  "app_permissionDenied": "U heeft geen toestemming om deze actie uit te voeren.",
+  "app_appEventsOption": "App Gebeurtenissen",
+  "app_editModeTitle": "Bewerkingsmodus",
+  "app_adminPrivileges": "Je hebt beheerdersrechten voor deze hub.",
+  "app_howToProceed": "Hoe wil je verdergaan?",
+  "app_viewSite": "Bekijken",
+  "app_editSite": "Bewerken",
+  "app_eventUpdateText": "Tekst Bijgewerkt: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Code Bijgewerkt",
+  "app_eventUpdateCheckbox": "Selectievakje Bijgewerkt: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Keuzelijst Bijgewerkt: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Lijst Bijgewerkt",
+  "app_eventUpdatePhoto": "Foto Bijgewerkt: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventRemovePhoto": "Foto Verwijderd",
+  "app_labelText": "Tekst",
+  "app_labelCode": "Code",
+  "app_labelCheckbox": "Selectievakje",
+  "app_labelDropdown": "Keuzelijst",
+  "app_labelList": "Lijst",
+  "app_labelPhoto": "Foto",
+  "app_reorderList": "Lijst Herschikken",
+  "app_updateLabel": "{label} Bijwerken",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "Geen foto",
+  "app_selectedPhoto": "Geselecteerde Foto",
+  "app_deletePhoto": "Foto Verwijderen",
+  "app_deletePhotoTitle": "Foto Verwijderen",
+  "app_deletePhotoConfirmation": "Bevestig verwijdering van foto",
+  "app_appSpecificEvent": "App-specifieke gebeurtenis",
+  "app_updateTextTitle": "Tekst Bijwerken",
+  "app_textValueLabel": "Tekstwaarde",
+  "app_updateCheckboxTitle": "Selectievakje Bijwerken",
+  "app_checkboxValueLabel": "Selectievakwaarde",
+  "app_updateCodeTitle": "Code Bijwerken",
+  "app_codeValueLabel": "Codewaarde",
+  "app_updateDropdownTitle": "Keuzelijst Bijwerken",
+  "app_dropdownValueLabel": "Keuzelijstwaarde",
+  "app_dropdownOption1": "Optie 1",
+  "app_dropdownOption2": "Optie 2",
+  "app_updateListTitle": "Lijst Bijwerken",
+  "app_reorderableListLabel": "Herschikbare Lijst",
+  "app_updatePhotoTitle": "Foto Bijwerken",
+  "app_appEventsTitle": "App Gebeurtenissen",
+  "app_appStateTitle": "App Status"
 }

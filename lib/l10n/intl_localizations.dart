@@ -5,11 +5,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'intl_localizations_ca.dart';
 import 'intl_localizations_en.dart';
 import 'intl_localizations_es.dart';
 import 'intl_localizations_it.dart';
 import 'intl_localizations_nb.dart';
 import 'intl_localizations_nl.dart';
+import 'intl_localizations_pt.dart';
 
 // ignore_for_file: type=lint
 
@@ -100,11 +102,13 @@ abstract class HyttaHubLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ca'),
     Locale('en'),
     Locale('es'),
     Locale('it'),
     Locale('nb'),
     Locale('nl'),
+    Locale('pt'),
   ];
 
   /// No description provided for @loginTitle.
@@ -1163,6 +1167,18 @@ abstract class HyttaHubLocalizations {
   /// **'Spanish'**
   String get spanish;
 
+  /// No description provided for @catalan.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalan'**
+  String get catalan;
+
+  /// No description provided for @portuguese.
+  ///
+  /// In en, this message translates to:
+  /// **'Portuguese'**
+  String get portuguese;
+
   /// No description provided for @norwegian.
   ///
   /// In en, this message translates to:
@@ -1356,8 +1372,15 @@ class _HyttaHubLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'es', 'it', 'nb', 'nl'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ca',
+    'en',
+    'es',
+    'it',
+    'nb',
+    'nl',
+    'pt',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_HyttaHubLocalizationsDelegate old) => false;
@@ -1366,6 +1389,8 @@ class _HyttaHubLocalizationsDelegate
 HyttaHubLocalizations lookupHyttaHubLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ca':
+      return HyttaHubLocalizationsCa();
     case 'en':
       return HyttaHubLocalizationsEn();
     case 'es':
@@ -1376,6 +1401,8 @@ HyttaHubLocalizations lookupHyttaHubLocalizations(Locale locale) {
       return HyttaHubLocalizationsNb();
     case 'nl':
       return HyttaHubLocalizationsNl();
+    case 'pt':
+      return HyttaHubLocalizationsPt();
   }
 
   throw FlutterError(

@@ -1,0 +1,102 @@
+{
+  "@@locale": "pt",
+  "app_submissionError": "Erro no envio: {error}",
+  "@app_submissionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "app_unexpectedError": "Erro inesperado; verifique a internet, volte e tente novamente",
+  "app_appTitle": "Exemplo de formulário do Hytta Hub",
+  "app_versionInfo": "Versão {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_enterButton": "Entrar",
+  "app_pickPhotosButton": "Escolher fotos",
+  "app_permissionDenied": "Você não tem permissão para realizar esta ação.",
+  "app_appEventsOption": "Eventos do aplicativo",
+  "app_editModeTitle": "Modo de edição",
+  "app_adminPrivileges": "Você tem privilégios de administrador neste hub.",
+  "app_howToProceed": "Como deseja continuar?",
+  "app_viewSite": "Ver",
+  "app_editSite": "Editar",
+  "app_eventUpdateText": "Texto atualizado: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Código atualizado",
+  "app_eventUpdateCheckbox": "Caixa de seleção atualizada: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Lista suspensa atualizada: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Lista atualizada",
+  "app_eventUpdatePhoto": "Foto atualizada: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventRemovePhoto": "Foto removida",
+  "app_labelText": "Texto",
+  "app_labelCode": "Código",
+  "app_labelCheckbox": "Caixa de seleção",
+  "app_labelDropdown": "Lista suspensa",
+  "app_labelList": "Lista",
+  "app_labelPhoto": "Foto",
+  "app_reorderList": "Reordenar lista",
+  "app_updateLabel": "Atualizar {label}",
+  "@app_updateLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "app_noPhoto": "Nenhuma foto",
+  "app_selectedPhoto": "Foto selecionada",
+  "app_deletePhoto": "Apagar foto",
+  "app_deletePhotoTitle": "Apagar foto",
+  "app_deletePhotoConfirmation": "Confirme que deseja apagar a foto",
+  "app_appSpecificEvent": "Evento específico do aplicativo",
+  "app_updateTextTitle": "Atualizar texto",
+  "app_textValueLabel": "Valor do texto",
+  "app_updateCheckboxTitle": "Atualizar caixa de seleção",
+  "app_checkboxValueLabel": "Valor da caixa de seleção",
+  "app_updateCodeTitle": "Atualizar código",
+  "app_codeValueLabel": "Valor do código",
+  "app_updateDropdownTitle": "Atualizar lista suspensa",
+  "app_dropdownValueLabel": "Valor da lista suspensa",
+  "app_dropdownOption1": "Opção 1",
+  "app_dropdownOption2": "Opção 2",
+  "app_updateListTitle": "Atualizar lista",
+  "app_reorderableListLabel": "Lista reordenável",
+  "app_updatePhotoTitle": "Atualizar foto",
+  "app_appEventsTitle": "Eventos do aplicativo",
+  "app_appStateTitle": "Estado do aplicativo"
+}

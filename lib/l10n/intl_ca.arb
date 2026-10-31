@@ -1,0 +1,348 @@
+{
+  "@@locale": "ca",
+  "loginTitle": "Inici de sessió",
+  "createAccountTitle": "Crea un compte",
+  "loginEmailLabel": "Correu electrònic",
+  "loginPasswordLabel": "Contrasenya",
+  "loginPasswordHelperText": "La contrasenya ha de tenir com a mínim 16 caràcters.",
+  "loginSuccessTitle": "Sessió iniciada",
+  "loginEmailEmptyError": "El correu electrònic no pot estar buit",
+  "loginEmailInvalidFormatError": "Introdueix una adreça de correu electrònic vàlida.",
+  "loginEmailReservedError": "El format del correu electrònic (coincideix amb __.*__) no està permès.",
+  "loginEmailTooLongError": "El correu electrònic és massa llarg (màxim 1500 bytes).",
+  "loginNotServiceAdminError": "No és un administrador del servei",
+  "loginNotBetaUserError": "No és un correu electrònic autoritzat",
+  "loginAgreeToTermsCheckbox": "Accepto les condicions",
+  "loginAgreeToPrivacyPolicyCheckbox": "Accepto la política de privadesa",
+  "loginAlreadyHaveAccountButton": "Ja tens un compte?",
+  "loginNeedToCreateAccountButton": "Necessites crear un compte?",
+  "loginForgotPasswordButton": "Has oblidat la contrasenya?",
+  "loginGoToEmailResetPasswordMessage": "Ves a la teva safata d'entrada, obre el correu i fes clic a l'enllaç per crear una contrasenya nova. Després torna aquí i inicia la sessió.",
+  "loginGoToEmailVerifyEmailMessage": "Ves a la teva safata d'entrada, obre el correu i fes clic a l'enllaç per verificar la teva adreça electrònica. Després torna aquí i inicia la sessió.",
+  "app_versionInfo": "Versió {appVersion} ({appBuildNumber})",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "num"
+      }
+    }
+  },
+  "sites": "Hubs",
+  "noSites": "cap hub",
+  "initializingAccountTitle": "S'està inicialitzant el compte",
+  "serviceCreateAccountTitle": "Crea un compte de servei",
+  "serviceLoginTitle": "Inici de sessió del servei",
+  "accountSettingsTitle": "Configuració del compte",
+  "manageSitesTitle": "Abandona",
+  "reorderSitesTitle": "Reordena",
+  "removeAccountTitle": "Elimina el compte",
+  "logout": "Tanca la sessió",
+  "logoutDialogTitle": "Vols tancar la sessió?",
+  "logoutDialogMessage": "Segur que vols tancar la sessió?",
+  "cancelButton": "Cancel·la",
+  "createSiteTitle": "Crea un hub",
+  "joinSiteTitle": "Uneix-te a un hub",
+  "unimplementedTitle": "No implementat",
+  "toBeImplemented": "Properament!",
+  "siteNameLabel": "Nom",
+  "siteNameEmptyError": "El nom no pot estar buit",
+  "userNameLabel": "Nom d'usuari",
+  "userNameEmptyError": "El nom d'usuari no pot estar buit",
+  "pasteCodeTooltip": "Enganxa el codi",
+  "backspaceTooltip": "Retrocés",
+  "joinSiteCodeLabel": "Introdueix el codi de 8 caràcters",
+  "siteCodeEmptyError": "El codi no pot estar buit",
+  "siteCodeLengthError": "El codi ha de tenir 8 caràcters",
+  "leaveSiteTooltip": "Abandona",
+  "removeSiteTitle": "Elimina",
+  "leaveSiteConfirmation": "Vols abandonar-lo? Només un administrador et pot tornar a afegir.",
+  "updateTermsTitle": "Actualitza les condicions",
+  "viewTerms": "Mostra les condicions",
+  "viewPrivacyPolicy": "Mostra la política de privadesa",
+  "agreeToTerms": "Accepto les condicions del servei",
+  "agreeToPrivacyPolicy": "Accepto la política de privadesa",
+  "showAccountEventsState": "Mostra els esdeveniments i l'estat del compte",
+  "serviceAdminTitle": "Administració del servei",
+  "serviceStatusTitle": "Estat del servei",
+  "minRequiredVersionTitle": "Versió mínima requerida",
+  "manageBetaUsersTitle": "Gestiona els usuaris beta",
+  "errorFetchingBetaUsers": "S'ha produït un error en obtenir els usuaris beta",
+  "newTermsOfServiceTitle": "Noves condicions del servei",
+  "newPrivacyPolicyTitle": "Nova política de privadesa",
+  "manageServiceAdminsTitle": "Gestiona els administradors del servei",
+  "showServiceEventsStateTitle": "Mostra els esdeveniments i l'estat del servei",
+  "serviceDownTitle": "Servei no disponible",
+  "serviceDownMessage": "El servei no està disponible temporalment. Espera mentre treballem per restablir-lo.",
+  "accountEventsTitle": "Esdeveniments del compte (base de dades)",
+  "accountStateTitle": "Estat del compte (reproducció local)",
+  "serviceEventsTitle": "Esdeveniments del servei (base de dades)",
+  "serviceStateTitle": "Estat del servei (reproducció local)",
+  "networkErrorTitle": "Error de xarxa",
+  "serviceNetworkErrorMessage": "S'ha produït un error en contactar amb el servei. Comprova la connexió a Internet i torna-ho a provar.",
+  "newVersionAvailableTitle": "Hi ha una versió nova disponible",
+  "newVersionAvailableMessage": "Actualitza el navegador o l'aplicació a la darrera versió.",
+  "privacyPolicyTitle": "Política de privadesa",
+  "noPrivacyPolicyAvailable": "No hi ha cap política de privadesa disponible.",
+  "termsOfServiceTitle": "Condicions del servei",
+  "noTermsAvailable": "No hi ha cap condició disponible.",
+  "initializeDataStoreTitle": "Inicialitza el magatzem de dades",
+  "errorTodo": "Error: todo",
+  "initializeDataStoreBody": "El magatzem de dades és buit. Crea el primer administrador del servei per inicialitzar el sistema.",
+  "successfullySubmittedTodo": "s'ha enviat correctament, todo: desactivar els camps",
+  "errorSubmittingForm": "S'ha produït un error en enviar el formulari",
+  "disallowedCharactersError": "Els caràcters '[' i ']' no estan permesos",
+  "errorTitle": "Error",
+  "unexpectedError": "Error inesperat; comprova la connexió a Internet, torna enrere i prova-ho de nou",
+  "permissionDenied": "No tens permís per fer aquesta acció.",
+  "removedFromSite": "Se t'ha eliminat.",
+  "addMemberTitle": "Afegeix un membre",
+  "memberNameLabel": "Nom del membre",
+  "memberNameEmptyError": "El nom del membre no pot estar buit",
+  "memberNameExistsError": "El nom del membre ja existeix",
+  "administratorLabel": "Administrador",
+  "emailExistsError": "El correu electrònic ja existeix.",
+  "renameSiteTitle": "Canvia el nom",
+  "manageSiteMembers": "Membres",
+  "showSiteEventsState": "Mostra els esdeveniments i l'estat",
+  "showSiteAllowedEmails": "Correus permesos",
+  "siteSettingsTitle": "Configuració",
+  "newSiteNameLabel": "Nom nou",
+  "siteEmailsTitle": "Correus del hub (base de dades)",
+  "siteEventsTitle": "Esdeveniments del hub (base de dades)",
+  "siteStateTitle": "Estat del hub (reproducció local)",
+  "membersTitle": "Membres",
+  "serviceSettingsTitle": "Configuració del servei",
+  "termsOfServiceContentLabel": "Contingut de les condicions del servei",
+  "termsOfServiceContentEmptyError": "Introdueix el contingut de les condicions del servei.",
+  "contentTooShortError": "El contingut és massa curt.",
+  "privacyPolicyContentLabel": "Contingut de la política de privadesa",
+  "privacyPolicyContentEmptyError": "Introdueix el contingut de la política de privadesa.",
+  "serviceUnavailableLabel": "Servei no disponible",
+  "minVersionLabel": "Versió mínima",
+  "versionNumberEmptyError": "Introdueix un número de versió.",
+  "versionNumberInvalidError": "Introdueix un número positiu vàlid.",
+  "betaUserEmailsLabel": "Correus dels usuaris beta",
+  "aliasLabel": "Àlies",
+  "nicknameEmptyError": "El sobrenom no pot estar buit",
+  "adminAliasExistsError": "L'àlies d'administrador ja existeix",
+  "failedToLoadEmails": "No s'han pogut carregar els correus.",
+  "permissionDeniedViewList": "No tens permís per veure aquesta llista.",
+  "noEmailsFound": "No s'ha trobat cap correu.",
+  "userId": "ID d'usuari: {userId}",
+  "@userId": {
+    "placeholders": {
+      "userId": {
+        "type": "int"
+      }
+    }
+  },
+  "removeMemberTooltip": "Elimina el membre",
+  "removeMemberTitle": "Elimina el membre",
+  "removeMemberConfirmation": "Vols eliminar el membre? Aquesta acció no es pot desfer.",
+  "updateMemberTooltip": "Actualitza el membre",
+  "updateMemberTitle": "Actualitza el membre",
+  "restoreMemberTooltip": "Restaura el membre",
+  "restoreMemberTitle": "Restaura el membre",
+  "removedMembersTitle": "Membres eliminats",
+  "addAdminTitle": "Afegeix un administrador",
+  "updateAdminTitle": "Actualitza l'administrador",
+  "removeAdminTitle": "Elimina l'administrador",
+  "removeAdminConfirmation": "Vols eliminar l'administrador? Aquesta acció no es pot desfer.",
+  "restoreAdminTitle": "Restaura l'administrador",
+  "removeAccountConfirmation": "Vols eliminar el compte? Aquesta acció no es pot desfer.",
+  "cannotRemoveAccountTitle": "No es pot eliminar el compte",
+  "cannotRemoveAccountContent": "Has d'abandonar tots els hubs abans de poder eliminar el teu compte.",
+  "cannotChangeEmailWhenOnlyAdminError": "No pots canviar el teu correu electrònic quan ets l'únic administrador.",
+  "okButton": "D'acord",
+  "copySiteIdTooltip": "Copia l'ID",
+  "siteIdCopied": "S'ha copiat l'ID al porta-retalls",
+  "and": "i",
+  "mustAgreeToTermsError": "Has d'acceptar les condicions.",
+  "mustAgreeToPrivacyPolicyError": "Has d'acceptar la política de privadesa.",
+  "leadingTrailingSpacesError": "No es permeten espais al principi ni al final.",
+  "emailLowercaseError": "El correu electrònic ha d'estar en minúscules.",
+  "emailLeadingTrailingSpacesError": "El correu electrònic no pot tenir espais al principi ni al final.",
+  "formSubmissionError": "S'ha produït un error en enviar el formulari; comprova la connexió a Internet, torna enrere i prova-ho de nou.",
+  "failedToLoadEvents": "No s'han pogut carregar els esdeveniments: {error}",
+  "@failedToLoadEvents": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "showEventsListTooltip": "Mostra la llista d'esdeveniments",
+  "showReplayStateTooltip": "Mostra l'estat de la reproducció",
+  "toggleSortOrderTooltip": "Canvia el criteri d'ordenació",
+  "noEventsToReplay": "No hi ha esdeveniments per reproduir.",
+  "eventVersion": "Versió: {version}",
+  "@eventVersion": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingTitle": "S'està carregant...",
+  "authenticationErrorWithDetails": "Error d'autenticació: {details}",
+  "@authenticationErrorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingEllipsis": "...",
+  "loginDismissSnackbar": "Descarta",
+  "passwordEmptyError": "La contrasenya no pot estar buida.",
+  "passwordTooShortError": "La contrasenya és massa curta.",
+  "passwordTooLongError": "La contrasenya és massa llarga.",
+  "noEventsFound": "No s'ha trobat cap esdeveniment.",
+  "copySiteTitle": "Copia",
+  "@copySiteTitle": {
+    "description": "Títol de l'opció de còpia del diàleg."
+  },
+  "copySiteTooltip": "Copia",
+  "@copySiteTooltip": {
+    "description": "Descripció emergent del botó de còpia."
+  },
+  "copySiteConfirmTitle": "Confirmació de la còpia",
+  "@copySiteConfirmTitle": {
+    "description": "Títol de la pantalla de confirmació de la còpia."
+  },
+  "copySiteConfirmMessage": "En copiar-lo es crearà un hub privat duplicat per a tu. Tingues en compte que copiar els fitxers multimèdia pot trigar una estona. Podràs editar el nom nou i afegir membres un cop s'hagi completat la còpia.",
+  "@copySiteConfirmMessage": {
+    "description": "Missatge de la confirmació de la còpia."
+  },
+  "errorAssigningUser": "S'ha produït un error en assignar l'usuari: {error}",
+  "@errorAssigningUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectLanguage": "Selecciona l'idioma",
+  "nightMode": "Mode nocturn",
+  "platform": "Plataforma",
+  "info": "Informació",
+  "serviceLoginButton": "Inici de sessió del servei",
+  "english": "Anglès",
+  "italian": "Italià",
+  "spanish": "Espanyol",
+  "catalan": "Català",
+  "portuguese": "Portuguès",
+  "norwegian": "Noruec",
+  "dutch": "Neerlandès",
+  "themeSettingsAutomatic": "Automàtic",
+  "themeSettingsAlwaysOff": "Sempre desactivat",
+  "themeSettingsAlwaysOn": "Sempre activat",
+  "openSourceLicensesButton": "Paquets de codi obert",
+  "clearLocalStorageButton": "Esborra tot l'emmagatzematge local",
+  "refreshBrowserButton": "Actualitza el navegador",
+  "openSourceLicensesTitle": "Paquets de codi obert",
+  "siteInfoTitle": "Informació",
+  "siteEventCount": "Nombre d'esdeveniments",
+  "siteTotalSize": "Mida total",
+  "bytesLabel": "{size} bytes",
+  "@bytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "kilobytesLabel": "{size} KB",
+  "@kilobytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "megabytesLabel": "{size} MB",
+  "@megabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "gigabytesLabel": "{size} GB",
+  "@gigabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "siteFileCount": "Nombre de fitxers",
+  "siteTotalFileSize": "Mida total dels fitxers",
+  "errorFetchingFiles": "S'ha produït un error en obtenir els fitxers",
+  "refresh": "Actualitza",
+  "eventSiteCreated": "Creat: {siteName}",
+  "@eventSiteCreated": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventAddedMember": "Membre afegit: {memberName}",
+  "@eventAddedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRenamedSite": "Nom canviat: {siteName}",
+  "@eventRenamedSite": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRemovedMember": "Membre eliminat: {memberId}",
+  "@eventRemovedMember": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventMemberLeft": "El membre ha marxat: {memberId}",
+  "@eventMemberLeft": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventRestoredMember": "Membre restaurat: {memberName}",
+  "@eventRestoredMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventUpdatedMember": "Membre actualitzat: {memberName}",
+  "@eventUpdatedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCopied": "Copiat/Importat",
+  "eventAppSpecific": "Esdeveniment específic de l'aplicació",
+  "eventUnknown": "Esdeveniment desconegut"
+}

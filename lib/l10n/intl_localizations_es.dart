@@ -587,6 +587,12 @@ class HyttaHubLocalizationsEs extends HyttaHubLocalizations {
   String get spanish => 'Español';
 
   @override
+  String get catalan => 'Catalán';
+
+  @override
+  String get portuguese => 'Portugués';
+
+  @override
   String get norwegian => 'Noruego';
 
   @override

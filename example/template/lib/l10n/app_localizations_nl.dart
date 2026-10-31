@@ -29,54 +29,54 @@ class AppLocalizationsNl extends AppLocalizations {
   String get app_enterButton => 'Enter';
 
   @override
-  String get app_pickPhotosButton => 'Pick Photos';
+  String get app_pickPhotosButton => 'Foto\'s Kiezen';
 
   @override
   String get app_permissionDenied =>
       'U heeft geen toestemming om deze actie uit te voeren.';
 
   @override
-  String get app_appEventsOption => 'App Events';
+  String get app_appEventsOption => 'App Gebeurtenissen';
 
   @override
-  String get app_editModeTitle => 'Edit Mode';
+  String get app_editModeTitle => 'Bewerkingsmodus';
 
   @override
-  String get app_adminPrivileges => 'You have admin privileges for this hub.';
+  String get app_adminPrivileges => 'Je hebt beheerdersrechten voor deze hub.';
 
   @override
-  String get app_howToProceed => 'How would you like to proceed?';
+  String get app_howToProceed => 'Hoe wil je verdergaan?';
 
   @override
-  String get app_viewSite => 'View';
+  String get app_viewSite => 'Bekijken';
 
   @override
-  String get app_editSite => 'Edit';
+  String get app_editSite => 'Bewerken';
 
   @override
   String app_eventUpdateText(String value) {
-    return 'Updated Text: $value';
+    return 'Tekst Bijgewerkt: $value';
   }
 
   @override
-  String get app_eventUpdateCode => 'Updated Code';
+  String get app_eventUpdateCode => 'Code Bijgewerkt';
 
   @override
   String app_eventUpdateCheckbox(String value) {
-    return 'Updated Checkbox: $value';
+    return 'Selectievakje Bijgewerkt: $value';
   }
 
   @override
   String app_eventUpdateDropdown(String value) {
-    return 'Updated Dropdown: $value';
+    return 'Keuzelijst Bijgewerkt: $value';
   }
 
   @override
-  String get app_eventUpdateList => 'Updated List';
+  String get app_eventUpdateList => 'Lijst Bijgewerkt';
 
   @override
   String app_eventUpdatePhoto(String name) {
-    return 'Updated Photo: $name';
+    return 'Foto Bijgewerkt: $name';
   }
 
   @override

@@ -1,0 +1,348 @@
+{
+  "@@locale": "pt",
+  "loginTitle": "Login",
+  "createAccountTitle": "Criar conta",
+  "loginEmailLabel": "E-mail",
+  "loginPasswordLabel": "Senha",
+  "loginPasswordHelperText": "A senha deve ter no mínimo 16 caracteres.",
+  "loginSuccessTitle": "Login realizado",
+  "loginEmailEmptyError": "O e-mail não pode ficar vazio",
+  "loginEmailInvalidFormatError": "Digite um endereço de e-mail válido.",
+  "loginEmailReservedError": "O formato de e-mail (que corresponde a __.*__) não é permitido.",
+  "loginEmailTooLongError": "O e-mail é muito longo (máximo de 1500 bytes).",
+  "loginNotServiceAdminError": "Não é um administrador do serviço",
+  "loginNotBetaUserError": "Não é um e-mail autorizado",
+  "loginAgreeToTermsCheckbox": "Concordo com os Termos",
+  "loginAgreeToPrivacyPolicyCheckbox": "Concordo com a Política de Privacidade",
+  "loginAlreadyHaveAccountButton": "Já tem uma conta?",
+  "loginNeedToCreateAccountButton": "Precisa criar uma conta?",
+  "loginForgotPasswordButton": "Esqueceu a senha?",
+  "loginGoToEmailResetPasswordMessage": "Acesse sua caixa de entrada, abra o e-mail e clique no link para criar uma nova senha. Depois volte aqui e faça login.",
+  "loginGoToEmailVerifyEmailMessage": "Acesse sua caixa de entrada, abra o e-mail e clique no link para verificar seu endereço de e-mail. Depois volte aqui e faça login.",
+  "app_versionInfo": "Versão {appVersion} ({appBuildNumber})",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "num"
+      }
+    }
+  },
+  "sites": "Hubs",
+  "noSites": "nenhum hub",
+  "initializingAccountTitle": "Inicializando a conta",
+  "serviceCreateAccountTitle": "Criar conta de serviço",
+  "serviceLoginTitle": "Login do serviço",
+  "accountSettingsTitle": "Configurações da conta",
+  "manageSitesTitle": "Abandonar",
+  "reorderSitesTitle": "Reordenar",
+  "removeAccountTitle": "Remover conta",
+  "logout": "Sair",
+  "logoutDialogTitle": "Sair?",
+  "logoutDialogMessage": "Tem certeza de que deseja sair?",
+  "cancelButton": "Cancelar",
+  "createSiteTitle": "Criar hub",
+  "joinSiteTitle": "Entrar em um hub",
+  "unimplementedTitle": "Não implementado",
+  "toBeImplemented": "Em breve!",
+  "siteNameLabel": "Nome",
+  "siteNameEmptyError": "O nome não pode ficar vazio",
+  "userNameLabel": "Nome de usuário",
+  "userNameEmptyError": "O nome de usuário não pode ficar vazio",
+  "pasteCodeTooltip": "Colar código",
+  "backspaceTooltip": "Apagar",
+  "joinSiteCodeLabel": "Digite o código de 8 caracteres",
+  "siteCodeEmptyError": "O código não pode ficar vazio",
+  "siteCodeLengthError": "O código deve ter 8 caracteres",
+  "leaveSiteTooltip": "Abandonar",
+  "removeSiteTitle": "Remover",
+  "leaveSiteConfirmation": "Abandonar? Somente um administrador pode adicionar você novamente.",
+  "updateTermsTitle": "Atualizar termos",
+  "viewTerms": "Ver termos",
+  "viewPrivacyPolicy": "Ver política de privacidade",
+  "agreeToTerms": "Concordo com os Termos de Serviço",
+  "agreeToPrivacyPolicy": "Concordo com a Política de Privacidade",
+  "showAccountEventsState": "Mostrar eventos e estado da conta",
+  "serviceAdminTitle": "Administração do serviço",
+  "serviceStatusTitle": "Status do serviço",
+  "minRequiredVersionTitle": "Versão mínima exigida",
+  "manageBetaUsersTitle": "Gerenciar usuários beta",
+  "errorFetchingBetaUsers": "Erro ao buscar os usuários beta",
+  "newTermsOfServiceTitle": "Novos Termos de Serviço",
+  "newPrivacyPolicyTitle": "Nova Política de Privacidade",
+  "manageServiceAdminsTitle": "Gerenciar administradores do serviço",
+  "showServiceEventsStateTitle": "Mostrar eventos e estado do serviço",
+  "serviceDownTitle": "Serviço indisponível",
+  "serviceDownMessage": "O serviço está temporariamente indisponível. Aguarde enquanto trabalhamos para restaurá-lo.",
+  "accountEventsTitle": "Eventos da conta (banco de dados)",
+  "accountStateTitle": "Estado da conta (replay local)",
+  "serviceEventsTitle": "Eventos do serviço (banco de dados)",
+  "serviceStateTitle": "Estado do serviço (replay local)",
+  "networkErrorTitle": "Erro de rede",
+  "serviceNetworkErrorMessage": "Ocorreu um erro ao contatar o serviço. Verifique sua conexão com a internet e tente novamente.",
+  "newVersionAvailableTitle": "Nova versão disponível",
+  "newVersionAvailableMessage": "Atualize seu navegador ou aplicativo para a versão mais recente.",
+  "privacyPolicyTitle": "Política de Privacidade",
+  "noPrivacyPolicyAvailable": "Nenhuma política de privacidade disponível.",
+  "termsOfServiceTitle": "Termos de Serviço",
+  "noTermsAvailable": "Nenhum termo disponível.",
+  "initializeDataStoreTitle": "Inicializar o armazenamento de dados",
+  "errorTodo": "Erro: todo",
+  "initializeDataStoreBody": "O armazenamento de dados está vazio. Crie o primeiro administrador do serviço para inicializar o sistema.",
+  "successfullySubmittedTodo": "enviado com sucesso, todo: desabilitar os campos",
+  "errorSubmittingForm": "Erro ao enviar o formulário",
+  "disallowedCharactersError": "Os caracteres '[' e ']' não são permitidos",
+  "errorTitle": "Erro",
+  "unexpectedError": "Erro inesperado; verifique a internet, volte e tente novamente",
+  "permissionDenied": "Você não tem permissão para realizar esta ação.",
+  "removedFromSite": "Você foi removido.",
+  "addMemberTitle": "Adicionar membro",
+  "memberNameLabel": "Nome do membro",
+  "memberNameEmptyError": "O nome do membro não pode ficar vazio",
+  "memberNameExistsError": "O nome do membro já existe",
+  "administratorLabel": "Administrador",
+  "emailExistsError": "O e-mail já existe.",
+  "renameSiteTitle": "Renomear",
+  "manageSiteMembers": "Membros",
+  "showSiteEventsState": "Mostrar eventos e estado",
+  "showSiteAllowedEmails": "E-mails permitidos",
+  "siteSettingsTitle": "Configurações",
+  "newSiteNameLabel": "Novo nome",
+  "siteEmailsTitle": "E-mails do hub (banco de dados)",
+  "siteEventsTitle": "Eventos do hub (banco de dados)",
+  "siteStateTitle": "Estado do hub (replay local)",
+  "membersTitle": "Membros",
+  "serviceSettingsTitle": "Configurações do serviço",
+  "termsOfServiceContentLabel": "Conteúdo dos Termos de Serviço",
+  "termsOfServiceContentEmptyError": "Digite o conteúdo dos termos de serviço.",
+  "contentTooShortError": "O conteúdo é muito curto.",
+  "privacyPolicyContentLabel": "Conteúdo da Política de Privacidade",
+  "privacyPolicyContentEmptyError": "Digite o conteúdo da política de privacidade.",
+  "serviceUnavailableLabel": "Serviço indisponível",
+  "minVersionLabel": "Versão mínima",
+  "versionNumberEmptyError": "Digite um número de versão.",
+  "versionNumberInvalidError": "Digite um número positivo válido.",
+  "betaUserEmailsLabel": "E-mails dos usuários beta",
+  "aliasLabel": "Alias",
+  "nicknameEmptyError": "O alias não pode ficar vazio",
+  "adminAliasExistsError": "O alias de administrador já existe",
+  "failedToLoadEmails": "Falha ao carregar os e-mails.",
+  "permissionDeniedViewList": "Você não tem permissão para ver esta lista.",
+  "noEmailsFound": "Nenhum e-mail encontrado.",
+  "userId": "ID do usuário: {userId}",
+  "@userId": {
+    "placeholders": {
+      "userId": {
+        "type": "int"
+      }
+    }
+  },
+  "removeMemberTooltip": "Remover membro",
+  "removeMemberTitle": "Remover membro",
+  "removeMemberConfirmation": "Remover membro? Esta ação não pode ser desfeita.",
+  "updateMemberTooltip": "Atualizar membro",
+  "updateMemberTitle": "Atualizar membro",
+  "restoreMemberTooltip": "Restaurar membro",
+  "restoreMemberTitle": "Restaurar membro",
+  "removedMembersTitle": "Membros removidos",
+  "addAdminTitle": "Adicionar administrador",
+  "updateAdminTitle": "Atualizar administrador",
+  "removeAdminTitle": "Remover administrador",
+  "removeAdminConfirmation": "Remover administrador? Esta ação não pode ser desfeita.",
+  "restoreAdminTitle": "Restaurar administrador",
+  "removeAccountConfirmation": "Remover conta? Esta ação não pode ser desfeita.",
+  "cannotRemoveAccountTitle": "Não é possível remover a conta",
+  "cannotRemoveAccountContent": "Você precisa abandonar todos os hubs antes de remover sua conta.",
+  "cannotChangeEmailWhenOnlyAdminError": "Não é possível alterar seu e-mail enquanto você for o único administrador.",
+  "okButton": "OK",
+  "copySiteIdTooltip": "Copiar ID",
+  "siteIdCopied": "ID copiado para a área de transferência",
+  "and": "e",
+  "mustAgreeToTermsError": "Você precisa concordar com os termos.",
+  "mustAgreeToPrivacyPolicyError": "Você precisa concordar com a política de privacidade.",
+  "leadingTrailingSpacesError": "Não são permitidos espaços no início nem no fim.",
+  "emailLowercaseError": "O e-mail deve estar em minúsculas.",
+  "emailLeadingTrailingSpacesError": "O e-mail não pode ter espaços no início nem no fim.",
+  "formSubmissionError": "Erro ao enviar o formulário; verifique a conexão com a internet, volte e tente novamente.",
+  "failedToLoadEvents": "Falha ao carregar os eventos: {error}",
+  "@failedToLoadEvents": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "showEventsListTooltip": "Mostrar lista de eventos",
+  "showReplayStateTooltip": "Mostrar estado do replay",
+  "toggleSortOrderTooltip": "Alternar ordem de classificação",
+  "noEventsToReplay": "Nenhum evento para reproduzir.",
+  "eventVersion": "Versão: {version}",
+  "@eventVersion": {
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingTitle": "Carregando...",
+  "authenticationErrorWithDetails": "Erro de autenticação: {details}",
+  "@authenticationErrorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingEllipsis": "...",
+  "loginDismissSnackbar": "Dispensar",
+  "passwordEmptyError": "A senha não pode ficar vazia.",
+  "passwordTooShortError": "A senha é muito curta.",
+  "passwordTooLongError": "A senha é muito longa.",
+  "noEventsFound": "Nenhum evento encontrado.",
+  "copySiteTitle": "Copiar",
+  "@copySiteTitle": {
+    "description": "Título da opção de cópia no diálogo."
+  },
+  "copySiteTooltip": "Copiar",
+  "@copySiteTooltip": {
+    "description": "Dica do botão de copiar."
+  },
+  "copySiteConfirmTitle": "Confirmação da cópia",
+  "@copySiteConfirmTitle": {
+    "description": "Título da tela de confirmação da cópia."
+  },
+  "copySiteConfirmMessage": "A cópia criará um hub privado duplicado para você. Observe que copiar os arquivos de mídia pode levar algum tempo. Você poderá editar o novo nome e adicionar membros assim que a cópia for concluída.",
+  "@copySiteConfirmMessage": {
+    "description": "Mensagem da confirmação da cópia."
+  },
+  "errorAssigningUser": "Erro ao atribuir o usuário: {error}",
+  "@errorAssigningUser": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectLanguage": "Selecionar idioma",
+  "nightMode": "Modo noturno",
+  "platform": "Plataforma",
+  "info": "Informações",
+  "serviceLoginButton": "Login do serviço",
+  "english": "Inglês",
+  "italian": "Italiano",
+  "spanish": "Espanhol",
+  "catalan": "Catalão",
+  "portuguese": "Português",
+  "norwegian": "Norueguês",
+  "dutch": "Holandês",
+  "themeSettingsAutomatic": "Automático",
+  "themeSettingsAlwaysOff": "Sempre desativado",
+  "themeSettingsAlwaysOn": "Sempre ativado",
+  "openSourceLicensesButton": "Pacotes de código aberto",
+  "clearLocalStorageButton": "Limpar todo o armazenamento local",
+  "refreshBrowserButton": "Atualizar o navegador",
+  "openSourceLicensesTitle": "Pacotes de código aberto",
+  "siteInfoTitle": "Informações",
+  "siteEventCount": "Número de eventos",
+  "siteTotalSize": "Tamanho total",
+  "bytesLabel": "{size} bytes",
+  "@bytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "int"
+      }
+    }
+  },
+  "kilobytesLabel": "{size} KB",
+  "@kilobytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "megabytesLabel": "{size} MB",
+  "@megabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "gigabytesLabel": "{size} GB",
+  "@gigabytesLabel": {
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "siteFileCount": "Número de arquivos",
+  "siteTotalFileSize": "Tamanho total dos arquivos",
+  "errorFetchingFiles": "Erro ao buscar os arquivos",
+  "refresh": "Atualizar",
+  "eventSiteCreated": "Criado: {siteName}",
+  "@eventSiteCreated": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventAddedMember": "Membro adicionado: {memberName}",
+  "@eventAddedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRenamedSite": "Renomeado: {siteName}",
+  "@eventRenamedSite": {
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventRemovedMember": "Membro removido: {memberId}",
+  "@eventRemovedMember": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventMemberLeft": "Membro saiu: {memberId}",
+  "@eventMemberLeft": {
+    "placeholders": {
+      "memberId": {
+        "type": "int"
+      }
+    }
+  },
+  "eventRestoredMember": "Membro restaurado: {memberName}",
+  "@eventRestoredMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventUpdatedMember": "Membro atualizado: {memberName}",
+  "@eventUpdatedMember": {
+    "placeholders": {
+      "memberName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventSiteCopied": "Copiado/Importado",
+  "eventAppSpecific": "Evento específico do aplicativo",
+  "eventUnknown": "Evento desconhecido"
+}

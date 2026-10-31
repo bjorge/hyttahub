@@ -9,67 +9,66 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   HyttaHubLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
-  String get loginTitle => 'Login';
+  String get loginTitle => 'Inloggen';
 
   @override
-  String get createAccountTitle => 'Create Account';
+  String get createAccountTitle => 'Account aanmaken';
 
   @override
-  String get loginEmailLabel => 'Email';
+  String get loginEmailLabel => 'E-mail';
 
   @override
-  String get loginPasswordLabel => 'Password';
+  String get loginPasswordLabel => 'Wachtwoord';
 
   @override
   String get loginPasswordHelperText =>
-      'Password must be at least 16 characters long.';
+      'Het wachtwoord moet minstens 16 tekens lang zijn.';
 
   @override
-  String get loginSuccessTitle => 'Login Success';
+  String get loginSuccessTitle => 'Succesvol ingelogd';
 
   @override
-  String get loginEmailEmptyError => 'Email cannot be empty';
+  String get loginEmailEmptyError => 'E-mail mag niet leeg zijn';
 
   @override
-  String get loginEmailInvalidFormatError =>
-      'Please enter a valid email address format.';
+  String get loginEmailInvalidFormatError => 'Voer een geldig e-mailadres in.';
 
   @override
   String get loginEmailReservedError =>
-      'Email format (matches __.*__) is not allowed.';
+      'E-mailformaat (komt overeen met __.*__) is niet toegestaan.';
 
   @override
-  String get loginEmailTooLongError => 'Email is too long (max 1500 bytes).';
+  String get loginEmailTooLongError => 'E-mail is te lang (max. 1500 bytes).';
 
   @override
-  String get loginNotServiceAdminError => 'Not a service admin';
+  String get loginNotServiceAdminError => 'Geen servicebeheerder';
 
   @override
   String get loginNotBetaUserError => 'Geen geautoriseerde e-mail';
 
   @override
-  String get loginAgreeToTermsCheckbox => 'I agree to the Terms';
+  String get loginAgreeToTermsCheckbox => 'Ik ga akkoord met de voorwaarden';
 
   @override
   String get loginAgreeToPrivacyPolicyCheckbox =>
-      'I agree to the Privacy Policy';
+      'Ik ga akkoord met het privacybeleid';
 
   @override
-  String get loginAlreadyHaveAccountButton => 'Already have an account?';
+  String get loginAlreadyHaveAccountButton => 'Heb je al een account?';
 
   @override
-  String get loginNeedToCreateAccountButton => 'Need to create an account?';
+  String get loginNeedToCreateAccountButton => 'Moet je een account aanmaken?';
 
   @override
-  String get loginForgotPasswordButton => 'Forgot Password?';
+  String get loginForgotPasswordButton => 'Wachtwoord vergeten?';
 
   @override
   String get loginGoToEmailResetPasswordMessage =>
-      'Go to your email inbox, open the email, and click the link to create a new password. Then return here and login.';
+      'Ga naar je inbox, open de e-mail en klik op de link om een nieuw wachtwoord aan te maken. Kom daarna terug en log in.';
 
   @override
   String get loginGoToEmailVerifyEmailMessage =>
-      'Go to your email inbox, open the email, and click the link to verify your email address. Then return here and login.';
+      'Ga naar je inbox, open de e-mail en klik op de link om je e-mailadres te verifiëren. Kom daarna terug en log in.';
 
   @override
   String app_versionInfo(String appVersion, num appBuildNumber) {
@@ -83,16 +82,16 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get noSites => 'geen hubs';
 
   @override
-  String get initializingAccountTitle => 'Initializing Account';
+  String get initializingAccountTitle => 'Account initialiseren';
 
   @override
-  String get serviceCreateAccountTitle => 'Service Create Account';
+  String get serviceCreateAccountTitle => 'Serviceaccount aanmaken';
 
   @override
-  String get serviceLoginTitle => 'Service Login';
+  String get serviceLoginTitle => 'Service-inlog';
 
   @override
-  String get accountSettingsTitle => 'Account Settings';
+  String get accountSettingsTitle => 'Accountinstellingen';
 
   @override
   String get manageSitesTitle => 'Verlaten';
@@ -101,19 +100,19 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get reorderSitesTitle => 'Hubs herschikken';
 
   @override
-  String get removeAccountTitle => 'Remove Account';
+  String get removeAccountTitle => 'Account verwijderen';
 
   @override
-  String get logout => 'Logout';
+  String get logout => 'Uitloggen';
 
   @override
-  String get logoutDialogTitle => 'Logout?';
+  String get logoutDialogTitle => 'Uitloggen?';
 
   @override
-  String get logoutDialogMessage => 'Are you sure you want to log out?';
+  String get logoutDialogMessage => 'Weet je zeker dat je wilt uitloggen?';
 
   @override
-  String get cancelButton => 'Cancel';
+  String get cancelButton => 'Annuleren';
 
   @override
   String get createSiteTitle => 'Hub maken';
@@ -122,10 +121,10 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get joinSiteTitle => 'Deelnemen aan hub';
 
   @override
-  String get unimplementedTitle => 'Unimplemented';
+  String get unimplementedTitle => 'Niet geïmplementeerd';
 
   @override
-  String get toBeImplemented => 'Coming Soon!';
+  String get toBeImplemented => 'Binnenkort beschikbaar!';
 
   @override
   String get siteNameLabel => 'Naam';
@@ -134,13 +133,13 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get siteNameEmptyError => 'Naam mag niet leeg zijn';
 
   @override
-  String get userNameLabel => 'User Name';
+  String get userNameLabel => 'Gebruikersnaam';
 
   @override
   String get userNameEmptyError => 'Gebruikersnaam mag niet leeg zijn';
 
   @override
-  String get pasteCodeTooltip => 'Paste Code';
+  String get pasteCodeTooltip => 'Code plakken';
 
   @override
   String get backspaceTooltip => 'Backspace';
@@ -165,94 +164,95 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
       'Verlaten? Alleen een beheerder kan je opnieuw toevoegen.';
 
   @override
-  String get updateTermsTitle => 'Update Terms';
+  String get updateTermsTitle => 'Voorwaarden bijwerken';
 
   @override
-  String get viewTerms => 'View Terms';
+  String get viewTerms => 'Voorwaarden bekijken';
 
   @override
-  String get viewPrivacyPolicy => 'View Privacy Policy';
+  String get viewPrivacyPolicy => 'Privacybeleid bekijken';
 
   @override
-  String get agreeToTerms => 'I agree to the Terms of Service';
+  String get agreeToTerms => 'Ik ga akkoord met de servicevoorwaarden';
 
   @override
-  String get agreeToPrivacyPolicy => 'I agree to the Privacy Policy';
+  String get agreeToPrivacyPolicy => 'Ik ga akkoord met het privacybeleid';
 
   @override
-  String get showAccountEventsState => 'Show Account Events & State';
+  String get showAccountEventsState => 'Accountgebeurtenissen en -status tonen';
 
   @override
-  String get serviceAdminTitle => 'Service Admin';
+  String get serviceAdminTitle => 'Servicebeheer';
 
   @override
-  String get serviceStatusTitle => 'Service Status';
+  String get serviceStatusTitle => 'Servicestatus';
 
   @override
-  String get minRequiredVersionTitle => 'Minimum Required Version';
+  String get minRequiredVersionTitle => 'Minimaal vereiste versie';
 
   @override
-  String get manageBetaUsersTitle => 'Manage Beta Users';
+  String get manageBetaUsersTitle => 'Bètagebruikers beheren';
 
   @override
-  String get errorFetchingBetaUsers => 'Error fetching beta users';
+  String get errorFetchingBetaUsers => 'Fout bij ophalen van bètagebruikers';
 
   @override
-  String get newTermsOfServiceTitle => 'New Terms of Service';
+  String get newTermsOfServiceTitle => 'Nieuwe servicevoorwaarden';
 
   @override
-  String get newPrivacyPolicyTitle => 'New Privacy Policy';
+  String get newPrivacyPolicyTitle => 'Nieuw privacybeleid';
 
   @override
-  String get manageServiceAdminsTitle => 'Manage Service Admins';
+  String get manageServiceAdminsTitle => 'Servicebeheerders beheren';
 
   @override
-  String get showServiceEventsStateTitle => 'Show Service Events & State';
+  String get showServiceEventsStateTitle =>
+      'Servicegebeurtenissen en -status tonen';
 
   @override
-  String get serviceDownTitle => 'Service Down';
+  String get serviceDownTitle => 'Service niet beschikbaar';
 
   @override
   String get serviceDownMessage =>
-      'The service is temporarily unavailable. Please wait while we work to restore it.';
+      'De service is tijdelijk niet beschikbaar. Wacht even terwijl we werken aan het herstel.';
 
   @override
-  String get accountEventsTitle => 'Account Events (database)';
+  String get accountEventsTitle => 'Accountgebeurtenissen (database)';
 
   @override
-  String get accountStateTitle => 'Account State (local replay)';
+  String get accountStateTitle => 'Accountstatus (lokale replay)';
 
   @override
-  String get serviceEventsTitle => 'Service Events (database)';
+  String get serviceEventsTitle => 'Servicegebeurtenissen (database)';
 
   @override
-  String get serviceStateTitle => 'Service State (local replay)';
+  String get serviceStateTitle => 'Servicestatus (lokale replay)';
 
   @override
-  String get networkErrorTitle => 'Network Error';
+  String get networkErrorTitle => 'Netwerkfout';
 
   @override
   String get serviceNetworkErrorMessage =>
-      'There was an error contacting the service. Please check your internet connection and try again.';
+      'Er is een fout opgetreden bij het contact met de service. Controleer je internetverbinding en probeer het opnieuw.';
 
   @override
-  String get newVersionAvailableTitle => 'New Version Available';
+  String get newVersionAvailableTitle => 'Nieuwe versie beschikbaar';
 
   @override
   String get newVersionAvailableMessage =>
-      'Please update your browser or app to the latest version.';
+      'Werk je browser of app bij naar de nieuwste versie.';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy';
+  String get privacyPolicyTitle => 'Privacybeleid';
 
   @override
-  String get noPrivacyPolicyAvailable => 'No privacy policy available.';
+  String get noPrivacyPolicyAvailable => 'Geen privacybeleid beschikbaar.';
 
   @override
-  String get termsOfServiceTitle => 'Terms of Service';
+  String get termsOfServiceTitle => 'Servicevoorwaarden';
 
   @override
-  String get noTermsAvailable => 'No terms available.';
+  String get noTermsAvailable => 'Geen voorwaarden beschikbaar.';
 
   @override
   String get initializeDataStoreTitle => 'Initialiseer de Gegevensopslag';
@@ -266,17 +266,17 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
 
   @override
   String get successfullySubmittedTodo =>
-      'successfully submitted, todo: grey out fields';
+      'succesvol verzonden, todo: velden grijs maken';
 
   @override
-  String get errorSubmittingForm => 'Error submitting form';
+  String get errorSubmittingForm => 'Fout bij verzenden van formulier';
 
   @override
   String get disallowedCharactersError =>
-      'Characters \'[\' and \']\' are not allowed';
+      'De tekens \'[\' en \']\' zijn niet toegestaan';
 
   @override
-  String get errorTitle => 'Error';
+  String get errorTitle => 'Fout';
 
   @override
   String get unexpectedError =>
@@ -290,19 +290,19 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get removedFromSite => 'Je bent verwijderd.';
 
   @override
-  String get addMemberTitle => 'Add Member';
+  String get addMemberTitle => 'Lid toevoegen';
 
   @override
-  String get memberNameLabel => 'Member Name';
+  String get memberNameLabel => 'Naam van lid';
 
   @override
-  String get memberNameEmptyError => 'Member name cannot be empty';
+  String get memberNameEmptyError => 'Naam van lid mag niet leeg zijn';
 
   @override
-  String get memberNameExistsError => 'Member name already exists';
+  String get memberNameExistsError => 'Naam van lid bestaat al';
 
   @override
-  String get administratorLabel => 'Administrator';
+  String get administratorLabel => 'Beheerder';
 
   @override
   String get emailExistsError => 'E-mail bestaat al.';
@@ -314,10 +314,10 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get manageSiteMembers => 'Leden';
 
   @override
-  String get showSiteEventsState => 'Show Events & State';
+  String get showSiteEventsState => 'Gebeurtenissen en status tonen';
 
   @override
-  String get showSiteAllowedEmails => 'Allowed Emails';
+  String get showSiteAllowedEmails => 'Toegestane e-mailadressen';
 
   @override
   String get siteSettingsTitle => 'Instellingen';
@@ -335,40 +335,39 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get siteStateTitle => 'Hub status (lokal replay)';
 
   @override
-  String get membersTitle => 'Members';
+  String get membersTitle => 'Leden';
 
   @override
-  String get serviceSettingsTitle => 'Service Settings';
+  String get serviceSettingsTitle => 'Service-instellingen';
 
   @override
-  String get termsOfServiceContentLabel => 'Terms of Service Content';
+  String get termsOfServiceContentLabel => 'Inhoud van de servicevoorwaarden';
 
   @override
   String get termsOfServiceContentEmptyError =>
-      'Please enter terms of service content.';
+      'Voer de inhoud van de servicevoorwaarden in.';
 
   @override
-  String get contentTooShortError => 'Content is too short.';
+  String get contentTooShortError => 'De inhoud is te kort.';
 
   @override
-  String get privacyPolicyContentLabel => 'Privacy Policy Content';
+  String get privacyPolicyContentLabel => 'Inhoud van het privacybeleid';
 
   @override
   String get privacyPolicyContentEmptyError =>
-      'Please enter privacy policy content.';
+      'Voer de inhoud van het privacybeleid in.';
 
   @override
-  String get serviceUnavailableLabel => 'Service Unavailable';
+  String get serviceUnavailableLabel => 'Service niet beschikbaar';
 
   @override
-  String get minVersionLabel => 'Min Version';
+  String get minVersionLabel => 'Min. versie';
 
   @override
-  String get versionNumberEmptyError => 'Please enter a version number.';
+  String get versionNumberEmptyError => 'Voer een versienummer in.';
 
   @override
-  String get versionNumberInvalidError =>
-      'Please enter a valid positive number.';
+  String get versionNumberInvalidError => 'Voer een geldig positief getal in.';
 
   @override
   String get betaUserEmailsLabel => 'E-mailadressen van bètagebruikers';
@@ -377,73 +376,73 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get aliasLabel => 'Alias';
 
   @override
-  String get nicknameEmptyError => 'Nickname cannot be empty';
+  String get nicknameEmptyError => 'Bijnaam mag niet leeg zijn';
 
   @override
-  String get adminAliasExistsError => 'Admin alias already exists';
+  String get adminAliasExistsError => 'Beheerdersalias bestaat al';
 
   @override
-  String get failedToLoadEmails => 'Failed to load emails.';
+  String get failedToLoadEmails => 'Kan e-mailadressen niet laden.';
 
   @override
   String get permissionDeniedViewList =>
-      'You do not have permission to view this list.';
+      'Je hebt geen toestemming om deze lijst te bekijken.';
 
   @override
-  String get noEmailsFound => 'No emails found.';
+  String get noEmailsFound => 'Geen e-mailadressen gevonden.';
 
   @override
   String userId(int userId) {
-    return 'User ID: $userId';
+    return 'Gebruikers-ID: $userId';
   }
 
   @override
-  String get removeMemberTooltip => 'Remove Member';
+  String get removeMemberTooltip => 'Lid verwijderen';
 
   @override
-  String get removeMemberTitle => 'Remove Member';
+  String get removeMemberTitle => 'Lid verwijderen';
 
   @override
   String get removeMemberConfirmation =>
-      'Remove Member? This action cannot be undone.';
+      'Lid verwijderen? Deze actie kan niet ongedaan worden gemaakt.';
 
   @override
-  String get updateMemberTooltip => 'Update Member';
+  String get updateMemberTooltip => 'Lid bijwerken';
 
   @override
-  String get updateMemberTitle => 'Update Member';
+  String get updateMemberTitle => 'Lid bijwerken';
 
   @override
-  String get restoreMemberTooltip => 'Restore Member';
+  String get restoreMemberTooltip => 'Lid herstellen';
 
   @override
-  String get restoreMemberTitle => 'Restore Member';
+  String get restoreMemberTitle => 'Lid herstellen';
 
   @override
-  String get removedMembersTitle => 'Removed Members';
+  String get removedMembersTitle => 'Verwijderde leden';
 
   @override
-  String get addAdminTitle => 'Add Admin';
+  String get addAdminTitle => 'Beheerder toevoegen';
 
   @override
-  String get updateAdminTitle => 'Update Admin';
+  String get updateAdminTitle => 'Beheerder bijwerken';
 
   @override
-  String get removeAdminTitle => 'Remove Admin';
+  String get removeAdminTitle => 'Beheerder verwijderen';
 
   @override
   String get removeAdminConfirmation =>
-      'Remove Admin? This action cannot be undone.';
+      'Beheerder verwijderen? Deze actie kan niet ongedaan worden gemaakt.';
 
   @override
-  String get restoreAdminTitle => 'Restore Admin';
+  String get restoreAdminTitle => 'Beheerder herstellen';
 
   @override
   String get removeAccountConfirmation =>
-      'Remove Account? This action cannot be undone.';
+      'Account verwijderen? Deze actie kan niet ongedaan worden gemaakt.';
 
   @override
-  String get cannotRemoveAccountTitle => 'Cannot Remove Account';
+  String get cannotRemoveAccountTitle => 'Kan account niet verwijderen';
 
   @override
   String get cannotRemoveAccountContent =>
@@ -451,7 +450,7 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
 
   @override
   String get cannotChangeEmailWhenOnlyAdminError =>
-      'Cannot change your email when you are the only admin.';
+      'Je kunt je e-mailadres niet wijzigen als je de enige beheerder bent.';
 
   @override
   String get okButton => 'OK';
@@ -463,58 +462,59 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get siteIdCopied => 'ID naar klembord gekopieerd';
 
   @override
-  String get and => '&';
+  String get and => 'en';
 
   @override
-  String get mustAgreeToTermsError => 'You must agree to the terms.';
+  String get mustAgreeToTermsError =>
+      'Je moet akkoord gaan met de voorwaarden.';
 
   @override
   String get mustAgreeToPrivacyPolicyError =>
-      'You must agree to the privacy policy.';
+      'Je moet akkoord gaan met het privacybeleid.';
 
   @override
   String get leadingTrailingSpacesError =>
-      'Leading or trailing spaces are not allowed.';
+      'Spaties aan het begin of einde zijn niet toegestaan.';
 
   @override
-  String get emailLowercaseError => 'Email must be in lowercase.';
+  String get emailLowercaseError => 'E-mail moet in kleine letters zijn.';
 
   @override
   String get emailLeadingTrailingSpacesError =>
-      'Email cannot have leading or trailing spaces.';
+      'E-mail mag geen spaties aan het begin of einde hebben.';
 
   @override
   String get formSubmissionError =>
-      'Error submitting the form, check internet connection, go back and try again.';
+      'Fout bij het verzenden van het formulier, controleer je internetverbinding, ga terug en probeer het opnieuw.';
 
   @override
   String failedToLoadEvents(String error) {
-    return 'Failed to load events: $error';
+    return 'Kan gebeurtenissen niet laden: $error';
   }
 
   @override
-  String get showEventsListTooltip => 'Show Events List';
+  String get showEventsListTooltip => 'Gebeurtenissenlijst tonen';
 
   @override
-  String get showReplayStateTooltip => 'Show Replay State';
+  String get showReplayStateTooltip => 'Replaystatus tonen';
 
   @override
-  String get toggleSortOrderTooltip => 'Toggle Sort Order';
+  String get toggleSortOrderTooltip => 'Sorteervolgorde wisselen';
 
   @override
-  String get noEventsToReplay => 'No events to replay.';
+  String get noEventsToReplay => 'Geen gebeurtenissen om af te spelen.';
 
   @override
   String eventVersion(int version) {
-    return 'Version: $version';
+    return 'Versie: $version';
   }
 
   @override
-  String get loadingTitle => 'Loading...';
+  String get loadingTitle => 'Laden...';
 
   @override
   String authenticationErrorWithDetails(String details) {
-    return 'Authentication error: $details';
+    return 'Authenticatiefout: $details';
   }
 
   @override
@@ -566,7 +566,7 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
   String get info => 'Info';
 
   @override
-  String get serviceLoginButton => 'Service Login';
+  String get serviceLoginButton => 'Service-inlog';
 
   @override
   String get english => 'Engels';
@@ -576,6 +576,12 @@ class HyttaHubLocalizationsNl extends HyttaHubLocalizations {
 
   @override
   String get spanish => 'Spaans';
+
+  @override
+  String get catalan => 'Catalaans';
+
+  @override
+  String get portuguese => 'Portugees';
 
   @override
   String get norwegian => 'Noors';

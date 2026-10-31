@@ -1,3 +1,19 @@
+## 0.1.61
+
+*   **Catalan & Portuguese Localization**:
+    *   Added Catalan (`ca`) and Portuguese (`pt`) to `AppLanguage`, `LanguageCubit.fromJson`, the default `supportedLocales` in `HyttaHubApp`, and the language picker in `HyttaHubAppBarActions`.
+    *   Added fully translated `intl_ca.arb` and `intl_pt.arb` (complete coverage of all framework strings), plus `catalan` and `portuguese` language names in every existing `.arb`.
+    *   Portuguese targets the base `pt` locale, which follows the CLDR/Flutter convention of Brazilian Portuguese as the unmarked variant, written in a formal register that also reads naturally in Portugal. Devices set to either `pt-BR` or `pt-PT` resolve to it.
+    *   Both example apps (`tictactoe` and `template`) now offer Catalan and Portuguese in the language picker, with complete translations so the new locales can be exercised end to end.
+    *   Added `supported_locales_test.dart`, which asserts that every `AppLanguage` has a loadable locale, so a future language cannot be half-wired.
+*   **Translation Backfill & Cleanup**:
+    *   Completed the Dutch framework translation: 120 strings in `intl_nl.arb` were still the untranslated English source text and are now translated.
+    *   Removed 13 dead keys (plus 5 orphaned metadata blocks) left in `intl_nl.arb` by "Removed import site option." (`252341e`), which had cleaned the other locales but missed Dutch.
+    *   Backfilled the missing `example/template` translations: Spanish, Italian and Dutch were each missing 13 strings and Norwegian 7, all of which had been silently falling back to English.
+    *   Normalized every `.arb` to the template's key order and placeholder metadata, so all locales now diff cleanly against one another.
+*   **Maintenance**:
+    *   Updated package version to 0.1.61.
+
 ## 0.1.60
 
 *   **Auto-Resync Interval & Self-Healing Streams**:

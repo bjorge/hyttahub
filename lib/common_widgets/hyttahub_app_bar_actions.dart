@@ -80,6 +80,12 @@ class _LanguagePicker extends StatelessWidget {
                 case AppLanguage.es:
                   name = l10n.spanish;
                   break;
+                case AppLanguage.ca:
+                  name = l10n.catalan;
+                  break;
+                case AppLanguage.pt:
+                  name = l10n.portuguese;
+                  break;
                 case AppLanguage.nb:
                   name = l10n.norwegian;
                   break;

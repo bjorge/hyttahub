@@ -1,0 +1,93 @@
+{
+  "@@locale": "ca",
+  "app_unexpectedError": "Error inesperat; comprova la connexió a Internet, torna enrere i prova-ho de nou",
+  "app_appTitle": "Exemple de formulari de Hytta Hub",
+  "app_nightMode": "Mode nocturn",
+  "app_themeSettingsAlwaysOff": "Sempre desactivat",
+  "app_themeSettingsAlwaysOn": "Sempre activat",
+  "app_themeSettingsAutomatic": "Automàtic",
+  "app_versionInfo": "Versió {appVersion}-{appBuildNumber}",
+  "@app_versionInfo": {
+    "placeholders": {
+      "appVersion": {
+        "type": "String"
+      },
+      "appBuildNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app_selectLanguage": "Selecciona l'idioma",
+  "app_english": "Anglès",
+  "app_italian": "Italià",
+  "app_spanish": "Espanyol",
+  "app_norwegian": "Noruec",
+  "app_dutch": "Neerlandès",
+  "app_enterButton": "Entra",
+  "app_serviceLoginButton": "Inici de sessió del servei",
+  "app_permissionDenied": "No tens permís per fer aquesta acció.",
+  "app_appEventsOption": "Esdeveniments de l'aplicació",
+  "app_eventMove": "El jugador {player} ha mogut a ({x}, {y})",
+  "@app_eventMove": {
+    "placeholders": {
+      "player": {
+        "type": "int"
+      },
+      "x": {
+        "type": "int"
+      },
+      "y": {
+        "type": "int"
+      }
+    }
+  },
+  "app_eventStartGame": "Partida iniciada (contra el bot: {vsBot})",
+  "@app_eventStartGame": {
+    "placeholders": {
+      "vsBot": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventPlayAgain": "Torna a jugar",
+  "app_draw": "Empat!",
+  "app_playerWins": "Guanya {name}!",
+  "@app_playerWins": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_startMultiplayerGame": "Inicia una partida multijugador",
+  "app_startBotGame": "Inicia una partida contra el bot",
+  "app_playerYou": "{name} (tu)",
+  "@app_playerYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_botName": "Bot",
+  "app_unknownPlayer": "Desconegut ({id})",
+  "@app_unknownPlayer": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "app_submissionErrorSnack": "Error en l'enviament: {errorCode}",
+  "@app_submissionErrorSnack": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
+  },
+  "app_appSpecificEvent": "Esdeveniment específic de l'aplicació",
+  "app_appEventsTitle": "Esdeveniments de l'aplicació",
+  "app_appStateTitle": "Estat de l'aplicació",
+  "app_platformLabel": "Plataforma"
+}

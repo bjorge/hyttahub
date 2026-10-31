@@ -1,6 +1,11 @@
 {
   "@@locale": "it",
   "app_submissionError": "Errore di invio: {error}",
+  "@app_submissionError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "app_unexpectedError": "Errore imprevisto, controlla la connessione internet, torna indietro e riprova",
   "app_appTitle": "Hytta Hub Esempio di Modulo",
   "app_versionInfo": "Versione {appVersion}-{appBuildNumber}",
@@ -15,7 +20,49 @@
     }
   },
   "app_enterButton": "Invio",
+  "app_pickPhotosButton": "Scegli Foto",
   "app_permissionDenied": "Non hai il permesso di eseguire questa azione.",
+  "app_appEventsOption": "Eventi dell'Applicazione",
+  "app_editModeTitle": "Modalità di Modifica",
+  "app_adminPrivileges": "Hai privilegi di amministratore per questo hub.",
+  "app_howToProceed": "Come vuoi procedere?",
+  "app_viewSite": "Visualizza",
+  "app_editSite": "Modifica",
+  "app_eventUpdateText": "Testo Aggiornato: {value}",
+  "@app_eventUpdateText": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateCode": "Codice Aggiornato",
+  "app_eventUpdateCheckbox": "Casella Aggiornata: {value}",
+  "@app_eventUpdateCheckbox": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateDropdown": "Menu a Tendina Aggiornato: {value}",
+  "@app_eventUpdateDropdown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventUpdateList": "Lista Aggiornata",
+  "app_eventUpdatePhoto": "Foto Aggiornata: {name}",
+  "@app_eventUpdatePhoto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "app_eventRemovePhoto": "Foto Rimossa",
   "app_labelText": "Testo",
   "app_labelCode": "Codice",
   "app_labelCheckbox": "Casella",
@@ -36,8 +83,6 @@
   "app_deletePhoto": "Elimina Foto",
   "app_deletePhotoTitle": "Elimina Foto",
   "app_deletePhotoConfirmation": "Conferma eliminazione della foto",
-  "app_eventRemovePhoto": "Foto Rimossa",
-
   "app_appSpecificEvent": "Evento specifico dell'applicazione",
   "app_updateTextTitle": "Aggiorna Testo",
   "app_textValueLabel": "Valore del Testo",

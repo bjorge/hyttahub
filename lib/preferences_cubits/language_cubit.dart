@@ -3,7 +3,7 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 
-enum AppLanguage { en, it, es, nb, nl }
+enum AppLanguage { en, it, es, ca, pt, nb, nl }
 
 class LanguageCubit extends HydratedCubit<AppLanguage> {
   LanguageCubit(this.storageKey) : super(HyttaHubOptions.defaultLanguage ?? AppLanguage.en);
@@ -28,6 +28,10 @@ class LanguageCubit extends HydratedCubit<AppLanguage> {
         return AppLanguage.it;
       case 'es':
         return AppLanguage.es;
+      case 'ca':
+        return AppLanguage.ca;
+      case 'pt':
+        return AppLanguage.pt;
       case 'nb':
         return AppLanguage.nb;
       case 'nl':

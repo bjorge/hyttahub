@@ -29,7 +29,7 @@ class AppLocalizationsNb extends AppLocalizations {
   String get app_enterButton => 'Enter';
 
   @override
-  String get app_pickPhotosButton => 'Pick Photos';
+  String get app_pickPhotosButton => 'Velg Bilder';
 
   @override
   String get app_permissionDenied =>
@@ -56,28 +56,28 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String app_eventUpdateText(String value) {
-    return 'Updated Text: $value';
+    return 'Tekst Oppdatert: $value';
   }
 
   @override
-  String get app_eventUpdateCode => 'Updated Code';
+  String get app_eventUpdateCode => 'Kode Oppdatert';
 
   @override
   String app_eventUpdateCheckbox(String value) {
-    return 'Updated Checkbox: $value';
+    return 'Avkrysning Oppdatert: $value';
   }
 
   @override
   String app_eventUpdateDropdown(String value) {
-    return 'Updated Dropdown: $value';
+    return 'Nedtrekksmeny Oppdatert: $value';
   }
 
   @override
-  String get app_eventUpdateList => 'Updated List';
+  String get app_eventUpdateList => 'Liste Oppdatert';
 
   @override
   String app_eventUpdatePhoto(String name) {
-    return 'Updated Photo: $name';
+    return 'Bilde Oppdatert: $name';
   }
 
   @override
