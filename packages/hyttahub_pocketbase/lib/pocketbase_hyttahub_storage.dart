@@ -309,14 +309,34 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   // ── Real-time ────────────────────────────────────────────────────────────
 
+  static final Expando<_ClientRealtimeState> _clientStates =
+      Expando<_ClientRealtimeState>();
+
+  _ClientRealtimeState get _realtimeState =>
+      _clientStates[_client] ??= _ClientRealtimeState(_client);
+
+  /// Tears down the shared PocketBase SSE connection (`_client.realtime`) by
+  /// unsubscribing all topics, and then triggers every active listener across
+  /// all [PocketbaseHyttaHubStorage] instances sharing [_client] to re-seed
+  /// and re-subscribe on a fresh `GET /api/realtime` connection.
+  ///
+  /// Because the PocketBase Dart SDK shares a single `SseClient` across all
+  /// subscriptions and only closes it when all topics are removed, a single
+  /// listener unsubscribing and re-subscribes (e.g. when `BaseReplayBloc`'s
+  /// `resyncInterval` detects missed events on a half-open connection, or on
+  /// app resume) would otherwise reuse the existing dead `SseClient`.
+  Future<void> forceReconnect() => _realtimeState.forceReconnect();
+
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
     final info = PathInfo.parse(path);
     final controller = StreamController<Map<String, Map<String, dynamic>>>();
+    final rtState = _realtimeState;
     Map<String, Map<String, dynamic>> currentData = {};
     // Holds the per-subscription unsubscribe function returned by PocketBase.
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
+    bool hasConnectedOnce = false;
 
     Future<void> setup() async {
       if (isSettingUp) return;
@@ -330,6 +350,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
       while (!controller.isClosed) {
         try {
+          // If another listener on this client is still active and
+          // this listener is re-initializing (e.g. after a cancel/restart),
+          // ensure the shared SSE connection is freshly established.
+          if (hasConnectedOnce && rtState.reconnectingFuture != null) {
+            await rtState.reconnectingFuture;
+          }
+
           final initial = await getCollection(path);
           currentData = _toDocIdMap(initial);
           if (!controller.isClosed) controller.add(Map.from(currentData));
@@ -378,6 +405,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             break;
           }
           unsubscribeFn = unsub;
+          hasConnectedOnce = true;
           break;
         } catch (e) {
           if (e is ClientException) {
@@ -400,16 +428,36 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       isSettingUp = false;
     }
 
-    setup().catchError(controller.addError);
+    Future<void> refreshOnly() async {
+      if (isSettingUp || controller.isClosed) return;
+      try {
+        final updated = await getCollection(path);
+        currentData = _toDocIdMap(updated);
+        if (!controller.isClosed) {
+          controller.add(Map.from(currentData));
+        }
+      } catch (_) {}
+    }
+
+    void triggerSetup() {
+      setup().catchError((Object e, StackTrace st) {
+        if (!controller.isClosed) {
+          controller.addError(e, st);
+        }
+      });
+    }
+
+    rtState.registerListener(restart: triggerSetup, refresh: refreshOnly);
+    triggerSetup();
 
     _StorageLifecycleObserver? observer;
     try {
       final binding = WidgetsBinding.instance;
       observer = _StorageLifecycleObserver(() {
         if (kDebugMode) {
-          print('[PB] App resumed, forcing listenCollection setup for ${info.collection}');
+          print('[PB] App resumed, forcing full reconnect for ${info.collection}');
         }
-        setup();
+        forceReconnect();
       });
       binding.addObserver(observer);
     } catch (_) {
@@ -417,6 +465,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     controller.onCancel = () async {
+      rtState.unregisterListener(restart: triggerSetup, refresh: refreshOnly);
       if (observer != null) {
         try {
           WidgetsBinding.instance.removeObserver(observer);
@@ -453,8 +502,14 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   }) {
     final info = PathInfo.parse(path);
     final controller = StreamController<Map<int, String>>();
+    final rtState = _realtimeState;
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
+    int currentLastVersion = lastVersion;
+
+    final cancelledAt = rtState.recentlyCancelledEventPaths.remove(path);
+    final bool isResyncRestart = cancelledAt != null &&
+        DateTime.now().difference(cancelledAt) < const Duration(seconds: 5);
 
     Future<void> setup() async {
       if (isSettingUp) return;
@@ -471,16 +526,21 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           final initial = await getCollection(path);
           final seed = _buildEventMap(
             initial,
-            lastVersion,
+            currentLastVersion,
             versionField,
             payloadField,
           );
           if (kDebugMode) {
             print(
-              '[PB] listenEvents col=${info.collection} seed=${seed.keys.toList()} lastVersion=$lastVersion',
+              '[PB] listenEvents col=${info.collection} seed=${seed.keys.toList()} lastVersion=$currentLastVersion',
             );
           }
-          if (seed.isNotEmpty && !controller.isClosed) controller.add(seed);
+          if (seed.isNotEmpty && !controller.isClosed) {
+            for (final v in seed.keys) {
+              if (v > currentLastVersion) currentLastVersion = v;
+            }
+            controller.add(seed);
+          }
 
           if (kDebugMode) {
             print('[PB] listenEvents subscribe col=${info.collection}');
@@ -505,7 +565,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
               try {
                 final version = (doc[versionField] as num).toInt();
                 final payload = doc[payloadField] as String;
-                if (version > lastVersion) {
+                if (version > currentLastVersion) {
+                  currentLastVersion = version;
                   if (kDebugMode) {
                     print(
                       '[PB] listenEvents incremental update col=${info.collection} version=$version',
@@ -523,7 +584,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             final all = await getCollection(path);
             final events = _buildEventMap(
               all,
-              lastVersion,
+              currentLastVersion,
               versionField,
               payloadField,
             );
@@ -533,6 +594,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
               );
             }
             if (events.isNotEmpty) {
+              for (final v in events.keys) {
+                if (v > currentLastVersion) currentLastVersion = v;
+              }
               controller.add(events);
             }
           }, filter: info.filter);
@@ -563,16 +627,51 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       isSettingUp = false;
     }
 
-    setup().catchError(controller.addError);
+    Future<void> refreshOnly() async {
+      if (isSettingUp || controller.isClosed) return;
+      try {
+        final all = await getCollection(path);
+        final events = _buildEventMap(
+          all,
+          currentLastVersion,
+          versionField,
+          payloadField,
+        );
+        if (events.isNotEmpty && !controller.isClosed) {
+          for (final v in events.keys) {
+            if (v > currentLastVersion) currentLastVersion = v;
+          }
+          controller.add(events);
+        }
+      } catch (_) {}
+    }
+
+    void triggerSetup() {
+      setup().catchError((Object e, StackTrace st) {
+        if (!controller.isClosed) {
+          controller.addError(e, st);
+        }
+      });
+    }
+
+    rtState.registerListener(restart: triggerSetup, refresh: refreshOnly);
+    if (isResyncRestart && rtState.activeListeners.length > 1) {
+      // BaseReplayBloc cancelled and restarted this event stream because it
+      // detected missed events. Force all active listeners on this PocketBase
+      // client to tear down the shared SSE stream and reconnect cleanly.
+      forceReconnect();
+    } else {
+      triggerSetup();
+    }
 
     _StorageLifecycleObserver? observer;
     try {
       final binding = WidgetsBinding.instance;
       observer = _StorageLifecycleObserver(() {
         if (kDebugMode) {
-          print('[PB] App resumed, forcing listenEvents setup for ${info.collection}');
+          print('[PB] App resumed, forcing full reconnect for ${info.collection}');
         }
-        setup();
+        forceReconnect();
       });
       binding.addObserver(observer);
     } catch (_) {
@@ -580,6 +679,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     controller.onCancel = () async {
+      rtState.unregisterListener(restart: triggerSetup, refresh: refreshOnly);
+      rtState.recentlyCancelledEventPaths[path] = DateTime.now();
       if (observer != null) {
         try {
           WidgetsBinding.instance.removeObserver(observer);
@@ -797,5 +898,82 @@ class _StorageLifecycleObserver extends WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       onResume();
     }
+  }
+}
+
+/// Shared real-time listener state per [PocketBase] client instance.
+///
+/// Multiple [PocketbaseHyttaHubStorage] instances may wrap the same underlying
+/// [PocketBase] client (and therefore share a single `RealtimeService` SSE
+/// connection). Tracking active listeners per client ensures that
+/// [forceReconnect] and automatic `SseClient` reconnects re-seed and
+/// re-subscribe all active `listenCollection` and `listenEvents` streams.
+class _ClientRealtimeState {
+  _ClientRealtimeState(this.client) {
+    final prevOnDisconnect = client.realtime.onDisconnect;
+    client.realtime.onDisconnect = (subscriptions) {
+      prevOnDisconnect?.call(subscriptions);
+      // If subscriptions is non-empty, the disconnect was caused by an
+      // unexpected network/server error (not by unsubscribing all topics).
+      // When SseClient auto-reconnects, refresh all active listeners so any
+      // records created/updated during the disconnect gap are fetched.
+      if (subscriptions.isNotEmpty && reconnectingFuture == null) {
+        _scheduleRefreshAfterAutoReconnect();
+      }
+    };
+  }
+
+  final PocketBase client;
+  final Set<VoidCallback> activeListeners = {};
+  final Set<Future<void> Function()> activeRefreshers = {};
+  final Map<String, DateTime> recentlyCancelledEventPaths = {};
+
+  Future<void>? reconnectingFuture;
+  Timer? _autoReconnectRefreshTimer;
+
+  void registerListener({
+    required VoidCallback restart,
+    required Future<void> Function() refresh,
+  }) {
+    activeListeners.add(restart);
+    activeRefreshers.add(refresh);
+  }
+
+  void unregisterListener({
+    required VoidCallback restart,
+    required Future<void> Function() refresh,
+  }) {
+    activeListeners.remove(restart);
+    activeRefreshers.remove(refresh);
+  }
+
+  void _scheduleRefreshAfterAutoReconnect() {
+    _autoReconnectRefreshTimer?.cancel();
+    _autoReconnectRefreshTimer = Timer(const Duration(seconds: 1), () async {
+      if (reconnectingFuture != null) return;
+      for (final refresh in List.of(activeRefreshers)) {
+        await refresh();
+      }
+    });
+  }
+
+  Future<void> forceReconnect() {
+    _autoReconnectRefreshTimer?.cancel();
+    return reconnectingFuture ??= () async {
+      if (kDebugMode) {
+        print(
+          '[PB] forceReconnect: tearing down SSE and restarting ${activeListeners.length} active listener(s)',
+        );
+      }
+      try {
+        await client.realtime.unsubscribe();
+      } catch (_) {}
+
+      for (final restart in List.of(activeListeners)) {
+        restart();
+      }
+    }().whenComplete(() {
+      reconnectingFuture = null;
+    });
   }
 }
