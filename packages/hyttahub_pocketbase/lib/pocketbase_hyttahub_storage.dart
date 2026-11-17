@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -309,11 +310,11 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
   // ── Real-time ────────────────────────────────────────────────────────────
 
-  static final Expando<_ClientRealtimeState> _clientStates =
-      Expando<_ClientRealtimeState>();
+  static final Expando<ClientRealtimeState> _clientStates =
+      Expando<ClientRealtimeState>();
 
-  _ClientRealtimeState get _realtimeState =>
-      _clientStates[_client] ??= _ClientRealtimeState(_client);
+  ClientRealtimeState get _realtimeState =>
+      _clientStates[_client] ??= ClientRealtimeState(_client);
 
   /// Tears down the shared PocketBase SSE connection (`_client.realtime`) by
   /// unsubscribing all topics, and then triggers every active listener across
@@ -966,8 +967,12 @@ class _StorageLifecycleObserver extends WidgetsBindingObserver {
 /// connection). Tracking active listeners per client ensures that
 /// [forceReconnect] and automatic `SseClient` reconnects re-seed and
 /// re-subscribe all active `listenCollection` and `listenEvents` streams.
-class _ClientRealtimeState {
-  _ClientRealtimeState(this.client) {
+///
+/// Internal to this package — public only so the reconnect bookkeeping can be
+/// unit tested without a live SSE connection.
+@visibleForTesting
+class ClientRealtimeState {
+  ClientRealtimeState(this.client) {
     final prevOnDisconnect = client.realtime.onDisconnect;
     client.realtime.onDisconnect = (subscriptions) {
       prevOnDisconnect?.call(subscriptions);
@@ -989,13 +994,13 @@ class _ClientRealtimeState {
 
   /// How long after a cancel a re-listen on the same path still counts as a
   /// resync restart rather than a fresh listen.
-  static const Duration _resyncRestartWindow = Duration(seconds: 5);
+  static const Duration resyncRestartWindow = Duration(seconds: 5);
 
   /// Delays between attempts to refresh listeners after the SDK's `SseClient`
   /// auto-reconnects. The first attempt usually lands while the connection is
   /// still coming back, so a single shot would silently give up on the very
   /// gap it exists to close.
-  static const List<Duration> _refreshBackoff = [
+  static const List<Duration> refreshBackoff = [
     Duration(seconds: 1),
     Duration(seconds: 3),
     Duration(seconds: 8),
@@ -1028,49 +1033,61 @@ class _ClientRealtimeState {
   }
 
   /// Records that an event stream on [path] was just cancelled, so a re-listen
-  /// arriving within [_resyncRestartWindow] can be recognised as a resync
+  /// arriving within [resyncRestartWindow] can be recognised as a resync
   /// restart.
   ///
   /// Prunes expired entries on the way in: outside that window an entry is
   /// dead weight, and it is only ever removed by a matching re-listen that may
   /// never come.
   void noteCancelledEventPath(String path) {
-    final now = DateTime.now();
+    final now = clock.now();
     _recentlyCancelledEventPaths.removeWhere(
-      (_, at) => now.difference(at) > _resyncRestartWindow,
+      (_, at) => now.difference(at) > resyncRestartWindow,
     );
     _recentlyCancelledEventPaths[path] = now;
   }
 
-  /// Whether [path] was cancelled within [_resyncRestartWindow], consuming the
+  /// Number of cancelled paths currently tracked. Exposed so the pruning in
+  /// [noteCancelledEventPath] can be asserted — an unbounded map here would
+  /// otherwise only show up as a slow leak.
+  @visibleForTesting
+  int get trackedCancelledPaths => _recentlyCancelledEventPaths.length;
+
+  /// Whether [path] was cancelled within [resyncRestartWindow], consuming the
   /// record either way.
   bool consumeCancelledEventPath(String path) {
     final cancelledAt = _recentlyCancelledEventPaths.remove(path);
     return cancelledAt != null &&
-        DateTime.now().difference(cancelledAt) < _resyncRestartWindow;
+        clock.now().difference(cancelledAt) < resyncRestartWindow;
   }
 
   void _scheduleRefreshAfterAutoReconnect({bool reset = true}) {
     if (reset) _refreshAttempt = 0;
     _autoReconnectRefreshTimer?.cancel();
 
-    if (_refreshAttempt >= _refreshBackoff.length) {
+    if (_refreshAttempt >= refreshBackoff.length) {
       if (kDebugMode) {
         print(
-          '[PB] refresh after reconnect gave up after ${_refreshBackoff.length} attempts',
+          '[PB] refresh after reconnect gave up after ${refreshBackoff.length} attempts',
         );
       }
       return;
     }
 
-    _autoReconnectRefreshTimer = Timer(_refreshBackoff[_refreshAttempt], () async {
+    _autoReconnectRefreshTimer = Timer(refreshBackoff[_refreshAttempt], () async {
       // A full reconnect supersedes the refresh — it re-seeds every listener.
       if (reconnectingFuture != null) return;
 
       final results = await Future.wait(
-        // An unhandled rejection here would escape into the Timer's zone.
-        List.of(activeRefreshers)
-            .map((refresh) => refresh().catchError((Object _) => false)),
+        List.of(activeRefreshers).map((refresh) async {
+          // Treat a thrown refresher as a failed refresh. Without this the
+          // rejection escapes into the Timer's zone, killing the retry chain.
+          try {
+            return await refresh();
+          } catch (_) {
+            return false;
+          }
+        }),
       );
       if (results.every((refreshed) => refreshed)) return;
 
