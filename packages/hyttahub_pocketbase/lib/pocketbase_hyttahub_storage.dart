@@ -336,7 +336,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     // Holds the per-subscription unsubscribe function returned by PocketBase.
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
-    bool hasConnectedOnce = false;
 
     Future<void> setup() async {
       if (isSettingUp) return;
@@ -350,13 +349,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
       while (!controller.isClosed) {
         try {
-          // If another listener on this client is still active and
-          // this listener is re-initializing (e.g. after a cancel/restart),
-          // ensure the shared SSE connection is freshly established.
-          if (hasConnectedOnce && rtState.reconnectingFuture != null) {
-            await rtState.reconnectingFuture;
-          }
-
           final initial = await getCollection(path);
           currentData = _toDocIdMap(initial);
           if (!controller.isClosed) controller.add(Map.from(currentData));
@@ -405,7 +397,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             break;
           }
           unsubscribeFn = unsub;
-          hasConnectedOnce = true;
           break;
         } catch (e) {
           if (e is ClientException) {
@@ -439,8 +430,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       } catch (_) {}
     }
 
-    void triggerSetup() {
-      setup().catchError((Object e, StackTrace st) {
+    Future<void> triggerSetup() {
+      return setup().catchError((Object e, StackTrace st) {
         if (!controller.isClosed) {
           controller.addError(e, st);
         }
@@ -523,29 +514,22 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
       while (!controller.isClosed) {
         try {
-          final initial = await getCollection(path);
-          final seed = _buildEventMap(
-            initial,
-            currentLastVersion,
-            versionField,
-            payloadField,
-          );
-          if (kDebugMode) {
-            print(
-              '[PB] listenEvents col=${info.collection} seed=${seed.keys.toList()} lastVersion=$currentLastVersion',
-            );
-          }
-          if (seed.isNotEmpty && !controller.isClosed) {
-            for (final v in seed.keys) {
-              if (v > currentLastVersion) currentLastVersion = v;
-            }
-            controller.add(seed);
-          }
+          // The floor the seed must be built from. Captured before
+          // subscribing, because the SSE handler may advance
+          // [currentLastVersion] while the seed fetch is in flight.
+          final seedFloor = currentLastVersion;
 
           if (kDebugMode) {
             print('[PB] listenEvents subscribe col=${info.collection}');
           }
 
+          // Subscribe *before* seeding. An event written while the seed
+          // fetch is in flight is absent from the snapshot, so if it were
+          // also written before the subscription existed it would be lost
+          // for good: every later refetch filters on [currentLastVersion],
+          // which subsequent events push past the hole. Subscribing first
+          // closes that window — the overlap is re-emitted by the seed and
+          // the consumer de-duplicates.
           final unsub = await _client.collection(info.collection).subscribe('*', (event) async {
             if (controller.isClosed) return;
 
@@ -606,8 +590,34 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             break;
           }
           unsubscribeFn = unsub;
+
+          final initial = await getCollection(path);
+          final seed = _buildEventMap(
+            initial,
+            seedFloor,
+            versionField,
+            payloadField,
+          );
+          if (kDebugMode) {
+            print(
+              '[PB] listenEvents col=${info.collection} seed=${seed.keys.toList()} lastVersion=$seedFloor',
+            );
+          }
+          if (seed.isNotEmpty && !controller.isClosed) {
+            for (final v in seed.keys) {
+              if (v > currentLastVersion) currentLastVersion = v;
+            }
+            controller.add(seed);
+          }
           break;
         } catch (e) {
+          // The seed fetch may have failed after the subscription was
+          // established; drop it so the retry starts from a clean slate.
+          try {
+            await unsubscribeFn?.call();
+          } catch (_) {}
+          unsubscribeFn = null;
+
           if (e is ClientException) {
             if (e.statusCode == 400 || e.statusCode == 401 || e.statusCode == 403) {
               rethrow;
@@ -646,8 +656,8 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       } catch (_) {}
     }
 
-    void triggerSetup() {
-      setup().catchError((Object e, StackTrace st) {
+    Future<void> triggerSetup() {
+      return setup().catchError((Object e, StackTrace st) {
         if (!controller.isClosed) {
           controller.addError(e, st);
         }
@@ -923,8 +933,14 @@ class _ClientRealtimeState {
     };
   }
 
+  /// Upper bound on how long [forceReconnect] waits for listeners to re-seed
+  /// and re-subscribe. A listener parked in its retry loop (e.g. a collection
+  /// that does not exist yet) must not pin [reconnectingFuture] forever and
+  /// block every later reconnect and gap refresh.
+  static const Duration _restartTimeout = Duration(seconds: 30);
+
   final PocketBase client;
-  final Set<VoidCallback> activeListeners = {};
+  final Set<Future<void> Function()> activeListeners = {};
   final Set<Future<void> Function()> activeRefreshers = {};
   final Map<String, DateTime> recentlyCancelledEventPaths = {};
 
@@ -932,7 +948,7 @@ class _ClientRealtimeState {
   Timer? _autoReconnectRefreshTimer;
 
   void registerListener({
-    required VoidCallback restart,
+    required Future<void> Function() restart,
     required Future<void> Function() refresh,
   }) {
     activeListeners.add(restart);
@@ -940,7 +956,7 @@ class _ClientRealtimeState {
   }
 
   void unregisterListener({
-    required VoidCallback restart,
+    required Future<void> Function() restart,
     required Future<void> Function() refresh,
   }) {
     activeListeners.remove(restart);
@@ -969,9 +985,16 @@ class _ClientRealtimeState {
         await client.realtime.unsubscribe();
       } catch (_) {}
 
-      for (final restart in List.of(activeListeners)) {
-        restart();
-      }
+      // Wait for the restarts so [reconnectingFuture] spans the whole
+      // reconnect rather than just the teardown. Otherwise a second
+      // forceReconnect arriving mid-restart would call unsubscribe() again
+      // and wipe subscriptions that are still being established.
+      // Restart failures are already surfaced on the individual streams.
+      try {
+        await Future.wait(
+          List.of(activeListeners).map((restart) => restart()),
+        ).timeout(_restartTimeout);
+      } catch (_) {}
     }().whenComplete(() {
       reconnectingFuture = null;
     });
