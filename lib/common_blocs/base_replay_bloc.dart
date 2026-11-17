@@ -25,9 +25,10 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
     // Whether to use Flutter isolates via `compute()` for heavy CPU work.
     bool? useIsolates,
-    this.gapTimeout = const Duration(seconds: 5),
+    Duration? gapTimeout,
     this.resyncInterval,
-  }) : _initialState = initialState,
+  }) : _gapTimeout = gapTimeout,
+       _initialState = initialState,
        _replayIsolateHandler = replayIsolateHandler,
        _hydrateIsolateHandler = hydrateIsolateHandler,
        _useIsolateOverride = useIsolates {
@@ -71,7 +72,34 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     return true;
   }
 
-  final Duration gapTimeout;
+  /// Explicit [gapTimeout] passed to the constructor, if any.
+  final Duration? _gapTimeout;
+
+  /// Fallback gap timeout used when no resync interval is configured and so
+  /// there is no resync attempt to wait for.
+  static const Duration _fallbackGapTimeout = Duration(seconds: 5);
+
+  /// Headroom added on top of the resync interval. A resync needs two network
+  /// round trips to recover a gap — the version probe, then the re-listen's
+  /// seed fetch — so the gap timeout has to clear the interval by more than a
+  /// moment.
+  static const Duration _gapTimeoutSlack = Duration(seconds: 5);
+
+  /// How long a missing version is waited for before [_handleGapTimeout]
+  /// gives up on it.
+  ///
+  /// Defaults to one resync interval plus [_gapTimeoutSlack], so a resync
+  /// always gets at least one attempt at fetching the missing event first.
+  /// A shorter timeout silently pre-empts its own recovery: the skip advances
+  /// `_lastVersion` past the hole, after which the resync's
+  /// `latestVersion > _lastVersion` check can never fire.
+  Duration get gapTimeout {
+    final explicit = _gapTimeout;
+    if (explicit != null) return explicit;
+    final interval = _effectiveResyncInterval;
+    if (interval == null) return _fallbackGapTimeout;
+    return interval + _gapTimeoutSlack;
+  }
 
   /// Provides the storage type to use for this BLoC.
   StorageEnum get storageType;
@@ -179,8 +207,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
 
     // Handle gaps
     if (_eventBuffer.isNotEmpty) {
-      final int minInBuffer =
-          _eventBuffer.keys.fold(_eventBuffer.keys.first, (p, e) => e < p ? e : p);
+      final int minInBuffer = _minBufferedVersion();
 
       if (minInBuffer > _lastVersion + 1) {
         if (kDebugMode) {
@@ -204,20 +231,77 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     }
   }
 
+  /// Lowest version currently held in [_eventBuffer]. Only valid when the
+  /// buffer is non-empty.
+  int _minBufferedVersion() =>
+      _eventBuffer.keys.fold(_eventBuffer.keys.first, (p, e) => e < p ? e : p);
+
   Future<void> _handleGapTimeout(Emitter<S> emit) async {
+    _gapTimer = null;
     if (isClosed || _eventBuffer.isEmpty) {
-      _gapTimer = null;
       return;
     }
 
-    final int minInBuffer =
-        _eventBuffer.keys.fold(_eventBuffer.keys.first, (p, e) => e < p ? e : p);
+    if (_minBufferedVersion() > _lastVersion + 1) {
+      // Read the collection directly before giving up on the gap. Skipping
+      // replays the state without the missing event and advances _lastVersion
+      // past it, so nothing can ever deliver it afterwards — a silent,
+      // permanent divergence. The realtime stream can miss an event without
+      // the connection ever failing, so a direct read is the only way to tell
+      // "the event is genuinely not there" from "we never received it".
+      await _fillGapFromStorage();
 
+      if (isClosed || _eventBuffer.isEmpty) {
+        return;
+      }
+    }
 
-    // Force progress by skipping the gap
-    _lastVersion = minInBuffer - 1;
-    _gapTimer = null;
+    final int minInBuffer = _minBufferedVersion();
+
+    if (minInBuffer > _lastVersion + 1) {
+      if (kDebugMode) {
+        print(
+          "BaseReplayBloc ($S): gap v${_lastVersion + 1}..v${minInBuffer - 1} "
+          "not in storage either, skipping",
+        );
+      }
+      // Force progress by skipping the gap
+      _lastVersion = minInBuffer - 1;
+    }
+
     await _processBuffer(emit);
+  }
+
+  /// Reads the event collection directly and buffers everything above
+  /// [_lastVersion], filling any hole the realtime stream missed.
+  ///
+  /// Buffers rather than emits: the caller is inside an event handler and
+  /// drains the buffer itself via [_processBuffer].
+  Future<void> _fillGapFromStorage() async {
+    try {
+      final path = await getCollectionPath();
+      if (path == null || path.isEmpty) return;
+
+      final docs = await _storage.getCollection(path);
+      var filled = 0;
+      for (final doc in docs) {
+        final version = doc[versionField];
+        final payload = doc[payloadField];
+        if (version is! num || payload is! String) continue;
+        final v = version.toInt();
+        if (v > _lastVersion && !_eventBuffer.containsKey(v)) {
+          _eventBuffer[v] = payload;
+          filled++;
+        }
+      }
+      if (kDebugMode && filled > 0) {
+        print("BaseReplayBloc ($S): gap refetch recovered $filled event(s)");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("BaseReplayBloc ($S): gap refetch failed: $e");
+      }
+    }
   }
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {

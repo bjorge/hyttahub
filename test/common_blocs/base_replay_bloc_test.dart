@@ -8,6 +8,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
 import 'package:hyttahub/collection_paths.dart';
+import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/hyttahub_implementation.pb.dart';
 import 'package:hyttahub/storage/in_memory_hyttahub_storage.dart';
@@ -110,7 +111,7 @@ class TestReplayBloc extends BaseReplayBloc<ServiceReplayBlocState> {
     hydrateIsolateHandlerOverride,
     this.handleEmptySnapshotCompleter,
     super.storage,
-    Duration gapTimeout = const Duration(milliseconds: 100),
+    Duration? gapTimeout = const Duration(milliseconds: 100),
     super.resyncInterval,
   }) : super(
          ServiceReplayBlocState(),
@@ -190,7 +191,7 @@ void main() {
       hydrateIsolateHandlerOverride,
       FutureOr<Uint8List> Function(Map<String, dynamic>)?
       replayIsolateHandlerOverride,
-      Duration gapTimeout = const Duration(milliseconds: 100),
+      Duration? gapTimeout = const Duration(milliseconds: 100),
       Duration? resyncInterval,
     }) {
       return TestReplayBloc(
@@ -424,6 +425,77 @@ void main() {
           }),
         ],
       );
+
+      blocTest<TestReplayBloc, ServiceReplayBlocState>(
+        'fills the gap from storage instead of skipping it',
+        build: () => buildBloc(gapTimeout: const Duration(milliseconds: 10)),
+        act: (bloc) async {
+          // v2 exists in storage but was never delivered by the realtime
+          // stream — the case that previously replayed state without it.
+          await inMemoryStorage.setDocument(collectionPath, '2', {
+            docVersion: 2,
+            docPayload: 'event2',
+          });
+          bloc.add(
+            CommonReplayBlocEvent(
+              newEvents: CommonReplayBlocEvent_NewEvents(
+                events: {1: 'event1', 3: 'event3'}.entries,
+              ),
+            ),
+          );
+        },
+        wait: const Duration(seconds: 1),
+        expect: () => [
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+          }),
+          // v2 is recovered from storage, so v3 is replayed after it rather
+          // than the gap being skipped.
+          isA<ServiceReplayBlocState>().having((s) => s.events, 'events', {
+            1: 'event1',
+            2: 'event2',
+            3: 'event3',
+          }),
+        ],
+      );
+
+      test('gapTimeout defaults to one resync interval plus slack', () {
+        final previousGlobal = HyttaHubOptions.resyncInterval;
+        HyttaHubOptions.resyncInterval = null;
+        try {
+          // A gap timeout shorter than the resync interval pre-empts its own
+          // recovery, so the default has to clear the interval.
+          final derived = buildBloc(
+            gapTimeout: null,
+            resyncInterval: const Duration(seconds: 12),
+          );
+          expect(derived.gapTimeout, greaterThan(const Duration(seconds: 12)));
+
+          // The globally configured interval is honoured too.
+          HyttaHubOptions.resyncInterval = const Duration(seconds: 12);
+          final fromGlobal = buildBloc(gapTimeout: null);
+          expect(
+            fromGlobal.gapTimeout,
+            greaterThan(const Duration(seconds: 12)),
+          );
+          HyttaHubOptions.resyncInterval = null;
+
+          // An explicit value still wins.
+          final explicit = buildBloc(gapTimeout: const Duration(seconds: 3));
+          expect(explicit.gapTimeout, const Duration(seconds: 3));
+
+          // With no resync configured there is nothing to wait for.
+          final noResync = buildBloc(gapTimeout: null);
+          expect(noResync.gapTimeout, const Duration(seconds: 5));
+
+          derived.close();
+          fromGlobal.close();
+          explicit.close();
+          noResync.close();
+        } finally {
+          HyttaHubOptions.resyncInterval = previousGlobal;
+        }
+      });
 
       blocTest<TestReplayBloc, ServiceReplayBlocState>(
         'clears local state and refetches when validation fails',
