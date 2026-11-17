@@ -49,3 +49,8 @@ app.*.map.json
 untranslated-messages.txt
 
 .firebase
+
+# Local monorepo linkage: points the packages at the in-tree hyttahub rather
+# than the published one. Required to build or test a cross-package change
+# before hyttahub is published, but personal to a working copy.
+pubspec_overrides.yaml
