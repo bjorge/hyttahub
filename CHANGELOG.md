@@ -1,3 +1,22 @@
+## 0.2.0
+
+*   **Breaking: Storage Interface**:
+    *   `BaseHyttaHubStorage.listenEvents` now takes `lastVersion` as an `int Function()` cursor rather than an `int` snapshot. It is read on every seed and re-seed, so the caller stays the single source of truth for how far it has got and an implementation can no longer cache a watermark that drifts from it.
+    *   Added `BaseHyttaHubStorage.reconnectRealtime()`, which re-establishes the backend's realtime transport and re-seeds every active stream. Backends whose realtime layer heals itself implement it as a no-op.
+    *   `getCollection` gained an optional `newerThan` (`VersionFilter`) parameter. This is additive for callers but requires a signature update in any out-of-tree implementation.
+    *   Existing `^0.1.x` constraints deliberately do not resolve to this release; consumers that implement the storage interface must opt in and update their implementations.
+*   **Replay Gap Recovery**:
+    *   `gapTimeout` now defaults to one resync interval plus slack instead of a fixed 5 seconds, read when the timer is armed so it tracks `HyttaHubOptions.resyncInterval`. The old default silently pre-empted its own recovery: the skip advanced `_lastVersion` past the hole, after which the resync's `latestVersion > _lastVersion` check could never fire and the event was lost with no error. Only blocs that passed an explicit `gapTimeout` were unaffected.
+    *   `_handleGapTimeout` now reads the event log before giving up, so a gap is skipped only once storage has confirmed the version really is absent. Debug output distinguishes a recovered gap from a genuine hole.
+*   **Realtime Simplification**:
+    *   The auto-resync now fetches what it missed through the normal event path and calls `reconnectRealtime()`, instead of cancelling and re-listening. The storage layer previously had to infer the intent from the timing of a cancel, which made single-listener and multi-listener apps recover by different mechanisms.
+    *   Consolidated the gap filler and the resync onto one `_fetchEventsAbove` read, removing a duplicated listener setup inside the resync timer.
+*   **Version-Bounded Reads**:
+    *   `getCollection` can now bound a read to records above a version, applied server-side. Every seed, reconnect and gap fill previously transferred the whole event collection and discarded all but the few new records client-side — the dominant cost for a long session, growing for as long as the session lasts.
+    *   Callers still filter the result rather than assuming it was narrowed, so a backend that ignores the bound stays correct.
+*   **Maintenance**:
+    *   Updated package version to 0.2.0.
+
 ## 0.1.61
 
 *   **Catalan & Portuguese Localization**:

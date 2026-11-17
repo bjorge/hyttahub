@@ -1,3 +1,15 @@
+## 0.2.0
+
+* **Breaking: `reconnectRealtime()`**: `forceReconnect()` is now `reconnectRealtime()`, implementing the new `BaseHyttaHubStorage` member. `listenEvents` takes an `int Function()` version cursor rather than an `int`.
+* **Event Loss on Seed**: `listenEvents` now subscribes before seeding. An event written while the seed fetch was in flight appeared in neither the snapshot nor the stream, and since later refetches filter on a version that subsequent events push past, it was unrecoverable. The seed is built from the floor captured before subscribing, so the overlap is re-emitted and the consumer de-duplicates.
+* **Single Version Cursor**: Removed the watermark this package kept alongside the consumer's. The two could drift, and the class of bug where the storage advanced past an event the consumer never processed is now unrepresentable rather than merely fixed.
+* **Server-Side Version Filter**: `getCollection` applies the new `newerThan` bound as a PocketBase filter term, so a long event log is no longer transferred in full on every seed, reconnect and gap fill. The field name is rejected unless it is a plain identifier, since it is interpolated as a bare identifier and cannot be quoted the way values are.
+* **Shared SSE Connection**: Reconnect state is now tracked per `PocketBase` client rather than per storage instance. The Dart SDK multiplexes every subscription over one `SseClient` and only closes it when all topics are removed, so one listener re-subscribing on its own reused the dead connection — reconnects have to be client-wide.
+* **Reconnect Bookkeeping**: `reconnectRealtime()` waits for its restarts rather than just the teardown, so a second reconnect mid-restart cannot wipe subscriptions still being established. A restart arriving while a listener is connecting is queued instead of dropped, and an auth error no longer latches the setup guard on and swallows every later reconnect. The post-reconnect catch-up retries on a backoff instead of making a single attempt and silently giving up.
+* **Removed the Resync Heuristic**: The storage no longer infers a resync from a path being cancelled and re-listened within five seconds with more than one listener active. Consumers call `reconnectRealtime()` explicitly.
+* **Testing**: Added unit tests for the reconnect state machine and integration tests driving the listeners against a fake SSE backend, covering subscribe-before-seed ordering, reconnects across storages sharing a client, restart queueing, and the version filter reaching the wire.
+* **Dependency Update**: Upgraded `hyttahub` dependency constraint to `^0.2.0`.
+
 ## 0.1.8
 
 * **Dependency Update**: Upgraded `hyttahub` dependency constraint to `^0.1.60`.
