@@ -54,3 +54,8 @@ untranslated-messages.txt
 # than the published one. Required to build or test a cross-package change
 # before hyttahub is published, but personal to a working copy.
 pubspec_overrides.yaml
+
+# Library packages do not pin their own dependencies — a consumer's
+# resolution wins, so a committed lockfile here is noise that drifts.
+# Application lockfiles (example/*) stay tracked.
+packages/*/pubspec.lock
