@@ -37,8 +37,12 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
     bool descending = false,
     int? limit,
     List<String>? fields,
+    VersionFilter? newerThan,
   }) async {
     Query query = _firestore.collection(path);
+    if (newerThan != null) {
+      query = query.where(newerThan.field, isGreaterThan: newerThan.version);
+    }
     if (orderBy != null) {
       query = query.orderBy(orderBy, descending: descending);
     }

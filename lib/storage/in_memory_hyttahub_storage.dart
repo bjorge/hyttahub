@@ -337,11 +337,18 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
     bool descending = false,
     int? limit,
     List<String>? fields,
+    VersionFilter? newerThan,
   }) async {
     final docs = data[path];
     if (docs == null) return [];
 
     var list = docs.values.toList();
+    if (newerThan != null) {
+      list = list.where((doc) {
+        final value = doc[newerThan.field];
+        return value is num && value > newerThan.version;
+      }).toList();
+    }
     if (orderBy != null) {
       list.sort((a, b) {
         final valA = a[orderBy];

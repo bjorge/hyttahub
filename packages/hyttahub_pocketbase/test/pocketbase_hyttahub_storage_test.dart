@@ -5,9 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 
 void main() {
+  _versionFilterTests();
+
   group('PocketbaseHyttaHubStorage Batch Support', () {
     test('runBatch sends queued setDocument and updateDocument requests to /api/batch', () async {
       String? capturedPath;
@@ -115,6 +118,63 @@ void main() {
       await storage.runBatch((batch) async {});
 
       expect(called, isFalse);
+    });
+  });
+}
+
+void _versionFilterTests() {
+  group('PocketbaseHyttaHubStorage version filter', () {
+    test('narrows the read server-side alongside the path filter', () async {
+      String? capturedFilter;
+      final mockClient = MockClient((request) async {
+        capturedFilter = request.url.queryParameters['filter'];
+        return http.Response(
+          jsonEncode({
+            'page': 1,
+            'perPage': 500,
+            'totalItems': 0,
+            'totalPages': 1,
+            'items': <dynamic>[],
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+
+      final storage = PocketbaseHyttaHubStorage(
+        client: PocketBase('http://127.0.0.1:8090',
+            httpClientFactory: () => mockClient),
+      );
+
+      await storage.getCollection(
+        'hyttahub/testapp/sites/site1/site_events',
+        newerThan: const VersionFilter(field: 'v', version: 42),
+      );
+
+      expect(capturedFilter, contains('app = "testapp"'));
+      expect(capturedFilter, contains('siteId = "site1"'));
+      expect(capturedFilter, contains('v > 42'));
+    });
+
+    test('rejects a field name that is not a plain identifier', () async {
+      final storage = PocketbaseHyttaHubStorage(
+        client: PocketBase(
+          'http://127.0.0.1:8090',
+          httpClientFactory: () => MockClient(
+            (request) async => fail('request should never be sent'),
+          ),
+        ),
+      );
+
+      // The field is a bare identifier in the filter expression, so it cannot
+      // be quoted the way values are.
+      expect(
+        () => storage.getCollection(
+          'hyttahub/testapp/sites/site1/site_events',
+          newerThan: const VersionFilter(field: 'v || 1=1', version: 0),
+        ),
+        throwsArgumentError,
+      );
     });
   });
 }

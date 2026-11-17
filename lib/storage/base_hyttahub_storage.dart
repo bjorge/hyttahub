@@ -3,14 +3,39 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+/// Restricts a collection read to records whose [field] is greater than
+/// [version].
+///
+/// Applied by the backend where it can be, so an event log that has grown to
+/// thousands of records is not transferred in full just to find the handful
+/// that are new.
+class VersionFilter {
+  const VersionFilter({required this.field, required this.version});
+
+  final String field;
+  final int version;
+}
+
 abstract class BaseHyttaHubStorage {
   Future<Map<String, dynamic>?> getDocument(String path, String docId);
+
+  /// Reads a collection.
+  ///
+  /// [newerThan] restricts the read to records above a version. Backends
+  /// apply it server-side where they can, and callers must still tolerate a
+  /// backend that does not — filter the result as well rather than assuming
+  /// it has been narrowed.
+  ///
+  /// Note for query-planner backends: combining [newerThan] with an [orderBy]
+  /// on a *different* field may be rejected (Firestore requires the first
+  /// ordering to match the inequality field).
   Future<List<Map<String, dynamic>>> getCollection(
     String path, {
     String? orderBy,
     bool descending = false,
     int? limit,
     List<String>? fields,
+    VersionFilter? newerThan,
   });
   Future<void> setDocument(String path, String docId, Map<String, dynamic> data);
   Future<void> updateDocument(String path, String docId, Map<String, dynamic> data);

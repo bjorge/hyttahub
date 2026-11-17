@@ -202,6 +202,25 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   String _esc(String value) =>
       value.replaceAll(r'\', r'\\').replaceAll('"', r'\"');
 
+  /// Builds the PocketBase filter for [info], narrowed by [newerThan].
+  ///
+  /// The version bound goes server-side so a long event log is not shipped in
+  /// full on every seed, reconnect and gap fill. The field name is a bare
+  /// identifier in the filter expression and so cannot be quoted the way
+  /// [_esc] handles values — it is rejected outright if it is not a plain
+  /// identifier.
+  String _filterFor(PathInfo info, VersionFilter? newerThan) {
+    if (newerThan == null) return info.filter;
+    if (!_isSafeSegment(newerThan.field)) {
+      throw ArgumentError.value(
+        newerThan.field,
+        'newerThan.field',
+        'must be a plain identifier to be used in a PocketBase filter',
+      );
+    }
+    return '${info.filter} && ${newerThan.field} > ${newerThan.version}';
+  }
+
   // ── Document access ──────────────────────────────────────────────────────
 
   @override
@@ -218,10 +237,12 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     bool descending = false,
     int? limit,
     List<String>? fields,
+    VersionFilter? newerThan,
   }) async {
     final info = PathInfo.parse(path);
     final sort = orderBy != null ? '${descending ? '-' : '+'}$orderBy' : null;
     final fieldsStr = fields != null && fields.isNotEmpty ? fields.join(',') : null;
+    final filter = _filterFor(info, newerThan);
     try {
       if (limit != null) {
         final result = await _client
@@ -230,7 +251,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
               page: 1,
               perPage: limit,
               sort: sort,
-              filter: info.filter,
+              filter: filter,
               fields: fieldsStr,
             );
         return result.items.map((r) => r.toJson()).toList();
@@ -239,7 +260,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           .collection(info.collection)
           .getFullList(
             sort: sort,
-            filter: info.filter,
+            filter: filter,
             fields: fieldsStr,
           );
       return records.map((r) => r.toJson()).toList();
@@ -587,10 +608,14 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             }
 
             // The event carried no usable record, so fall back to a full read.
-            final all = await getCollection(path);
+            final floor = lastVersion();
+            final all = await getCollection(
+              path,
+              newerThan: VersionFilter(field: versionField, version: floor),
+            );
             final events = _buildEventMap(
               all,
-              lastVersion(),
+              floor,
               versionField,
               payloadField,
             );
@@ -610,7 +635,10 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           }
           unsubscribeFn = unsub;
 
-          final initial = await getCollection(path);
+          final initial = await getCollection(
+            path,
+            newerThan: VersionFilter(field: versionField, version: seedFloor),
+          );
           final seed = _buildEventMap(
             initial,
             seedFloor,
@@ -677,10 +705,14 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
       // A setup in flight is already re-seeding; nothing to refresh.
       if (isSettingUp || controller.isClosed) return true;
       try {
-        final all = await getCollection(path);
+        final floor = lastVersion();
+        final all = await getCollection(
+          path,
+          newerThan: VersionFilter(field: versionField, version: floor),
+        );
         final events = _buildEventMap(
           all,
-          lastVersion(),
+          floor,
           versionField,
           payloadField,
         );

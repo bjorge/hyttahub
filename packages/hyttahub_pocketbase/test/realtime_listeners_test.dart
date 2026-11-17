@@ -14,6 +14,9 @@ import 'package:hyttahub_pocketbase/pocketbase_hyttahub_storage.dart';
 /// service to consider itself connected.
 class _FakeBackend {
   final List<String> requests = [];
+
+  /// `filter` query parameter of each collection read, in order.
+  final List<String> recordFilters = [];
   final Map<String, List<Map<String, dynamic>>> collections = {};
   final List<StreamController<List<int>>> _sseStreams = [];
   int sseConnections = 0;
@@ -29,7 +32,10 @@ class _FakeBackend {
       .where((r) => r.contains('/api/collections/'))
       .toList(growable: false);
 
-  void clearRequests() => requests.clear();
+  void clearRequests() {
+    requests.clear();
+    recordFilters.clear();
+  }
 
   /// Makes the next collection read hang until [releaseRecordRead].
   ///
@@ -76,7 +82,22 @@ class _FakeBackend {
             );
           }
 
-          final items = collections[match.group(1)] ?? const [];
+          final filter = request.url.queryParameters['filter'] ?? '';
+          recordFilters.add(filter);
+
+          // Honour a `field > n` bound the way PocketBase would, so a read
+          // that is supposed to be narrowed server-side genuinely is.
+          var items = collections[match.group(1)] ?? const <Map<String, dynamic>>[];
+          final bound = RegExp(r'(\w+)\s*>\s*(\d+)').firstMatch(filter);
+          if (bound != null) {
+            final field = bound.group(1)!;
+            final floor = int.parse(bound.group(2)!);
+            items = items.where((record) {
+              final value = record[field];
+              return value is num && value > floor;
+            }).toList();
+          }
+
           return _json({
             'page': 1,
             'perPage': 500,
@@ -216,6 +237,45 @@ void main() {
 
     expect(events.first, {2: 'two'},
         reason: 'v1 is at or below the caller-supplied lastVersion');
+    expect(
+      backend.recordFilters.first,
+      contains('v > 1'),
+      reason: 'the version bound belongs in the query, not in a client-side '
+          'filter over a collection that grows all session',
+    );
+
+    await sub.cancel();
+  });
+
+  test('the seed read is narrowed to the caller version, not the whole log',
+      () async {
+    // A long-running game accumulates thousands of events. Re-seeding on every
+    // reconnect must not ship the whole log to find the few that are new.
+    backend.collections[siteCollection] = [
+      for (var v = 1; v <= 200; v++)
+        _eventRecord(
+          id: 'rec${v.toString().padLeft(12, '0')}',
+          version: v,
+          payload: 'event$v',
+        ),
+    ];
+
+    final storage = PocketbaseHyttaHubStorage(client: pb);
+    final events = <Map<int, String>>[];
+    final sub = storage
+        .listenEvents(sitePath,
+            lastVersion: () => 198, versionField: 'v', payloadField: 'p')
+        .listen(events.add);
+
+    await _until(() => events.isNotEmpty);
+
+    expect(events.first, {199: 'event199', 200: 'event200'});
+    expect(backend.recordFilters.first, contains('v > 198'));
+    expect(
+      backend.recordFilters.first,
+      contains('siteId = "site1"'),
+      reason: 'the version bound must narrow the path filter, not replace it',
+    );
 
     await sub.cancel();
   });

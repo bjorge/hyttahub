@@ -306,13 +306,17 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
     final path = await getCollectionPath();
     if (path == null || path.isEmpty) return const {};
 
-    final docs = await _storage.getCollection(path);
+    final docs = await _storage.getCollection(
+      path,
+      newerThan: VersionFilter(field: versionField, version: version),
+    );
     final events = <int, String>{};
     for (final doc in docs) {
       final rawVersion = doc[versionField];
       final payload = doc[payloadField];
       if (rawVersion is! num || payload is! String) continue;
       final parsed = rawVersion.toInt();
+      // Re-checked rather than assumed: a backend may not narrow the read.
       if (parsed > version) events[parsed] = payload;
     }
     return events;
