@@ -174,7 +174,7 @@ void main() {
     final sub = storage
         .listenEvents(
           sitePath,
-          lastVersion: 0,
+          lastVersion: () => 0,
           versionField: 'v',
           payloadField: 'p',
         )
@@ -206,7 +206,7 @@ void main() {
     final sub = storage
         .listenEvents(
           sitePath,
-          lastVersion: 1,
+          lastVersion: () => 1,
           versionField: 'v',
           payloadField: 'p',
         )
@@ -240,11 +240,11 @@ void main() {
 
     final siteSub = siteStorage
         .listenEvents(sitePath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(siteEvents.add);
     final accountSub = accountStorage
         .listenEvents(accountPath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(accountEvents.add);
 
     await _until(() => siteEvents.isNotEmpty && accountEvents.isNotEmpty);
@@ -253,7 +253,7 @@ void main() {
     backend.clearRequests();
 
     // Reconnecting through one storage must restart the other's listener too.
-    await siteStorage.forceReconnect();
+    await siteStorage.reconnectRealtime();
     await _until(() => backend.recordReads.length >= 2);
 
     expect(
@@ -289,7 +289,7 @@ void main() {
     final events = <Map<int, String>>[];
     final sub = storage
         .listenEvents(sitePath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(events.add);
 
     // Wait until the listener is parked on its seed fetch, i.e. mid-setup.
@@ -297,7 +297,7 @@ void main() {
     expect(backend.recordReads, hasLength(1));
 
     // The reconnect returns promptly — the queued restart must not block it.
-    await storage.forceReconnect();
+    await storage.reconnectRealtime();
 
     backend.releaseRecordRead();
     await _until(() => backend.recordReads.length >= 2);
@@ -327,7 +327,7 @@ void main() {
     final events = <Map<int, String>>[];
     final sub = storage
         .listenEvents(sitePath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(events.add, onError: errors.add);
 
     await _until(() => errors.isNotEmpty);
@@ -336,7 +336,7 @@ void main() {
     backend.recordsStatus = 200;
     backend.clearRequests();
 
-    await storage.forceReconnect();
+    await storage.reconnectRealtime();
     await _until(() => events.isNotEmpty);
 
     expect(events.first, {1: 'one'});
@@ -365,18 +365,18 @@ void main() {
 
     final siteSub = siteStorage
         .listenEvents(sitePath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(siteEvents.add);
     final accountSub = accountStorage
         .listenEvents(accountPath,
-            lastVersion: 0, versionField: 'v', payloadField: 'p')
+            lastVersion: () => 0, versionField: 'v', payloadField: 'p')
         .listen(accountEvents.add);
 
     await _until(() => siteEvents.isNotEmpty && accountEvents.isNotEmpty);
     await accountSub.cancel();
 
     backend.clearRequests();
-    await siteStorage.forceReconnect();
+    await siteStorage.reconnectRealtime();
     await _until(() => backend.recordReads.isNotEmpty);
 
     expect(

@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
@@ -294,92 +293,6 @@ void main() {
       _simulateUnexpectedDisconnect(pb);
 
       expect(previousCalled, isTrue);
-    });
-  });
-
-  group('ClientRealtimeState cancelled event paths', () {
-    const path = 'hyttahub/app/sites/site1/site_events';
-
-    test('a re-listen inside the window is a resync restart', () {
-      final state = ClientRealtimeState(_offlineClient());
-
-      state.noteCancelledEventPath(path);
-
-      expect(state.consumeCancelledEventPath(path), isTrue);
-      // Consumed — a later listen on the same path is a fresh one.
-      expect(state.consumeCancelledEventPath(path), isFalse);
-    });
-
-    test('a path that was never cancelled is not a resync restart', () {
-      final state = ClientRealtimeState(_offlineClient());
-      expect(state.consumeCancelledEventPath(path), isFalse);
-    });
-
-    test('a re-listen outside the window is not a resync restart', () {
-      final start = DateTime(2026, 1, 1);
-      final state = withClock(
-        Clock.fixed(start),
-        () {
-          final s = ClientRealtimeState(_offlineClient());
-          s.noteCancelledEventPath(path);
-          return s;
-        },
-      );
-
-      withClock(
-        Clock.fixed(
-          start.add(ClientRealtimeState.resyncRestartWindow +
-              const Duration(seconds: 1)),
-        ),
-        () => expect(state.consumeCancelledEventPath(path), isFalse),
-      );
-    });
-
-    test('expired entries are pruned instead of accumulating', () {
-      // Entries are only otherwise removed by a matching re-listen, which for
-      // a path that is never listened to again never comes.
-      final start = DateTime(2026, 1, 1);
-      final state = ClientRealtimeState(_offlineClient());
-
-      withClock(Clock.fixed(start), () {
-        for (var i = 0; i < 50; i++) {
-          state.noteCancelledEventPath('$path/$i');
-        }
-      });
-      expect(state.trackedCancelledPaths, 50);
-
-      withClock(
-        Clock.fixed(
-          start.add(ClientRealtimeState.resyncRestartWindow +
-              const Duration(seconds: 1)),
-        ),
-        () => state.noteCancelledEventPath('$path/fresh'),
-      );
-
-      expect(
-        state.trackedCancelledPaths,
-        1,
-        reason: 'stale entries should have been pruned on write',
-      );
-    });
-
-    test('entries still inside the window survive a prune', () {
-      final start = DateTime(2026, 1, 1);
-      final state = ClientRealtimeState(_offlineClient());
-
-      withClock(Clock.fixed(start), () {
-        state.noteCancelledEventPath('$path/a');
-      });
-      withClock(
-        Clock.fixed(start.add(const Duration(seconds: 1))),
-        () => state.noteCancelledEventPath('$path/b'),
-      );
-
-      expect(state.trackedCancelledPaths, 2);
-      withClock(
-        Clock.fixed(start.add(const Duration(seconds: 2))),
-        () => expect(state.consumeCancelledEventPath('$path/a'), isTrue),
-      );
     });
   });
 }

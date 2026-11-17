@@ -17,12 +17,27 @@ abstract class BaseHyttaHubStorage {
 
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path);
 
+  /// Streams events newer than the caller's current version.
+  ///
+  /// [lastVersion] is read whenever the stream needs to seed or re-seed —
+  /// on first listen and after every reconnect — so the caller stays the
+  /// single source of truth for how far it has actually got. An
+  /// implementation must not cache its own copy: a version the caller has
+  /// not processed yet has to be re-delivered, not assumed delivered.
   Stream<Map<int, String>> listenEvents(
     String path, {
-    required int lastVersion,
+    required int Function() lastVersion,
     required String versionField,
     required String payloadField,
   });
+
+  /// Re-establishes the realtime transport, re-seeding every active
+  /// [listenCollection] and [listenEvents] stream on this backend.
+  ///
+  /// Callers invoke this when they have evidence the stream has gone stale —
+  /// typically events that exist in storage but never arrived. Backends whose
+  /// realtime layer heals itself implement this as a no-op.
+  Future<void> reconnectRealtime();
 
   dynamic get serverTimestamp;
   bool isPermissionDenied(Object error);

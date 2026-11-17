@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -322,11 +321,12 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   /// and re-subscribe on a fresh `GET /api/realtime` connection.
   ///
   /// Because the PocketBase Dart SDK shares a single `SseClient` across all
-  /// subscriptions and only closes it when all topics are removed, a single
-  /// listener unsubscribing and re-subscribes (e.g. when `BaseReplayBloc`'s
-  /// `resyncInterval` detects missed events on a half-open connection, or on
-  /// app resume) would otherwise reuse the existing dead `SseClient`.
-  Future<void> forceReconnect() => _realtimeState.forceReconnect();
+  /// subscriptions and only closes it when all topics are removed, one
+  /// listener re-subscribing on its own would reuse the existing dead
+  /// `SseClient`. The teardown has to be client-wide, which is why this is
+  /// not something an individual stream can do for itself.
+  @override
+  Future<void> reconnectRealtime() => _realtimeState.forceReconnect();
 
   @override
   Stream<Map<String, Map<String, dynamic>>> listenCollection(String path) {
@@ -474,7 +474,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
         if (kDebugMode) {
           print('[PB] App resumed, forcing full reconnect for ${info.collection}');
         }
-        forceReconnect();
+        reconnectRealtime();
       });
       binding.addObserver(observer);
     } catch (_) {
@@ -513,7 +513,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
   @override
   Stream<Map<int, String>> listenEvents(
     String path, {
-    required int lastVersion,
+    required int Function() lastVersion,
     required String versionField,
     required String payloadField,
   }) {
@@ -523,9 +523,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
     bool restartRequested = false;
-    int currentLastVersion = lastVersion;
-
-    final bool isResyncRestart = rtState.consumeCancelledEventPath(path);
 
     Future<void> connect() async {
       // Clean up previous subscription before recreating
@@ -536,10 +533,11 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
       while (!controller.isClosed) {
         try {
-          // The floor the seed must be built from. Captured before
-          // subscribing, because the SSE handler may advance
-          // [currentLastVersion] while the seed fetch is in flight.
-          final seedFloor = currentLastVersion;
+          // The floor the seed must be built from, captured before
+          // subscribing: the handler can advance the caller's version while
+          // the seed fetch is in flight, and seeding from the newer value
+          // would drop everything the snapshot still has to deliver.
+          final seedFloor = lastVersion();
 
           if (kDebugMode) {
             print('[PB] listenEvents subscribe col=${info.collection}');
@@ -548,7 +546,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           // Subscribe *before* seeding. An event written while the seed
           // fetch is in flight is absent from the snapshot, so if it were
           // also written before the subscription existed it would be lost
-          // for good: every later refetch filters on [currentLastVersion],
+          // for good: every later refetch filters on the caller's version,
           // which subsequent events push past the hole. Subscribing first
           // closes that window — the overlap is re-emitted by the seed and
           // the consumer de-duplicates.
@@ -568,29 +566,31 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
                 print('[PB] listenEvents SSE event col=${info.collection} action=${event.action}');
               }
               final doc = record.toJson();
-              try {
-                final version = (doc[versionField] as num).toInt();
-                final payload = doc[payloadField] as String;
-                if (version > currentLastVersion) {
-                  currentLastVersion = version;
+              final rawVersion = doc[versionField];
+              final payload = doc[payloadField];
+              if (rawVersion is num && payload is String) {
+                // The record carried everything we need. Emit it if it is
+                // new to the caller and stop either way — falling through on
+                // a duplicate would refetch the whole collection to learn
+                // nothing.
+                final version = rawVersion.toInt();
+                if (version > lastVersion()) {
                   if (kDebugMode) {
                     print(
                       '[PB] listenEvents incremental update col=${info.collection} version=$version',
                     );
                   }
                   controller.add({version: payload});
-                  return;
                 }
-              } catch (_) {
-                // Ignore malformed record data
+                return;
               }
             }
 
-            // Fallback to full fetch if incremental update is insufficient
+            // The event carried no usable record, so fall back to a full read.
             final all = await getCollection(path);
             final events = _buildEventMap(
               all,
-              currentLastVersion,
+              lastVersion(),
               versionField,
               payloadField,
             );
@@ -600,9 +600,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
               );
             }
             if (events.isNotEmpty) {
-              for (final v in events.keys) {
-                if (v > currentLastVersion) currentLastVersion = v;
-              }
               controller.add(events);
             }
           }, filter: info.filter);
@@ -626,9 +623,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
             );
           }
           if (seed.isNotEmpty && !controller.isClosed) {
-            for (final v in seed.keys) {
-              if (v > currentLastVersion) currentLastVersion = v;
-            }
             controller.add(seed);
           }
           break;
@@ -686,14 +680,11 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
         final all = await getCollection(path);
         final events = _buildEventMap(
           all,
-          currentLastVersion,
+          lastVersion(),
           versionField,
           payloadField,
         );
         if (events.isNotEmpty && !controller.isClosed) {
-          for (final v in events.keys) {
-            if (v > currentLastVersion) currentLastVersion = v;
-          }
           controller.add(events);
         }
         return true;
@@ -714,14 +705,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     }
 
     rtState.registerListener(restart: triggerSetup, refresh: refreshOnly);
-    if (isResyncRestart && rtState.activeListeners.length > 1) {
-      // BaseReplayBloc cancelled and restarted this event stream because it
-      // detected missed events. Force all active listeners on this PocketBase
-      // client to tear down the shared SSE stream and reconnect cleanly.
-      forceReconnect();
-    } else {
-      triggerSetup();
-    }
+    triggerSetup();
 
     _StorageLifecycleObserver? observer;
     try {
@@ -730,7 +714,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
         if (kDebugMode) {
           print('[PB] App resumed, forcing full reconnect for ${info.collection}');
         }
-        forceReconnect();
+        reconnectRealtime();
       });
       binding.addObserver(observer);
     } catch (_) {
@@ -739,7 +723,6 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
     controller.onCancel = () async {
       rtState.unregisterListener(restart: triggerSetup, refresh: refreshOnly);
-      rtState.noteCancelledEventPath(path);
       if (observer != null) {
         try {
           WidgetsBinding.instance.removeObserver(observer);
@@ -992,10 +975,6 @@ class ClientRealtimeState {
   /// block every later reconnect and gap refresh.
   static const Duration _restartTimeout = Duration(seconds: 30);
 
-  /// How long after a cancel a re-listen on the same path still counts as a
-  /// resync restart rather than a fresh listen.
-  static const Duration resyncRestartWindow = Duration(seconds: 5);
-
   /// Delays between attempts to refresh listeners after the SDK's `SseClient`
   /// auto-reconnects. The first attempt usually lands while the connection is
   /// still coming back, so a single shot would silently give up on the very
@@ -1010,7 +989,6 @@ class ClientRealtimeState {
   final PocketBase client;
   final Set<Future<void> Function()> activeListeners = {};
   final Set<Future<bool> Function()> activeRefreshers = {};
-  final Map<String, DateTime> _recentlyCancelledEventPaths = {};
 
   Future<void>? reconnectingFuture;
   Timer? _autoReconnectRefreshTimer;
@@ -1030,35 +1008,6 @@ class ClientRealtimeState {
   }) {
     activeListeners.remove(restart);
     activeRefreshers.remove(refresh);
-  }
-
-  /// Records that an event stream on [path] was just cancelled, so a re-listen
-  /// arriving within [resyncRestartWindow] can be recognised as a resync
-  /// restart.
-  ///
-  /// Prunes expired entries on the way in: outside that window an entry is
-  /// dead weight, and it is only ever removed by a matching re-listen that may
-  /// never come.
-  void noteCancelledEventPath(String path) {
-    final now = clock.now();
-    _recentlyCancelledEventPaths.removeWhere(
-      (_, at) => now.difference(at) > resyncRestartWindow,
-    );
-    _recentlyCancelledEventPaths[path] = now;
-  }
-
-  /// Number of cancelled paths currently tracked. Exposed so the pruning in
-  /// [noteCancelledEventPath] can be asserted — an unbounded map here would
-  /// otherwise only show up as a slow leak.
-  @visibleForTesting
-  int get trackedCancelledPaths => _recentlyCancelledEventPaths.length;
-
-  /// Whether [path] was cancelled within [resyncRestartWindow], consuming the
-  /// record either way.
-  bool consumeCancelledEventPath(String path) {
-    final cancelledAt = _recentlyCancelledEventPaths.remove(path);
-    return cancelledAt != null &&
-        clock.now().difference(cancelledAt) < resyncRestartWindow;
   }
 
   void _scheduleRefreshAfterAutoReconnect({bool reset = true}) {

@@ -679,6 +679,76 @@ void main() {
         expect(bloc.state.events, {1: 'event1', 2: 'event2'});
         await bloc.close();
       });
+
+      test('auto-resync asks storage to reconnect instead of re-listening',
+          () async {
+        // Events in storage that never arrived are the evidence the realtime
+        // stream is stale, so the bloc says what it wants. It used to cancel
+        // and re-listen, leaving the storage layer to infer the intent from
+        // the timing of the cancel.
+        final spy = _ReconnectSpyStorage();
+        await spy.setDocument(
+          collectionPath,
+          '1',
+          {docVersion: 1, docPayload: 'event1'},
+        );
+
+        final bloc = TestReplayBloc(
+          collectionPath,
+          storage: spy,
+          resyncInterval: const Duration(milliseconds: 100),
+          hydrateIsolateHandlerOverride: testHydrateIsolateHandler,
+        );
+
+        bloc.add(CommonReplayBlocEvent(listen: true));
+        await Future.delayed(const Duration(milliseconds: 100));
+        expect(spy.reconnectCount, 0, reason: 'nothing missing yet');
+
+        final listensBefore = spy.listenEventsCount;
+
+        // Slip an event into storage without notifying the listener.
+        spy.data.putIfAbsent(collectionPath, () => {})['2'] = {
+          docVersion: 2,
+          docPayload: 'event2',
+        };
+        await Future.delayed(const Duration(milliseconds: 250));
+
+        expect(bloc.state.events, {1: 'event1', 2: 'event2'});
+        expect(spy.reconnectCount, greaterThan(0),
+            reason: 'the resync should have asked for a fresh transport');
+        expect(spy.listenEventsCount, listensBefore,
+            reason: 'and should not have re-listened to do it');
+
+        await bloc.close();
+      });
     });
   });
+}
+
+/// Counts the calls the resync path depends on, over real in-memory storage.
+class _ReconnectSpyStorage extends InMemoryHyttaHubStorage {
+  int reconnectCount = 0;
+  int listenEventsCount = 0;
+
+  @override
+  Future<void> reconnectRealtime() async {
+    reconnectCount++;
+    await super.reconnectRealtime();
+  }
+
+  @override
+  Stream<Map<int, String>> listenEvents(
+    String path, {
+    required int Function() lastVersion,
+    required String versionField,
+    required String payloadField,
+  }) {
+    listenEventsCount++;
+    return super.listenEvents(
+      path,
+      lastVersion: lastVersion,
+      versionField: versionField,
+      payloadField: payloadField,
+    );
+  }
 }

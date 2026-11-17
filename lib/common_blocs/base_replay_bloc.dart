@@ -279,21 +279,14 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
   /// drains the buffer itself via [_processBuffer].
   Future<void> _fillGapFromStorage() async {
     try {
-      final path = await getCollectionPath();
-      if (path == null || path.isEmpty) return;
-
-      final docs = await _storage.getCollection(path);
+      final events = await _fetchEventsAbove(_lastVersion);
       var filled = 0;
-      for (final doc in docs) {
-        final version = doc[versionField];
-        final payload = doc[payloadField];
-        if (version is! num || payload is! String) continue;
-        final v = version.toInt();
-        if (v > _lastVersion && !_eventBuffer.containsKey(v)) {
-          _eventBuffer[v] = payload;
+      events.forEach((version, payload) {
+        if (!_eventBuffer.containsKey(version)) {
+          _eventBuffer[version] = payload;
           filled++;
         }
-      }
+      });
       if (kDebugMode && filled > 0) {
         print("BaseReplayBloc ($S): gap refetch recovered $filled event(s)");
       }
@@ -302,6 +295,27 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         print("BaseReplayBloc ($S): gap refetch failed: $e");
       }
     }
+  }
+
+  /// Reads the event log and returns everything newer than [version].
+  ///
+  /// The single place events are pulled from storage outside the realtime
+  /// stream — both the gap filler and the resync go through it, and it is
+  /// where a server-side version filter would slot in.
+  Future<Map<int, String>> _fetchEventsAbove(int version) async {
+    final path = await getCollectionPath();
+    if (path == null || path.isEmpty) return const {};
+
+    final docs = await _storage.getCollection(path);
+    final events = <int, String>{};
+    for (final doc in docs) {
+      final rawVersion = doc[versionField];
+      final payload = doc[payloadField];
+      if (rawVersion is! num || payload is! String) continue;
+      final parsed = rawVersion.toInt();
+      if (parsed > version) events[parsed] = payload;
+    }
+    return events;
   }
 
   Future<void> _onListenForEvents(bool listen, Emitter<S> emit) async {
@@ -448,7 +462,10 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       _subscription = _storage
           .listenEvents(
             path,
-            lastVersion: _lastVersion,
+            // Read on every seed and re-seed, so a reconnect picks up from
+            // what has actually been processed rather than from a snapshot
+            // of where we were when the stream was created.
+            lastVersion: () => _lastVersion,
             versionField: versionField,
             payloadField: payloadField,
           )
@@ -515,37 +532,28 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             if (latestVersion > _lastVersion) {
               if (kDebugMode) {
                 print(
-                  'BaseReplayBloc ($S): Auto-resync found missing events (latest v:$latestVersion > last v:$_lastVersion), restarting listener',
+                  'BaseReplayBloc ($S): Auto-resync found missing events (latest v:$latestVersion > last v:$_lastVersion), catching up and reconnecting',
                 );
               }
-              await _subscription?.cancel();
-              _subscription = _storage
-                  .listenEvents(
-                    path,
-                    lastVersion: _lastVersion,
-                    versionField: versionField,
-                    payloadField: payloadField,
-                  )
-                  .listen(
-                    (eventsData) {
-                      if (eventsData.isNotEmpty) {
-                        if (!isClosed) {
-                          add(
-                            CommonReplayBlocEvent(
-                              newEvents: CommonReplayBlocEvent_NewEvents(
-                                events: eventsData.entries,
-                              ),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    onError: (error) {
-                      if (!isClosed) {
-                        // do not emit an error state here, as it would be confusing to the UI, and might cause an exception
-                      }
-                    },
-                  );
+
+              // Pull what we missed through the normal event path, so it is
+              // buffered, ordered and de-duplicated like anything else.
+              final missed = await _fetchEventsAbove(_lastVersion);
+              if (missed.isNotEmpty && !isClosed) {
+                add(
+                  CommonReplayBlocEvent(
+                    newEvents: CommonReplayBlocEvent_NewEvents(
+                      events: missed.entries,
+                    ),
+                  ),
+                );
+              }
+
+              // Events existing in storage that never arrived is the evidence
+              // that the realtime stream is stale. Ask for a fresh transport
+              // rather than cancelling and re-listening, which left the
+              // storage layer to infer the intent from the timing.
+              await _storage.reconnectRealtime();
             }
           }
         }

@@ -15,8 +15,6 @@ dependencies:
 
   pocketbase: ^0.24.0
   http: ^1.2.0
-  # Injectable time source, so the realtime reconnect windows are testable.
-  clock: ^1.1.1
 
 dev_dependencies:
   flutter_test:

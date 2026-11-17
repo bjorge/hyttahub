@@ -392,18 +392,24 @@ class InMemoryHyttaHubStorage implements BaseHyttaHubStorage {
   @override
   Stream<Map<int, String>> listenEvents(
     String path, {
-    required int lastVersion,
+    required int Function() lastVersion,
     required String versionField,
     required String payloadField,
   }) {
     // Initial events
-    final initialEvents = _getEvents(path, lastVersion, versionField, payloadField);
+    final initialEvents =
+        _getEvents(path, lastVersion(), versionField, payloadField);
 
     // Filtered stream for updates
     return updateController.stream
         .where((update) => update['path'] == path)
-        .map((_) => _getEvents(path, lastVersion, versionField, payloadField))
+        .map((_) => _getEvents(path, lastVersion(), versionField, payloadField))
         .startWith2(initialEvents);
+  }
+
+  @override
+  Future<void> reconnectRealtime() async {
+    // Nothing to reconnect: updates come from an in-process stream.
   }
 
   @override

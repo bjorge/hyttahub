@@ -77,15 +77,21 @@ class FirestoreHyttaHubStorage implements BaseHyttaHubStorage {
   }
 
   @override
+  Future<void> reconnectRealtime() async {
+    // The Firestore SDK owns its own connection and resumes its listeners,
+    // so there is no transport for the caller to re-establish.
+  }
+
+  @override
   Stream<Map<int, String>> listenEvents(
     String path, {
-    required int lastVersion,
+    required int Function() lastVersion,
     required String versionField,
     required String payloadField,
   }) {
     return _firestore
         .collection(path)
-        .where(versionField, isGreaterThan: lastVersion)
+        .where(versionField, isGreaterThan: lastVersion())
         .orderBy(versionField, descending: false)
         .snapshots(includeMetadataChanges: true)
         .where((snapshot) => !snapshot.metadata.isFromCache)
