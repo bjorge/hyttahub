@@ -18,11 +18,33 @@ class _FakeBackend {
   final List<StreamController<List<int>>> _sseStreams = [];
   int sseConnections = 0;
 
+  /// Status returned for collection reads. Set to 403 to make a seed fail the
+  /// way a permission error would.
+  int recordsStatus = 200;
+
+  Completer<void>? _recordReadGate;
+  Completer<void>? _recordReadReached;
+
   List<String> get recordReads => requests
       .where((r) => r.contains('/api/collections/'))
       .toList(growable: false);
 
   void clearRequests() => requests.clear();
+
+  /// Makes the next collection read hang until [releaseRecordRead].
+  ///
+  /// Returns a future that completes once that read is actually in flight, so
+  /// a test can act while the listener is mid-setup.
+  Future<void> blockNextRecordRead() {
+    _recordReadGate = Completer<void>();
+    _recordReadReached = Completer<void>();
+    return _recordReadReached!.future;
+  }
+
+  void releaseRecordRead() {
+    final gate = _recordReadGate;
+    if (gate != null && !gate.isCompleted) gate.complete();
+  }
 
   http.Client get client => MockClient.streaming((request, _) async {
         final path = request.url.path;
@@ -39,6 +61,21 @@ class _FakeBackend {
         final match =
             RegExp(r'^/api/collections/([^/]+)/records$').firstMatch(path);
         if (match != null) {
+          // Once released the gate stays completed, so only the read that
+          // arrives first is actually held.
+          final gate = _recordReadGate;
+          if (gate != null && !gate.isCompleted) {
+            _recordReadReached?.complete();
+            await gate.future;
+          }
+
+          if (recordsStatus != 200) {
+            return _json(
+              {'code': recordsStatus, 'message': 'denied', 'data': {}},
+              status: recordsStatus,
+            );
+          }
+
           final items = collections[match.group(1)] ?? const [];
           return _json({
             'page': 1,
@@ -74,9 +111,10 @@ class _FakeBackend {
     );
   }
 
-  http.StreamedResponse _json(Object body) => http.StreamedResponse(
+  http.StreamedResponse _json(Object body, {int status = 200}) =>
+      http.StreamedResponse(
         Stream.value(utf8.encode(jsonEncode(body))),
-        200,
+        status,
         headers: {'content-type': 'application/json'},
       );
 
@@ -235,6 +273,80 @@ void main() {
 
     await siteSub.cancel();
     await accountSub.cancel();
+  });
+
+  test('a reconnect arriving mid-setup is queued, not dropped', () async {
+    // The isSettingUp guard used to drop the restart outright, leaving the
+    // listener subscribed to a connection forceReconnect had already torn
+    // down, with nothing left to retrigger it.
+    backend.collections[siteCollection] = [
+      _eventRecord(id: 'rec000000000001', version: 1, payload: 'one'),
+    ];
+
+    final storage = PocketbaseHyttaHubStorage(client: pb);
+    final seedInFlight = backend.blockNextRecordRead();
+
+    final events = <Map<int, String>>[];
+    final sub = storage
+        .listenEvents(sitePath,
+            lastVersion: 0, versionField: 'v', payloadField: 'p')
+        .listen(events.add);
+
+    // Wait until the listener is parked on its seed fetch, i.e. mid-setup.
+    await seedInFlight;
+    expect(backend.recordReads, hasLength(1));
+
+    // The reconnect returns promptly — the queued restart must not block it.
+    await storage.forceReconnect();
+
+    backend.releaseRecordRead();
+    await _until(() => backend.recordReads.length >= 2);
+
+    expect(
+      backend.recordReads,
+      hasLength(greaterThanOrEqualTo(2)),
+      reason: 'the queued restart should have re-run connect() once the '
+          'in-flight attempt finished',
+    );
+
+    await sub.cancel();
+  });
+
+  test('an auth failure does not wedge the listener against later reconnects',
+      () async {
+    // connect() rethrows on 401/403 without completing its loop; before the
+    // finally, that left isSettingUp latched on and every later reconnect was
+    // silently swallowed.
+    backend.collections[siteCollection] = [
+      _eventRecord(id: 'rec000000000001', version: 1, payload: 'one'),
+    ];
+    backend.recordsStatus = 403;
+
+    final storage = PocketbaseHyttaHubStorage(client: pb);
+    final errors = <Object>[];
+    final events = <Map<int, String>>[];
+    final sub = storage
+        .listenEvents(sitePath,
+            lastVersion: 0, versionField: 'v', payloadField: 'p')
+        .listen(events.add, onError: errors.add);
+
+    await _until(() => errors.isNotEmpty);
+
+    // Permission restored; a reconnect should be able to pick the stream up.
+    backend.recordsStatus = 200;
+    backend.clearRequests();
+
+    await storage.forceReconnect();
+    await _until(() => events.isNotEmpty);
+
+    expect(events.first, {1: 'one'});
+    expect(
+      backend.recordReads,
+      isNotEmpty,
+      reason: 'the listener should still be restartable after an auth error',
+    );
+
+    await sub.cancel();
   });
 
   test('a cancelled listener is not restarted by a later reconnect', () async {
