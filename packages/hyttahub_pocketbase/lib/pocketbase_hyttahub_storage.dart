@@ -336,11 +336,9 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     // Holds the per-subscription unsubscribe function returned by PocketBase.
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
+    bool restartRequested = false;
 
-    Future<void> setup() async {
-      if (isSettingUp) return;
-      isSettingUp = true;
-
+    Future<void> connect() async {
       // Clean up previous subscription before recreating
       try {
         await unsubscribeFn?.call();
@@ -416,18 +414,45 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           continue;
         }
       }
-      isSettingUp = false;
     }
 
-    Future<void> refreshOnly() async {
-      if (isSettingUp || controller.isClosed) return;
+    Future<void> setup() async {
+      if (isSettingUp) {
+        // A reconnect arrived while this listener was still connecting.
+        // Dropping it would leave the listener holding a subscription that
+        // forceReconnect has already torn down, with nothing to retrigger it.
+        restartRequested = true;
+        return;
+      }
+      isSettingUp = true;
+      try {
+        do {
+          restartRequested = false;
+          await connect();
+        } while (restartRequested && !controller.isClosed);
+      } finally {
+        // Reset even when connect() rethrows an auth error, so a later
+        // reconnect is not silently swallowed by the isSettingUp guard.
+        isSettingUp = false;
+      }
+    }
+
+    Future<bool> refreshOnly() async {
+      // A setup in flight is already re-seeding; nothing to refresh.
+      if (isSettingUp || controller.isClosed) return true;
       try {
         final updated = await getCollection(path);
         currentData = _toDocIdMap(updated);
         if (!controller.isClosed) {
           controller.add(Map.from(currentData));
         }
-      } catch (_) {}
+        return true;
+      } catch (e) {
+        if (kDebugMode) {
+          print('[PB] listenCollection refresh failed col=${info.collection}: $e');
+        }
+        return false;
+      }
     }
 
     Future<void> triggerSetup() {
@@ -496,16 +521,12 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
     final rtState = _realtimeState;
     Future<void> Function()? unsubscribeFn;
     bool isSettingUp = false;
+    bool restartRequested = false;
     int currentLastVersion = lastVersion;
 
-    final cancelledAt = rtState.recentlyCancelledEventPaths.remove(path);
-    final bool isResyncRestart = cancelledAt != null &&
-        DateTime.now().difference(cancelledAt) < const Duration(seconds: 5);
+    final bool isResyncRestart = rtState.consumeCancelledEventPath(path);
 
-    Future<void> setup() async {
-      if (isSettingUp) return;
-      isSettingUp = true;
-
+    Future<void> connect() async {
       // Clean up previous subscription before recreating
       try {
         await unsubscribeFn?.call();
@@ -634,11 +655,32 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           continue;
         }
       }
-      isSettingUp = false;
     }
 
-    Future<void> refreshOnly() async {
-      if (isSettingUp || controller.isClosed) return;
+    Future<void> setup() async {
+      if (isSettingUp) {
+        // A reconnect arrived while this listener was still connecting.
+        // Dropping it would leave the listener holding a subscription that
+        // forceReconnect has already torn down, with nothing to retrigger it.
+        restartRequested = true;
+        return;
+      }
+      isSettingUp = true;
+      try {
+        do {
+          restartRequested = false;
+          await connect();
+        } while (restartRequested && !controller.isClosed);
+      } finally {
+        // Reset even when connect() rethrows an auth error, so a later
+        // reconnect is not silently swallowed by the isSettingUp guard.
+        isSettingUp = false;
+      }
+    }
+
+    Future<bool> refreshOnly() async {
+      // A setup in flight is already re-seeding; nothing to refresh.
+      if (isSettingUp || controller.isClosed) return true;
       try {
         final all = await getCollection(path);
         final events = _buildEventMap(
@@ -653,7 +695,13 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
           }
           controller.add(events);
         }
-      } catch (_) {}
+        return true;
+      } catch (e) {
+        if (kDebugMode) {
+          print('[PB] listenEvents refresh failed col=${info.collection}: $e');
+        }
+        return false;
+      }
     }
 
     Future<void> triggerSetup() {
@@ -690,7 +738,7 @@ class PocketbaseHyttaHubStorage implements BaseHyttaHubStorage {
 
     controller.onCancel = () async {
       rtState.unregisterListener(restart: triggerSetup, refresh: refreshOnly);
-      rtState.recentlyCancelledEventPaths[path] = DateTime.now();
+      rtState.noteCancelledEventPath(path);
       if (observer != null) {
         try {
           WidgetsBinding.instance.removeObserver(observer);
@@ -939,17 +987,33 @@ class _ClientRealtimeState {
   /// block every later reconnect and gap refresh.
   static const Duration _restartTimeout = Duration(seconds: 30);
 
+  /// How long after a cancel a re-listen on the same path still counts as a
+  /// resync restart rather than a fresh listen.
+  static const Duration _resyncRestartWindow = Duration(seconds: 5);
+
+  /// Delays between attempts to refresh listeners after the SDK's `SseClient`
+  /// auto-reconnects. The first attempt usually lands while the connection is
+  /// still coming back, so a single shot would silently give up on the very
+  /// gap it exists to close.
+  static const List<Duration> _refreshBackoff = [
+    Duration(seconds: 1),
+    Duration(seconds: 3),
+    Duration(seconds: 8),
+    Duration(seconds: 20),
+  ];
+
   final PocketBase client;
   final Set<Future<void> Function()> activeListeners = {};
-  final Set<Future<void> Function()> activeRefreshers = {};
-  final Map<String, DateTime> recentlyCancelledEventPaths = {};
+  final Set<Future<bool> Function()> activeRefreshers = {};
+  final Map<String, DateTime> _recentlyCancelledEventPaths = {};
 
   Future<void>? reconnectingFuture;
   Timer? _autoReconnectRefreshTimer;
+  int _refreshAttempt = 0;
 
   void registerListener({
     required Future<void> Function() restart,
-    required Future<void> Function() refresh,
+    required Future<bool> Function() refresh,
   }) {
     activeListeners.add(restart);
     activeRefreshers.add(refresh);
@@ -957,19 +1021,63 @@ class _ClientRealtimeState {
 
   void unregisterListener({
     required Future<void> Function() restart,
-    required Future<void> Function() refresh,
+    required Future<bool> Function() refresh,
   }) {
     activeListeners.remove(restart);
     activeRefreshers.remove(refresh);
   }
 
-  void _scheduleRefreshAfterAutoReconnect() {
+  /// Records that an event stream on [path] was just cancelled, so a re-listen
+  /// arriving within [_resyncRestartWindow] can be recognised as a resync
+  /// restart.
+  ///
+  /// Prunes expired entries on the way in: outside that window an entry is
+  /// dead weight, and it is only ever removed by a matching re-listen that may
+  /// never come.
+  void noteCancelledEventPath(String path) {
+    final now = DateTime.now();
+    _recentlyCancelledEventPaths.removeWhere(
+      (_, at) => now.difference(at) > _resyncRestartWindow,
+    );
+    _recentlyCancelledEventPaths[path] = now;
+  }
+
+  /// Whether [path] was cancelled within [_resyncRestartWindow], consuming the
+  /// record either way.
+  bool consumeCancelledEventPath(String path) {
+    final cancelledAt = _recentlyCancelledEventPaths.remove(path);
+    return cancelledAt != null &&
+        DateTime.now().difference(cancelledAt) < _resyncRestartWindow;
+  }
+
+  void _scheduleRefreshAfterAutoReconnect({bool reset = true}) {
+    if (reset) _refreshAttempt = 0;
     _autoReconnectRefreshTimer?.cancel();
-    _autoReconnectRefreshTimer = Timer(const Duration(seconds: 1), () async {
-      if (reconnectingFuture != null) return;
-      for (final refresh in List.of(activeRefreshers)) {
-        await refresh();
+
+    if (_refreshAttempt >= _refreshBackoff.length) {
+      if (kDebugMode) {
+        print(
+          '[PB] refresh after reconnect gave up after ${_refreshBackoff.length} attempts',
+        );
       }
+      return;
+    }
+
+    _autoReconnectRefreshTimer = Timer(_refreshBackoff[_refreshAttempt], () async {
+      // A full reconnect supersedes the refresh — it re-seeds every listener.
+      if (reconnectingFuture != null) return;
+
+      final results = await Future.wait(
+        // An unhandled rejection here would escape into the Timer's zone.
+        List.of(activeRefreshers)
+            .map((refresh) => refresh().catchError((Object _) => false)),
+      );
+      if (results.every((refreshed) => refreshed)) return;
+
+      // At least one listener could not be refreshed (still offline, most
+      // likely). Retry rather than leaving its gap unfilled.
+      _refreshAttempt++;
+      _scheduleRefreshAfterAutoReconnect(reset: false);
     });
   }
 
