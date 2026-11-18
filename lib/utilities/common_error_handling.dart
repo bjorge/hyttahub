@@ -104,6 +104,9 @@ Widget? handleAccountReplayState(
   }
 
   if (errorWidget != null) {
+    if (accountState.state == CommonReplayStateEnum.uninitializedListening) {
+      return errorWidget;
+    }
     if (!inScaffold) {
       return Scaffold(
         body: Center(child: errorWidget),

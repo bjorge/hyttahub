@@ -133,20 +133,62 @@ class _AccountInitializingWidgetState extends State<AccountInitializingWidget> {
       child:
           BlocConsumer<AccountSubmitBloc, BaseSubmitState<SubmitAccountEvent>>(
             builder: (context, submitState) {
+              final hasError = submitState.submissionState.state ==
+                  CommonSubmitBlocState_State.error;
               return Scaffold(
                 appBar: AppBar(
                   title: Text(
                     HyttaHubLocalizations.of(context)!.initializingAccountTitle,
                   ),
                 ),
-                body: Center(child: CircularProgressIndicator()),
+                body: hasError
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                HyttaHubLocalizations.of(context)!
+                                    .unexpectedError,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                context.read<AccountSubmitBloc>().add(
+                                  AccountEventSubmission(
+                                    submission: CommonSubmitBlocEvent(
+                                      submit: CommonSubmitBlocEvent_SubmitNow(),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const Center(child: CircularProgressIndicator()),
               );
             },
             listener:
                 (
                   BuildContext context,
                   BaseSubmitState<SubmitAccountEvent> state,
-                ) {},
+                ) {
+                  if (state.submissionState.state ==
+                      CommonSubmitBlocState_State.success) {
+                    context.read<AccountReplayBloc>().add(
+                      CommonReplayBlocEvent(listen: true),
+                    );
+                  }
+                },
           ),
     );
   }
