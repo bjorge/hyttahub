@@ -55,6 +55,13 @@ HyttaHub is persistence-agnostic and uses a dynamic registration system.
 
 Please see [PERSISTENCE.md](PERSISTENCE.md) for details on how to register and use multiple storage providers.
 
+### Real-Time Event Delivery
+
+Replay depends on a contiguously versioned event log, so a single missing
+version stalls it. See [REALTIME.md](REALTIME.md) for the failure modes, how
+`gapTimeout` and `resyncInterval` interact, and how to tell a delivery gap from
+a genuinely missing version in storage.
+
 ## FAQ
 
 **I want to make some changes to the language files, how do I compile them?**
