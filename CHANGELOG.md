@@ -1,3 +1,16 @@
+## 0.2.1
+
+*   **Flutter 3.50.0 & Material UI Migration**:
+    *   Added `material_ui: ^1.11.1` and migrated all `package:flutter/material.dart` imports to `package:material_ui/material_ui.dart`.
+    *   Updated `HyttaHubApp` to use `GlobalMaterialLocalizations.delegates` from `package:material_ui/material_ui.dart`.
+    *   Migrated `ReorderableListView` in `common_form.dart` from the deprecated `onReorder` callback to `onReorderItem` (removing the manual `newIndex` adjustment).
+    *   Added `header: "// ignore_for_file: deprecated_member_use"` to `l10n.yaml` so generated localization files remain warning-free on Flutter 3.50.0.
+    *   Cleaned up Dart 3.14 `unused_catch_stack` warnings in `BaseReplayBloc` and `use_super_parameters` lints in the example apps.
+*   **Documentation**:
+    *   Documented realtime gap failure modes and diagnosis in `REALTIME.md` and linked it from `README.md`.
+*   **Maintenance**:
+    *   Updated package version to 0.2.1.
+
 ## 0.2.0
 
 *   **Breaking: Storage Interface**:
