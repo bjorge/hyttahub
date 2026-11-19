@@ -8,7 +8,7 @@ import 'package:tictactoe/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_widgets/events_display.dart';
 import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hyttahub/utilities/app_wrapper_util.dart';
 import 'package:tictactoe/l10n/app_localizations.dart';
 

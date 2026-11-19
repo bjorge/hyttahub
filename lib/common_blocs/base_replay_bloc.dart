@@ -494,7 +494,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
             },
           );
       _resetResyncTimer();
-    } catch (e, _) {
+    } catch (e) {
       CommonReplayStateEnum errorState = CommonReplayStateEnum.networkError;
       if (_storage.isPermissionDenied(e)) {
         errorState = CommonReplayStateEnum.permissionDenied;
@@ -628,7 +628,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
       );
 
       return restoringState..freeze();
-    } catch (e, _) {
+    } catch (e) {
       return null; // Or handle error appropriately, returning null will use initialState
     }
   }
@@ -646,7 +646,7 @@ abstract class BaseReplayBloc<S extends GeneratedMessage>
         'events_map': serializedEventsMap,
         HyttaHubOptions.implementation?.appBuildNumber.toString() ?? '': serializedState,
       };
-    } catch (e, _) {
+    } catch (e) {
       return null; // Prevents corrupt data from being saved
     }
   }

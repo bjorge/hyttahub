@@ -24,7 +24,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 bjorge
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/common_widgets/hyttahub_app_bar_actions.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';

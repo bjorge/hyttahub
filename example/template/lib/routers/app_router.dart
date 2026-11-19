@@ -6,7 +6,7 @@ import 'package:hyttahub/hyttahub_app.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/common_widgets/common_form.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter extends StatefulWidget {

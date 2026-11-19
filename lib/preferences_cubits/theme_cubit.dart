@@ -1,6 +1,6 @@
 // Copyright (c) 2025 bjorge
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 

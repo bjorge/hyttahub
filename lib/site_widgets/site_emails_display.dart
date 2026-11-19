@@ -4,7 +4,7 @@ import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/common_widgets/allowed_emails_display.dart';
 import 'package:hyttahub/collection_paths.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SiteEmailsDisplayScreen extends StatelessWidget {
   const SiteEmailsDisplayScreen({super.key, required this.siteId});

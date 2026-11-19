@@ -4,7 +4,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'dart:convert';
 
 import 'package:hyttahub/collection_paths.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 import 'package:hyttahub/hyttahub_options.dart';

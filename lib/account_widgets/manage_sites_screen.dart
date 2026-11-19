@@ -8,7 +8,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/site_widgets/site_name_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

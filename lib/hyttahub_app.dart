@@ -1,15 +1,12 @@
 // Copyright (c) 2025 bjorge
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
 import 'package:hyttahub/preferences_cubits/platform_cubit.dart';
 import 'package:hyttahub/preferences_cubits/theme_cubit.dart';
-
-
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 
 /// A wrapper around [MaterialApp.router] that provides common HyttaHub BLoCs
@@ -95,9 +92,7 @@ class HyttaHubApp extends StatelessWidget {
                       localizationsDelegates: [
                         ...localizationsDelegates,
                         HyttaHubLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate,
-                        GlobalCupertinoLocalizations.delegate,
+                        ...GlobalMaterialLocalizations.delegates,
                       ],
                       routerConfig: routerConfig,
                     );

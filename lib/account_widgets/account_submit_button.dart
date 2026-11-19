@@ -6,7 +6,7 @@ import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountSubmitIconButton extends StatelessWidget {

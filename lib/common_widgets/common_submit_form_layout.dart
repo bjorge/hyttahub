@@ -4,7 +4,7 @@ import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/common_widgets/layout.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:protobuf/protobuf.dart';
 
 

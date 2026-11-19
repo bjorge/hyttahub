@@ -6,7 +6,7 @@ import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/preferences_cubits/login_cubit.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utils/refresh_helper.dart';

@@ -1,6 +1,6 @@
 // Copyright (c) 2026 bjorge
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 
 class OpenSourceLicensesScreen extends StatelessWidget {

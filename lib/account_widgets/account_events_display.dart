@@ -8,7 +8,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/account_events.pb.dart';
 import 'package:hyttahub/proto/account_replay_bloc.pb.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AccountEventsDisplayScreen extends StatelessWidget {
   const AccountEventsDisplayScreen({super.key, required this.email});

@@ -8,7 +8,7 @@ import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/proto/site_replay_bloc.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SiteEventsDisplayScreen extends StatelessWidget {
   const SiteEventsDisplayScreen({super.key, required this.siteId});

@@ -12,7 +12,7 @@ import 'package:template/app_widgets/update_list_screen.dart';
 import 'package:hyttahub/site_widgets/site_edit_mode_cubit.dart';
 import 'package:hyttahub/routes/hyttahub_routes.dart';
 import 'package:hyttahub/utilities/common_error_handling.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:template/routers/landing.dart';
 import 'package:hyttahub/collection_paths.dart';

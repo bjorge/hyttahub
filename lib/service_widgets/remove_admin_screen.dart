@@ -9,7 +9,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/proto/service_events.pb.dart';
 import 'package:hyttahub/service_blocs/service_submit_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/service_widgets/service_submit_button.dart';
 

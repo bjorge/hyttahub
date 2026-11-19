@@ -9,7 +9,6 @@ export 'package:template/proto/app_events.pb.dart';
 import 'package:template/proto/app_replay_bloc.pb.dart';
 export 'package:template/proto/app_replay_bloc.pb.dart';
 import 'package:hyttahub/common_blocs/base_replay_bloc.dart';
-import 'package:hyttahub/storage/base_hyttahub_storage.dart';
 import 'package:hyttahub/collection_paths.dart';
 import 'package:hyttahub/hyttahub_options.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
@@ -42,14 +41,12 @@ FutureOr<Uint8List> appHydrateIsolateHandler(Map<int, String> eventsMap) {
 class AppReplayBloc extends BaseReplayBloc<AppReplayBlocState> {
   AppReplayBloc(
     this.collectionName, {
-    BaseHyttaHubStorage? storage,
-    bool? useIsolates,
+    super.storage,
+    super.useIsolates,
   }) : super(
          AppReplayBlocState(),
-         storage: storage,
          replayIsolateHandler: appReplayIsolateHandler,
          hydrateIsolateHandler: appHydrateIsolateHandler,
-         useIsolates: useIsolates,
        );
 
   @override

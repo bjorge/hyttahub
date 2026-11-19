@@ -42,7 +42,7 @@ import 'package:hyttahub/service_widgets/service_down_page.dart';
 import 'package:hyttahub/service_widgets/service_new_version_page.dart';
 import 'package:hyttahub/service_widgets/service_uninitialized_page.dart';
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hyttahub/common_blocs/allowed_emails_bloc.dart';

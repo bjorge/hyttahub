@@ -4,7 +4,7 @@ import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/preferences_cubits/language_cubit.dart';
 import 'package:hyttahub/service_blocs/service_replay_bloc.dart';
 import 'package:hyttahub/utilities/localization_utils.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ServicePrivacyDisplay extends StatelessWidget {

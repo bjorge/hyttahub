@@ -37,6 +37,8 @@ dependencies:
   sembast: ^3.8.5+1
   path: ^1.9.1
   rxdart: ^0.28.0
+  material_ui: ^1.11.1
+  intl: any
 
 dev_dependencies:
   flutter_test:

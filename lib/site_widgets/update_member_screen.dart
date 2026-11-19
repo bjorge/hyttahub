@@ -14,7 +14,7 @@ import 'package:hyttahub/proto/site_events.pb.dart';
 import 'package:hyttahub/site_blocs/site_replay_bloc.dart';
 import 'package:hyttahub/site_blocs/site_submit_bloc.dart';
 import 'package:hyttahub/site_widgets/site_submit_button.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 

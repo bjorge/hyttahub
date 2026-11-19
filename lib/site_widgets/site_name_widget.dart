@@ -3,7 +3,7 @@
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
 import 'package:hyttahub/site_blocs/site_name_replay_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SiteNameDisplay extends StatefulWidget {

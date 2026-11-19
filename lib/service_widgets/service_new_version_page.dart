@@ -2,7 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:hyttahub/utils/refresh_helper.dart';
 
 class ServiceNewVersionPage extends StatelessWidget {

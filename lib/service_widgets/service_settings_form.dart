@@ -14,7 +14,7 @@ import 'package:hyttahub/service_widgets/service_submit_button.dart';
 import 'package:hyttahub/utilities/bloom_filter.dart';
 import 'package:hyttahub/utilities/pattern_utils.dart';
 import 'package:hyttahub/utilities/constants.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 

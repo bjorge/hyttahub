@@ -1,7 +1,7 @@
 // Copyright (c) 2025 bjorge
 
 import 'package:hyttahub/l10n/intl_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class UnimplementedScreen extends StatelessWidget {
   const UnimplementedScreen({super.key});

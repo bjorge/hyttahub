@@ -3,7 +3,7 @@
 import 'package:hyttahub/common_blocs/base_submit_bloc.dart';
 import 'package:hyttahub/l10n/intl_localizations.dart';
 import 'package:hyttahub/proto/common_blocs.pb.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hyttahub/utilities/pattern_utils.dart';
@@ -697,11 +697,8 @@ class _BaseReorderableFormFieldState<
                     ),
             );
           },
-          onReorder: (int oldIndex, int newIndex) {
+          onReorderItem: (int oldIndex, int newIndex) {
             setState(() {
-              if (newIndex > oldIndex) {
-                newIndex -= 1;
-              }
               final item = _items.removeAt(oldIndex);
               _items.insert(newIndex, item);
 
